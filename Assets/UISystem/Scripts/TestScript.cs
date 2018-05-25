@@ -13,5 +13,6 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//added a comment, here again, and again
+	//added a comment, here again
+	//added another line of comment
 }
