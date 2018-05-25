@@ -15,4 +15,6 @@ public class TestScript : MonoBehaviour {
 	}
 	//added a comment, here again
 	//added another line of comment
+
+	//this line is added in master branch
 }
