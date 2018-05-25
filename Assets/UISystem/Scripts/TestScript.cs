@@ -15,4 +15,6 @@ public class TestScript : MonoBehaviour {
 	}
 	//added a comment, here again
 	//added another line of comment
+
+	//Testing: added testing comment
 }
