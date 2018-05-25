@@ -19,4 +19,6 @@ public class TestScript : MonoBehaviour {
 	//this line is added in master branch
 
 	//hotfix is made
+	//Testing: added testing comment
+	//Testing: even more change
 }
