@@ -13,5 +13,4 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//what if i make some change locally and fetch/merge unchanged remote?
 }
