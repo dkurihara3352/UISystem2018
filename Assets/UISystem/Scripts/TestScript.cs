@@ -13,5 +13,5 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//Master branch is updated with change introduced in test3
+	//Master branch is updated with change introduced in test3 and again in test3v2
 }
