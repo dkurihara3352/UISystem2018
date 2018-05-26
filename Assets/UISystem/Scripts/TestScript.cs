@@ -13,4 +13,8 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
+<<<<<<< HEAD
+=======
+	//This is a test branch	
+>>>>>>> test
 }
