@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
+using NSubstitute;
 using TestTesting;
 
 public class TestScriptTest {
@@ -29,5 +30,17 @@ public class TestScriptTest {
 		TestClass testClass = new TestClass();
 		int result = testClass.Doubles(2);
 		Assert.That(result, Is.EqualTo(4));
+	}
+	[Test]
+	public void TestClass_Doubles_When0_Returns0(){
+		TestClass testClass = new TestClass();
+		int result = testClass.Doubles(0);
+		Assert.That(result, Is.EqualTo(0));
+	}
+	[Test]
+	public void NSubstituteTest(){
+		ITestClass testClass = Substitute.For<ITestClass>();
+		testClass.Doubles(2).Returns(5);
+		Assert.That(testClass.Doubles(2), Is.EqualTo(5));
 	}
 }
