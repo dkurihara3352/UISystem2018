@@ -13,6 +13,5 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//This is test1
-	//And this is added in test2
+	//This is final in Test3
 }
