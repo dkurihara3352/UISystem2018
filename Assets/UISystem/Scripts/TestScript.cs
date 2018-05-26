@@ -13,12 +13,5 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//added a comment, here again
-	//added another line of comment
-
-	//this line is added in master branch
-
-	//hotfix is made
-	//Testing: added testing comment
-	//Testing: even more change
+	
 }
