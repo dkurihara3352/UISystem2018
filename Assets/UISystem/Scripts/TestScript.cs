@@ -13,8 +13,5 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-<<<<<<< HEAD
-=======
-	//This is a test branch	
->>>>>>> test
+	//what if i make some change locally and fetch/merge unchanged remote?
 }
