@@ -13,5 +13,5 @@ public class TestScript : MonoBehaviour {
 	void Update () {
 		
 	}
-	//This is final in Test3
+	//Master branch is updated with change introduced in test3
 }
