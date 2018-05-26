@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestScript : MonoBehaviour {
+namespace TestTesting{
 
-	// Use this for initialization
-	void Start () {
-		
+	public class TestClass{
+		public int Doubles(int q){
+			return q *2;
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-	//Master branch is updated with change introduced in test3 and again in test3v2
 }
