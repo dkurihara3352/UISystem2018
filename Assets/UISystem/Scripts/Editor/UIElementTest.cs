@@ -11,4 +11,10 @@ public class UIElementTest {
 		IUIElement uie = new UIElement();
 		Assert.That(uie, Is.Not.Null);
 	}
+	[Test]
+	public void UIElement_SayHi_WhenCalled_PrintHi(){
+		IUIElement uie = new UIElement();
+		string result = uie.SayHi();
+		Assert.That(result, Is.Null);
+	}
 }
