@@ -9,11 +9,14 @@ namespace UISystem{
 		IUIManager GetUIM();
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
+		IUIImage CreateUIImage();
 	}
-	public class UIElement: IUIElement{
-		public UIElement(IUIManager uim, IUIAdaptor uia){
+	public abstract class AbsUIElement: IUIElement{
+		public AbsUIElement(IUIManager uim, IUIAdaptor uia){
 			this._uiManager = uim;
 			this._uiAdaptor = uia;
+			IUIImage uiImage = this.CreateUIImage();
+			this._uiImage = uiImage;
 		}
 		IUIManager _uiManager;
 		public IUIManager GetUIM(){
@@ -29,16 +32,12 @@ namespace UISystem{
 		public List<IUIElement> GetChildUIEs(){
 			return GetUIAdaptor().GetChildUIEs();
 		}
-		public virtual IUIImage GetUIImage(){
-			return null;
+		public IUIImage GetUIImage(){
+			return this._uiImage;
 		}
+		IUIImage _uiImage;
+		public abstract IUIImage CreateUIImage();
 	}
 	public interface IUIImage{
-		void SetDarkness(float darkness);
-		float GetDarkness();
-		float GetDefaultDarkness();
-		float GetDisabledDarkness();
-		void SetAlpha(float a);
-		float GetAlpha();
 	}
 }
