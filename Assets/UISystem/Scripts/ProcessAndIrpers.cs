@@ -41,18 +41,21 @@ namespace UISystem{
 
 	}
 	public interface IProcessFactory{
-		TurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
+		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
 	}
 	public class ProcessFactory: IProcessFactory{
 		public ProcessFactory(IProcessManager procManager){
-			this.processManager = procManager;
+			if(procManager != null)
+				this.processManager = procManager;
+			else
+				throw new System.ArgumentNullException("procManager", "ProcessFactory does not operate without a procManager");
 		}
 		IProcessManager processManager;
 		IProcessManager GetProcessManager(){
 			return processManager;
 		}
-		public TurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
-			TurnImageDarknessProcess process = new TurnImageDarknessProcess(GetProcessManager(), image, targetDarkness);
+		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
+			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(GetProcessManager(), image, targetDarkness);
 			return process;
 		}
 	}

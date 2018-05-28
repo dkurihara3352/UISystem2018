@@ -53,13 +53,13 @@ namespace UISystem{
 				throw new System.ArgumentNullException("state", "target state must not be null");
 			}
 		}
-		SelectableState selectableState;
-		UnselectableState unselectableState;
-		SelectedState selectedState;
+		protected SelectableState selectableState;
+		protected UnselectableState unselectableState;
+		protected SelectedState selectedState;
 		void InitializeStates(IUIElement uie, IProcessFactory procFac){
 			IUIImage image = uie.GetUIImage();
-			TurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());
-			TurnImageDarknessProcess turnToDarkenedProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDarkenedDarkness());
+			ITurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());
+			ITurnImageDarknessProcess turnToDarkenedProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDarkenedDarkness());
 
 			selectableState = new SelectableState(turnToDefaultProcess);
 			unselectableState = new UnselectableState(turnToDarkenedProcess);
@@ -82,8 +82,8 @@ namespace UISystem{
 		void OnExit();
 	}
 	public abstract class TurnImageDarknessState: ISelectabilityState{
-		protected TurnImageDarknessProcess process;
-		public TurnImageDarknessState(TurnImageDarknessProcess process){
+		protected ITurnImageDarknessProcess process;
+		public TurnImageDarknessState(ITurnImageDarknessProcess process){
 			this.process = process;
 		}
 		public void OnEnter(){
@@ -98,12 +98,13 @@ namespace UISystem{
 		}
 	}
 	public class SelectableState: TurnImageDarknessState{
-		public SelectableState(TurnImageDarknessProcess process): base(process){}
+		public SelectableState(ITurnImageDarknessProcess process): base(process){}
 	}
 	public class UnselectableState: TurnImageDarknessState{
-		public UnselectableState(TurnImageDarknessProcess process): base(process){}
+		public UnselectableState(ITurnImageDarknessProcess process): base(process){}
 	}
-	public class TurnImageDarknessProcess: AbsProcess{
+	public interface ITurnImageDarknessProcess: IProcess{}
+	public class TurnImageDarknessProcess: AbsProcess, ITurnImageDarknessProcess{
 		public TurnImageDarknessProcess(IProcessManager procManager, IUIImage image, float targetDarkness): base(procManager){
 			this.image = image;
 			this.targetDarkness = targetDarkness;
