@@ -39,5 +39,9 @@ namespace UISystem{
 		public abstract IUIImage CreateUIImage();
 	}
 	public interface IUIImage{
+		float GetCurrentDarkness();
+		float GetDefaultDarkness();
+		float GetDarkenedDarkness();
+		void SetDarkness(float darkness);
 	}
 }

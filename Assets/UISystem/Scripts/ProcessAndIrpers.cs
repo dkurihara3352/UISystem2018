@@ -37,8 +37,19 @@ namespace UISystem{
 	}
 	public interface IProcessFactory{
 	}
-	public interface IProcessHandler{
-		void InitWithProcesses(IProcessFactory procFactory);
+	public interface IInterpolator{
+		void Interpolate(float zeroToOne);
+		void InterpolateImple(float zeroToOne);
+		void Terminate();
+	}
+	public abstract class AbsInterpolater: IInterpolator{
+		public abstract void InterpolateImple(float zeroToOne);
+		public void Interpolate(float zeroToOne){
+			this.InterpolateImple(zeroToOne);
+			if(zeroToOne >= 1f)
+				this.Terminate();
+		}
+		public abstract void Terminate();
 	}
 }
 

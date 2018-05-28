@@ -98,34 +98,49 @@ namespace UISystem{
 	}
 	public class TurnDarknessToDefaultProcess: AbsProcess{
 		public TurnDarknessToDefaultProcess(IProcessManager procManager, IUIImage image): base(procManager){
-			_uiImage = image;
+			this.image = image;
 		}
-		IUIImage _uiImage;
-		float counter;
+		IUIImage image;
+		float elapsedT;
+		float rateOfChange = 1f;
+		ImageDarknessIrper GetIrper(){return irper;}
+		void SetIrper(ImageDarknessIrper irper){this.irper = irper;}
+		ImageDarknessIrper irper;
 		public override void Run(){
-			float initVal = _uiImage.GetDarkness();
-			float tarVal = _uiImage.GetDefaultDarkness();
-			float totalT = CalcTotalIrperT(initVal, tarVal);
-			irper = new ImageDarknessIrper(_uiImage, initVal, tarVal, totalT);
-			SetIrper(irper);
-			irper.Interpolate(0f);
+			elapsedT = 0f;
+			float tarVal = image.GetDefaultDarkness();
+			float initVal = image.GetCurrentDarkness();
+			ImageDarknessIrper newIrper = new ImageDarknessIrper(image,initVal, tarVal);
+			SetIrper(newIrper);
+			newIrper.Interpolate(0f);
 			base.Run();
 		}
 		public override void UpdateProcess(float deltaT){
-			float irperT = CalcIrperT(deltaT);
+			elapsedT += deltaT;
+			float irperT = elapsedT/ rateOfChange;
 			GetIrper().Interpolate(irperT);
-			if(irperT > 1f)
+			if(irperT >= 1f)
 				this.Expire();
 		}
 		public override void Reset(){
 			SetIrper(null);
-			counter = 0f;
+			elapsedT = 0f;
 		}
-		/* What's the difference b/w Stop() and Expire()?
-			Is stopped process able to be resumed?
-			What's going to happen when UpdateProcess(deltaT) is called in the same
-			frame this is init'ed, with deltaT big enough to soon expire the process?
-		 */
+	}
+	public class ImageDarknessIrper: AbsInterpolater{
+		IUIImage image;
+		float initDarkness;
+		float targetDarkness;
+		public ImageDarknessIrper(IUIImage image, float sourceDarkness, float targetDarkness){
+			this.image = image;
+			this.initDarkness = sourceDarkness;
+			this.targetDarkness = targetDarkness;
+		}
+		public override void InterpolateImple(float zeroToOne){
+			float newDarkness = Mathf.Lerp(initDarkness, targetDarkness, zeroToOne);
+			image.SetDarkness(newDarkness);
+		}
+		public override void Terminate(){return;}
 	}
 	public class UnselectableState: AbsSelectabilityState{
 		public UnselectableState(IUIElement uie) :base(uie){
