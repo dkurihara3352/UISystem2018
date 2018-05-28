@@ -13,16 +13,15 @@ namespace UISystem{
 	}
 	public abstract class AbsProcess: IProcess{
 		public AbsProcess(IProcessManager procManager){
-			processManager = procManager;
+			this.processManager = procManager;
 		}
 		IProcessManager processManager;
-		IProcessManager ThisProcManager(){return processManager;}
 		public abstract void UpdateProcess(float deltaT);
 		public virtual void Run(){
-			ThisProcManager().AddRunningProcess(this);
+			processManager.AddRunningProcess(this);
 		}
 		public void Stop(){
-			ThisProcManager().RemoveRunningProcess(this);
+			processManager.RemoveRunningProcess(this);
 		}
 		public virtual void Expire(){
 			this.Stop();

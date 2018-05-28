@@ -26,8 +26,10 @@ namespace UISystem{
 			TrySwitchState(unselectableState);
 		}
 		public void BecomeSelected(){
-			if(this.IsSelectable())
+			if(this.IsSelectable() || this.IsSelected())
 				TrySwitchState(selectedState);
+			else
+				throw new System.InvalidOperationException("This method should not be called while this is not selectable");
 		}
 		public bool IsSelectable(){
 			return curState is SelectableState;
@@ -107,22 +109,39 @@ namespace UISystem{
 	public class TurnImageDarknessProcess: AbsProcess, ITurnImageDarknessProcess{
 		public TurnImageDarknessProcess(IProcessManager procManager, IUIImage image, float targetDarkness): base(procManager){
 			this.image = image;
+			targetDarkness = CheckAndMakeDarknessValueIsInRange(targetDarkness);
 			this.targetDarkness = targetDarkness;
 		}
-		IUIImage image;
-		float targetDarkness;
+		readonly IUIImage image;
+		readonly float targetDarkness;
+		readonly float rateOfChange = 1f;
+			/*  time it takes from complete darkness 0f to zero darkness 1f
+				it's set to 1sec here
+			*/
+		readonly float diffThreshold = .05f;
 		float elapsedT;
-		float rateOfChange = 1f;
-		float diffThreshold = .05f;
-		ImageDarknessIrper GetIrper(){return irper;}
-		void SetIrper(ImageDarknessIrper irper){this.irper = irper;}
+		float totalReqTime;
+			/* actual time it takes from init to tarDarkness
+				,this is computed in CalcAndSetComputationFields
+			 */
 		ImageDarknessIrper irper;
+		float CheckAndMakeDarknessValueIsInRange(float darkness){
+			/* clamp the given value within 0 - 1 range */
+			if(darkness < 0f)
+				return 0f;
+			else if( darkness > 1f)
+				return 1f;
+			else
+				return darkness;
+		}
 		public override void Run(){
-			elapsedT = 0f;
+			ResetFields();
 			float initDarkness = image.GetCurrentDarkness();
+			initDarkness = CheckAndMakeDarknessValueIsInRange(initDarkness);
 			if(DifferenceIsBigEnough(targetDarkness - initDarkness)){
-				ImageDarknessIrper newIrper = new ImageDarknessIrper(image,initDarkness, targetDarkness);
-				SetIrper(newIrper);
+				ImageDarknessIrper newIrper = new ImageDarknessIrper(image, initDarkness, targetDarkness);
+				CalcAndSetComputationFields(initDarkness, targetDarkness);
+				irper = newIrper;
 				newIrper.Interpolate(0f);
 				base.Run();
 			}else{
@@ -136,16 +155,52 @@ namespace UISystem{
 			else
 				return diff < -diffThreshold;
 		}
+		void CalcAndSetComputationFields(float initDarkness, float targetDarkness){
+			/*	Comp detail
+				Dx (max possible diff: constant)
+				Tx (max possible total time: constant)
+				r (rate of Change: constant)
+				{
+					Dx/Tx = r
+					Dx = 1f
+					Tx = 1f sec
+					r = 1f
+				}
+				Da (actual diff)
+				Ta(time it takes to irp actual diff)
+				{
+					Da/Ta = r
+					Ta = Da/r
+				}
+				Ti (irperT)
+				Te (elapsedT)
+				{
+					Ti = Te/Ta
+				}
+			*/
+			float actualDiff = targetDarkness - initDarkness;
+			if(actualDiff < 0f)
+				actualDiff *= -1f;
+			totalReqTime = actualDiff/rateOfChange;
+		}
+		void ResetFields(){
+			irper = null;
+			elapsedT = 0f;
+			totalReqTime = 0f;
+		}
 		public override void UpdateProcess(float deltaT){
+			/* see above for comp detail */
 			elapsedT += deltaT;
-			float irperT = elapsedT/ rateOfChange;
-			GetIrper().Interpolate(irperT);
-			if(irperT >= 1f)
+			float irperT = elapsedT/ totalReqTime;
+			if(irperT < 1f)
+				irper.Interpolate(irperT);
+			else{
+				irper.Interpolate(1f);
 				this.Expire();
+			}
 		}
 		public override void Reset(){
-			SetIrper(null);
-			elapsedT = 0f;
+			ResetFields();
 		}
 	}
 	public class ImageDarknessIrper: AbsInterpolater{
