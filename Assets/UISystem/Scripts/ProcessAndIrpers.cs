@@ -9,13 +9,14 @@ namespace UISystem{
 		void Stop();
 		void Expire();
 		void Reset();
+		bool IsRunning();
 	}
 	public abstract class AbsProcess: IProcess{
 		public AbsProcess(IProcessManager procManager){
-			_processManager = procManager;
+			processManager = procManager;
 		}
-		IProcessManager _processManager;
-		IProcessManager ThisProcManager(){return _processManager;}
+		IProcessManager processManager;
+		IProcessManager ThisProcManager(){return processManager;}
 		public abstract void UpdateProcess(float deltaT);
 		public virtual void Run(){
 			ThisProcManager().AddRunningProcess(this);
@@ -28,14 +29,32 @@ namespace UISystem{
 			this.Reset();
 		}
 		public abstract void Reset();
+		public bool IsRunning(){
+			return processManager.RunningProcessesContains(this);
+		}
 	}
 	public interface IProcessManager{
 		void AddRunningProcess(IProcess process);
 		void RemoveRunningProcess(IProcess process);
 		void UpdateAllRegisteredProcesses(float deltaT);
+		bool RunningProcessesContains(IProcess process);
 
 	}
 	public interface IProcessFactory{
+		TurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
+	}
+	public class ProcessFactory: IProcessFactory{
+		public ProcessFactory(IProcessManager procManager){
+			this.processManager = procManager;
+		}
+		IProcessManager processManager;
+		IProcessManager GetProcessManager(){
+			return processManager;
+		}
+		public TurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
+			TurnImageDarknessProcess process = new TurnImageDarknessProcess(GetProcessManager(), image, targetDarkness);
+			return process;
+		}
 	}
 	public interface IInterpolator{
 		void Interpolate(float zeroToOne);

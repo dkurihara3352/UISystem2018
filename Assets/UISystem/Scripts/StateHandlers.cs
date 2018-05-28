@@ -14,56 +14,61 @@ namespace UISystem{
 
 	}
 	public class SelectabilityStateEngine: ISelectabilityStateEngine{
-		ISelectabilityState _curState;
-		public SelectabilityStateEngine(IUIElement uie){
-			this.InitializeStates(uie);
+		ISelectabilityState curState;
+		public SelectabilityStateEngine(IUIElement uie, IProcessFactory procFac){
+			this.InitializeStates(uie, procFac);
 			this.SetToInitialState();
 		}
 		public void BecomeSelectable(){
-			TrySwitchState(_selectableState);
+			TrySwitchState(selectableState);
 		}
 		public void BecomeUnselectable(){
-			TrySwitchState(_unselectableState);
+			TrySwitchState(unselectableState);
 		}
 		public void BecomeSelected(){
 			if(this.IsSelectable())
-				TrySwitchState(_selectedState);
+				TrySwitchState(selectedState);
 		}
 		public bool IsSelectable(){
-			return _curState is SelectableState;
+			return curState is SelectableState;
 		}
 		public bool IsSelected(){
-			return _curState is SelectedState;
+			return curState is SelectedState;
 		}
 		void TrySwitchState(ISelectabilityState state){
 			if(state != null){
-				if(_curState != null){
-					if(_curState != state){
-						_curState.OnExit();
-						_curState = state;
+				if(curState != null){
+					if(curState != state){
+						curState.OnExit();
+						curState = state;
 						state.OnEnter();
 					}else{//state no change
 						return;
 					}
 				}else{// curstate null
-					_curState = state;
+					curState = state;
 					state.OnEnter();
 				}
 			}else{
 				throw new System.ArgumentNullException("state", "target state must not be null");
 			}
 		}
-		SelectableState _selectableState;
-		UnselectableState _unselectableState;
-		SelectedState _selectedState;
-		void InitializeStates(IUIElement uie){
-			_selectableState = new SelectableState(uie);
-			_unselectableState = new UnselectableState(uie);
-			_selectedState = new SelectedState(uie);
+		SelectableState selectableState;
+		UnselectableState unselectableState;
+		SelectedState selectedState;
+		void InitializeStates(IUIElement uie, IProcessFactory procFac){
+			IUIImage image = uie.GetUIImage();
+			TurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());
+			TurnImageDarknessProcess turnToDarkenedProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDarkenedDarkness());
+
+			selectableState = new SelectableState(turnToDefaultProcess);
+			unselectableState = new UnselectableState(turnToDarkenedProcess);
+			selectedState = new SelectedState(uie);
+
 			MakeSureStatesAreSet();
 		}
 		void MakeSureStatesAreSet(){
-			if(_selectableState != null && _unselectableState != null && _selectedState != null)
+			if(selectableState != null && unselectableState != null && selectedState != null)
 				return;
 			else
 				throw new System.InvalidOperationException("any of the states not correctly set");
@@ -76,44 +81,59 @@ namespace UISystem{
 		void OnEnter();
 		void OnExit();
 	}
-	public abstract class AbsSelectabilityState: ISelectabilityState{
-		protected IUIImage _uiImage;
-		public AbsSelectabilityState(IUIElement uie){
-			this._uiImage = uie.GetUIImage();
+	public abstract class TurnImageDarknessState: ISelectabilityState{
+		protected TurnImageDarknessProcess process;
+		public TurnImageDarknessState(TurnImageDarknessProcess process){
+			this.process = process;
 		}
-		public abstract void OnEnter();
-		public abstract void OnExit();
-	}
-	public class SelectableState: AbsSelectabilityState{
-		public SelectableState(IUIElement uie) :base(uie){
+		public void OnEnter(){
+			StartTurningImageDarkness();
 		}
-		public override void OnEnter(){
-			TryStartTurningDarknessToDefault();
+		public void OnExit(){
+			if(process.IsRunning())
+				process.Stop();
 		}
-		public override void OnExit(){
-		}
-		void TryStartTurningDarknessToDefault(){
-
+		void StartTurningImageDarkness(){
+			process.Run();
 		}
 	}
-	public class TurnDarknessToDefaultProcess: AbsProcess{
-		public TurnDarknessToDefaultProcess(IProcessManager procManager, IUIImage image): base(procManager){
+	public class SelectableState: TurnImageDarknessState{
+		public SelectableState(TurnImageDarknessProcess process): base(process){}
+	}
+	public class UnselectableState: TurnImageDarknessState{
+		public UnselectableState(TurnImageDarknessProcess process): base(process){}
+	}
+	public class TurnImageDarknessProcess: AbsProcess{
+		public TurnImageDarknessProcess(IProcessManager procManager, IUIImage image, float targetDarkness): base(procManager){
 			this.image = image;
+			this.targetDarkness = targetDarkness;
 		}
 		IUIImage image;
+		float targetDarkness;
 		float elapsedT;
 		float rateOfChange = 1f;
+		float diffThreshold = .05f;
 		ImageDarknessIrper GetIrper(){return irper;}
 		void SetIrper(ImageDarknessIrper irper){this.irper = irper;}
 		ImageDarknessIrper irper;
 		public override void Run(){
 			elapsedT = 0f;
-			float tarVal = image.GetDefaultDarkness();
-			float initVal = image.GetCurrentDarkness();
-			ImageDarknessIrper newIrper = new ImageDarknessIrper(image,initVal, tarVal);
-			SetIrper(newIrper);
-			newIrper.Interpolate(0f);
-			base.Run();
+			float initDarkness = image.GetCurrentDarkness();
+			if(DifferenceIsBigEnough(targetDarkness - initDarkness)){
+				ImageDarknessIrper newIrper = new ImageDarknessIrper(image,initDarkness, targetDarkness);
+				SetIrper(newIrper);
+				newIrper.Interpolate(0f);
+				base.Run();
+			}else{
+				image.SetDarkness(targetDarkness);
+				return;
+			}
+		}
+		bool DifferenceIsBigEnough(float diff){
+			if(diff >= 0f)
+				return diff > diffThreshold;
+			else
+				return diff < -diffThreshold;
 		}
 		public override void UpdateProcess(float deltaT){
 			elapsedT += deltaT;
@@ -142,17 +162,14 @@ namespace UISystem{
 		}
 		public override void Terminate(){return;}
 	}
-	public class UnselectableState: AbsSelectabilityState{
-		public UnselectableState(IUIElement uie) :base(uie){
+	public class SelectedState: ISelectabilityState{
+		public SelectedState(IUIElement uie){
+			// no process required.
 		}
-		public override void OnEnter(){}
-		public override void OnExit(){}
-	}
-	public class SelectedState: AbsSelectabilityState{
-		public SelectedState(IUIElement uie) :base(uie){
+		public void OnEnter(){
+			// CursorManager.MoveCursor(this.image);
 		}
-		public override void OnEnter(){}
-		public override void OnExit(){}
+		public void OnExit(){}
 	}
 }
 
