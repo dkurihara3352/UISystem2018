@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElement{
+	public interface IUIElement: IUIInputHandler{
 		IUIElement GetParentUIE();
 		List<IUIElement> GetChildUIEs();
 		IUIManager GetUIM();
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		IUIImage CreateUIImage();
+		void Activate();
 	}
 	public abstract class AbsUIElement: IUIElement, ISelectabilityStateHandler{
 		public AbsUIElement(IUIManager uim, IUIAdaptor uia){
@@ -38,27 +39,65 @@ namespace UISystem{
 		}
 		protected IUIImage uiImage;
 		public abstract IUIImage CreateUIImage();
-		ISelectabilityStateEngine selectabilityEngine;
-		public void BecomeSelectable(){
-			selectabilityEngine.BecomeSelectable();
+		public virtual void Activate(){
+			foreach(IUIElement childUIE in this.GetChildUIEs()){
+				if(childUIE != null)
+					childUIE.Activate(); 
+			}
 		}
-		public void BecomeUnselectable(){
-			selectabilityEngine.BecomeUnselectable();
-		}
-		public void BecomeSelected(){
-			selectabilityEngine.BecomeSelected();
-		}
-		public bool IsSelectable(){
-			return selectabilityEngine.IsSelectable();
-		}
-		public bool IsSelected(){
-			return selectabilityEngine.IsSelected();
-		}
+		/* SelectabilityState */
+			ISelectabilityStateEngine selectabilityEngine;
+			public void BecomeSelectable(){
+				selectabilityEngine.BecomeSelectable();
+			}
+			public void BecomeUnselectable(){
+				selectabilityEngine.BecomeUnselectable();
+			}
+			public void BecomeSelected(){
+				selectabilityEngine.BecomeSelected();
+			}
+			public bool IsSelectable(){
+				return selectabilityEngine.IsSelectable();
+			}
+			public bool IsSelected(){
+				return selectabilityEngine.IsSelected();
+			}
+		/* UIInput */
+			public virtual void OnTouch( int touchCount){}
+			public virtual void OnDelayedTouch(){}
+			public virtual void OnRelease(){}
+			public virtual void OnDelayedRelease(){}
+			public virtual void OnTap( int tapCount){}
+			public virtual void OnDrag( Vector2 pos, Vector2 deltaP){}
+			public virtual void OnHold( float elapsedT){}
+			public virtual void OnSwipe( Vector2 deltaP){}
+		/*  */
+	}
+	public interface IUIInputHandler{
+		void OnTouch( int touchCount);
+		void OnDelayedTouch();
+		void OnRelease();
+		void OnDelayedRelease();
+		void OnTap( int tapCount);
+		void OnDrag( Vector2 pos, Vector2 deltaP);
+		void OnHold( float elapsedT);
+		void OnSwipe( Vector2 deltaP);
 	}
 	public interface IUIImage{
-		float GetCurrentDarkness();
-		float GetDefaultDarkness();
-		float GetDarkenedDarkness();
+		/* Color.Lerp(white, black, darknessValue)
+		 */
+		float GetCurrentDarkness();/* range is from 0f to 1f */
+		float GetDefaultDarkness();/* usually, 1f */
+		float GetDarkenedDarkness();/* somewhere around .5f */
 		void SetDarkness(float darkness);
+	}
+	public interface IVisibilitySwitcher{
+		/* subclassed by same uies that are also IRootActivator?
+			.Tools, Widgets
+			** implementation idea **
+			. CanvasGroup is assigned, and tweak its group alpha or like
+		 */
+		void Show();
+		void Hide();
 	}
 }

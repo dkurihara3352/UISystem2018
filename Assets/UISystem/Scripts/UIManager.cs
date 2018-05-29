@@ -19,4 +19,12 @@ namespace UISystem{
 		IProcessFactory processFacotory;
 		public IProcessManager processManager;/* assigned in the inspector */
 	}
+	public class UIManagerAdaptor: MonoBehaviour{
+		IUIManager uiManager;
+		public IUIAdaptor rootUIAdaptor;/* assigned in inspector*/
+		public void Awake(){
+			uiManager = new UIManager();
+			rootUIAdaptor.GetReadyForActivation(uiManager);
+		}
+	}
 }
