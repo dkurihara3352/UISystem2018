@@ -58,7 +58,7 @@ namespace UISystem{
 			 */
 			List<IUIAdaptor> result = new List<IUIAdaptor>();
 			for(int i = 0; i < transToExamine.childCount; i ++){
-				Transform child = this.transform.GetChild(i);
+				Transform child = transToExamine.GetChild(i);
 				IUIAdaptor childUIA = child.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
 				if(childUIA != null){
 					result.Add(childUIA);
