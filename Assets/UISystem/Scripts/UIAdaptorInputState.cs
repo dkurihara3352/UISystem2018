@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 
 namespace UISystem{
 	public interface IRawInputHandler{
-		void OnPointerDown(PointerEventData eventData);
-		void OnPointerUp(PointerEventData eventData);
+		void OnPointerDown(ICustomEventData eventData);
+		void OnPointerUp(ICustomEventData eventData);
 	}
 	/* States */
 	public interface IUIAdaptorInputState: IRawInputHandler, ISwitchableState{
@@ -18,19 +18,19 @@ namespace UISystem{
 		protected readonly IUIAdaptorStateEngine engine;
 		public abstract void OnEnter();
 		public abstract void OnExit();
-		public abstract void OnPointerDown(PointerEventData eventData);
-		public abstract void OnPointerUp(PointerEventData eventData);
+		public abstract void OnPointerDown(ICustomEventData eventData);
+		public abstract void OnPointerUp(ICustomEventData eventData);
 
 	}
 	public abstract class PointerUpInputState: AbsUIAdaptorInputState{
 		public PointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
-		public override void OnPointerUp(PointerEventData eventData){
+		public override void OnPointerUp(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerUp should not be called while pointer is already help up");
 		}
 	}
 	public abstract class PointerDownInputState: AbsUIAdaptorInputState{
 		public PointerDownInputState(IUIAdaptorStateEngine engine): base(engine){}
-		public override void OnPointerDown(PointerEventData eventData){
+		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
 		}
 	}
@@ -48,7 +48,7 @@ namespace UISystem{
 			engine.ResetTouchCounter();
 		}
 		public override void OnExit(){}
-		public override void OnPointerDown(PointerEventData eventData){
+		public override void OnPointerDown(ICustomEventData eventData){
 			engine.IncrementTouchCounter();
 			engine.TouchUIE();
 			engine.WaitForTap();
@@ -72,7 +72,7 @@ namespace UISystem{
 			waitingForTapProcess.Run();
 		}
 		public override void OnExit(){}
-		public override void OnPointerUp(PointerEventData eventData){
+		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.TapUIE();
 		}
@@ -94,7 +94,7 @@ namespace UISystem{
 		}
 		public override void OnExit(){
 		}
-		public override void OnPointerUp(PointerEventData eventData){
+		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 		}
 	}
@@ -117,7 +117,7 @@ namespace UISystem{
 			waitAndExpireProcess.Run();
 		}
 		public override void OnExit(){}
-		public override void OnPointerDown(PointerEventData eventData){
+		public override void OnPointerDown(ICustomEventData eventData){
 			engine.IncrementTouchCounter();
 			engine.TouchUIE();
 			engine.WaitForTap();
@@ -179,17 +179,17 @@ namespace UISystem{
 			return 0.5f;
 		}
 		/* IRawInputHandler */
-			public void OnPointerDown(PointerEventData eventData){
+			public void OnPointerDown(ICustomEventData eventData){
 				curState.OnPointerDown(eventData);
 			}
-			public void OnPointerUp(PointerEventData eventData){
+			public void OnPointerUp(ICustomEventData eventData){
 				curState.OnPointerUp(eventData);
 			}
 		/* IUIAdaptorStateHandler imple and states switch */
-			readonly WaitingForFirstTouchState waitingForFirstTouchState;
-			readonly WaitingForTapState waitingForTapState;
-			readonly WaitingForReleaseState waitingForReleaseState;
-			readonly WaitingForNextTouchState waitingForNextTouchState;
+			protected readonly WaitingForFirstTouchState waitingForFirstTouchState;
+			protected readonly WaitingForTapState waitingForTapState;
+			protected readonly WaitingForReleaseState waitingForReleaseState;
+			protected readonly WaitingForNextTouchState waitingForNextTouchState;
 			public void WaitForFirstTouch(){
 				TrySwitchState(waitingForFirstTouchState);
 			}

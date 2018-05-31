@@ -203,185 +203,186 @@ public class UIAdaptorTest{
 		Assert.That(actualUIAs, Is.EqualTo(expectedUIAs));
 	}
 	/* Test Support Classes */
-	[Test]
-	public void PseudoTransform_Construction_WhenCalled_ParentIsSetCorrectly(){
-		PsTransConstArg arg;
-		PseudoTransform trans = CreatePseudoTransform(out arg);
+		[Test]
+		public void PseudoTransform_Construction_WhenCalled_ParentIsSetCorrectly(){
+			PsTransConstArg arg;
+			PseudoTransform trans = CreatePseudoTransform(out arg);
 
-		Assert.That(trans.parent, Is.SameAs(arg.parent));
-	}
-	[Test]
-	public void PseudoTransform_Construction_WhenCalled_ChildrenIsSetCorrectly(){
-		PsTransConstArg arg;
-		PseudoTransform trans = CreatePseudoTransform(out arg);
+			Assert.That(trans.parent, Is.SameAs(arg.parent));
+		}
+		[Test]
+		public void PseudoTransform_Construction_WhenCalled_ChildrenIsSetCorrectly(){
+			PsTransConstArg arg;
+			PseudoTransform trans = CreatePseudoTransform(out arg);
 
-		Assert.That(trans.children, Is.SameAs(arg.children));
-	}
-	[Test]
-	public void PseudoTransform_Construction_WhenCalled_UIAIsSetCorrectly(){
-		PsTransConstArg arg;
-		PseudoTransform trans = CreatePseudoTransform(out arg);
+			Assert.That(trans.children, Is.SameAs(arg.children));
+		}
+		[Test]
+		public void PseudoTransform_Construction_WhenCalled_UIAIsSetCorrectly(){
+			PsTransConstArg arg;
+			PseudoTransform trans = CreatePseudoTransform(out arg);
 
-		Assert.That(trans.GetIUIAdaptorComponent(), Is.SameAs(arg.uia));
-	}
-	[Test][TestCaseSource(typeof(GetChildTestCase), "validCases")]
-	public void PseudoTransform_GetChild_SuppliedWithValidIndex_ReturnsCorrectly(int expectedCount){
-		PsTransConstArg arg;
-		PseudoTransform trans = CreatePseudoTransform(out arg);
-		List<IPseudoTransform> expectedEles = CreatePseudoTransList(expectedCount);
-		trans.children = expectedEles;
+			Assert.That(trans.GetIUIAdaptorComponent(), Is.SameAs(arg.uia));
+		}
+		[Test][TestCaseSource(typeof(GetChildTestCase), "validCases")]
+		public void PseudoTransform_GetChild_SuppliedWithValidIndex_ReturnsCorrectly(int expectedCount){
+			PsTransConstArg arg;
+			PseudoTransform trans = CreatePseudoTransform(out arg);
+			List<IPseudoTransform> expectedEles = CreatePseudoTransList(expectedCount);
+			trans.children = expectedEles;
 
-		Assert.That(trans.childCount, Is.EqualTo(expectedCount));
-		for(int i = 0; i < trans.childCount; i ++){
-			Assert.That(trans.GetChild(i), Is.SameAs(expectedEles[i]));
-		}
-	}
-		List<IPseudoTransform> CreatePseudoTransList(int count){
-			List<IPseudoTransform> result = new List<IPseudoTransform>();
-			for(int i = 0; i < count; i ++){
-				IPseudoTransform newEle = Substitute.For<IPseudoTransform>();
-				result.Add(newEle);
-			}
-			return result;
-		}
-		class GetChildTestCase{
-			static object[] validCases = {
-				new object[]{0},
-				new object[]{1},
-				new object[]{2},
-				new object[]{100}
-			};
-			static object[] invalidCases = {
-				new object[]{2, 3},
-				new object[]{2, -1},
-				new object[]{100, 100}
-			};
-		}
-	[Test][ExpectedException(typeof(System.ArgumentOutOfRangeException))]
-	[TestCaseSource(typeof(GetChildTestCase), "invalidCases")]
-	public void PseudoTransform_GetChild_SuppliedWithInvalidIndex_ThrowsException(int count, int invalidId){
-		PsTransConstArg arg;
-		PseudoTransform trans = CreatePseudoTransform(out arg);
-		List<IPseudoTransform> elements = CreatePseudoTransList(count);
-		trans.children = elements;
-		IPseudoTransform invalidChild = trans.GetChild(invalidId);
-	}
-	public interface IPseudoTransform{
-		IPseudoTransform parent{get;set;}
-		List<IPseudoTransform> children{get;set;}
-		int childCount{get;}
-		IPseudoTransform GetChild(int index);
-		IUIAdaptor GetIUIAdaptorComponent();
-		void SetUIA(IUIAdaptor uia);
-	}
-	class PseudoTransform: IPseudoTransform{
-		public PseudoTransform(IPseudoTransform parent, List<IPseudoTransform> children, IUIAdaptor uia){
-			this._parent = parent;
-			this._children = children;
-			this._uia = uia;
-		}
-		protected IPseudoTransform _parent;
-		public IPseudoTransform parent{
-			get{return _parent;}
-			set{_parent = value;}
-		}
-		protected List<IPseudoTransform> _children;
-		public List<IPseudoTransform> children{
-			get{return _children;}
-			set{_children = value;}
-		}
-		public int childCount{
-			get{
-				if(_children != null)
-					return _children.Count;
-				else
-					return 0;
+			Assert.That(trans.childCount, Is.EqualTo(expectedCount));
+			for(int i = 0; i < trans.childCount; i ++){
+				Assert.That(trans.GetChild(i), Is.SameAs(expectedEles[i]));
 			}
 		}
-		public IPseudoTransform GetChild(int index){
-			if(_children != null){
-				if(index < childCount && index >= 0)
-					return _children[index];
-				else
-					throw new System.ArgumentOutOfRangeException();
+			List<IPseudoTransform> CreatePseudoTransList(int count){
+				List<IPseudoTransform> result = new List<IPseudoTransform>();
+				for(int i = 0; i < count; i ++){
+					IPseudoTransform newEle = Substitute.For<IPseudoTransform>();
+					result.Add(newEle);
+				}
+				return result;
 			}
-			throw new System.NullReferenceException();
+			class GetChildTestCase{
+				static object[] validCases = {
+					new object[]{0},
+					new object[]{1},
+					new object[]{2},
+					new object[]{100}
+				};
+				static object[] invalidCases = {
+					new object[]{2, 3},
+					new object[]{2, -1},
+					new object[]{100, 100}
+				};
+			}
+		[Test][ExpectedException(typeof(System.ArgumentOutOfRangeException))]
+		[TestCaseSource(typeof(GetChildTestCase), "invalidCases")]
+		public void PseudoTransform_GetChild_SuppliedWithInvalidIndex_ThrowsException(int count, int invalidId){
+			PsTransConstArg arg;
+			PseudoTransform trans = CreatePseudoTransform(out arg);
+			List<IPseudoTransform> elements = CreatePseudoTransList(count);
+			trans.children = elements;
+			IPseudoTransform invalidChild = trans.GetChild(invalidId);
 		}
-		protected IUIAdaptor _uia;
-		public IUIAdaptor GetIUIAdaptorComponent(){
-			return _uia;
+		public interface IPseudoTransform{
+			IPseudoTransform parent{get;set;}
+			List<IPseudoTransform> children{get;set;}
+			int childCount{get;}
+			IPseudoTransform GetChild(int index);
+			IUIAdaptor GetIUIAdaptorComponent();
+			void SetUIA(IUIAdaptor uia);
 		}
-		public void SetUIA(IUIAdaptor uia){
-			this._uia = uia;
+		class PseudoTransform: IPseudoTransform{
+			public PseudoTransform(IPseudoTransform parent, List<IPseudoTransform> children, IUIAdaptor uia){
+				this._parent = parent;
+				this._children = children;
+				this._uia = uia;
+			}
+			protected IPseudoTransform _parent;
+			public IPseudoTransform parent{
+				get{return _parent;}
+				set{_parent = value;}
+			}
+			protected List<IPseudoTransform> _children;
+			public List<IPseudoTransform> children{
+				get{return _children;}
+				set{_children = value;}
+			}
+			public int childCount{
+				get{
+					if(_children != null)
+						return _children.Count;
+					else
+						return 0;
+				}
+			}
+			public IPseudoTransform GetChild(int index){
+				if(_children != null){
+					if(index < childCount && index >= 0)
+						return _children[index];
+					else
+						throw new System.ArgumentOutOfRangeException();
+				}
+				throw new System.NullReferenceException();
+			}
+			protected IUIAdaptor _uia;
+			public IUIAdaptor GetIUIAdaptorComponent(){
+				return _uia;
+			}
+			public void SetUIA(IUIAdaptor uia){
+				this._uia = uia;
+			}
 		}
-	}
 
-	public interface IPseudoMonoBehaviour{
-	}
-	class PseudoMonoBehaviour: IPseudoMonoBehaviour{
-		public PseudoMonoBehaviour(IPseudoTransform transform){
-			this.transform = transform;
+		public interface IPseudoMonoBehaviour{
 		}
-		protected IPseudoTransform transform;
-	}
-	class PseudoUIAdaptor: PseudoMonoBehaviour{
-		public PseudoUIAdaptor(IPseudoTransform transform): base(transform){
+		class PseudoMonoBehaviour: IPseudoMonoBehaviour{
+			public PseudoMonoBehaviour(IPseudoTransform transform){
+				this.transform = transform;
+			}
+			protected IPseudoTransform transform;
 		}
-		public IUIAdaptor FindClosestParentUIAdaptor(){
-			IPseudoTransform parentToExamine = transform.parent;
-			while(true){
-				if(parentToExamine != null){
-					IUIAdaptor parentUIAdaptor = parentToExamine.GetIUIAdaptorComponent();
-					if(parentUIAdaptor != null){
-						return parentUIAdaptor;
+		class PseudoUIAdaptor: PseudoMonoBehaviour{
+			public PseudoUIAdaptor(IPseudoTransform transform): base(transform){
+			}
+			public IUIAdaptor FindClosestParentUIAdaptor(){
+				IPseudoTransform parentToExamine = transform.parent;
+				while(true){
+					if(parentToExamine != null){
+						IUIAdaptor parentUIAdaptor = parentToExamine.GetIUIAdaptorComponent();
+						if(parentUIAdaptor != null){
+							return parentUIAdaptor;
+						}else{
+							parentToExamine = parentToExamine.parent;
+						}
 					}else{
-						parentToExamine = parentToExamine.parent;
+						return null;/* top of the hierarchy */
 					}
-				}else{
-					return null;/* top of the hierarchy */
 				}
 			}
-		}
-		public List<IUIAdaptor> GetChildUIAdaptors(){
-			return this.FindAllClosestChildUIAdaptors(this.transform);
-		}
-		List<IUIAdaptor> FindAllClosestChildUIAdaptors(IPseudoTransform transToExamine){
-			List<IUIAdaptor> result = new List<IUIAdaptor>();
-			for(int i = 0; i < transToExamine.childCount; i ++){
-				IPseudoTransform child = transToExamine.GetChild(i);
-				IUIAdaptor childUIA = child.GetIUIAdaptorComponent();
-				if(childUIA != null){
-					result.Add(childUIA);
-				}else{
-					List<IUIAdaptor> allUIAsOfThisChild = FindAllClosestChildUIAdaptors(child);
-					if(allUIAsOfThisChild.Count != 0)
-						result.AddRange(allUIAsOfThisChild);
-				}
+			public List<IUIAdaptor> GetChildUIAdaptors(){
+				return this.FindAllClosestChildUIAdaptors(this.transform);
 			}
-			return result;
+			List<IUIAdaptor> FindAllClosestChildUIAdaptors(IPseudoTransform transToExamine){
+				List<IUIAdaptor> result = new List<IUIAdaptor>();
+				for(int i = 0; i < transToExamine.childCount; i ++){
+					IPseudoTransform child = transToExamine.GetChild(i);
+					IUIAdaptor childUIA = child.GetIUIAdaptorComponent();
+					if(childUIA != null){
+						result.Add(childUIA);
+					}else{
+						List<IUIAdaptor> allUIAsOfThisChild = FindAllClosestChildUIAdaptors(child);
+						if(allUIAsOfThisChild.Count != 0)
+							result.AddRange(allUIAsOfThisChild);
+					}
+				}
+				return result;
+			}
 		}
-	}
-	class PsTransConstArg{
-		public PsTransConstArg(IPseudoTransform parent, List<IPseudoTransform> children, IUIAdaptor uia){
-			this.parent = parent;
-			this.children = children;
-			this.uia = uia;
+		class PsTransConstArg{
+			public PsTransConstArg(IPseudoTransform parent, List<IPseudoTransform> children, IUIAdaptor uia){
+				this.parent = parent;
+				this.children = children;
+				this.uia = uia;
+			}
+			public IPseudoTransform parent;
+			public List<IPseudoTransform> children;
+			public IUIAdaptor uia;
 		}
-		public IPseudoTransform parent;
-		public List<IPseudoTransform> children;
-		public IUIAdaptor uia;
-	}
-	PseudoTransform CreatePseudoTransform(out PsTransConstArg arg){
-		IPseudoTransform parent = Substitute.For<IPseudoTransform>();
-		List<IPseudoTransform> children = new List<IPseudoTransform>();
-		IUIAdaptor uia = Substitute.For<IUIAdaptor>();
-		arg = new PsTransConstArg(parent, children, uia);
-		return new PseudoTransform(parent, children, uia);
-	}
-	PseudoTransform CreatePseudoTransform(){
-		IPseudoTransform parent = Substitute.For<IPseudoTransform>();
-		List<IPseudoTransform> children = new List<IPseudoTransform>();
-		IUIAdaptor uia = Substitute.For<IUIAdaptor>();
-		return new PseudoTransform(parent, children, uia);
-	}
+		PseudoTransform CreatePseudoTransform(out PsTransConstArg arg){
+			IPseudoTransform parent = Substitute.For<IPseudoTransform>();
+			List<IPseudoTransform> children = new List<IPseudoTransform>();
+			IUIAdaptor uia = Substitute.For<IUIAdaptor>();
+			arg = new PsTransConstArg(parent, children, uia);
+			return new PseudoTransform(parent, children, uia);
+		}
+		PseudoTransform CreatePseudoTransform(){
+			IPseudoTransform parent = Substitute.For<IPseudoTransform>();
+			List<IPseudoTransform> children = new List<IPseudoTransform>();
+			IUIAdaptor uia = Substitute.For<IUIAdaptor>();
+			return new PseudoTransform(parent, children, uia);
+		}
+	/*  */
 }

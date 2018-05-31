@@ -5,7 +5,7 @@ using UnityEditor;
 using NUnit.Framework;
 using NSubstitute;
 using UISystem;
-public class SelStateEngineTest {
+public class SelectabilityStateTest {
     [Test]
     public void Constructor_WhenCalled_ThisStatesAreAllSet(){
         TestSelStateEngineConstArg arg;
@@ -32,7 +32,7 @@ public class SelStateEngineTest {
         Assert.That(engine.IsSelected(), Is.False);
     }
     [Test]
-    public void BecomeUnhoverable_WhenCalledWhileIsSelectable_ThisBecomesNotSelectable(){
+    public void BecomeUnselectable_WhenCalledWhileIsSelectable_ThisBecomesNotSelectable(){
         TestSelStateEngineConstArg arg;
         TestSelectabilityStateEngine engine = CreateTestSelectabilityStateEngine(out arg);
         Assert.That(engine.IsSelectable(), Is.True);
@@ -42,7 +42,7 @@ public class SelStateEngineTest {
         Assert.That(engine.IsSelectable(), Is.False);
     }
     [Test]
-    public void BecomeUnhoverable_WhenCalledWhileNotSelectable_ThisStaysNotSelectable(){
+    public void BecomeUnselectable_WhenCalledWhileNotSelectable_ThisStaysNotSelectable(){
         TestSelStateEngineConstArg arg;
         TestSelectabilityStateEngine engine = CreateTestSelectabilityStateEngine(out arg);
         Assert.That(engine.IsSelectable(), Is.True);
