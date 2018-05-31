@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 namespace UISystem{
 	public interface IUIAdaptor{
 		IUIElement GetUIElement();
@@ -9,7 +9,7 @@ namespace UISystem{
 		List<IUIElement> GetChildUIEs();
 		void GetReadyForActivation(IUIManager uim);
 	}
-	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor{
+	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler{
 		/* 
 			Isolate MB-free part of implementation to some other class and 
 			hold ref to it for the sake of easy testing
@@ -71,7 +71,7 @@ namespace UISystem{
 			return result;
 		}
 		public void GetReadyForActivation(IUIManager uim){
-			/* 
+			/* Perform all initialization here
 				Perform below tasks, 
 				and call GetReadyForActivation(uim) for each child UIAdaptors
 
@@ -86,5 +86,30 @@ namespace UISystem{
 		protected abstract void CreateAndSetUIE(IUIManager uim);
 			/* Instantiate corresponding UIE with this, uim, and some other required args
 			 */
+		/* Event System Imple */
+		public void OnPointerEnter(PointerEventData eventData){
+			if(this.uiElement is IPickUpReceiver){
+				IPickUpReceiver receiver = (IPickUpReceiver)this.uiElement;
+				receiver.CheckForHover();
+			}
+		}
+		int touchCount;
+		float timeSinceLastTouch;
+		public void OnPointerDown(PointerEventData eventData){
+			/* OnTouch(int touchCount)
+				if timer not expired
+					touchCount ++
+					timer is reset
+					start counting
+				if timer has been expired
+					touchCount == 1
+					timer is reset
+					start counting
+
+			 */
+			 /* Use process and state?
+			 		InputProcess
+			  */
+		}
 	}
 }

@@ -9,7 +9,7 @@ namespace UISystem{
 	public class UIManager: IUIManager {
 		public UIManager(){
 			if(processManager != null)
-				this.processFacotory = new ProcessFactory(processManager);
+				this.processFacotory = new ProcessFactory(processManager, this);
 			else
 				throw new System.InvalidOperationException("ProcessManager is not assigned to UIManager in the inspector");
 		}

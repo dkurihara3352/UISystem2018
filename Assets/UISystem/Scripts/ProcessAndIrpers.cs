@@ -41,20 +41,28 @@ namespace UISystem{
 	}
 	public interface IProcessFactory{
 		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
+		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
 	}
 	public class ProcessFactory: IProcessFactory{
-		public ProcessFactory(IProcessManager procManager){
+		public ProcessFactory(IProcessManager procManager, IUIManager uim){
 			if(procManager != null)
 				this.processManager = procManager;
 			else
 				throw new System.ArgumentNullException("procManager", "ProcessFactory does not operate without a procManager");
+			if(uim != null)
+				this.uiManager = uim;
+			else
+				throw new System.ArgumentNullException("uim", "ProcessFactory does not operate without a uim");
+
 		}
-		IProcessManager processManager;
-		IProcessManager GetProcessManager(){
-			return processManager;
-		}
+		readonly IProcessManager processManager;
+		readonly IUIManager uiManager;
 		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
-			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(GetProcessManager(), image, targetDarkness);
+			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(processManager, image, targetDarkness);
+			return process;
+		}
+		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){
+			IWaitAndExpireProcess process = new WaitAndExpireProcess(processManager, state, waitTime);
 			return process;
 		}
 	}
@@ -71,6 +79,33 @@ namespace UISystem{
 				this.Terminate();
 		}
 		public abstract void Terminate();
+	}
+	public interface IWaitAndExpireProcessState{
+		void OnProcessExpire();
+	}
+	public interface IWaitAndExpireProcess: IProcess{}
+	public class WaitAndExpireProcess: AbsProcess, IWaitAndExpireProcess{
+		public WaitAndExpireProcess(IProcessManager procMan, IWaitAndExpireProcessState state,float expireT): base(procMan){
+			this.expireT = expireT;
+			this.state = state;
+			Reset();
+		}
+		readonly IWaitAndExpireProcessState state;
+		float elapsedT;
+		readonly float expireT;
+		public override void UpdateProcess(float deltaT){
+			elapsedT += deltaT;
+			if(elapsedT >= expireT){
+				this.Expire();
+			}
+		}
+		public override void Expire(){
+			base.Expire();
+			state.OnProcessExpire();
+		}
+		public override void Reset(){
+			elapsedT = 0f;
+		}
 	}
 }
 

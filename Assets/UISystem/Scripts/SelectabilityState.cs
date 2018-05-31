@@ -13,52 +13,8 @@ namespace UISystem{
 	public interface ISelectabilityStateEngine: ISelectabilityStateHandler{
 
 	}
-	public class SelectabilityStateEngine: ISelectabilityStateEngine{
-		ISelectabilityState curState;
+	public class SelectabilityStateEngine: AbsSwitchableStateEngine<ISelectabilityState>, ISelectabilityStateEngine{
 		public SelectabilityStateEngine(IUIElement uie, IProcessFactory procFac){
-			this.InitializeStates(uie, procFac);
-			this.SetToInitialState();
-		}
-		public void BecomeSelectable(){
-			TrySwitchState(selectableState);
-		}
-		public void BecomeUnselectable(){
-			TrySwitchState(unselectableState);
-		}
-		public void BecomeSelected(){
-			if(this.IsSelectable() || this.IsSelected())
-				TrySwitchState(selectedState);
-			else
-				throw new System.InvalidOperationException("This method should not be called while this is not selectable");
-		}
-		public bool IsSelectable(){
-			return curState is SelectableState;
-		}
-		public bool IsSelected(){
-			return curState is SelectedState;
-		}
-		void TrySwitchState(ISelectabilityState state){
-			if(state != null){
-				if(curState != null){
-					if(curState != state){
-						curState.OnExit();
-						curState = state;
-						state.OnEnter();
-					}else{//state no change
-						return;
-					}
-				}else{// curstate null
-					curState = state;
-					state.OnEnter();
-				}
-			}else{
-				throw new System.ArgumentNullException("state", "target state must not be null");
-			}
-		}
-		protected SelectableState selectableState;
-		protected UnselectableState unselectableState;
-		protected SelectedState selectedState;
-		void InitializeStates(IUIElement uie, IProcessFactory procFac){
 			IUIImage image = uie.GetUIImage();
 			ITurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());
 			ITurnImageDarknessProcess turnToDarkenedProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDarkenedDarkness());
@@ -68,7 +24,12 @@ namespace UISystem{
 			selectedState = new SelectedState(uie);
 
 			MakeSureStatesAreSet();
+
+			this.SetToInitialState();
 		}
+		protected readonly SelectableState selectableState;
+		protected readonly UnselectableState unselectableState;
+		protected readonly SelectedState selectedState;
 		void MakeSureStatesAreSet(){
 			if(selectableState != null && unselectableState != null && selectedState != null)
 				return;
@@ -78,10 +39,27 @@ namespace UISystem{
 		void SetToInitialState(){
 			BecomeSelectable();
 		}
+		/* SelStateHandler */
+			public void BecomeSelectable(){
+				TrySwitchState(selectableState);
+			}
+			public void BecomeUnselectable(){
+				TrySwitchState(unselectableState);
+			}
+			public void BecomeSelected(){
+				if(this.IsSelectable() || this.IsSelected())
+					TrySwitchState(selectedState);
+				else
+					throw new System.InvalidOperationException("This method should not be called while this is not selectable");
+			}
+			public bool IsSelectable(){
+				return curState is SelectableState;
+			}
+			public bool IsSelected(){
+				return curState is SelectedState;
+			}
 	}
-	public interface ISelectabilityState{
-		void OnEnter();
-		void OnExit();
+	public interface ISelectabilityState: ISwitchableState{
 	}
 	public abstract class TurnImageDarknessState: ISelectabilityState{
 		protected ITurnImageDarknessProcess process;
