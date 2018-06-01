@@ -71,7 +71,10 @@ namespace UISystem{
 		public override void OnEnter(){
 			waitingForTapProcess.Run();
 		}
-		public override void OnExit(){}
+		public override void OnExit(){
+			if(waitingForTapProcess.IsRunning())
+				waitingForTapProcess.Stop();
+		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.TapUIE();
@@ -116,7 +119,10 @@ namespace UISystem{
 		public override void OnEnter(){
 			waitAndExpireProcess.Run();
 		}
-		public override void OnExit(){}
+		public override void OnExit(){
+			if(waitAndExpireProcess.IsRunning())
+				waitAndExpireProcess.Stop();
+		}
 		public override void OnPointerDown(ICustomEventData eventData){
 			engine.IncrementTouchCounter();
 			engine.TouchUIE();
