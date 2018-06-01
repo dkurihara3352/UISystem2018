@@ -74,11 +74,11 @@ namespace UISystem{
 		/*  */
 	}
 	public interface IUIInputHandler{
-		void OnTouch( int touchCount);
-		void OnDelayedTouch();
-		void OnRelease();
-		void OnDelayedRelease();
-		void OnTap( int tapCount);
+		void OnTouch( int touchCount);/* done */
+		void OnDelayedTouch();/* done */
+		void OnRelease();/* done */
+		void OnDelayedRelease();/* done */
+		void OnTap( int tapCount);/* done */
 		void OnDrag( Vector2 pos, Vector2 deltaP);
 		void OnHold( float elapsedT);
 		void OnSwipe( Vector2 deltaP);

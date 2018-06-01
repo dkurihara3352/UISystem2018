@@ -9,7 +9,7 @@ namespace UISystem{
 		List<IUIElement> GetChildUIEs();
 		void GetReadyForActivation(IUIManager uim);
 	}
-	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler{
+	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
 		/* 
 			Isolate MB-free part of implementation to some other class and 
 			hold ref to it for the sake of easy testing
@@ -99,6 +99,12 @@ namespace UISystem{
 				CustomEventData result = new CustomEventData(sourceData);
 				return result;
 			}
+			Vector2 CalcPointerPos(PointerEventData eventData){
+				return Vector2.zero;
+			}
+			Vector2 CalcPointerDelta(PointerEventData eventData){
+				return Vector2.zero;
+			}
 			public void OnPointerEnter(PointerEventData eventData){
 				if(this.uiElement is IPickUpReceiver){
 					IPickUpReceiver receiver = (IPickUpReceiver)this.uiElement;
@@ -112,6 +118,11 @@ namespace UISystem{
 			public void OnPointerUp(PointerEventData eventData){
 				CustomEventData customEventData = CreateCustomEventData(eventData);
 				inputStateEngine.OnPointerUp(customEventData);
+			}
+			public void OnDrag(PointerEventData eventData){
+				Vector2 dragPos = this.CalcPointerPos(eventData);
+				Vector2 dragDeltaP = this.CalcPointerDelta(eventData);
+				inputStateEngine.OnDrag(dragPos, dragDeltaP);
 			}
 	}
 	public interface ICustomEventData{
