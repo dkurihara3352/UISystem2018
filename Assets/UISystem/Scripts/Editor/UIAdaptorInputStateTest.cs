@@ -25,6 +25,13 @@ public class UIAdaptorInputStateTest{
 		state.OnPointerDown(eventData);
 	}
 	[Test]
+	public void PointerUpInputState_OnDrag_WhenCalled_ThrowsException(){
+		IUIAdaptorStateEngine engine = Substitute.For<IUIAdaptorStateEngine>();
+		TestPointerUpInputState state = new TestPointerUpInputState(engine);
+
+		Assert.Throws(typeof(System.InvalidOperationException), () => state.OnDrag(Vector2.zero, Vector2.zero));
+	}
+	[Test]
 	public void TestUIAStateEngine_Construction_WhenCalled_StatesAreAllSet(){
 		TestUIAStateEngine engine = CreateTestUIAStateEngine();
 
@@ -145,6 +152,20 @@ public class UIAdaptorInputStateTest{
 		Assert.That(engine.IsWaitingForRelease(), Is.True);
 	}
 	[Test]
+	public void TestUIAStateEngine_ProcessExpires_WhileWFTapState_RunsWFReleaseProcess(){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		IWaitAndExpireProcess wfTapProcess = arg.wfTapProcess;
+		IWaitAndExpireProcess wfReleaseProcess = arg.wfReleaseProcess;
+		engine.OnPointerDown(eventData);
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+		
+		wfTapProcess.Expire();
+
+		wfReleaseProcess.Received(1).Run();
+	}
+	[Test]
 	public void TestUIAStateEngine_ProcessExpires_WhileWFTapState_UIECalledOnDelayedTouch(){
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
@@ -157,6 +178,46 @@ public class UIAdaptorInputStateTest{
 		wfTapProcess.Expire();
 
 		uie.Received(1).OnDelayedTouch();
+	}
+	[Test]
+	public void TestUIAStateEngine_OnPointerExit_WhileWFTapState_BecomesWFRelease(){//and run process, reset touchC
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		IUIElement uie = arg.uie;
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		engine.OnPointerDown(eventData);
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+
+		engine.OnPointerExit(eventData);
+
+		Assert.That(engine.IsWaitingForRelease(), Is.True);
+	}
+	[Test]
+	public void TestUIAStateEngine_OnPointerExit_WhileWFTapState_ResetTouchCount(){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		IUIElement uie = arg.uie;
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		engine.OnPointerDown(eventData);
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+
+		engine.OnPointerExit(eventData);
+
+		Assert.That(engine.GetTouchCount(), Is.EqualTo(0));
+	}
+	[Test]
+	public void TestUIAStateEngine_OnPointerExit_WhileWFTapState_RunsWFReleaseProcess(){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		IUIElement uie = arg.uie;
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		IWaitAndExpireProcess wfReleaseProcess = arg.wfReleaseProcess;
+		engine.OnPointerDown(eventData);
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+
+		engine.OnPointerExit(eventData);
+
+		wfReleaseProcess.Received(1).Run();
 	}
 	[Test]
 	public void TestUIAStateEngine_OnPointerUp_WhielInWFReleaseState_BecomesWaitingForNextTouch(){
@@ -172,6 +233,21 @@ public class UIAdaptorInputStateTest{
 		engine.OnPointerUp(eventData);
 
 		Assert.That(engine.IsWaitingForNextTouch(), Is.True);
+	}
+	[Test]
+	public void TestUIAStateEngine_OnPointerUp_WhielInWFReleaseState_StopsWFReleaseProcess(){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		IWaitAndExpireProcess wfTapProcess = arg.wfTapProcess;
+		IWaitAndExpireProcess wfReleaseProcess = arg.wfReleaseProcess;
+		engine.OnPointerDown(eventData);
+		wfTapProcess.Expire();
+		Assert.That(engine.IsWaitingForRelease(), Is.True);
+
+		engine.OnPointerUp(eventData);
+
+		wfReleaseProcess.Received(1).Stop();
 	}
 	[Test]
 	public void TestUIAStateEngine_OnPointerUP_WhileWFRelease_CallsUIEOnRelease(){
@@ -204,7 +280,23 @@ public class UIAdaptorInputStateTest{
 		Assert.That(engine.IsWaitingForTap(), Is.True);
 	}
 	[Test]
-	public void TestUIAStateEngine_OnPointerDown_WhileInWFNextTouchState_IncrementTouchCount([NUnit.Framework.Values(100)]int count){
+	public void TestUIAStateEngine_OnPointerDown_WhileInWFNextTouchState_RunsWFTapProcess(){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
+		IWaitAndExpireProcess wfTapProcess = arg.wfTapProcess;
+		engine.OnPointerDown(eventData);
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+		wfTapProcess.Received(1).Run();
+		engine.OnPointerUp(eventData);
+		Assert.That(engine.IsWaitingForNextTouch(), Is.True);
+
+		engine.OnPointerDown(eventData);
+
+		wfTapProcess.Received(2).Run();
+	}
+	[Test]
+	public void TestUIAStateEngine_OnPointerDown_WhileWFNextTouch_IncrementTouchCount([NUnit.Framework.Values(100)]int count){
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
@@ -216,7 +308,7 @@ public class UIAdaptorInputStateTest{
 		}
 	}
 	[Test]
-	public void TestUIAStateEngine_OnPointerDown_WhileWFNTAndTouchCountX_CallsUIEOnTouchWithArgX([Values(100)]int count){
+	public void TestUIAStateEngine_OnPointerDown_WhileWFNextTouch_TouchCountX_CallsUIEOnTouchWithArgX([Values(100)]int count){
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
@@ -229,7 +321,7 @@ public class UIAdaptorInputStateTest{
 		}
 	}
 	[Test]
-	public void TestUIAStateEngine_OnPointerUp_WhileWFTapAndTouchCountX_CallsUIEOnTapWithArgX([Values(100)]int count){
+	public void TestUIAStateEngine_OnPointerUp_WhileWFTap_TouchCountX_EligibleForTap_CallsUIEOnTapWithArgX([Values(100)]int count){
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
@@ -242,7 +334,7 @@ public class UIAdaptorInputStateTest{
 		}
 	}
 	[Test]
-	public void TestUIAStateEngine_ProcessExpires_WhileWFNextTouchAndTouchCountX_ResetTouchCountToZero([Values(1, 10, 100)]int count){
+	public void TestUIAStateEngine_ProcessExpires_WhileWFNextTouch_TouchCountX_ResetTouchCountToZero([Values(1, 10, 100)]int count){
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
@@ -271,6 +363,56 @@ public class UIAdaptorInputStateTest{
 
 		uie.Received(1).OnDelayedRelease();
 	}
+	[Test][TestCaseSource(typeof(OnDragTestCase), "case1")]
+	public void TestUIAStateEngine_OnDrag_WhilePointerDownState_OverThreshold_CallsUIEOnDrag(float vector2X, bool overThreshold){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		IUIElement uie = arg.uie;
+		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
+		engine.OnPointerDown(Substitute.For<ICustomEventData>());
+		Assert.That(engine.GetCurState(), Is.InstanceOf(typeof(PointerDownInputState)));
+
+		engine.OnDrag(Vector2.zero, dragDeltaP);
+		
+		if(dragDeltaP.sqrMagnitude >= engine.GetDragThreshold() * engine.GetDragThreshold()){
+			Assert.That(overThreshold, Is.True);
+			uie.Received(1).OnDrag(Vector2.zero, dragDeltaP);
+		}else{
+			Assert.That(overThreshold, Is.False);
+			uie.DidNotReceive().OnDrag(Vector2.zero, dragDeltaP);
+		}
+	}
+	class OnDragTestCase{
+		static object[] case1 = {
+			new object[]{0f, false},
+			new object[]{4.5f, false},
+			new object[]{4.999999f, false},/* dunno the boundary */
+			new object[]{5f - float.Epsilon, true},/* this is bit weird, minor though */
+			new object[]{5f, true},
+			new object[]{10f, true},
+		};
+		static object[] case2 = {
+			new object[]{1 ,5f - float.Epsilon, true},
+			new object[]{10 ,5f, true},
+			new object[]{100 ,10f, true},
+			new object[]{4 ,1f, false},
+			new object[]{4 ,4f, false},
+			new object[]{4 ,4.999f, false},
+		};
+	}
+	[Test][TestCaseSource(typeof(OnDragTestCase), "case1")]
+	public void TestUIAStateEngine_OnDrag_WhileWFTapState_OverThreshold_DoesNotBecomeWFRelease(float vector2X, bool overThreshold){
+		UIAStateEngineConstArg arg;
+		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
+		IUIElement uie = arg.uie;
+		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
+		engine.OnPointerDown(Substitute.For<ICustomEventData>());
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+		
+		engine.OnDrag(Vector2.zero, dragDeltaP);
+		
+		Assert.That(engine.IsWaitingForTap(), Is.True);
+	}
 	/* Test Support Classes */
 		[Test]
 		public void TestUIAStateEngine_TestMethods_WorksProperly(){
@@ -294,20 +436,24 @@ public class UIAdaptorInputStateTest{
 			public override void OnExit(){}
 			public override void OnPointerUp(ICustomEventData eventData){}
 			public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){}
+			public override void OnPointerEnter(ICustomEventData eventData){}
+			public override void OnPointerExit(ICustomEventData eventData){}
 		}
 		class UIAStateEngineConstArg{
-			public UIAStateEngineConstArg(IUIAdaptor uia, IUIElement uie, IProcessFactory procFac, IWaitAndExpireProcess wfTapProcess, IWaitAndExpireProcess wfNextTouchProcess){
+			public UIAStateEngineConstArg(IUIAdaptor uia, IUIElement uie, IProcessFactory procFac, IWaitAndExpireProcess wfTapProcess, IWaitAndExpireProcess wfNextTouchProcess, IWaitAndExpireProcess wfReleaseProcess){
 				this.uia = uia;
 				this.uie = uie;
 				this.procFac = procFac;
 				this.wfTapProcess = wfTapProcess;
 				this.wfNextTouchProcess = wfNextTouchProcess;
+				this.wfReleaseProcess = wfReleaseProcess;
 			}
 			public IUIAdaptor uia;
 			public IUIElement uie;
 			public IProcessFactory procFac;
 			public IWaitAndExpireProcess wfTapProcess;
 			public IWaitAndExpireProcess wfNextTouchProcess;
+			public IWaitAndExpireProcess wfReleaseProcess;
 
 		}
 		class TestUIAStateEngine: UIAdaptorStateEngine{
@@ -346,6 +492,9 @@ public class UIAdaptorInputStateTest{
 					this.waitingForReleaseState != null &&
 					this.waitingForNextTouchState != null;
 			}
+			public float GetDragThreshold(){
+				return this.dragDeltaPThreshold;
+			}
 		}
 		TestUIAStateEngine CreateTestUIAStateEngine(out UIAStateEngineConstArg arg){
 			/*  ** Note **
@@ -357,14 +506,18 @@ public class UIAdaptorInputStateTest{
 			IProcessFactory mockProcFac = Substitute.For<IProcessFactory>();
 				IWaitAndExpireProcess mockWFTapProcess = Substitute.For<IWaitAndExpireProcess>();
 				IWaitAndExpireProcess mockWFNextTouchProcess = Substitute.For<IWaitAndExpireProcess>();
+				IWaitAndExpireProcess mockWFReleaseProcess = Substitute.For<IWaitAndExpireProcess>();
 				mockWFTapProcess.When(x => x.Run()).Do(x => mockWFTapProcess.IsRunning().Returns(true));
 				mockWFNextTouchProcess.When(x => x.Run()).Do(x => mockWFNextTouchProcess.IsRunning().Returns(true));
+				mockWFReleaseProcess.When(x => x.Run()).Do(x => mockWFReleaseProcess.IsRunning().Returns(true));
 				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForTapState>(), Arg.Any<float>()).Returns(mockWFTapProcess);
 				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForNextTouchState>(), Arg.Any<float>()).Returns(mockWFNextTouchProcess);
+				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForReleaseState>(), Arg.Any<float>()).Returns(mockWFReleaseProcess);
 			TestUIAStateEngine engine = new TestUIAStateEngine(mockUIA, mockProcFac);
 				mockWFTapProcess.When(x => x.Expire()).Do(x => engine.GetWFTapState().OnProcessExpire());
 				mockWFNextTouchProcess.When(x => x.Expire()).Do(x => engine.GetWFNextTouchState().OnProcessExpire());
-			arg = new UIAStateEngineConstArg(mockUIA, mockUIE, mockProcFac, mockWFTapProcess, mockWFNextTouchProcess);
+				mockWFReleaseProcess.When(x => x.Expire()).Do(x => engine.GetWFReleaseState().OnProcessExpire());
+			arg = new UIAStateEngineConstArg(mockUIA, mockUIE, mockProcFac, mockWFTapProcess, mockWFNextTouchProcess, mockWFReleaseProcess);
 			return engine;
 		}
 		TestUIAStateEngine CreateTestUIAStateEngine(){

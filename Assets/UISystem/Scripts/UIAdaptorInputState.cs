@@ -8,6 +8,8 @@ namespace UISystem{
 		void OnPointerDown(ICustomEventData eventData);
 		void OnPointerUp(ICustomEventData eventData);
 		void OnDrag(Vector2 dragPos, Vector2 dragDeltaP);
+		void OnPointerEnter(ICustomEventData eventData);
+		void OnPointerExit(ICustomEventData eventData);
 	}
 	/* States */
 	public interface IUIAdaptorInputState: IRawInputHandler, ISwitchableState{
@@ -22,7 +24,8 @@ namespace UISystem{
 		public abstract void OnPointerDown(ICustomEventData eventData);
 		public abstract void OnPointerUp(ICustomEventData eventData);
 		public abstract void OnDrag(Vector2 dragPos, Vector2 dragDeltaP);
-
+		public abstract void OnPointerEnter(ICustomEventData eventData);
+		public abstract void OnPointerExit(ICustomEventData eventData);
 	}
 	public abstract class PointerUpInputState: AbsUIAdaptorInputState{
 		public PointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
@@ -31,6 +34,12 @@ namespace UISystem{
 		}
 		public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){
 			throw new System.InvalidOperationException("OnDrag should be impossible when pointer is held up, something's wrong");
+		}
+		public override void OnPointerEnter(ICustomEventData eventData){
+			throw new System.InvalidOperationException("OnPointerEnter should not be called while pointer is held up");
+		}
+		public override void OnPointerExit(ICustomEventData eventData){
+			throw new System.InvalidOperationException("OnPointerExit should not be called while pointer is held up");
 		}
 	}
 	public abstract class PointerDownInputState: AbsUIAdaptorInputState{
@@ -63,16 +72,22 @@ namespace UISystem{
 		/* 	Down state
 			enter =>
 				Runs WFTapProcess
-					pointer up => 
-						WFNextTouchState
-						Tap(touchCounter)
-					expire => 
-						WFReleaseState
-						DelayTouchUIE
-					drag =>
-							DragUIE
-							WFReleaseState
-
+			exit =>
+				stop the process if its running
+			pointer up => 
+				WFNextTouchState
+				Tap(touchCounter)
+			process expire => 
+				WFReleaseState
+				DelayTouchUIE
+			process update =>
+				HoldUIE
+			drag =>
+				DragUIE
+			pointer enter =>
+				do nothing
+			pointer exit =>
+				WFRelease
 		*/
 		public WaitingForTapState(IUIAdaptorStateEngine engine, IProcessFactory procFac): base(engine){
 			waitingForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
@@ -87,37 +102,70 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
+
 			engine.TapUIE();
+		}
+		public override void OnPointerEnter(ICustomEventData eventData){}
+		public override void OnPointerExit(ICustomEventData eventData){
+			engine.WaitForRelease();
 		}
 		public void OnProcessExpire(){
 			engine.WaitForRelease();
 			engine.DelayTouchUIE();
 		}
+		public void OnProcessUpdate(float deltaT){
+			engine.HoldUIE(deltaT);
+		}
 		public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){
 			engine.DragUIE(dragPos, dragDeltaP);
-			engine.WaitForRelease();
+			// engine.WaitForRelease();/* don't do this */
 		}
 	}
-	public class WaitingForReleaseState: PointerDownInputState{
+	public class WaitingForReleaseState: PointerDownInputState, IWaitAndExpireProcessState{
 		/* 	DownState
 			enter =>
 				touch count reset
+				Runs a process =>
+					HoldUIE every frame during its running
+			exit =>
+				stop the process
 			pointer up => 
 				WFNextTouchState
 				ReleaseUIE
 			drag =>
 				DragUIE
+			pointer enter => 
+				do nothing
+			pointer exit =>
+				do nothing
 		*/
-		public WaitingForReleaseState(IUIAdaptorStateEngine engine) :base(engine){
+		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IProcessFactory procFac) :base(engine){
+			this.wfReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
 		}
+		readonly IWaitAndExpireProcess wfReleaseProcess;
 		public override void OnEnter(){
 			engine.ResetTouchCounter();
+			wfReleaseProcess.Run();
 		}
 		public override void OnExit(){
+			if(wfReleaseProcess.IsRunning())
+				wfReleaseProcess.Stop();
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.ReleaseUIE();
+		}
+		public override void OnPointerEnter(ICustomEventData eventData){
+			return;
+		}
+		public override void OnPointerExit(ICustomEventData eventData){
+			return;
+		}
+		public void OnProcessExpire(){
+			return;
+		}
+		public void OnProcessUpdate(float deltaT){
+			engine.HoldUIE(deltaT);
 		}
 		public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){
 			engine.DragUIE(dragPos, dragDeltaP);
@@ -155,6 +203,9 @@ namespace UISystem{
 			engine.WaitForFirstTouch();
 			engine.DelayedReleaseUIE();
 		}
+		public void OnProcessUpdate(float deltaT){
+			return;
+		}
 	}
 	/* Engine */
 	public interface IUIAdaptorStateHandler{
@@ -175,13 +226,14 @@ namespace UISystem{
 		void ReleaseUIE();
 		void DelayedReleaseUIE();
 		void DragUIE(Vector2 dragPois, Vector2 dragDeltaP);
+		void HoldUIE(float deltaT);
 	}
 	public class UIAdaptorStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorStateEngine{
 		public UIAdaptorStateEngine(IUIAdaptor uia, IProcessFactory procFac){
 			this.uie = uia.GetUIElement();
 			this.waitingForFirstTouchState = new WaitingForFirstTouchState(this);
 			this.waitingForTapState = new WaitingForTapState(this, procFac);
-			this.waitingForReleaseState = new WaitingForReleaseState(this);
+			this.waitingForReleaseState = new WaitingForReleaseState(this, procFac);
 			this.waitingForNextTouchState = new WaitingForNextTouchState(this, procFac);
 			SetWithInitState();
 			ResetTouchCounter();
@@ -225,9 +277,12 @@ namespace UISystem{
 			float deltaPSqrMag = dragDeltaP.sqrMagnitude;
 			return deltaPSqrMag >= dragDeltaPThreshold * dragDeltaPThreshold;
 		}
-		float dragDeltaPThreshold = 5f;/* tweak */
+		protected float dragDeltaPThreshold = 5f;/* tweak */
 		public void DragUIE(Vector2 dragPos, Vector2 dragDeltaP){
 			this.uie.OnDrag(dragPos, dragDeltaP);
+		}
+		public void HoldUIE(float deltaT){
+			this.uie.OnHold(deltaT);
 		}
 		/* IRawInputHandler */
 			public void OnPointerDown(ICustomEventData eventData){
@@ -239,6 +294,12 @@ namespace UISystem{
 			public void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){
 				if(DragDeltaPIsOverThreshold(dragDeltaP))
 					curState.OnDrag(dragPos, dragDeltaP);
+			}
+			public void OnPointerEnter(ICustomEventData eventData){
+				curState.OnPointerEnter(eventData);
+			}
+			public void OnPointerExit(ICustomEventData eventData){
+				curState.OnPointerExit(eventData);
 			}
 		/* IUIAdaptorStateHandler imple and states switch */
 			protected readonly WaitingForFirstTouchState waitingForFirstTouchState;

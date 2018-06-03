@@ -78,9 +78,11 @@ namespace UISystem{
 		void OnDelayedTouch();/* done */
 		void OnRelease();/* done */
 		void OnDelayedRelease();/* done */
+		/* called after both OnRelease and OnTap */
 		void OnTap( int tapCount);/* done */
-		void OnDrag( Vector2 pos, Vector2 deltaP);
-		void OnHold( float elapsedT);
+		void OnDrag( Vector2 pos, Vector2 deltaP);/* done */
+		void OnHold( float deltaT);
+		/* called every frame from pointer down to up */
 		void OnSwipe( Vector2 deltaP);
 	}
 	public interface IUIImage{

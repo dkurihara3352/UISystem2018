@@ -82,10 +82,11 @@ namespace UISystem{
 	}
 	public interface IWaitAndExpireProcessState{
 		void OnProcessExpire();
+		void OnProcessUpdate(float deltaT);
 	}
 	public interface IWaitAndExpireProcess: IProcess{}
 	public class WaitAndExpireProcess: AbsProcess, IWaitAndExpireProcess{
-		public WaitAndExpireProcess(IProcessManager procMan, IWaitAndExpireProcessState state,float expireT): base(procMan){
+		public WaitAndExpireProcess(IProcessManager procMan, IWaitAndExpireProcessState state, float expireT): base(procMan){
 			this.expireT = expireT;
 			this.state = state;
 			Reset();
@@ -94,10 +95,15 @@ namespace UISystem{
 		float elapsedT;
 		readonly float expireT;
 		public override void UpdateProcess(float deltaT){
+			state.OnProcessUpdate(deltaT);
 			elapsedT += deltaT;
-			if(elapsedT >= expireT){
-				this.Expire();
-			}
+			if(this.ExpirationIsEnabled())
+				if(elapsedT >= expireT){
+					this.Expire();
+				}
+		}
+		bool ExpirationIsEnabled(){
+			return expireT > 0f;
 		}
 		public override void Expire(){
 			base.Expire();
