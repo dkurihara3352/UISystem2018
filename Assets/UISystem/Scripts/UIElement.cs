@@ -74,13 +74,23 @@ namespace UISystem{
 		/*  */
 	}
 	public interface IUIInputHandler{
-		void OnTouch( int touchCount);/* done */
-		void OnDelayedTouch();/* done */
-		void OnRelease();/* done */
-		void OnDelayedRelease();/* done */
+		/* Releasing
+			pointer up =>
+				OnRelease
+				if deltaP over thresh
+					OnSwipe
+				else
+					if stays in-bound && within time frame
+						OnTap
+
+		*/
+		void OnTouch( int touchCount);
+		void OnDelayedTouch();
+		void OnRelease();
+		void OnDelayedRelease();
 		/* called after both OnRelease and OnTap */
-		void OnTap( int tapCount);/* done */
-		void OnDrag( Vector2 pos, Vector2 deltaP);/* done */
+		void OnTap( int tapCount);
+		void OnDrag( Vector2 pos, Vector2 deltaP);
 		void OnHold( float deltaT);
 		/* called every frame from pointer down to up */
 		void OnSwipe( Vector2 deltaP);

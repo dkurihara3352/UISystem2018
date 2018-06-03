@@ -20,7 +20,7 @@ namespace UISystem{
 		public virtual void Run(){
 			processManager.AddRunningProcess(this);
 		}
-		public void Stop(){
+		public virtual void Stop(){
 			processManager.RemoveRunningProcess(this);
 		}
 		public virtual void Expire(){
@@ -108,6 +108,10 @@ namespace UISystem{
 		public override void Expire(){
 			base.Expire();
 			state.OnProcessExpire();
+		}
+		public override void Stop(){
+			base.Stop();
+			Reset();
 		}
 		public override void Reset(){
 			elapsedT = 0f;

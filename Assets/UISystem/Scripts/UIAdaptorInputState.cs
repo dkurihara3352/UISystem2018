@@ -47,6 +47,13 @@ namespace UISystem{
 		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
 		}
+		protected bool DeltaPIsOverSwipeThreshold(Vector2 deltaP){
+			float swipeThreshold = engine.GetSwipeThreshold();
+			if(deltaP.sqrMagnitude >= swipeThreshold * swipeThreshold)
+				return true;
+			return false;
+		}
+		
 	}
 	public class WaitingForFirstTouchState: PointerUpInputState{
 		/*  Up state
@@ -76,7 +83,11 @@ namespace UISystem{
 				stop the process if its running
 			pointer up => 
 				WFNextTouchState
-				Tap(touchCounter)
+				ReleaseUIE
+				if deltaP is over thresh
+					SwipeUIE
+				else
+					TapUIE(touchCounter)
 			process expire => 
 				WFReleaseState
 				DelayTouchUIE
@@ -102,8 +113,11 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
-
-			engine.TapUIE();
+			engine.ReleaseUIE();
+			if(DeltaPIsOverSwipeThreshold(eventData.deltaP))
+				engine.SwipeUIE(eventData.deltaP);
+			else
+				engine.TapUIE();
 		}
 		public override void OnPointerEnter(ICustomEventData eventData){}
 		public override void OnPointerExit(ICustomEventData eventData){
@@ -118,7 +132,6 @@ namespace UISystem{
 		}
 		public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){
 			engine.DragUIE(dragPos, dragDeltaP);
-			// engine.WaitForRelease();/* don't do this */
 		}
 	}
 	public class WaitingForReleaseState: PointerDownInputState, IWaitAndExpireProcessState{
@@ -132,6 +145,8 @@ namespace UISystem{
 			pointer up => 
 				WFNextTouchState
 				ReleaseUIE
+				if deltaP is over thresh
+					SwipeUIE
 			drag =>
 				DragUIE
 			pointer enter => 
@@ -154,6 +169,8 @@ namespace UISystem{
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.ReleaseUIE();
+			if(DeltaPIsOverSwipeThreshold(eventData.deltaP))
+				engine.SwipeUIE(eventData.deltaP);
 		}
 		public override void OnPointerEnter(ICustomEventData eventData){
 			return;
@@ -227,6 +244,8 @@ namespace UISystem{
 		void DelayedReleaseUIE();
 		void DragUIE(Vector2 dragPois, Vector2 dragDeltaP);
 		void HoldUIE(float deltaT);
+		void SwipeUIE(Vector2 deltaP);
+		float GetSwipeThreshold();
 	}
 	public class UIAdaptorStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorStateEngine{
 		public UIAdaptorStateEngine(IUIAdaptor uia, IProcessFactory procFac){
@@ -284,6 +303,13 @@ namespace UISystem{
 		public void HoldUIE(float deltaT){
 			this.uie.OnHold(deltaT);
 		}
+		public void SwipeUIE(Vector2 deltaP){
+			this.uie.OnSwipe(deltaP);
+		}
+		public float GetSwipeThreshold(){
+			return this.swipeThreshold;
+		}
+		float swipeThreshold = 5f;
 		/* IRawInputHandler */
 			public void OnPointerDown(ICustomEventData eventData){
 				curState.OnPointerDown(eventData);

@@ -126,11 +126,14 @@ namespace UISystem{
 			}
 	}
 	public interface ICustomEventData{
-
+		Vector2 deltaP{get;}
 	}
 	public class CustomEventData: ICustomEventData{
 		public CustomEventData(PointerEventData sourceData){
 			/* do some conversion here */
+		}
+		public Vector2 deltaP{
+			get{return Vector2.zero;}
 		}
 	}
 }
