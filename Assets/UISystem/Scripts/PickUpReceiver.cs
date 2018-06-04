@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IPickUpReceiverStateHandler{
+	public interface IHoverabilityStateHandler{
 		void WaitForPickUp();
+		void BecomeHoverable();
+		void BecomeUnhoverable();
 	}
-	public interface IPickUpReceiver: IUIElement, IPickUpReceiverStateHandler{
+	public interface IPickUpReceiver: IUIElement, IHoverabilityStateHandler{
 		void CheckForHover();
 	}
 }

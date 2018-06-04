@@ -4,26 +4,31 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IIITAMStateHandler{
-		void SetToPickedState();
+		void SetToPickedState(IItemIcon pickedII);
 		void SetToDefaultState();
 	}
 	public interface IItemIconTransactionManager: IPickUpManager ,IIITAMStateHandler{
 		void SetPickedII(IItemIcon pickedII);
 		IItemIcon GetPickedII();
+		void Activate();
 		void CheckAndActivateHoverPads();
 		void DeactivateHoverPads();
 		void EvaluateHoverability();
 		void ClearHoverability();
 		void HoverInitialPickUpReceiver();
 		void EvaluatePickability();
+		List<IIconGroup> GetAllRelevantIGs();
 	}
-	public class ItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
-		public ItemIconTransactionManager(){
+	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
+		public AbsItemIconTransactionManager(){
 			this.stateEngine = new ItemIconTAManagerStateEngine();
 		}
 		readonly IItemIcomTAManagerStateEngine stateEngine;
-		public void SetToPickedState(){
-			this.stateEngine.SetToPickedState();
+		public void Activate(){
+			SetToDefaultState();
+		}
+		public void SetToPickedState(IItemIcon pickedII){
+			this.stateEngine.SetToPickedState(pickedII);
 		}
 		public void SetToDefaultState(){
 			this.stateEngine.SetToDefaultState();
@@ -32,7 +37,7 @@ namespace UISystem{
 			this.pickedUIE = pickedII;
 		}
 		public IItemIcon GetPickedII(){
-			IPickableUIElement pickedUIE = this.GetPickedUIE();
+			IPickableUIE pickedUIE = this.GetPickedUIE();
 			if(pickedUIE != null){
 				if(pickedUIE is IItemIcon)
 					return pickedUIE as IItemIcon;
@@ -53,10 +58,17 @@ namespace UISystem{
 			this.hoveredPanel = null;
 			this.hoveredII = null;
 		}
-		public void EvaluatePickability(){}
+		public void EvaluatePickability(){
+			foreach(IIconGroup ig in GetAllRelevantIGs()){
+				ig.EvaluatePickability();
+			}
+		}
+		public abstract List<IIconGroup> GetAllRelevantIGs();
 	}
-	public interface IEquippableIITAManager: IItemIconTransactionManager{}
-	public class EquippableIITAManager: ItemIconTransactionManager, IEquippableIITAManager{
+	public interface IEquippableIITAManager: IItemIconTransactionManager{
+		IIconGroup GetRelevantEqpCGearsIG();
+	}
+	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
 		public EquippableIITAManager(IIconPanel equippedItemsPanel, IIconPanel poolItemsPanel){
 			this.equippedItemsPanel = equippedItemsPanel;
 			this.poolItemsPanel = poolItemsPanel;
@@ -73,6 +85,17 @@ namespace UISystem{
 		public override void ClearHoverability(){
 			equippedItemsPanel.WaitForPickUp();
 			poolItemsPanel.WaitForPickUp();
+		}
+		public override List<IIconGroup> GetAllRelevantIGs(){
+			List<IIconGroup> result = new List<IIconGroup>();
+			IIconGroup relevPoolIG = poolItemsPanel.GetRelevantIG();
+			IIconGroup relevEqpIG = equippedItemsPanel.GetRelevantIG();
+			result.Add(relevEqpIG);
+			result.Add(relevPoolIG);
+			return result;
+		}
+		public IIconGroup GetRelevantEqpCGearsIG(){
+			return null;
 		}
 	}
 	public interface IItemIconTAManagerState: ISwitchableState{
@@ -132,7 +155,8 @@ namespace UISystem{
 			/* init states here */
 			/* set to init state here */
 		}
-		public void SetToPickedState(){
+		public void SetToPickedState(IItemIcon pickedII){
+			pickedState.SetPickedII(pickedII);
 			this.TrySwitchState(pickedState);
 		}
 		readonly IITAMPickedState pickedState;

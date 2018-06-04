@@ -4,16 +4,16 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPickUpManager{
-		IPickableUIElement GetPickedUIE();
+		IPickableUIE GetPickedUIE();
 		IPickUpReceiver GetHoveredPUReceiver();
 		void ClearTAFields();
 	}
 	public abstract class AbsPickUpManager: IPickUpManager{
-		public IPickableUIElement GetPickedUIE(){
+		public IPickableUIE GetPickedUIE(){
 			return pickedUIE;
 		}
-		protected IPickableUIElement pickedUIE;
-		protected void SetPickedUIE(IPickableUIElement pickedUIE){
+		protected IPickableUIE pickedUIE;
+		protected void SetPickedUIE(IPickableUIE pickedUIE){
 			this.pickedUIE = pickedUIE;
 		}
 		public IPickUpReceiver GetHoveredPUReceiver(){
