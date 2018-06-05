@@ -7,6 +7,7 @@ namespace UISystem{
 		void WaitForPickUp();
 		void BecomeHoverable();
 		void BecomeUnhoverable();
+		void BecomeHovered();
 	}
 	public interface IPickUpReceiver: IUIElement, IHoverabilityStateHandler{
 		void CheckForHover();

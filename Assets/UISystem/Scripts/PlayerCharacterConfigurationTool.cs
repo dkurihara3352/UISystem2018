@@ -8,6 +8,8 @@ namespace UISystem{
 	}
 	public interface IEquipTool: IPlayerCharacterConfigurationTool{
 		void ResetMode();
+		void TrySwitchItemMode(IItemTemplate itemTemp);
+		void TrySwitchItemFilter(IItemTemplate itemTemp);
 	}
 }
 

@@ -9,15 +9,16 @@ namespace UISystem{
 		IUIManager GetUIM();
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
-		IUIImage CreateUIImage();
 		void Activate();
+		void SetParentUIE(IUIElement uie);
+		Vector2 GetLocalPosition(Vector2 worldPos);
+		void SetLocalPosition(Vector2 localPos);
 	}
 	public abstract class AbsUIElement: IUIElement, ISelectabilityStateHandler{
-		public AbsUIElement(IUIManager uim, IUIAdaptor uia){
+		public AbsUIElement(IUIManager uim, IUIAdaptor uia, IUIImage image){
 			this.uiManager = uim;
 			this.uiAdaptor = uia;
-			IUIImage uiImage = this.CreateUIImage();
-			this.uiImage = uiImage;
+			this.uiImage = image;
 			this.selectabilityEngine = new SelectabilityStateEngine(this, uim.GetProcessFactory());
 		}
 		IUIManager uiManager;
@@ -38,7 +39,6 @@ namespace UISystem{
 			return this.uiImage;
 		}
 		protected IUIImage uiImage;
-		public abstract IUIImage CreateUIImage();
 		public virtual void Activate(){
 			foreach(IUIElement childUIE in this.GetChildUIEs()){
 				if(childUIE != null)
@@ -72,6 +72,15 @@ namespace UISystem{
 			public virtual void OnHold( float elapsedT){}
 			public virtual void OnSwipe( Vector2 deltaP){}
 		/*  */
+		public Vector2 GetLocalPosition(Vector2 worldPos){
+			return this.uiAdaptor.GetLocalPosition(worldPos);
+		}
+		public void SetLocalPosition(Vector2 localPos){
+			this.uiAdaptor.SetLocalPosition(localPos);
+		}
+		public void SetParentUIE(IUIElement newParentUIE){
+			this.uiAdaptor.SetUIEParent(newParentUIE);
+		}
 	}
 	public interface IUIInputHandler{
 		/* Releasing
@@ -94,14 +103,6 @@ namespace UISystem{
 		void OnHold( float deltaT);
 		/* called every frame from pointer down to up */
 		void OnSwipe( Vector2 deltaP);
-	}
-	public interface IUIImage{
-		/* Color.Lerp(white, black, darknessValue)
-		 */
-		float GetCurrentDarkness();/* range is from 0f to 1f */
-		float GetDefaultDarkness();/* usually, 1f */
-		float GetDarkenedDarkness();/* somewhere around .5f */
-		void SetDarkness(float darkness);
 	}
 	public interface IVisibilitySwitcher{
 		/* subclassed by same uies that are also IRootActivator?

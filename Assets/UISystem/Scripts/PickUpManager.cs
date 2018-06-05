@@ -7,6 +7,12 @@ namespace UISystem{
 		IPickableUIE GetPickedUIE();
 		IPickUpReceiver GetHoveredPUReceiver();
 		void ClearTAFields();
+		IPickUpContextUIE GetPickUpContextUIE();
+	}
+	public interface IPickUpContextUIE: IUIElement{
+		/*  the uie to which PickUpManager is attached to implement this, such as ToolUIE or WidgetUIE
+		*/
+		Vector2 GetPickUpReservePosInWorldSpace();
 	}
 	public abstract class AbsPickUpManager: IPickUpManager{
 		public IPickableUIE GetPickedUIE(){
@@ -27,5 +33,6 @@ namespace UISystem{
 			SetPickedUIE(null);
 			SetHoveredPUReceiver(null);
 		}
+		public abstract IPickUpContextUIE GetPickUpContextUIE();
 	}
 }

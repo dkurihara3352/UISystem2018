@@ -77,6 +77,7 @@ namespace UISystem{
 		readonly IIconPanel poolItemsPanel;
 		IEquippableItemIcon eiiToEquip;
 		IEquippableItemIcon eiiToUnequip;
+		readonly IPickUpContextUIE eqpToolUIE;
 		public override void ClearTAFields(){
 			base.ClearTAFields();
 			this.eiiToEquip = null;
@@ -96,6 +97,9 @@ namespace UISystem{
 		}
 		public IIconGroup GetRelevantEqpCGearsIG(){
 			return null;
+		}
+		public override IPickUpContextUIE GetPickUpContextUIE(){
+			return eqpToolUIE;
 		}
 	}
 	public interface IItemIconTAManagerState: ISwitchableState{

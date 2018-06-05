@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPickabilityStateHandler{
+		void BecomePicked();
 		void BecomePickable();
 		void BecomeUnpickable();
 		bool IsPickable();

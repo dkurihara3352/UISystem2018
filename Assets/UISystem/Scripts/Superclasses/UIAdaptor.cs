@@ -6,8 +6,12 @@ namespace UISystem{
 	public interface IUIAdaptor{
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
+		void SetUIEParent(IUIElement newParentUIE);
 		List<IUIElement> GetChildUIEs();
 		void GetReadyForActivation(IUIManager uim);
+		Vector2 GetLocalPosition(Vector2 worldPos);
+		void SetLocalPosition(Vector2 localPos);
+		Transform GetParentTrans();
 	}
 	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
 		/* 
@@ -35,7 +39,11 @@ namespace UISystem{
 			}
 			IUIAdaptorStateEngine inputStateEngine;
 			protected abstract void CreateAndSetUIE(IUIManager uim);
-				/* Instantiate corresponding UIE with this, uim, and some other required args
+				/*  Instantiate corresponding UIE
+						Construction arg
+							uim, this, uiIamge
+						Create and pass uiImage
+							creation detail is imple in subclasses
 				*/
 		/*  Hierarchy stuff */
 			protected IUIElement uiElement;
@@ -46,6 +54,14 @@ namespace UISystem{
 					return closestParentUIAdaptor.GetUIElement();
 				else
 					return null;/* this should be the top one */
+			}
+			public Transform GetParentTrans(){
+				return transform.parent;
+			}
+			public void SetUIEParent(IUIElement newParentUIE){
+				IUIAdaptor newParUIA = newParentUIE.GetUIAdaptor();
+				Transform newParTrans = newParUIA.GetParentTrans();
+				this.transform.SetParent(newParTrans, worldPositionStays:true);
 			}
 			IUIAdaptor FindClosestParentUIAdaptor(){
 				Transform parentToExamine = transform.parent;
@@ -124,6 +140,14 @@ namespace UISystem{
 				Vector2 dragDeltaP = this.CalcPointerDelta(eventData);
 				inputStateEngine.OnDrag(dragPos, dragDeltaP);
 			}
+		/*  */
+		public Vector2 GetLocalPosition(Vector2 worldPos){
+			Vector3 localPosV3 = transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
+			return new Vector3(localPosV3.x, localPosV3.y);
+		}
+		public void SetLocalPosition(Vector2 localPos){
+			transform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
+		}
 	}
 	public interface ICustomEventData{
 		Vector2 deltaP{get;}

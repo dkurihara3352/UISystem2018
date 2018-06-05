@@ -6,12 +6,14 @@ namespace UISystem{
 	public interface IUIItem{
 		IItemTemplate GetItemTemplate();
 		int GetQuantity();
+		void SetQuantity(int q);
 	}
 	public interface IEquippableUIItem: IUIItem, IEquipStateHandler{
 		int GetMaxEquippableQuantity();
 	}
 	public interface IItemTemplate{
 		bool IsSameAs(IItemTemplate other);
+		int GetPickUpStepQuantity();
 	}
 	public interface INonStackableItemTemplate: IItemTemplate{}
 	public interface IStackableItemTemplate: IItemTemplate{}

@@ -7,7 +7,7 @@ namespace UISystem{
 		IIconGroup GetRelevantIG();
 	}
 	public abstract class AbsIconPanel: AbsUIElement, IIconPanel{
-		public AbsIconPanel(IUIManager uim, IUIAdaptor uia) :base(uim, uia){}
+		public AbsIconPanel(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
 		public void CheckForHover(){}
 		public void WaitForPickUp(){}
 		public abstract IIconGroup GetRelevantIG();
@@ -22,20 +22,14 @@ namespace UISystem{
 	}
 	public interface IPanelTransactionStateEngine: IHoverabilityStateHandler{}
 	public class EquippedItemsPanel: AbsIconPanel{
-		public EquippedItemsPanel(IUIManager uim, IUIAdaptor uia): base(uim, uia){}
-		public override IUIImage CreateUIImage(){
-			return null;/* imple later */
-		}
+		public EquippedItemsPanel(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
 		public override IIconGroup GetRelevantIG(){
 			/* impled later when building Scrollers */
 			return null;
 		}
 	}
 	public class PoolItemsPanel: AbsIconPanel{
-		public PoolItemsPanel(IUIManager uim, IUIAdaptor uia): base(uim, uia){}
-		public override IUIImage CreateUIImage(){
-			return null;/* imple later */
-		}
+		public PoolItemsPanel(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
 		public override IIconGroup GetRelevantIG(){
 			/* impled later when building Scrollers */
 			return null;
