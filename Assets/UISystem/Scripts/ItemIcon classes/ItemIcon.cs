@@ -6,18 +6,18 @@ namespace UISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
 		void EvaluatePickability();
 		IUIItem GetItem();
-		void SetUpAsPickedII();
 		int CalcTransferableQuantity(int pickedQ);
 		void IncreaseBy(int quantity, bool doesIncrement);
 		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
-		ITravelInterpolator GetRunningTravelIrper();
+		void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other);
 	}
 	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
-		public AbsItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IItemIconTransactionManager iiTAM): base(uim, uia, image){
+		public AbsItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IUIItem item,IItemIconTransactionManager iiTAM): base(uim, uia, image){
 			this.iiTAM = iiTAM;
+			this.item = item;
 		}
 		protected readonly IItemIconTransactionManager iiTAM;
 		/* IITransaction */
@@ -28,6 +28,9 @@ namespace UISystem{
 			}
 			public void BecomeUnpickable(){
 				iiTAStateEngine.BecomeUnpickable();
+			}
+			public void BecomePicked(){
+				iiTAStateEngine.BecomePicked();
 			}
 			public bool IsPickable(){
 				return iiTAStateEngine.IsPickable();
@@ -60,12 +63,16 @@ namespace UISystem{
 			bool IsTransferable(){
 				return transferableQuantity > 0;
 			}
+		/* IPickableUIE */
 			public void PickUp(){
 				this.BecomePicked();
 			}
-			public void BecomePicked(){
-				iiTAStateEngine.BecomePicked();
-			}
+			public abstract void CheckForImmediatePickUp();
+			public abstract void CheckForDelayedPickUp();
+			public abstract void CheckForSecondTouchPickUp();
+			public abstract void CheckForDragPickUp();
+			// public void BecomeVisuallyPickedUp(){}
+			// public void BecomeVisuallyUnpicked(){}
 		/* Hoverability state handling */
 			public void WaitForPickUp(){
 				iiTAStateEngine.WaitForPickUp();
@@ -104,19 +111,19 @@ namespace UISystem{
 				return slotID;
 			}
 		/* Item Handling */
-		protected IUIItem item;
-		public IUIItem GetItem(){
-			return item;
-		}
-		protected int GetQuantity(){
-			return this.item.GetQuantity();
-		}
-		void SetQuantity(int q){
-			this.item.SetQuantity(q);
-		}
-		IItemTemplate itemTemp{
-			get{return this.item.GetItemTemplate();}
-		}
+			protected IUIItem item;
+			public IUIItem GetItem(){
+				return item;
+			}
+			protected int GetQuantity(){
+				return this.item.GetQuantity();
+			}
+			void SetQuantity(int q){
+				this.item.SetQuantity(q);
+			}
+			IItemTemplate itemTemp{
+				get{return this.item.GetItemTemplate();}
+			}
 		/* pick up input transmission */
 		readonly IItemIconPickUpInputTransmitter inputTransmitter;
 		public override void OnTouch(int touchCount){
@@ -136,11 +143,13 @@ namespace UISystem{
 				return runningTravelIrper;
 			}
 		/*  */
-		public void DeclinePickUp(){}
-		public abstract void CheckForImmediatePickUp();
-		public abstract void CheckForDelayedPickUp();
-		public abstract void CheckForSecondTouchPickUp();
-		public abstract void CheckForDragPickUp();
+		// public void DeclinePickUp(){}
+		// public void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other){}
+		// public void IncreaseBy(int quantity, bool doesIncrement){}
+		// public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}
 		
+	}
+	public class ItemIcon: AbsItemIcon{
+		public ItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IUIItem item, IItemIconTransactionManager iiTAM): base(uim, uia, image, item, iiTAM){}
 	}
 }

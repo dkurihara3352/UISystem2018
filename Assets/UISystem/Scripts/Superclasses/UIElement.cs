@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElement: IUIInputHandler{
+	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler{
 		IUIElement GetParentUIE();
 		List<IUIElement> GetChildUIEs();
 		IUIManager GetUIM();
@@ -14,7 +14,7 @@ namespace UISystem{
 		Vector2 GetLocalPosition(Vector2 worldPos);
 		void SetLocalPosition(Vector2 localPos);
 	}
-	public abstract class AbsUIElement: IUIElement, ISelectabilityStateHandler{
+	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIManager uim, IUIAdaptor uia, IUIImage image){
 			this.uiManager = uim;
 			this.uiAdaptor = uia;

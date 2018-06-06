@@ -18,6 +18,7 @@ namespace UISystem{
 		void HoverInitialPickUpReceiver();
 		void EvaluatePickability();
 		List<IIconGroup> GetAllRelevantIGs();
+		IItemIcon CreateItemIcon(IUIItem item);
 	}
 	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
 		public AbsItemIconTransactionManager(){
@@ -48,11 +49,11 @@ namespace UISystem{
 		}
 		IIconPanel hoveredPanel;
 		IItemIcon hoveredII;
-		public void CheckAndActivateHoverPads(){}
-		public void DeactivateHoverPads(){}
-		public void EvaluateHoverability(){}
-		public virtual void ClearHoverability(){}
-		public void HoverInitialPickUpReceiver(){}
+		// public void CheckAndActivateHoverPads(){}
+		// public void DeactivateHoverPads(){}
+		// public void EvaluateHoverability(){}
+		// public virtual void ClearHoverability(){}
+		// public void HoverInitialPickUpReceiver(){}
 		public override void ClearTAFields(){
 			base.ClearTAFields();
 			this.hoveredPanel = null;
@@ -64,10 +65,16 @@ namespace UISystem{
 			}
 		}
 		public abstract List<IIconGroup> GetAllRelevantIGs();
+		readonly IItemIconFactory itemIconFactory;
+		public IItemIcon CreateItemIcon(IUIItem item){
+			return itemIconFactory.CreateItemIcon(item);
+		}
 	}
+
 	public interface IEquippableIITAManager: IItemIconTransactionManager{
 		IIconGroup GetRelevantEqpCGearsIG();
 	}
+
 	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
 		public EquippableIITAManager(IIconPanel equippedItemsPanel, IIconPanel poolItemsPanel){
 			this.equippedItemsPanel = equippedItemsPanel;
@@ -83,10 +90,10 @@ namespace UISystem{
 			this.eiiToEquip = null;
 			this.eiiToUnequip = null;
 		}
-		public override void ClearHoverability(){
-			equippedItemsPanel.WaitForPickUp();
-			poolItemsPanel.WaitForPickUp();
-		}
+		// public override void ClearHoverability(){
+		// 	equippedItemsPanel.WaitForPickUp();
+		// 	poolItemsPanel.WaitForPickUp();
+		// }
 		public override List<IIconGroup> GetAllRelevantIGs(){
 			List<IIconGroup> result = new List<IIconGroup>();
 			IIconGroup relevPoolIG = poolItemsPanel.GetRelevantIG();
@@ -101,73 +108,6 @@ namespace UISystem{
 		public override IPickUpContextUIE GetPickUpContextUIE(){
 			return eqpToolUIE;
 		}
-	}
-	public interface IItemIconTAManagerState: ISwitchableState{
-
-	}
-	public abstract class AbsItemIconTAManagerState: IItemIconTAManagerState{
-		public AbsItemIconTAManagerState(IItemIconTransactionManager tam){
-			this.tam = tam;
-		}
-		protected readonly IItemIconTransactionManager tam;
-		public abstract void OnEnter();
-		public abstract void OnExit();
-	}
-	public interface IIITAMPickedState: IItemIconTAManagerState{
-		void SetPickedII(IItemIcon itemIcon);
-	}
-	public class IITAMPickedState: AbsItemIconTAManagerState, IIITAMPickedState{
-		public IITAMPickedState(IItemIconTransactionManager tam): base(tam){}
-		public override void OnEnter(){
-			tam.SetPickedII(pickedII);
-			tam.CheckAndActivateHoverPads();
-			tam.EvaluateHoverability();
-			tam.HoverInitialPickUpReceiver();
-		}
-		public override void OnExit(){
-			tam.ClearTAFields();
-			tam.DeactivateHoverPads();
-			tam.ClearHoverability();
-			SetPickedII( null);
-		}
-		public void SetPickedII(IItemIcon pickedII){
-			this.pickedII = pickedII;
-		}
-		IItemIcon pickedII;
-	}
-	public class EqpIITAMPickedState: IITAMPickedState{
-		public EqpIITAMPickedState(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(eqpIITAM){
-			this.eqpTool = eqpTool;
-		}
-		readonly IEquipTool eqpTool;
-		public override void OnExit(){
-			base.OnExit();
-			eqpTool.ResetMode();/* or, EvalueateMode ? */
-		}
-	}
-	public class IITAMDefaultState: AbsItemIconTAManagerState{
-		public IITAMDefaultState(IItemIconTransactionManager tam): base(tam){}
-		public override void OnEnter(){
-			tam.EvaluatePickability();
-		}
-		public override void OnExit(){}
-	}
-	public interface IItemIcomTAManagerStateEngine: ISwitchableStateEngine<IItemIconTAManagerState>, IIITAMStateHandler{
-	}
-	public class ItemIconTAManagerStateEngine: AbsSwitchableStateEngine<IItemIconTAManagerState>, IItemIcomTAManagerStateEngine{
-		public ItemIconTAManagerStateEngine(){
-			/* init states here */
-			/* set to init state here */
-		}
-		public void SetToPickedState(IItemIcon pickedII){
-			pickedState.SetPickedII(pickedII);
-			this.TrySwitchState(pickedState);
-		}
-		readonly IITAMPickedState pickedState;
-		public void SetToDefaultState(){
-			this.TrySwitchState(defaultState);
-		}
-		readonly IITAMDefaultState defaultState;
 	}
 }
 

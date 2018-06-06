@@ -48,8 +48,11 @@ namespace UISystem{
 		protected readonly IItemIcon itemIcon;
 		readonly IItemIconTransactionManager iiTAM;
 		public virtual void OnEnter(){
-			itemIcon.SetUpAsPickedII();
+			SetUpIIAsPickedII();
 			iiTAM.SetToPickedState(itemIcon);
+			/* turn image's pickedness from nonpicked to picked */
+			itemIcon.BecomeVisuallyPickedUp();
+			itemIcon.BecomeSelected();
 		}
 		void SetUpIIAsPickedII(){
 			IUIItem item = itemIcon.GetItem();
@@ -99,10 +102,11 @@ namespace UISystem{
 			leftoverII.DisemptifyInstantly();
 			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: ThisItemIconIsInEqp());
 			/* leaves ghost or not? */
-			ITravelInterpolator runningTravelIrper = itemIcon.GetRunningTravelIrper();
-			runningTravelIrper.UpdateTravellingII(leftoverII);
+			itemIcon.SwapTravellingIIOnRunningTravIrperFromSelfTo(leftoverII);
 		}
-		public void OnExit(){}
+		public void OnExit(){
+			itemIcon.BecomeVisuallyUnpicked();
+		}
 	}
 	public class EqpIIPickedState: IIPickedState{
 		IEquippableItemIcon eqpII{

@@ -10,14 +10,14 @@ namespace UISystem{
 		bool IsPickable();
 		bool IsPicked();
 	}
-	public interface IPickable{
+	public interface IPickableUIE: IUIElement, IPickabilityStateHandler, IPickUpTransactionElement{
 		void PickUp();
 		void DeclinePickUp();
 		void CheckForImmediatePickUp();
 		void CheckForDelayedPickUp();
 		void CheckForSecondTouchPickUp();
 		void CheckForDragPickUp();
-	}
-	public interface IPickableUIE: IUIElement, IPickabilityStateHandler, IPickable{
+		void BecomeVisuallyPickedUp();
+		void BecomeVisuallyUnpicked();
 	}
 }

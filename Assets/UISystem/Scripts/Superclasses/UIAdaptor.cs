@@ -3,23 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace UISystem{
-	public interface IUIAdaptor{
+	public interface IMBAdaptor{}
+	public interface IUIAdaptor: IMBAdaptor{
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
 		void SetUIEParent(IUIElement newParentUIE);
+		List<IUIAdaptor> GetAllOffspringUIAs();
 		List<IUIElement> GetChildUIEs();
 		void GetReadyForActivation(IUIManager uim);
 		Vector2 GetLocalPosition(Vector2 worldPos);
 		void SetLocalPosition(Vector2 localPos);
 		Transform GetParentTrans();
 	}
-	public abstract class AbsUIAdaptorMB: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
+	public abstract class AbsUIAdaptor: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
 		/* 
 			Isolate MB-free part of implementation to some other class and 
 			hold ref to it for the sake of easy testing
 		*/
 		/*  Activation and init */
-			public void GetReadyForActivation(IUIManager uim){
+			public virtual void GetReadyForActivation(IUIManager uim){
 				/* Perform all initialization here
 					Perform below tasks, 
 					and call GetReadyForActivation(uim) for each child UIAdaptors
@@ -88,27 +90,37 @@ namespace UISystem{
 			List<IUIAdaptor> GetChildUIAdaptors(){
 				return FindAllClosestChildUIAdaptors(this.transform);
 			}
-			List<IUIAdaptor> FindAllClosestChildUIAdaptors(Transform transToExamine){
+			public List<IUIAdaptor> GetAllOffspringUIAs(){
+				List<IUIAdaptor> result = new List<IUIAdaptor>();
+				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
+					result.AddRange(childUIA.GetAllOffspringUIAs());
+				}
+				return result;
+			}
+			protected List<T> FindAllNextOffspringsWithComponent<T>(Transform transToExamine) where T: class{
 				/* 
-					find and return all most proximate child UIAdaptors
+					find and return all most proximate child Components
 					in all children branches
-					i.e. if any children does not have IUIAdaptor component,
+					i.e. if any children does not have the component,
 					then the child transform must try search down its offsprings for hits
 					and return them
 				*/
-				List<IUIAdaptor> result = new List<IUIAdaptor>();
+				List<T> result = new List<T>();
 				for(int i = 0; i < transToExamine.childCount; i ++){
 					Transform child = transToExamine.GetChild(i);
-					IUIAdaptor childUIA = child.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
-					if(childUIA != null){
-						result.Add(childUIA);
+					T childComp = child.GetComponent(typeof(T)) as T;
+					if(childComp != null){
+						result.Add(childComp);
 					}else{
-						List<IUIAdaptor> allUIAsOfThisChild = FindAllClosestChildUIAdaptors(child);
-						if(allUIAsOfThisChild.Count != 0)
-							result.AddRange(allUIAsOfThisChild);
+						List<T> allChildCompsOfThisChild = FindAllNextOffspringsWithComponent<T>(child);
+						if(allChildCompsOfThisChild.Count != 0)
+							result.AddRange(allChildCompsOfThisChild);
 					}
 				}
 				return result;
+			}
+			List<IUIAdaptor> FindAllClosestChildUIAdaptors (Transform transToExamine){
+				return FindAllNextOffspringsWithComponent<IUIAdaptor>(transToExamine);
 			}
 		/* Event System Imple */
 			CustomEventData CreateCustomEventData(PointerEventData sourceData){
@@ -147,6 +159,24 @@ namespace UISystem{
 		}
 		public void SetLocalPosition(Vector2 localPos){
 			transform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
+		}
+	}
+	public interface IItemIconUIAdaptor: IUIAdaptor{
+		IItemIcon GetItemIcon();
+		void SetItemForActivationPreparation(IUIItem item);
+	}
+	public class ItemIconUIAdaptor: AbsUIAdaptor, IItemIconUIAdaptor{
+		public IItemIcon GetItemIcon(){
+			return this.uiElement as IItemIcon;
+		}
+		IUIItem uiItem;
+		public void SetItemForActivationPreparation(IUIItem item){
+			this.uiItem = item;
+		}
+		protected override void CreateAndSetUIE(IUIManager uim){
+			IUIImage iiImage = CreateItemIconImage(this.uiItem);
+			IItemIcon itemIcon = new ItemIcon(uim, this, iiImage, this.uiItem, )
+			return;
 		}
 	}
 	public interface ICustomEventData{
