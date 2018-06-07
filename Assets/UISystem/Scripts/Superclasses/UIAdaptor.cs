@@ -16,19 +16,9 @@ namespace UISystem{
 		Transform GetParentTrans();
 	}
 	public abstract class AbsUIAdaptor: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
-		/* 
-			Isolate MB-free part of implementation to some other class and 
-			hold ref to it for the sake of easy testing
-		*/
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIManager uim){
-				/* Perform all initialization here
-					Perform below tasks, 
-					and call GetReadyForActivation(uim) for each child UIAdaptors
-
-					1.Instantiate and store ref to UIElement
-					2.uie.SetUIM(uim)
-				*/
+				/* Perform all initialization here */
 				this.CreateAndSetUIE(uim);
 				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
 					childUIA.GetReadyForActivation(uim);
@@ -41,15 +31,9 @@ namespace UISystem{
 			}
 			IUIAdaptorStateEngine inputStateEngine;
 			protected abstract void CreateAndSetUIE(IUIManager uim);
-				/*  Instantiate corresponding UIE
-						Construction arg
-							uim, this, uiIamge
-						Create and pass uiImage
-							creation detail is imple in subclasses
-				*/
+			protected abstract IUIImage CreateUIImage();
 		/*  Hierarchy stuff */
-			protected IUIElement uiElement;
-			public IUIElement GetUIElement(){return uiElement;}
+			public abstract IUIElement GetUIElement();
 			public IUIElement GetParentUIE(){
 				IUIAdaptor closestParentUIAdaptor = FindClosestParentUIAdaptor();
 				if(closestParentUIAdaptor != null)
@@ -104,6 +88,8 @@ namespace UISystem{
 					i.e. if any children does not have the component,
 					then the child transform must try search down its offsprings for hits
 					and return them
+
+					Make sure the component inherits both from mono behaviour and from T
 				*/
 				List<T> result = new List<T>();
 				for(int i = 0; i < transToExamine.childCount; i ++){
@@ -134,8 +120,8 @@ namespace UISystem{
 				return Vector2.zero;
 			}
 			public void OnPointerEnter(PointerEventData eventData){
-				if(this.uiElement is IPickUpReceiver){
-					IPickUpReceiver receiver = (IPickUpReceiver)this.uiElement;
+				if(this.GetUIElement() is IPickUpReceiver){
+					IPickUpReceiver receiver = (IPickUpReceiver)this.GetUIElement();
 					receiver.CheckForHover();
 				}
 			}
@@ -159,24 +145,6 @@ namespace UISystem{
 		}
 		public void SetLocalPosition(Vector2 localPos){
 			transform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
-		}
-	}
-	public interface IItemIconUIAdaptor: IUIAdaptor{
-		IItemIcon GetItemIcon();
-		void SetItemForActivationPreparation(IUIItem item);
-	}
-	public class ItemIconUIAdaptor: AbsUIAdaptor, IItemIconUIAdaptor{
-		public IItemIcon GetItemIcon(){
-			return this.uiElement as IItemIcon;
-		}
-		IUIItem uiItem;
-		public void SetItemForActivationPreparation(IUIItem item){
-			this.uiItem = item;
-		}
-		protected override void CreateAndSetUIE(IUIManager uim){
-			IUIImage iiImage = CreateItemIconImage(this.uiItem);
-			IItemIcon itemIcon = new ItemIcon(uim, this, iiImage, this.uiItem, )
-			return;
 		}
 	}
 	public interface ICustomEventData{

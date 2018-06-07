@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPickUpTransactionElement{
-		void SetPickUpManager(IPickUpManager pum);
 	}
 	public interface IHoverabilityStateHandler{
 		void WaitForPickUp();

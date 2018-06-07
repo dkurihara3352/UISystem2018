@@ -9,8 +9,10 @@ namespace UISystem{
 		bool IsInEqpIG();
 	}
 	public class EquippableItemIcon: AbsItemIcon, IEquippableItemIcon{
-		public EquippableItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IEquippableIITAManager eqpIITAM) :base(uim, uia, image, eqpIITAM){
+		public EquippableItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IEquippableUIItem eqpItem, IEquippableIITAManager eqpIITAM, IEquipTool tool) :base(uim, uia, image, eqpItem, eqpIITAM){
+			this.eqpTool = tool;
 		}
+		readonly IEquipTool eqpTool;
 		IEquippableIITAManager eqpIITAM{
 			get{
 				return (IEquippableIITAManager)this.iiTAM;

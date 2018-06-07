@@ -15,27 +15,10 @@ namespace UISystem{
 		IPickUpContextUIE GetPickUpContextUIE();
 	}
 	public abstract class AbsPickUpContextUIAdaptor: AbsUIAdaptor, IPickUpContextUIAdaptor{
-		public IPickUpContextUIE GetPickUpContextUIE(){
-			return this.uiElement as IPickUpContextUIE;
-		}
-		public IPickUpManager pum;/* assingned in the inspector */
-		public override void GetReadyForActivation(IUIManager uim){
-			/*  Find all iiTA elements =>
-					IPickableUIEs and IPickUpReceivers
-					Those that resides in the hierarchy betweeen this and the closest child pickUpContextUIA
-					foreach iiTAElement
-						iiTAElement.SetPUM(this.pum)
-			*/
-			List<IUIAdaptor> uias = GetPickUpDomainUIAs();
-			foreach(IUIAdaptor uia in uias){
-				IUIElement uie = uia.GetUIElement();
-				if(uie is IPickUpTransactionElement){
-					((IPickUpTransactionElement)uie).SetPickUpManager(pum);
-				}
-			}
-			base.GetReadyForActivation(uim);
-		}
-		List<IUIAdaptor> GetPickUpDomainUIAs(){
+		/*  uia for tools and widgets that handles pickup
+		*/
+		public abstract IPickUpContextUIE GetPickUpContextUIE();
+		protected List<IUIAdaptor> GetPickUpDomainUIAs(){
 			/* Get all the children, from self down to next offspring with IPickUpContextUIA, excluding both */
 			List<IUIAdaptor> result = new List<IUIAdaptor>();
 			List<IPickUpContextUIAdaptor> allNextOffspringPUCUIAs = FindAllNextOffspringsWithComponent<IPickUpContextUIAdaptor>(this.transform);
@@ -47,7 +30,7 @@ namespace UISystem{
 			}
 			return result;
 		}
-		List<IUIAdaptor> FindAllOffspringUIAsDownToPUCUIAs(List<IUIAdaptor> allOffspringUIAs, List<IPickUpContextUIAdaptor> allNextOffspringPUCUIAs){
+		protected List<IUIAdaptor> FindAllOffspringUIAsDownToPUCUIAs(List<IUIAdaptor> allOffspringUIAs, List<IPickUpContextUIAdaptor> allNextOffspringPUCUIAs){
 			List<IUIAdaptor> result = new List<IUIAdaptor>();
 			foreach(IUIAdaptor uia in allOffspringUIAs){
 				foreach(IPickUpContextUIAdaptor pucUIA in allNextOffspringPUCUIAs){
@@ -59,6 +42,62 @@ namespace UISystem{
 			}
 			return result;
 		}
+	}
+	public interface IEqpToolUIAdaptor: IPickUpContextUIAdaptor{
+	}
+	public class EqpToolUIAdaptor: AbsPickUpContextUIAdaptor, IEqpToolUIAdaptor{
+		/* assigned in the insp */
+			public IIconPanel eqpItemsPanel;
+			public IIconPanel poolItemsPanel;
+		/*  */
+		readonly IEqpToolUIE eqpToolUIE;
+		public override IUIElement GetUIElement(){
+			return eqpToolUIE;
+		}
+		public override IPickUpContextUIE GetPickUpContextUIE(){
+			return eqpToolUIE;
+		}
+		readonly IEquipTool equipTool;
+		IEquippableIITAManager _equipIITAM;
+		IEquippableIITAManager equipIITAM{
+			get{return _equipIITAM;}
+		}
+		IEquippableIITAManager CreateEquipIITAManager(){
+			return new EquippableIITAManager(eqpItemsPanel, poolItemsPanel);
+		}
+		// IEquippableIITAManager
+		protected override void CreateAndSetUIE(IUIManager uim){
+			IUIImage image = CreateUIImage();
+			IEqpToolUIE uie = new EqpToolUIE(uim, this, image);
+		}
+		protected override IUIImage CreateUIImage(){}
+		public override void GetReadyForActivation(IUIManager uim){
+			this._equipIITAM = CreateEquipIITAManager();
+			List<IEquipToolElementUIA> allEqpToolEleUIAsInThisDomain = GetAllEquipToolElementUIAsInThisDomain();
+			foreach(IEquipToolElementUIA eqpEleUIA in allEqpToolEleUIAsInThisDomain){
+				eqpEleUIA.SetEquipIITAM(this.equipIITAM);
+				eqpEleUIA.SetEquipTool(this.equipTool);
+			}
+			base.GetReadyForActivation(uim);
+		}
+		List<IEquipToolElementUIA> GetAllEquipToolElementUIAsInThisDomain(){
+			List<IEquipToolElementUIA> result = new List<IEquipToolElementUIA>();
+			List<IUIAdaptor> allUIAsInThisDomain = GetPickUpDomainUIAs();
+			foreach(IUIAdaptor uia in allUIAsInThisDomain){
+				if(uia is IEquipToolElementUIA)
+					result.Add((IEquipToolElementUIA)uia);
+			}
+			return result;
+		}
+	}
+	public interface IEqpToolUIE: IPickUpContextUIE{}
+	public class EqpToolUIE: AbsUIElement, IEqpToolUIE{
+		public EqpToolUIE(IUIManager uim, IEqpToolUIAdaptor uia, IUIImage image): base(uim, uia, image){}
+		public Vector2 GetPickUpReservePosInWorldSpace(){
+		}
+	}
+	public interface IEquipToolElementUIE: IUIElement{
+		void SetEqpTool(IEquipTool tool);
 	}
 }
 

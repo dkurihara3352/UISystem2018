@@ -7,8 +7,8 @@ namespace UISystem{
 		IItemIcon CreateItemIcon(IUIItem item);
 	}
 	public abstract class AbsItemIconFactory{
-		readonly IUIManager uim;
-		public IItemIcon CreateItemIcon(IUIItem item){
+		protected readonly IUIManager uim;
+		public abstract IItemIcon CreateItemIcon(IUIItem item);
 			/*  No need to access an prefab through inspector. Code it all up
 					Instantiate an gameObject
 						attach components
@@ -26,16 +26,19 @@ namespace UISystem{
 					ii uie
 						inst'ed and init'ed in uia GetReadyForActivation
 			*/
+	}
+	public class EqpItemIconFactory: AbsItemIconFactory{
+		readonly IEquipTool eqpTool;
+		public override IItemIcon CreateItemIcon(IUIItem item){
 			GameObject iiGO = new GameObject("iiGO");
-			IItemIconUIAdaptor iiUIA = iiGO.AddComponent<ItemIconUIAdaptor>() as IItemIconUIAdaptor;
-			iiUIA.SetItemForActivationPreparation(item);
-			iiUIA.GetReadyForActivation(uim);
-			IItemIcon itemIcon = iiUIA.GetItemIcon();
+			// IItemIconUIAdaptor iiUIA = iiGO.AddComponent<ItemIconUIAdaptor>() as IItemIconUIAdaptor;
+			IEqpItemIconUIA eqpIIUIA = iiGO.AddComponent<IEqpItemIconUIA>() as IEqpItemIconUIA;
+			eqpIIUIA.SetItemForActivationPreparation(item);
+			eqpIIUIA.SetEqpTool(eqpTool);
+			eqpIIUIA.GetReadyForActivation(uim);
+			IEquippableItemIcon itemIcon = eqpIIUIA.GetItemIcon();
 
 			return itemIcon;
 		}
-	}
-	public class EqpItemIconFactory: AbsItemIconFactory{
-
 	}
 }

@@ -71,8 +71,8 @@ namespace UISystem{
 			public abstract void CheckForDelayedPickUp();
 			public abstract void CheckForSecondTouchPickUp();
 			public abstract void CheckForDragPickUp();
-			// public void BecomeVisuallyPickedUp(){}
-			// public void BecomeVisuallyUnpicked(){}
+			public void BecomeVisuallyPickedUp(){}
+			public void BecomeVisuallyUnpicked(){}
 		/* Hoverability state handling */
 			public void WaitForPickUp(){
 				iiTAStateEngine.WaitForPickUp();
@@ -143,13 +143,10 @@ namespace UISystem{
 				return runningTravelIrper;
 			}
 		/*  */
-		// public void DeclinePickUp(){}
-		// public void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other){}
-		// public void IncreaseBy(int quantity, bool doesIncrement){}
-		// public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}
+		public void DeclinePickUp(){}
+		public void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other){}
+		public void IncreaseBy(int quantity, bool doesIncrement){}
+		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}
 		
-	}
-	public class ItemIcon: AbsItemIcon{
-		public ItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IUIItem item, IItemIconTransactionManager iiTAM): base(uim, uia, image, item, iiTAM){}
 	}
 }
