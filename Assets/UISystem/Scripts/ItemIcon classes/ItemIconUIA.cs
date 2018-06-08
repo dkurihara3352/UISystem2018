@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UISystem{
 	public interface IItemIconUIAdaptor: IUIAdaptor{
 	}
-	public abstract class AbsItemIconUIAdaptor: AbsUIAdaptor, IItemIconUIAdaptor{
+	public abstract class AbsItemIconUIAdaptor<T>: AbsUIAdaptor<T>, IItemIconUIAdaptor where T: IItemIcon{
 	}
 }
 

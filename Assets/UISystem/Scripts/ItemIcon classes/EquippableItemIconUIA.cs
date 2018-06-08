@@ -10,29 +10,36 @@ namespace UISystem{
 	public interface IEquippableItemIconUIA: IItemIconUIAdaptor, IEquipToolElementUIA{
 		void SetEquippableItem(IEquippableUIItem item);
 	}
-	public class EquippableItemIconUIA: AbsItemIconUIAdaptor, IEquippableItemIconUIA{
-		IEquippableItemIcon eqpII;
-		public override IUIElement GetUIElement(){
-			return this.eqpII;
+	public class EquippableItemIconUIA: AbsItemIconUIAdaptor<IEquippableItemIcon>, IEquippableItemIconUIA{
+		public override void GetReadyForActivation(IUIAActivationArg passedArg){
+			if(passedArg is IEquipToolUIAActivationArg){
+				IEquipToolUIAActivationArg eqpToolUIAArg = passedArg as IEquipToolUIAActivationArg;
+				this.SetEquipIITAM(eqpToolUIAArg.eqpIITAM);
+				this.SetEquipTool(eqpToolUIAArg.eqpTool);
+				base.GetReadyForActivation(passedArg);
+			}else
+				throw new System.ArgumentException("passedArg must be of type IEquipToolUIAActivationArg");
+		}
+		IEquippableUIItem eqpItem;
+		public void SetEquippableItem(IEquippableUIItem item){
+			this.eqpItem = item;
+		}
+		IEquippableItemIcon eqpII{
+			get{return this.GetUIElement() as IEquippableItemIcon;}
 		}
 		IEquippableIITAManager eqpIITAM;
-		public void SetEqpIITAM(IEquippableIITAManager eqpIITAM){
+		public void SetEquipIITAM(IEquippableIITAManager eqpIITAM){
 			this.eqpIITAM = eqpIITAM;
 		}
 		IEquipTool eqpTool;
 		public void SetEquipTool(IEquipTool tool){
 			this.eqpTool = tool;
 		}
-		protected override void CreateAndSetUIE(IUIManager uim){
-			IUIImage image = this.CreateUIImage();
-			IEquippableItemIcon eqpII = new EquippableItemIcon(uim, this, image, this.eqpItem, this.eqpIITAM, this.eqpTool);
-		}
-		protected override IUIImage CreateUIImage(){
-
-		}
-		IEquippableUIItem eqpItem;
-		public void SetEquippableItem(IEquippableUIItem item){
-			this.eqpItem = item;
+		protected override IEquippableItemIcon CreateUIElement(IUIElementFactory factory){
+			IEquipToolUIEFactory eqpToolFactory = null;
+			if(factory is IEquipToolUIEFactory)
+				eqpToolFactory = factory as IEquipToolUIEFactory;
+			return eqpToolFactory.CreateEquippableItemIcon(this, eqpItem);
 		}
 	}
 }

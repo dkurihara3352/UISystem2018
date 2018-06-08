@@ -21,10 +21,11 @@ namespace UISystem{
 	}
 	public class UIManagerAdaptor: MonoBehaviour{
 		IUIManager uiManager;
-		public IUIAdaptor rootUIAdaptor;/* assigned in inspector*/
+		public IPickUpContextUIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public void Awake(){
 			uiManager = new UIManager();
-			rootUIAdaptor.GetReadyForActivation(uiManager);
+			IUIAActivationArg rootUIAActivationArg = new RootUIAActivationArg(uiManager, factory:null);
+			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
 		}
 	}
 }

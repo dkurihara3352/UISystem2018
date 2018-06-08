@@ -10,19 +10,35 @@ namespace UISystem{
 		void SetUIEParent(IUIElement newParentUIE);
 		List<IUIAdaptor> GetAllOffspringUIAs();
 		List<IUIElement> GetChildUIEs();
-		void GetReadyForActivation(IUIManager uim);
+		void GetReadyForActivation(IUIAActivationArg passedArg);
+		/*  IPickUpContextUIA is fed with null factory
+				it needs to create its own domain factory and pass it to every domain elements
+		*/
 		Vector2 GetLocalPosition(Vector2 worldPos);
 		void SetLocalPosition(Vector2 localPos);
 		Transform GetParentTrans();
 	}
-	public abstract class AbsUIAdaptor: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler{
+	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
-			public virtual void GetReadyForActivation(IUIManager uim){
+			public virtual void GetReadyForActivation(IUIAActivationArg passedArg){
 				/* Perform all initialization here */
-				this.CreateAndSetUIE(uim);
-				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
-					childUIA.GetReadyForActivation(uim);
+				IUIAActivationArg domainArg = null;
+					/*  pick up context activation data
+							factory
+							tool ?
+							transaction manager
+					*/
+				if(this is IPickUpContextUIAdaptor){
+					domainArg = ((IPickUpContextUIAdaptor)this).CreateDomainActivationArg(passedArg.uim);
+				}else{
+					domainArg = passedArg;
 				}
+				IUIElementFactory factory = domainArg.factory;
+				this.uiElement = this.CreateUIElement(factory);
+				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
+					childUIA.GetReadyForActivation(domainArg);
+				}
+				IUIManager uim = domainArg.uim;
 				IUIAdaptorStateEngine engine = new UIAdaptorStateEngine(this, uim.GetProcessFactory());
 				SetInputStateEngine(engine);
 			}
@@ -30,10 +46,12 @@ namespace UISystem{
 				this.inputStateEngine = engine;
 			}
 			IUIAdaptorStateEngine inputStateEngine;
-			protected abstract void CreateAndSetUIE(IUIManager uim);
-			protected abstract IUIImage CreateUIImage();
 		/*  Hierarchy stuff */
-			public abstract IUIElement GetUIElement();
+			protected abstract T CreateUIElement(IUIElementFactory factory);
+			T uiElement;
+			public IUIElement GetUIElement(){
+				return uiElement;
+			}
 			public IUIElement GetParentUIE(){
 				IUIAdaptor closestParentUIAdaptor = FindClosestParentUIAdaptor();
 				if(closestParentUIAdaptor != null)
@@ -157,5 +175,8 @@ namespace UISystem{
 		public Vector2 deltaP{
 			get{return Vector2.zero;}
 		}
+	}
+	public interface IPreactivationArg{
+		IUIManager uim{get;}
 	}
 }
