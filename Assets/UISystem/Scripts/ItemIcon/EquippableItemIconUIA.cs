@@ -11,9 +11,9 @@ namespace UISystem{
 		void SetEquippableItem(IEquippableUIItem item);
 	}
 	public class EquippableItemIconUIA: AbsItemIconUIAdaptor<IEquippableItemIcon>, IEquippableItemIconUIA{
-		public override void GetReadyForActivation(IUIAActivationArg passedArg){
-			if(passedArg is IEquipToolUIAActivationArg){
-				IEquipToolUIAActivationArg eqpToolUIAArg = passedArg as IEquipToolUIAActivationArg;
+		public override void GetReadyForActivation(IUIAActivationData passedArg){
+			if(passedArg is IEquipToolUIAActivationData){
+				IEquipToolUIAActivationData eqpToolUIAArg = passedArg as IEquipToolUIAActivationData;
 				this.SetEquipIITAM(eqpToolUIAArg.eqpIITAM);
 				this.SetEquipTool(eqpToolUIAArg.eqpTool);
 				base.GetReadyForActivation(passedArg);

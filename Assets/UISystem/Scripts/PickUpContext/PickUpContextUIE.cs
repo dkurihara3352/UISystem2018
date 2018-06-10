@@ -6,6 +6,6 @@ namespace UISystem{
 	public interface IPickUpContextUIE: IUIElement{
 		/*  the uie to which PickUpManager is attached to implement this, such as ToolUIE or WidgetUIE
 		*/
-		Vector2 GetPickUpReservePosInWorldSpace();
+		Vector2 GetPickUpReserveWorldPos();
 	}
 }

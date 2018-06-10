@@ -85,27 +85,30 @@ namespace UISystem{
 			Vector2 curImagePosInContextSpace = image.GetCurPosInUIESpace(pickUpContextUIE);
 			image.SetParentUIE(pickUpContextUIE);
 			image.SetLocalPosition(curImagePosInContextSpace);
-			Vector2 reservePosInWorldSpace = pickUpContextUIE.GetPickUpReservePosInWorldSpace();
+			Vector2 reservePosInWorldSpace = pickUpContextUIE.GetPickUpReserveWorldPos();
 			IIconGroup ig = itemIcon.GetIconGroup();
 			Vector2 reservePosInThisIGSpace = ig.GetLocalPosition(reservePosInWorldSpace);
 			itemIcon.SetLocalPosition(reservePosInThisIGSpace);
 			itemIcon.SetSlotID(-1);
 		}
 		void SetUpLeftoverII(int pickedQuantity){
-			IItemIcon leftoverII = iiTAM.CreateItemIcon(itemIcon.GetItem());
+			IUIItem item = itemIcon.GetItem();
+			IItemIcon leftoverII = iiTAM.CreateItemIcon(item);
 			IUIImage leftoverIIImage = leftoverII.GetUIImage();
 			IIconGroup thisIG = itemIcon.GetIconGroup();
 			leftoverII.SetParentUIE(itemIcon.GetParentUIE());
 			IUIImage thisIIImage = itemIcon.GetUIImage();
 			leftoverIIImage.SetLocalPosition(thisIIImage.GetCurPosInUIESpace(itemIcon));
 			thisIG.ReplaceAndUpdateII(itemIcon.GetSlotID(), leftoverII);
-			leftoverII.DisemptifyInstantly();
-			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: ThisItemIconIsInEqp());
-			/* leaves ghost or not? */
+			leftoverII.DisemptifyInstantly(item);
+			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: !leftoverII.LeavesGhost());
 			itemIcon.SwapTravellingIIOnRunningTravIrperFromSelfTo(leftoverII);
 		}
 		public void OnExit(){
 			itemIcon.BecomeVisuallyUnpicked();
+		}
+		void StartIIImageSmoothFollowDragPos(){
+
 		}
 	}
 	public class EqpIIPickedState: IIPickedState{

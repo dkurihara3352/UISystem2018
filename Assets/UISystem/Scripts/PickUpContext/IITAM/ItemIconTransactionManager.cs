@@ -49,9 +49,18 @@ namespace UISystem{
 		}
 		IIconPanel hoveredPanel;
 		IItemIcon hoveredII;
-		// public void CheckAndActivateHoverPads(){}
-		// public void DeactivateHoverPads(){}
-		// public void EvaluateHoverability(){}
+		public void CheckAndActivateHoverPads(){
+			foreach(IIconGroup ig in GetAllRelevantIGs()){
+				ig.ActivateHoverPads();
+			}
+		}
+		public void DeactivateHoverPads(){
+			foreach(IIconGroup ig in this.GetAllRelevantIGs())
+				ig.DeactivateHoverPads();
+		}
+		public void EvaluateHoverability(){
+			
+		}
 		// public virtual void ClearHoverability(){}
 		// public void HoverInitialPickUpReceiver(){}
 		public override void ClearTAFields(){

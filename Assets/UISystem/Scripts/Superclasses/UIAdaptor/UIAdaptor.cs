@@ -10,7 +10,7 @@ namespace UISystem{
 		void SetUIEParent(IUIElement newParentUIE);
 		List<IUIAdaptor> GetAllOffspringUIAs();
 		List<IUIElement> GetChildUIEs();
-		void GetReadyForActivation(IUIAActivationArg passedArg);
+		void GetReadyForActivation(IUIAActivationData passedArg);
 		/*  IPickUpContextUIA is fed with null factory
 				it needs to create its own domain factory and pass it to every domain elements
 		*/
@@ -20,27 +20,29 @@ namespace UISystem{
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
-			public virtual void GetReadyForActivation(IUIAActivationArg passedArg){
+			protected IUIAActivationData activationData;
+			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				/* Perform all initialization here */
-				IUIAActivationArg domainArg = null;
+				IUIAActivationData domainData = null;
 					/*  pick up context activation data
 							factory
 							tool ?
 							transaction manager
 					*/
 				if(this is IPickUpContextUIAdaptor){
-					domainArg = ((IPickUpContextUIAdaptor)this).CreateDomainActivationArg(passedArg.uim);
+					domainData = ((IPickUpContextUIAdaptor)this).CreateDomainActivationData(passedData.uim);
 				}else{
-					domainArg = passedArg;
+					domainData = passedData;
 				}
-				IUIElementFactory factory = domainArg.factory;
+				IUIElementFactory factory = domainData.factory;
 				this.uiElement = this.CreateUIElement(factory);
 				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
-					childUIA.GetReadyForActivation(domainArg);
+					childUIA.GetReadyForActivation(domainData);
 				}
-				IUIManager uim = domainArg.uim;
+				IUIManager uim = domainData.uim;
 				IUIAdaptorStateEngine engine = new UIAdaptorStateEngine(this, uim.GetProcessFactory());
 				SetInputStateEngine(engine);
+				this.activationData = domainData;
 			}
 			void SetInputStateEngine(IUIAdaptorStateEngine engine){
 				this.inputStateEngine = engine;

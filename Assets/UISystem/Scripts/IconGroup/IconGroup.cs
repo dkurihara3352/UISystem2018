@@ -10,9 +10,17 @@ namespace UISystem{
 		int GetItemQuantity(IItemTemplate itemTemp);
 		void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII);
 		void UpdateIIs(List<IItemIcon> newIIs);
+		void ActivateHoverPads();
+		void DeactivateHoverPads();
 	}
 	public abstract class AbsIconGroup: AbsUIElement, IIconGroup{
-		public AbsIconGroup(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
+		public AbsIconGroup(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){
+
+		}
+		protected override void ActivateImple(){
+			base.ActivateImple();
+			DeactivateHoverPads();
+		}
 		List<IItemIcon> itemIcons;
 		public void EvaluatePickability(){
 			foreach(IItemIcon ii in this.itemIcons){
@@ -44,6 +52,13 @@ namespace UISystem{
 			UpdateIIs(newIIs);
 		}
 		public void UpdateIIs(List<IItemIcon> newIIs){}
+		IHoverPadsManager hoverPadsManager;
+		public void ActivateHoverPads(){
+			this.hoverPadsManager.ActivateHoverPads();
+		}
+		public void DeactivateHoverPads(){
+			this.hoverPadsManager.DeactivateHoverPads();
+		}
 	}
 	public interface IEqpToolIG: IIconGroup{}
 	public interface IEqpToolPoolIG: IEqpToolIG{}

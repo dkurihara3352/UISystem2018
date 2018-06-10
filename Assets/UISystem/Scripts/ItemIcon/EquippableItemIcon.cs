@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
+	public interface IEquipStateHandler{
+		void Equip();
+		void Unequip();
+		bool IsEquipped();
+	}
 	public interface IEquippableUIE: IUIElement, IEquipStateHandler{
 	}
 	public interface IEquippableItemIcon: IItemIcon, IEquippableUIE{
@@ -45,59 +50,38 @@ namespace UISystem{
 			}
 		}
 		/* pick up imple */
-		public override void CheckForImmediatePickUp(){
-			return;
-		}
-		public override void CheckForDelayedPickUp(){
-			this.CheckForPickUp();
-		}
-		public override void CheckForSecondTouchPickUp(){
-			this.CheckForPickUp();
-		}
-		public override void CheckForDragPickUp(){
-			return;
-		}
-		void CheckForPickUp(){
-			if(this.IsPicked())
+			public override void CheckForImmediatePickUp(){
 				return;
-			else{
-				if(this.IsPickable())
-					this.PickUp();
-				else
-					this.DeclinePickUp();
 			}
-		}
+			public override void CheckForDelayedPickUp(){
+				this.CheckForPickUp();
+			}
+			public override void CheckForSecondTouchPickUp(){
+				this.CheckForPickUp();
+			}
+			public override void CheckForDragPickUp(){
+				return;
+			}
+			void CheckForPickUp(){
+				if(this.IsPicked())
+					return;
+				else{
+					if(this.IsPickable())
+						this.PickUp();
+					else
+						this.DeclinePickUp();
+				}
+			}
 		/* Equip imple */
-		public void Equip(){}
-		public void Unequip(){}
-		public bool IsEquipped(){return false;}
+			public void Equip(){}
+			public void Unequip(){}
+			public bool IsEquipped(){return false;}
 		/*  */
 		public bool IsInEqpIG(){
 			return this.iconGroup is IEqpToolEqpIG<IItemTemplate>;
 		}
-	}
-	public interface IItemIconPickUpInputTransmitter{
-		void OnTouch(int touchCount);
-		void OnDelayedTouch();
-		void OnDrag(Vector2 dragPos, Vector2 deltaP);
-	}
-	public class ItemIconPickUpInputTransmitter: IItemIconPickUpInputTransmitter{
-		readonly IItemIcon itemIcon;
-		public void OnTouch(int touchCount){
-			if(touchCount == 1){
-				itemIcon.CheckForImmediatePickUp();
-			}else{
-				if(touchCount == 2){
-					itemIcon.CheckForSecondTouchPickUp();
-				}
-			}
-			return;
-		}
-		public void OnDelayedTouch(){
-			itemIcon.CheckForDelayedPickUp();
-		}
-		public void OnDrag(Vector2 dragPos, Vector2 deltaP){
-			return;
+		public override bool LeavesGhost(){
+			return !this.IsInEqpIG();
 		}
 	}
 }

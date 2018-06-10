@@ -10,6 +10,7 @@ namespace UISystem{
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		void Activate();
+		void Deactivate();
 		void SetParentUIE(IUIElement uie);
 		Vector2 GetLocalPosition(Vector2 worldPos);
 		void SetLocalPosition(Vector2 localPos);
@@ -40,12 +41,27 @@ namespace UISystem{
 		}
 		protected IUIImage uiImage;
 		public virtual void Activate(){
+			this.ActivateImple();
 			foreach(IUIElement childUIE in this.GetChildUIEs()){
 				if(childUIE != null)
 					childUIE.Activate(); 
 			}
 		}
+		protected virtual void ActivateImple(){
+			InitializeSelectabilityState();
+		}
+		public virtual void Deactivate(){
+			this.DeactivateImple();
+			foreach(IUIElement childUIE in this.GetChildUIEs()){
+				if(childUIE != null)
+					childUIE.Deactivate();
+			}
+		}
+		protected virtual void DeactivateImple(){}
 		/* SelectabilityState */
+			void InitializeSelectabilityState(){
+				BecomeSelectable();
+			}
 			ISelectabilityStateEngine selectabilityEngine;
 			public void BecomeSelectable(){
 				selectabilityEngine.BecomeSelectable();

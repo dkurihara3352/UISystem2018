@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIAActivationArg{
+	public interface IUIAActivationData{
 		IUIManager uim{get;}
 		IUIElementFactory factory{get;}
 	}
-	public abstract class AbsUIAActivationArg: IUIAActivationArg{
-		public AbsUIAActivationArg(IUIManager uim, IUIElementFactory factory){
+	public abstract class AbsUIAActivationData: IUIAActivationData{
+		public AbsUIAActivationData(IUIManager uim, IUIElementFactory factory){
 			this._uim = uim;
 			this._factory = factory;
 		}
@@ -17,16 +17,16 @@ namespace UISystem{
 		readonly IUIElementFactory _factory;
 		public IUIElementFactory factory{get{return _factory;}}
 	}
-	public class RootUIAActivationArg: AbsUIAActivationArg{
-		public RootUIAActivationArg(IUIManager uim, IUIElementFactory factory): base(uim, factory){}
+	public class RootUIAActivationData: AbsUIAActivationData{
+		public RootUIAActivationData(IUIManager uim, IUIElementFactory factory): base(uim, factory){}
 	}
-	public interface IEquipToolUIAActivationArg: IUIAActivationArg{
+	public interface IEquipToolUIAActivationData: IUIAActivationData{
 		IEquippableIITAManager eqpIITAM{get;}
 		IEquipTool eqpTool{get;}
 		IEquipToolUIEFactory eqpToolUIEFactory{get;}
 	}
-	public class EquipToolUIAActivationArg: AbsUIAActivationArg, IEquipToolUIAActivationArg{
-		public EquipToolUIAActivationArg(IUIManager uim, IEquipToolUIEFactory factory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, factory){
+	public class EquipToolUIAActivationData: AbsUIAActivationData, IEquipToolUIAActivationData{
+		public EquipToolUIAActivationData(IUIManager uim, IEquipToolUIEFactory factory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, factory){
 			this._eqpIITAM = eqpIITAM;
 			this._eqpTool = eqpTool;
 		}
