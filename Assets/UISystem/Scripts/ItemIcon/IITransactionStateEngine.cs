@@ -5,6 +5,7 @@ using UnityEngine;
 namespace UISystem{
 	public interface IIITransactionStateEngine: IPickabilityStateHandler, IHoverabilityStateHandler{}
 	public class IITransactionStateEngine: AbsSwitchableStateEngine<IIITransactionState>, IIITransactionStateEngine{
+		readonly IItemIcon itemIcon;
 		readonly IIIPickedState pickedState;
 		readonly IIIPickableState pickableState;
 		readonly IIIUnpickableState unpickableState;
@@ -55,17 +56,26 @@ namespace UISystem{
 			itemIcon.BecomeSelected();
 		}
 		void SetUpIIAsPickedII(){
-			IUIItem item = itemIcon.GetItem();
+			IUIItem item = itemIcon.GetUIItem();
 			int pickedQuantity = this.CalcPickedQuantity();
-			if(pickedQuantity != item.GetQuantity()){
+			if(this.ShouldCreateLeftoverII(item.GetQuantity(), pickedQuantity))
 				SetUpLeftoverII(pickedQuantity);
-			}
 			SetUpPickedQuantity(pickedQuantity);
-			DetachAndMoveToPickUpReserve();
+			LeaveUIImageBehind();
+			MoveToPickUpReservePos();
 			StartIIImageSmoothFollowDragPos();
 		}
+		bool ShouldCreateLeftoverII(int thisQuantity, int pickedQuantity){
+			int leftoverQ = thisQuantity - pickedQuantity;
+			if(leftoverQ > 0)
+				return true;
+			else
+				if(this.itemIcon.LeavesGhost())
+					return true;
+			return false;
+		}
 		int CalcPickedQuantity(){
-			IUIItem item = itemIcon.GetItem();
+			IUIItem item = itemIcon.GetUIItem();
 			IItemTemplate itemTemp = item.GetItemTemplate();
 			int transferableQ = itemIcon.CalcTransferableQuantity(0);
 			int pickUpStepQ = itemTemp.GetPickUpStepQuantity();
@@ -75,16 +85,19 @@ namespace UISystem{
 				return transferableQ;
 		}
 		void SetUpPickedQuantity(int pickedQ){
-			IUIItem item = itemIcon.GetItem();
+			IUIItem item = itemIcon.GetUIItem();
 			item.SetQuantity(0);
 			itemIcon.IncreaseBy(pickedQ, doesIncrement: true);
 		}
-		void DetachAndMoveToPickUpReserve(){
+		void LeaveUIImageBehind(){
 			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
 			IUIImage image = itemIcon.GetUIImage();
 			Vector2 curImagePosInContextSpace = image.GetCurPosInUIESpace(pickUpContextUIE);
 			image.SetParentUIE(pickUpContextUIE);
 			image.SetLocalPosition(curImagePosInContextSpace);
+		}
+		void MoveToPickUpReservePos(){
+			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
 			Vector2 reservePosInWorldSpace = pickUpContextUIE.GetPickUpReserveWorldPos();
 			IIconGroup ig = itemIcon.GetIconGroup();
 			Vector2 reservePosInThisIGSpace = ig.GetLocalPosition(reservePosInWorldSpace);
@@ -92,7 +105,11 @@ namespace UISystem{
 			itemIcon.SetSlotID(-1);
 		}
 		void SetUpLeftoverII(int pickedQuantity){
-			IUIItem item = itemIcon.GetItem();
+			IItemIcon leftoverII = CreateLeftoverII(pickedQuantity);
+			this.itemIcon.HandOverTravel(leftoverII);
+		}
+		IItemIcon CreateLeftoverII(int pickedQuantity){
+			IUIItem item = itemIcon.GetUIItem();
 			IItemIcon leftoverII = iiTAM.CreateItemIcon(item);
 			IUIImage leftoverIIImage = leftoverII.GetUIImage();
 			IIconGroup thisIG = itemIcon.GetIconGroup();
@@ -102,7 +119,7 @@ namespace UISystem{
 			thisIG.ReplaceAndUpdateII(itemIcon.GetSlotID(), leftoverII);
 			leftoverII.DisemptifyInstantly(item);
 			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: !leftoverII.LeavesGhost());
-			itemIcon.SwapTravellingIIOnRunningTravIrperFromSelfTo(leftoverII);
+			return leftoverII;
 		}
 		public void OnExit(){
 			itemIcon.BecomeVisuallyUnpicked();
@@ -122,7 +139,7 @@ namespace UISystem{
 		}
 		readonly IEquipTool eqpTool;
 		public override void OnEnter(){
-			IEquippableUIItem eqpItem = this.eqpII.GetItem() as IEquippableUIItem;
+			IEquippableUIItem eqpItem = this.eqpII.GetUIItem() as IEquippableUIItem;
 			IItemTemplate eqpItemTemp = eqpItem.GetItemTemplate();
 			eqpTool.TrySwitchItemMode(eqpItemTemp);
 			if(this.eqpII.IsInEqpIG())

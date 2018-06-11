@@ -11,6 +11,4 @@ namespace UISystem{
 			return eqpToolUIA.GetPickUpReserveWorldPos();
 		}
 	}
-	public interface IEquipToolElementUIE: IUIElement{
-	}
 }

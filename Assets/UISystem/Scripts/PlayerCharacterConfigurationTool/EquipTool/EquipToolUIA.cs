@@ -10,8 +10,8 @@ namespace UISystem{
 			public IIconPanel eqpItemsPanel;
 			public IIconPanel poolItemsPanel;
 		/*  */
-		IEquipToolUIAActivationData eqpUIAActivationData{
-			get{return this.activationData as IEquipToolUIAActivationData;}
+		IEquipToolActivationData eqpUIAActivationData{
+			get{return this.activationData as IEquipToolActivationData;}
 		}
 		IEquipToolUIE eqpToolUIE;
 		protected override IEquipToolUIE GetPickUpContextUIE(){

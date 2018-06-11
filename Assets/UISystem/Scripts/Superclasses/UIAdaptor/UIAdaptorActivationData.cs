@@ -20,12 +20,12 @@ namespace UISystem{
 	public class RootUIAActivationData: AbsUIAActivationData{
 		public RootUIAActivationData(IUIManager uim, IUIElementFactory factory): base(uim, factory){}
 	}
-	public interface IEquipToolUIAActivationData: IUIAActivationData{
+	public interface IEquipToolActivationData: IUIAActivationData{
 		IEquippableIITAManager eqpIITAM{get;}
 		IEquipTool eqpTool{get;}
 		IEquipToolUIEFactory eqpToolUIEFactory{get;}
 	}
-	public class EquipToolUIAActivationData: AbsUIAActivationData, IEquipToolUIAActivationData{
+	public class EquipToolUIAActivationData: AbsUIAActivationData, IEquipToolActivationData{
 		public EquipToolUIAActivationData(IUIManager uim, IEquipToolUIEFactory factory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, factory){
 			this._eqpIITAM = eqpIITAM;
 			this._eqpTool = eqpTool;

@@ -5,15 +5,17 @@ using UnityEngine;
 namespace UISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
 		void EvaluatePickability();
-		IUIItem GetItem();
+		IUIItem GetUIItem();
 		int CalcTransferableQuantity(int pickedQ);
 		void IncreaseBy(int quantity, bool doesIncrement);
 		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
-		void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other);
 		bool LeavesGhost();
+		void HandOverTravel(IItemIcon other);
+		void SetRunningInterpolator(ITravelInterpolator irper);
+		void EvaluateHoverability(IItemIcon pickedII);
 	}
 	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
 		public AbsItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IUIItem item,IItemIconTransactionManager iiTAM): base(uim, uia, image){
@@ -59,15 +61,12 @@ namespace UISystem{
 			}
 			void UpdateTransferableQuantity(int pickedQuantity){
 				int transQ = this.CalcTransferableQuantity(pickedQuantity);
-				SetTransferableQuantity(transQ);
+				this.transferableQuantity = transQ;
 			}
 			public int CalcTransferableQuantity(int pickedQuantity){
 				return this.GetMaxTransferableQuantity() - pickedQuantity;
 			}
 			protected abstract int GetMaxTransferableQuantity();
-			void SetTransferableQuantity(int transQ){
-				this.transferableQuantity = transQ;
-			}
 			int transferableQuantity;
 			bool IsTransferable(){
 				return transferableQuantity > 0;
@@ -83,6 +82,13 @@ namespace UISystem{
 			public void BecomeVisuallyPickedUp(){}
 			public void BecomeVisuallyUnpicked(){}
 		/* Hoverability state handling */
+			public void EvaluateHoverability(IItemIcon pickedII){
+				if(this.IsEligibleForHover(pickedII))
+					BecomeHoverable();
+				else
+					BecomeUnhoverable();
+			}
+			protected abstract bool IsEligibleForHover(IItemIcon pickedII);
 			public void WaitForPickUp(){
 				iiTAStateEngine.WaitForPickUp();
 			}
@@ -98,7 +104,7 @@ namespace UISystem{
 			public void CheckForHover(){}
 		/* Emptiness State Handling */
 			void InitializeEmptinessState(){
-				IUIItem item = this.GetItem();
+				IUIItem item = this.GetUIItem();
 				this.Disemptify(item);
 			}
 			readonly IEmptinessStateEngine engine;
@@ -127,7 +133,7 @@ namespace UISystem{
 			}
 		/* Item Handling */
 			protected IUIItem item;
-			public IUIItem GetItem(){
+			public IUIItem GetUIItem(){
 				return item;
 			}
 			protected int GetQuantity(){
@@ -153,13 +159,36 @@ namespace UISystem{
 			}
 		/* Travelling */
 			ITravelInterpolator runningTravelIrper;
-			public ITravelInterpolator GetRunningIrper(){
-				return runningTravelIrper;
+			public void SetRunningTravelInterpolator(ITravelInterpolator irper){
+				this.runningTravelInterpolator = irper;
+			}
+			public void HandOverTravel(IItemIcon other){
+				/*  Update running travel Irper
+					update mutation
+					pass image trans info to other's ?
+				*/
+				UpdateTravelIrper(other);
+				FindAndSwapIIInAllMutations(other);
+			}
+			void UpdateTravelIrper(IItemIcon targetII){
+				if(runningTravelInterpolator != null){
+					runningTravelInterpolator.UpdateTravellingII(targetII);
+					SetRunningInterpolator(null);
+				}
+			}
+			void FindAndSwapIIInAllMutations(IItemIcon targetII){
+				GetIconGroup().SwapIIInAllMutations(this, targetII);
 			}
 		/*  */
 		public abstract bool LeavesGhost();
 		public void DeclinePickUp(){}
-		public void SwapTravellingIIOnRunningTravIrperFromSelfTo(IItemIcon other){}
+		public ITravelInterpolator GetRunningTravelInterpolator(){
+			return runningTravelInterpolator;
+		}
+		public void SetRunningInterpolator(ITravelInterpolator travelIrper){
+			this.runningTravelInterpolator = travelIrper;
+		}
+		ITravelInterpolator runningTravelInterpolator;
 		public void IncreaseBy(int quantity, bool doesIncrement){}
 		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}
 		

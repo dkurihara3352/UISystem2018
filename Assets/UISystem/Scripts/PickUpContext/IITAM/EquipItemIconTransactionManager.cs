@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IEquippableIITAManager: IItemIconTransactionManager{
-		IIconGroup GetRelevantEqpCGearsIG();
+		IEqpToolEqpIG<ICarriedGearTemplate> GetRelevantEqpCGearsIG();
+		IEqpToolEqpIG<IItemTemplate> GetRelevantEquipIG(IItemTemplate itemTemp);
 	}
 
 	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
@@ -34,11 +35,32 @@ namespace UISystem{
 			result.Add(relevPoolIG);
 			return result;
 		}
-		public IIconGroup GetRelevantEqpCGearsIG(){
+		public IEqpToolEqpIG<ICarriedGearTemplate> GetRelevantEqpCGearsIG(){
 			return null;
+		}
+		IEqpToolEqpIG<IBowTemplate> GetRelevantEqpBowIG(){
+			return null;
+		}
+		IEqpToolEqpIG<IWearTemplate> GetRelevantEqpWearIG(){
+			return null;
+		}
+		public IEqpToolEqpIG<IItemTemplate> GetRelevantEquipIG(IItemTemplate itemTemp){
+			if(itemTemp is IBowTemplate)
+				return GetRelevantEqpBowIG() as IEqpToolEqpIG<IItemTemplate>;
+			else if(itemTemp is IWearTemplate)
+				return GetRelevantEqpWearIG() as IEqpToolEqpIG<IItemTemplate>;
+			else
+				return GetRelevantEqpCGearsIG() as IEqpToolEqpIG<IItemTemplate>;
 		}
 		public override IPickUpContextUIE GetPickUpContextUIE(){
 			return eqpToolUIE;
+		}
+		public override void EvaluateHoverability(){
+			IEquippableItemIcon pickedEqpII = this.pickedUIE as IEquippableItemIcon;
+			this.equippedItemsPanel.EvaluateHoverability(pickedEqpII);
+			this.poolItemsPanel.EvaluateHoverability(pickedEqpII);
+			foreach(IIconGroup ig in this.GetAllRelevantIGs())
+				ig.EvaluateAllIIsHoverability(pickedEqpII);
 		}
 	}
 }

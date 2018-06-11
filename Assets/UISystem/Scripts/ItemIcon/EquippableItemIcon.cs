@@ -76,6 +76,8 @@ namespace UISystem{
 			public void Equip(){}
 			public void Unequip(){}
 			public bool IsEquipped(){return false;}
+		/* hoverability */
+			protected override bool IsEligibleForHover(IItemIcon pickedII){}
 		/*  */
 		public bool IsInEqpIG(){
 			return this.iconGroup is IEqpToolEqpIG<IItemTemplate>;

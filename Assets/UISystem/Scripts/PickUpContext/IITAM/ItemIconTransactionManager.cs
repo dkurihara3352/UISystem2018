@@ -58,9 +58,7 @@ namespace UISystem{
 			foreach(IIconGroup ig in this.GetAllRelevantIGs())
 				ig.DeactivateHoverPads();
 		}
-		public void EvaluateHoverability(){
-			
-		}
+		public abstract void EvaluateHoverability();
 		// public virtual void ClearHoverability(){}
 		// public void HoverInitialPickUpReceiver(){}
 		public override void ClearTAFields(){
@@ -70,7 +68,7 @@ namespace UISystem{
 		}
 		public void EvaluatePickability(){
 			foreach(IIconGroup ig in GetAllRelevantIGs()){
-				ig.EvaluatePickability();
+				ig.EvaluateAllIIsPickability();
 			}
 		}
 		public abstract List<IIconGroup> GetAllRelevantIGs();
