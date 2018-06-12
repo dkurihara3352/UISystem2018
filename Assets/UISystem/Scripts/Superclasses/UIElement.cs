@@ -16,11 +16,11 @@ namespace UISystem{
 		void SetLocalPosition(Vector2 localPos);
 	}
 	public abstract class AbsUIElement: IUIElement{
-		public AbsUIElement(IUIManager uim, IUIAdaptor uia, IUIImage image){
-			this.uiManager = uim;
-			this.uiAdaptor = uia;
-			this.uiImage = image;
-			this.selectabilityEngine = new SelectabilityStateEngine(this, uim.GetProcessFactory());
+		public AbsUIElement(IUIElementConstArg arg){
+			this.uiManager = arg.uim;
+			this.uiAdaptor = arg.uia;
+			this.uiImage = arg.image;
+			this.selectabilityEngine = new SelectabilityStateEngine(this, uiManager.GetProcessFactory());
 		}
 		IUIManager uiManager;
 		public IUIManager GetUIM(){
@@ -97,6 +97,24 @@ namespace UISystem{
 		public void SetParentUIE(IUIElement newParentUIE){
 			this.uiAdaptor.SetUIEParent(newParentUIE);
 		}
+	}
+	public interface IUIElementConstArg{
+		IUIManager uim{get;}
+		IUIAdaptor uia{get;}
+		IUIImage image{get;}
+	}
+	public class UIElementConstArg: IUIElementConstArg{
+		readonly IUIManager _uim;
+		readonly IUIAdaptor _uia;
+		readonly IUIImage _image;
+		public UIElementConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image){
+			this._uim = uim;
+			this._uia = uia;
+			this._image = image;
+		}
+		public IUIManager uim{get{return _uim;}}
+		public IUIAdaptor uia{get{return _uia;}}
+		public IUIImage image{get{return _image;}}
 	}
 	public interface IUIInputHandler{
 		/* Releasing

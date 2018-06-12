@@ -6,6 +6,8 @@ namespace UISystem{
 	public interface IEquippableIITAManager: IItemIconTransactionManager{
 		IEqpToolEqpIG<ICarriedGearTemplate> GetRelevantEqpCGearsIG();
 		IEqpToolEqpIG<IItemTemplate> GetRelevantEquipIG(IItemTemplate itemTemp);
+		void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII);
+		void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel);
 	}
 
 	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
@@ -61,6 +63,51 @@ namespace UISystem{
 			this.poolItemsPanel.EvaluateHoverability(pickedEqpII);
 			foreach(IIconGroup ig in this.GetAllRelevantIGs())
 				ig.EvaluateAllIIsHoverability(pickedEqpII);
+		}
+		/* hover switch */
+		readonly IPickUpReceiverSwitch<IEquipToolPanel> hoveredPanelSwitch;
+		readonly IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch;
+		public void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel){
+			hoveredPanelSwitch.TrySwitchHoveredPUReceiver(panel);
+		}
+		public void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII){
+			hoveredEqpIISwitch.TrySwitchHoveredPUReceiver(eqpII);
+		}
+	}
+	public interface IPickUpReceiverSwitch<T> where T: class, IPickUpReceiver{
+		void TrySwitchHoveredPUReceiver(T hovered);
+		T GetHoveredPUReceiver();
+	}
+	public class PickUpReceiverSwitch<T>: IPickUpReceiverSwitch<T> where T: class, IPickUpReceiver{
+		public PickUpReceiverSwitch(){
+			currentHoveredPUReceiver = null;
+		}
+		T currentHoveredPUReceiver;
+		public T GetHoveredPUReceiver(){return currentHoveredPUReceiver;}
+		public void TrySwitchHoveredPUReceiver(T hoveredPURec){
+			if(hoveredPURec == null){
+				if(currentHoveredPUReceiver == null){
+					return;
+				}else{
+					currentHoveredPUReceiver.BecomeHoverable();
+					currentHoveredPUReceiver = null;
+				}
+			}else{
+				if(hoveredPURec.IsHoverable()){
+					if(currentHoveredPUReceiver == null){
+						currentHoveredPUReceiver = hoveredPURec;
+						hoveredPURec.BecomeHovered();
+					}else{
+						if(hoveredPURec == currentHoveredPUReceiver)
+							return;
+						else{
+							currentHoveredPUReceiver.BecomeHoverable();
+							currentHoveredPUReceiver = hoveredPURec;
+							hoveredPURec.BecomeHovered();
+						}
+					}
+				}
+			}
 		}
 	}
 }

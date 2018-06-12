@@ -8,12 +8,12 @@ namespace UISystem{
 		void EvaluateHoverability(IItemIcon pickedII);
 	}
 	public abstract class AbsIconPanel: AbsUIElement, IIconPanel{
-		public AbsIconPanel(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
+		public AbsIconPanel(IUIElementConstArg arg) :base(arg){}
 		protected override void ActivateImple(){
 			base.ActivateImple();
 			WaitForPickUp();
 		}
-		public void CheckForHover(){}
+		public abstract void CheckForHover();
 		public abstract IIconGroup GetRelevantIG();
 		/* panel transaction state handling */
 		readonly IPanelTransactionStateEngine panTAStateEngine;
@@ -36,14 +36,28 @@ namespace UISystem{
 		public void BecomeHovered(){
 			panTAStateEngine.BecomeHovered();
 		}
-	}
-	public class EquippedItemsPanel: AbsIconPanel, IEquipToolElementUIE{
-		public EquippedItemsPanel(IUIManager uim, IEquipToolElementUIA uia, IUIImage image, IEquipToolActivationData activationData) :base(uim, uia, image){
-			this.equipTool = activationData.eqpTool;
-			this.equipIITAM = activationData.eqpIITAM;
+		public bool IsHoverable(){
+			return panTAStateEngine.IsHoverable();
 		}
-		readonly IEquipTool equipTool;
-		readonly IEquippableIITAManager equipIITAM;
+		public bool IsHovered(){
+			return panTAStateEngine.IsHovered();
+		}
+	}
+	public interface IEquipToolPanel: IIconPanel, IEquipToolElementUIE{}
+	public abstract class AbsEquipToolPanel: AbsIconPanel, IEquipToolPanel{
+		public AbsEquipToolPanel(IEquipToolPanelConstArg arg): base(arg){
+			this.eqpIITAM = arg.eqpIITAM;
+			this.eqpTool = arg.eqpTool;
+		}
+		readonly protected IEquippableIITAManager eqpIITAM;
+		readonly protected IEquipTool eqpTool;
+		public override void CheckForHover(){
+			eqpIITAM.TrySwitchHoveredEqpToolPanel(this);
+		}
+	}
+	public class EquippedItemsPanel: AbsEquipToolPanel{
+		public EquippedItemsPanel(IEquipToolPanelConstArg arg) :base(arg){
+		}
 		public override IIconGroup GetRelevantIG(){
 			/* impled later when building Scrollers */
 			return null;
@@ -62,7 +76,7 @@ namespace UISystem{
 						if(pickedEqpII.IsEquipped()){//always has the same partially picked item
 							return true;
 						}else{
-							IEqpToolIG relevantEqpIG = equipIITAM.GetRelevantEquipIG(pickedItemTemp);
+							IEqpToolIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(pickedItemTemp);
 							if(relevantEqpIG.GetSize() == 1){//swap target is deduced
 								return true;
 							}else{
@@ -78,8 +92,8 @@ namespace UISystem{
 				throw new System.ArgumentException("pickedII must be of type IEquippableItemIcon");
 		}
 	}
-	public class PoolItemsPanel: AbsIconPanel, IEquipToolElementUIE{
-		public PoolItemsPanel(IUIManager uim, IUIAdaptor uia, IUIImage image) :base(uim, uia, image){}
+	public class PoolItemsPanel: AbsEquipToolPanel{
+		public PoolItemsPanel(IEquipToolPanelConstArg arg) :base(arg){}
 		public override IIconGroup GetRelevantIG(){
 			/* impled later when building Scrollers */
 			return null;
@@ -97,4 +111,8 @@ namespace UISystem{
 		}
 	}
 	public interface IPanelTransactionStateEngine: IHoverabilityStateHandler{}
+	public interface IEquipToolPanelConstArg: IUIElementConstArg{
+		IEquippableIITAManager eqpIITAM{get;}
+		IEquipTool eqpTool{get;}
+	}
 }

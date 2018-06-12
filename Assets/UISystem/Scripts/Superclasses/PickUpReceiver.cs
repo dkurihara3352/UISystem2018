@@ -10,6 +10,8 @@ namespace UISystem{
 		void BecomeHoverable();
 		void BecomeUnhoverable();
 		void BecomeHovered();
+		bool IsHoverable();
+		bool IsHovered();
 	}
 	public interface IPickUpReceiver: IUIElement, IHoverabilityStateHandler, IPickUpTransactionElement{
 		void CheckForHover();

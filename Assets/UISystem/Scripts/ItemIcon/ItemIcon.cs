@@ -6,6 +6,7 @@ namespace UISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
 		void EvaluatePickability();
 		IUIItem GetUIItem();
+		IItemTemplate GetItemTemplate();
 		int CalcTransferableQuantity(int pickedQ);
 		void IncreaseBy(int quantity, bool doesIncrement);
 		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
@@ -18,9 +19,9 @@ namespace UISystem{
 		void EvaluateHoverability(IItemIcon pickedII);
 	}
 	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
-		public AbsItemIcon(IUIManager uim, IUIAdaptor uia, IUIImage image, IUIItem item,IItemIconTransactionManager iiTAM): base(uim, uia, image){
-			this.iiTAM = iiTAM;
-			this.item = item;
+		public AbsItemIcon(IItemIconConstArg arg): base(arg){
+			this.iiTAM = arg.iiTAM;
+			this.item = arg.item;
 		}
 		protected override void ActivateImple(){
 			base.ActivateImple();
@@ -101,7 +102,13 @@ namespace UISystem{
 			public void BecomeHovered(){
 				iiTAStateEngine.BecomeHovered();
 			}
-			public void CheckForHover(){}
+			public bool IsHoverable(){
+				return iiTAStateEngine.IsHoverable();
+			}
+			public bool IsHovered(){
+				return iiTAStateEngine.IsHovered();
+			}
+			public abstract void CheckForHover();
 		/* Emptiness State Handling */
 			void InitializeEmptinessState(){
 				IUIItem item = this.GetUIItem();
@@ -142,8 +149,11 @@ namespace UISystem{
 			void SetQuantity(int q){
 				this.item.SetQuantity(q);
 			}
-			IItemTemplate itemTemp{
+			protected IItemTemplate itemTemp{
 				get{return this.item.GetItemTemplate();}
+			}
+			public IItemTemplate GetItemTemplate(){
+				return this.itemTemp;
 			}
 		/* pick up input transmission */
 			readonly IItemIconPickUpInputTransmitter inputTransmitter;
@@ -190,7 +200,10 @@ namespace UISystem{
 		}
 		ITravelInterpolator runningTravelInterpolator;
 		public void IncreaseBy(int quantity, bool doesIncrement){}
-		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}
-		
+		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}	
+	}
+	public interface IItemIconConstArg: IUIElementConstArg{
+		IItemIconTransactionManager iiTAM{get;}
+		IUIItem item{get;}
 	}
 }

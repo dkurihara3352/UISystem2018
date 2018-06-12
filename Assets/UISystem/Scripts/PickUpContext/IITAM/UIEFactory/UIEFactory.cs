@@ -19,14 +19,16 @@ namespace UISystem{
 		readonly IEquippableIITAManager eqpIITAM;
 		public IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia){
 			IUIImage image = CreateEquipToolUIImage();
-			EquipToolUIE uie = new EquipToolUIE(uim, uia, image);
+			IUIElementConstArg arg = new UIElementConstArg(uim, uia, image);
+			EquipToolUIE uie = new EquipToolUIE(arg);
 			return uie;
 		}
 		IUIImage CreateEquipToolUIImage(){
 		}
 		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia, IEquippableUIItem item){
 			IUIImage image = CreateEquippableItemIconUIImage(item);
-			EquippableItemIcon eqpII = new EquippableItemIcon(uim, uia, image, item, eqpIITAM, eqpTool);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(uim, uia, image, eqpIITAM, item, eqpTool);
+			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
 			return eqpII;
 		}
 		IUIImage CreateEquippableItemIconUIImage(IEquippableUIItem item){
