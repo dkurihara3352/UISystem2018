@@ -17,7 +17,7 @@ namespace UISystem{
 		void ClearHoverability();
 		void HoverInitialPickUpReceiver();
 		void EvaluatePickability();
-		List<IIconGroup> GetAllRelevantIGs();
+		List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII);
 		IItemIcon CreateItemIcon(IUIItem item);
 	}
 	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
@@ -50,28 +50,28 @@ namespace UISystem{
 		IIconPanel hoveredPanel;
 		IItemIcon hoveredII;
 		public void CheckAndActivateHoverPads(){
-			foreach(IIconGroup ig in GetAllRelevantIGs()){
+			foreach(IIconGroup ig in GetAllRelevantIGs(this.GetPickedII())){
 				ig.ActivateHoverPads();
 			}
 		}
 		public void DeactivateHoverPads(){
-			foreach(IIconGroup ig in this.GetAllRelevantIGs())
+			foreach(IIconGroup ig in this.GetAllRelevantIGs(this.GetPickedII()))
 				ig.DeactivateHoverPads();
 		}
 		public abstract void EvaluateHoverability();
 		// public virtual void ClearHoverability(){}
-		// public void HoverInitialPickUpReceiver(){}
+		public abstract void HoverInitialPickUpReceiver();
 		public override void ClearTAFields(){
 			base.ClearTAFields();
 			this.hoveredPanel = null;
 			this.hoveredII = null;
 		}
 		public void EvaluatePickability(){
-			foreach(IIconGroup ig in GetAllRelevantIGs()){
+			foreach(IIconGroup ig in GetAllRelevantIGs(null)){
 				ig.EvaluateAllIIsPickability();
 			}
 		}
-		public abstract List<IIconGroup> GetAllRelevantIGs();
+		public abstract List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII);
 		public abstract IItemIcon CreateItemIcon(IUIItem item);
 	}
 }

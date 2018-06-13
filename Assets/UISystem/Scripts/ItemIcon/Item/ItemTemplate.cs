@@ -7,6 +7,7 @@ namespace UISystem{
 		int GetPickUpStepQuantity();
 		int GetMaxEquippableQuantity();
 		bool IsStackable();
+		bool IsSameAs(IItemTemplate itemTemp);
 	}
 	public abstract class AbsItemTemplate: IItemTemplate{
 		public AbsItemTemplate(IItemTemplateArg arg){
@@ -37,6 +38,9 @@ namespace UISystem{
 		readonly int maxQuantityPerSlot;
 		public bool IsStackable(){
 			return maxQuantityPerSlot > 1;
+		}
+		public bool IsSameAs(IItemTemplate other){
+			return Object.ReferenceEquals(other, this);
 		}
 	}
 	public interface IItemTemplateArg{

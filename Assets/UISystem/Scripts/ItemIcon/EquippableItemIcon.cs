@@ -13,6 +13,8 @@ namespace UISystem{
 	public interface IEquippableItemIcon: IItemIcon, IEquippableUIE{
 		bool IsInEqpIG();
 		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
+		IEquippableUIItem GetEquippableItem();
+		bool IsBowOrWearItemIcon();
 	}
 	public class EquippableItemIcon: AbsItemIcon, IEquippableItemIcon{
 		public EquippableItemIcon(IEquippableItemIconConstArg arg) :base(arg){
@@ -29,6 +31,9 @@ namespace UISystem{
 				return this.item as IEquippableUIItem;//safe
 			}
 		}
+		public IEquippableUIItem GetEquippableItem(){
+			return eqpItem;
+		}
 		IEqpToolIG eqpToolIG{
 			get{
 				if(this.iconGroup is IEqpToolIG)
@@ -44,7 +49,7 @@ namespace UISystem{
 		protected override int GetMaxTransferableQuantity(){
 			IItemTemplate thisItemTemp = this.eqpItem.GetItemTemplate();
 			int thisQuantity = this.GetQuantity();
-			if(this.IsBowOrWearItem()){
+			if(this.IsBowOrWearItemIcon()){
 				if(thisQuantity != 0)
 					return 1;
 				else
@@ -120,7 +125,7 @@ namespace UISystem{
 				else{
 					if(this.ItemTempFamilyIsSameAs(pickedEqpII.GetItemTemplate())){
 						if(this.IsInPoolIG()){//picked from equipIG to pool
-							if(this.IsBowOrWearItem()){
+							if(this.IsBowOrWearItemIcon()){
 								if(this.eqpItem.IsSameAs(pickedEqpII.GetUIItem()))
 									return false;
 								else
@@ -154,7 +159,7 @@ namespace UISystem{
 		public bool IsInPoolIG(){
 			return this.eqpToolIG is IEqpToolPoolIG;
 		}
-		public bool IsBowOrWearItem(){
+		public bool IsBowOrWearItemIcon(){
 			return this.itemTemp is IBowTemplate || this.itemTemp is IWearTemplate;
 		}
 		public bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp){
