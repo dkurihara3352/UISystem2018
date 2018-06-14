@@ -23,6 +23,9 @@ namespace UISystem{
 			this.hoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
 			this.hoveredPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
 		}
+		public override IItemIcon CreateItemIcon(IUIItem item){
+			return null;
+		}
 		/* TA fields */
 			readonly IPickUpContextUIE eqpToolUIE;
 			readonly IIconPanel equippedItemsPanel;

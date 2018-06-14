@@ -91,8 +91,8 @@ namespace UISystem{
 		}
 	}
 	public interface IEquipToolPoolItemsPanel: IEquipToolPanel{}
-	public class PoolItemsPanel: AbsEquipToolPanel, IEquipToolPoolItemsPanel{
-		public PoolItemsPanel(IEquipToolPanelConstArg arg) :base(arg){}
+	public class EqpToolPoolItemsPanel: AbsEquipToolPanel, IEquipToolPoolItemsPanel{
+		public EqpToolPoolItemsPanel(IEquipToolPanelConstArg arg) :base(arg){}
 		protected override bool IsEligibleForHover(IItemIcon pickedII){
 			if(pickedII is IEquippableItemIcon){
 				IEquippableUIItem eqpItem = ((IEquippableItemIcon)pickedII).GetUIItem() as IEquippableUIItem;

@@ -17,6 +17,8 @@ namespace UISystem{
 		void HandOverTravel(IItemIcon other);
 		void SetRunningInterpolator(ITravelInterpolator irper);
 		void EvaluateHoverability(IItemIcon pickedII);
+		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
+		bool HasSameItem(IItemIcon other);
 	}
 	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -155,7 +157,9 @@ namespace UISystem{
 			public IItemTemplate GetItemTemplate(){
 				return this.itemTemp;
 			}
-		/* pick up input transmission */
+			public abstract bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
+			public abstract bool HasSameItem(IItemIcon other);
+		/* input handling */
 			readonly IItemIconPickUpInputTransmitter inputTransmitter;
 			public override void OnTouch(int touchCount){
 				inputTransmitter.OnTouch(touchCount);

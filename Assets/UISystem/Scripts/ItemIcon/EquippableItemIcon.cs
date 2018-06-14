@@ -3,16 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IEquipStateHandler{
-		void Equip();
-		void Unequip();
-		bool IsEquipped();
-	}
-	public interface IEquippableUIE: IUIElement, IEquipStateHandler{
-	}
 	public interface IEquippableItemIcon: IItemIcon, IEquippableUIE{
 		bool IsInEqpIG();
-		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 		IEquippableUIItem GetEquippableItem();
 		bool IsBowOrWearItemIcon();
 	}
@@ -20,55 +12,56 @@ namespace UISystem{
 		public EquippableItemIcon(IEquippableItemIconConstArg arg) :base(arg){
 			this.eqpTool = arg.tool;
 		}
-		readonly IEquipTool eqpTool;
-		IEquippableIITAManager eqpIITAM{
-			get{
-				return (IEquippableIITAManager)this.iiTAM;//safe
+		/*  */
+			readonly IEquipTool eqpTool;
+			IEquippableIITAManager eqpIITAM{
+				get{
+					return (IEquippableIITAManager)this.iiTAM;//safe
+				}
 			}
-		}
-		IEquippableUIItem eqpItem{
-			get{
-				return this.item as IEquippableUIItem;//safe
+			IEquippableUIItem eqpItem{
+				get{
+					return this.item as IEquippableUIItem;//safe
+				}
 			}
-		}
-		public IEquippableUIItem GetEquippableItem(){
-			return eqpItem;
-		}
-		IEqpToolIG eqpToolIG{
-			get{
-				if(this.iconGroup is IEqpToolIG)
-					return this.iconGroup as IEqpToolIG;
-				else 
-					throw new System.InvalidCastException("this.iconGroup must be of type IEqpToolIG");
+			public IEquippableUIItem GetEquippableItem(){
+				return eqpItem;
 			}
-		}
-		void CheckPassedItemIconTypeValidity(IItemIcon itemIcon){
-			if(!(itemIcon is IEquippableItemIcon))
-				throw new System.InvalidCastException("passed itemIcon must be of type IEquippableItemIcon");
-		}
-		protected override int GetMaxTransferableQuantity(){
-			IItemTemplate thisItemTemp = this.eqpItem.GetItemTemplate();
-			int thisQuantity = this.GetQuantity();
-			if(this.IsBowOrWearItemIcon()){
-				if(thisQuantity != 0)
-					return 1;
-				else
-					return 0;
-			}else{
-				if(this.IsInEqpIG())
-					return thisQuantity;
-				else{
-					if(this.itemTemp.IsStackable())
+			IEqpToolIG eqpToolIG{
+				get{
+					if(this.iconGroup is IEqpToolIG)
+						return this.iconGroup as IEqpToolIG;
+					else 
+						throw new System.InvalidCastException("this.iconGroup must be of type IEqpToolIG");
+				}
+			}
+			void CheckPassedItemIconTypeValidity(IItemIcon itemIcon){
+				if(!(itemIcon is IEquippableItemIcon))
+					throw new System.InvalidCastException("passed itemIcon must be of type IEquippableItemIcon");
+			}
+		/* pick up imple */
+			protected override int GetMaxTransferableQuantity(){
+				IItemTemplate thisItemTemp = this.eqpItem.GetItemTemplate();
+				int thisQuantity = this.GetQuantity();
+				if(this.IsBowOrWearItemIcon()){
+					if(thisQuantity != 0)
+						return 1;
+					else
+						return 0;
+				}else{
+					if(this.IsInEqpIG())
 						return thisQuantity;
 					else{
-						IIconGroup relevantEqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
-						int itemQuantityInEqpCGIG = relevantEqpCGIG.GetItemQuantity(this.eqpItem);
-						return this.eqpItem.GetMaxEquippableQuantity() - itemQuantityInEqpCGIG;
+						if(this.itemTemp.IsStackable())
+							return thisQuantity;
+						else{
+							IIconGroup relevantEqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+							int itemQuantityInEqpCGIG = relevantEqpCGIG.GetItemQuantity(this.eqpItem);
+							return this.eqpItem.GetMaxEquippableQuantity() - itemQuantityInEqpCGIG;
+						}
 					}
 				}
 			}
-		}
-		/* pick up imple */
 			public override void CheckForImmediatePickUp(){
 				return;
 			}
@@ -153,28 +146,36 @@ namespace UISystem{
 				}
 			}
 		/*  */
-		public bool IsInEqpIG(){
-			return this.eqpToolIG is IEqpToolEqpIG<IItemTemplate>;
-		}
-		public bool IsInPoolIG(){
-			return this.eqpToolIG is IEqpToolPoolIG;
-		}
-		public bool IsBowOrWearItemIcon(){
-			return this.itemTemp is IBowTemplate || this.itemTemp is IWearTemplate;
-		}
-		public bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp){
-			if(
-				(this.itemTemp is IBowTemplate && itemTemp is IBowTemplate)
-				||(this.itemTemp is IWearTemplate && itemTemp is IWearTemplate)
-				||(this.itemTemp is ICarriedGearTemplate && itemTemp is ICarriedGearTemplate)
-			)
-				return true;
-			else
-				return false;
-		}
-		public override bool LeavesGhost(){
-			return !this.IsInEqpIG();
-		}
+			public bool IsInEqpIG(){
+				return this.eqpToolIG is IEqpToolEqpIG<IItemTemplate>;
+			}
+			public bool IsInPoolIG(){
+				return this.eqpToolIG is IEqpToolPoolIG;
+			}
+			public bool IsBowOrWearItemIcon(){
+				return this.itemTemp is IBowTemplate || this.itemTemp is IWearTemplate;
+			}
+			public override bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp){
+				if(
+					(this.itemTemp is IBowTemplate && itemTemp is IBowTemplate)
+					||(this.itemTemp is IWearTemplate && itemTemp is IWearTemplate)
+					||(this.itemTemp is ICarriedGearTemplate && itemTemp is ICarriedGearTemplate)
+				)
+					return true;
+				else
+					return false;
+			}
+			public override bool LeavesGhost(){
+				return !this.IsInEqpIG();
+			}
+			public override bool HasSameItem(IItemIcon other){
+				IEquippableItemIcon otherEqpII = other as IEquippableItemIcon;
+				if(otherEqpII != null){
+					return this.GetEquippableItem().IsSameAs(otherEqpII.GetEquippableItem());
+				}else
+					throw new System.InvalidOperationException("other must be of type IEquippableItemIcon");
+			}
+		/*  */
 	}
 	public interface IEquippableItemIconConstArg: IItemIconConstArg{
 		IEquipTool tool{get;}

@@ -27,18 +27,18 @@ namespace UISystem{
 			if(maxQuantityPerSlot < 1)
 				throw new System.InvalidOperationException("maxQuantityPerSlot must be at least 1");
 		}
-		readonly int pickupStepQuantity;
 		public int GetPickUpStepQuantity(){
 			return pickupStepQuantity;
 		}
-		readonly int maxEquippableQuantity;
+		readonly int pickupStepQuantity;
 		public int GetMaxEquippableQuantity(){
 			return maxEquippableQuantity;
 		}
-		readonly int maxQuantityPerSlot;
+		readonly int maxEquippableQuantity;
 		public bool IsStackable(){
 			return maxQuantityPerSlot > 1;
 		}
+		readonly int maxQuantityPerSlot;
 		public bool IsSameAs(IItemTemplate other){
 			return Object.ReferenceEquals(other, this);
 		}
@@ -49,17 +49,17 @@ namespace UISystem{
 		int maxQuantityPerSlot{get;}
 	}
 	public class ItemTemplateArg: IItemTemplateArg{
-		readonly int _pickupStepQuantity;
-		readonly int _maxEquippableQuantity;
-		readonly int _maxQuantityPerSlot;
 		public ItemTemplateArg(int pickupStepQuantity, int maxEquippableQuantity, int maxQuantityPerSlot){
 			this._pickupStepQuantity = pickupStepQuantity;
 			this._maxEquippableQuantity = maxEquippableQuantity;
 			this._maxQuantityPerSlot = maxQuantityPerSlot;
 		}
 		public int pickupStepQuantity{get{return _pickupStepQuantity;}}
+		readonly int _pickupStepQuantity;
 		public int maxEquippableQuantity{get{return _maxEquippableQuantity;}}
+		readonly int _maxEquippableQuantity;
 		public int maxQuantityPerSlot{get{return _maxQuantityPerSlot;}}
+		readonly int _maxQuantityPerSlot;
 
 	}
 	public interface IBowTemplate: IItemTemplate{}

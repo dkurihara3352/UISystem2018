@@ -11,6 +11,10 @@ namespace UISystem{
 	public class ItemIconPickUpInputTransmitter: IItemIconPickUpInputTransmitter{
 		readonly IItemIcon itemIcon;
 		public void OnTouch(int touchCount){
+			CheckAndCallPickUp(touchCount);
+			CheckAndIncrementPickUpQuantity(touchCount);
+		}
+		void CheckAndCallPickUp(int touchCount){
 			if(touchCount == 1){
 				itemIcon.CheckForImmediatePickUp();
 			}else{
@@ -19,6 +23,9 @@ namespace UISystem{
 				}
 			}
 			return;
+		}
+		void CheckAndIncrementPickUpQuantity(int touchCount){
+			
 		}
 		public void OnDelayedTouch(){
 			itemIcon.CheckForDelayedPickUp();

@@ -18,21 +18,21 @@ namespace UISystem{
 			this.quantity = quantity;
 			this.itemID = itemID;
 		}
-		readonly IItemTemplate itemTemp;
-		readonly int itemID;/* item instance ID, as opposed to templateID */
 		public int GetItemID(){
 			return itemID;
 		}
-		int quantity;
+		readonly int itemID;/* item instance ID, as opposed to templateID */
 		public IItemTemplate GetItemTemplate(){
 			return itemTemp;
 		}
+		readonly IItemTemplate itemTemp;
 		public int GetQuantity(){
 			return quantity;
 		}
 		public void SetQuantity(int q){
 			this.quantity = q;
 		}
+		int quantity;
 		public bool IsSameAs(IUIItem other){
 			/*  Ghost is treated as same, sharing the same item instance with picked
 			*/
@@ -52,13 +52,13 @@ namespace UISystem{
 		public int GetMaxEquippableQuantity(){
 			return GetItemTemplate().GetMaxEquippableQuantity();
 		}
-		bool isEquipped;
 		public void Equip(){
 			this.isEquipped = true;
 		}
 		public void Unequip(){
 			this.isEquipped = false;
 		}
+		bool isEquipped;
 		public bool IsEquipped(){
 			return this.isEquipped;
 		}

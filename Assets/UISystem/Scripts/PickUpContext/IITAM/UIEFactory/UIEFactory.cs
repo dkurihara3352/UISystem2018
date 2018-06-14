@@ -24,6 +24,7 @@ namespace UISystem{
 			return uie;
 		}
 		IUIImage CreateEquipToolUIImage(){
+			return null;
 		}
 		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia, IEquippableUIItem item){
 			IUIImage image = CreateEquippableItemIconUIImage(item);
@@ -32,7 +33,7 @@ namespace UISystem{
 			return eqpII;
 		}
 		IUIImage CreateEquippableItemIconUIImage(IEquippableUIItem item){
-
+			return null;
 		}
 	}
 }

@@ -101,7 +101,7 @@ namespace UISystem{
 				}
 				return result;
 			}
-			protected List<T> FindAllNextOffspringsWithComponent<T>(Transform transToExamine) where T: class{
+			protected List<U> FindAllNextOffspringsWithComponent<U>(Transform transToExamine) where U: class{
 				/* 
 					find and return all most proximate child Components
 					in all children branches
@@ -111,14 +111,14 @@ namespace UISystem{
 
 					Make sure the component inherits both from mono behaviour and from T
 				*/
-				List<T> result = new List<T>();
+				List<U> result = new List<U>();
 				for(int i = 0; i < transToExamine.childCount; i ++){
 					Transform child = transToExamine.GetChild(i);
-					T childComp = child.GetComponent(typeof(T)) as T;
+					U childComp = child.GetComponent(typeof(U)) as U;
 					if(childComp != null){
 						result.Add(childComp);
 					}else{
-						List<T> allChildCompsOfThisChild = FindAllNextOffspringsWithComponent<T>(child);
+						List<U> allChildCompsOfThisChild = FindAllNextOffspringsWithComponent<U>(child);
 						if(allChildCompsOfThisChild.Count != 0)
 							result.AddRange(allChildCompsOfThisChild);
 					}
