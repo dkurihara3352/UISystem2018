@@ -59,7 +59,7 @@ namespace UISystem{
 				ig.DeactivateHoverPads();
 		}
 		public abstract void EvaluateHoverability();
-		// public virtual void ClearHoverability(){}
+		public abstract void ClearHoverability();
 		public abstract void HoverInitialPickUpReceiver();
 		public override void ClearTAFields(){
 			base.ClearTAFields();

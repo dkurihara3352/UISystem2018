@@ -170,6 +170,12 @@ namespace UISystem{
 			public void RemoveEmptyIIs(){
 
 			}
+			IUIItemSorter GetSorter(){
+
+			}
+			void AddItemAndMutate(IUIItem item, int idAtAdd){
+				
+			}
 		/*  */
 	}
 	public interface IIconGroupConstArg: IUIElementConstArg{
