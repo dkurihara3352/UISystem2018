@@ -5,15 +5,15 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler{
 		IUIElement GetParentUIE();
+		void SetParentUIE(IUIElement uie, bool worldPositionStays);
 		List<IUIElement> GetChildUIEs();
+		Vector2 GetPositionInThisSpace(Vector2 worldPos);
+		void SetLocalPosition(Vector2 localPos);
 		IUIManager GetUIM();
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		void Activate();
 		void Deactivate();
-		void SetParentUIE(IUIElement uie);
-		Vector2 GetLocalPosition(Vector2 worldPos);
-		void SetLocalPosition(Vector2 localPos);
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
@@ -88,14 +88,14 @@ namespace UISystem{
 			public virtual void OnHold( float elapsedT){}
 			public virtual void OnSwipe( Vector2 deltaP){}
 		/*  */
-		public Vector2 GetLocalPosition(Vector2 worldPos){
-			return this.uiAdaptor.GetLocalPosition(worldPos);
+		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
+			return this.uiAdaptor.GetPositionInThisSpace(worldPos);
 		}
 		public void SetLocalPosition(Vector2 localPos){
 			this.uiAdaptor.SetLocalPosition(localPos);
 		}
-		public void SetParentUIE(IUIElement newParentUIE){
-			this.uiAdaptor.SetUIEParent(newParentUIE);
+		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
+			this.uiAdaptor.SetParentUIE(newParentUIE, worldPositionStays);
 		}
 	}
 	public interface IUIElementConstArg{

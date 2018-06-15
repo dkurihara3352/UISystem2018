@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIconTAManagerState: ISwitchableState{
-
-	}
+	public interface IItemIconTAManagerState: ISwitchableState{}
 	public abstract class AbsItemIconTAManagerState: IItemIconTAManagerState{
 		public AbsItemIconTAManagerState(IItemIconTransactionManager tam){
 			this.tam = tam;
@@ -36,7 +34,9 @@ namespace UISystem{
 		}
 		IItemIcon pickedII;
 	}
-	public class EqpIITAMPickedState: IITAMPickedState{
+	public interface IEqpIITAMState: IItemIconTAManagerState{}
+	public interface IEqpIITAMPickedState: IIITAMPickedState, IEqpIITAMState{}
+	public class EqpIITAMPickedState: IITAMPickedState, IEqpIITAMPickedState{
 		public EqpIITAMPickedState(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(eqpIITAM){
 			this.eqpTool = eqpTool;
 		}
@@ -46,7 +46,8 @@ namespace UISystem{
 			eqpTool.ResetMode();/* or, EvalueateMode ? */
 		}
 	}
-	public class IITAMDefaultState: AbsItemIconTAManagerState{
+	public interface IIITAMDefaultState: IItemIconTAManagerState{}
+	public class IITAMDefaultState: AbsItemIconTAManagerState, IIITAMDefaultState{
 		public IITAMDefaultState(IItemIconTransactionManager tam): base(tam){}
 		public override void OnEnter(){
 			tam.EvaluatePickability();
@@ -64,11 +65,17 @@ namespace UISystem{
 			pickedState.SetPickedII(pickedII);
 			this.TrySwitchState(pickedState);
 		}
-		readonly IITAMPickedState pickedState;
+		readonly IIITAMPickedState pickedState;
 		public void SetToDefaultState(){
 			this.TrySwitchState(defaultState);
 		}
-		readonly IITAMDefaultState defaultState;
+		readonly IIITAMDefaultState defaultState;
+		public bool IsInPickedUpState(){
+			return curState is IIITAMPickedState;
+		}
+		public bool IsInDefaultState(){
+			return curState is IIITAMDefaultState;
+		}
 	}
 }
 

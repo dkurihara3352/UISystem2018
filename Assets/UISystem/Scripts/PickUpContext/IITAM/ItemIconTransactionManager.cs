@@ -6,6 +6,8 @@ namespace UISystem{
 	public interface IIITAMStateHandler{
 		void SetToPickedState(IItemIcon pickedII);
 		void SetToDefaultState();
+		bool IsInPickedUpState();
+		bool IsInDefaultState();
 	}
 	public interface IItemIconTransactionManager: IPickUpManager ,IIITAMStateHandler{
 		void SetPickedII(IItemIcon pickedII);
@@ -24,16 +26,24 @@ namespace UISystem{
 		public AbsItemIconTransactionManager(){
 			this.stateEngine = new ItemIconTAManagerStateEngine();
 		}
-		readonly IItemIcomTAManagerStateEngine stateEngine;
-		public void Activate(){
-			SetToDefaultState();
-		}
-		public void SetToPickedState(IItemIcon pickedII){
-			this.stateEngine.SetToPickedState(pickedII);
-		}
-		public void SetToDefaultState(){
-			this.stateEngine.SetToDefaultState();
-		}
+		/* tam state */
+			readonly IItemIcomTAManagerStateEngine stateEngine;
+			public void Activate(){
+				SetToDefaultState();
+			}
+			public void SetToPickedState(IItemIcon pickedII){
+				this.stateEngine.SetToPickedState(pickedII);
+			}
+			public void SetToDefaultState(){
+				this.stateEngine.SetToDefaultState();
+			}
+			public bool IsInPickedUpState(){
+				return this.stateEngine.IsInPickedUpState();
+			}
+			public bool IsInDefaultState(){
+				return this.stateEngine.IsInDefaultState();
+			}
+		/*  */
 		public void SetPickedII(IItemIcon pickedII){
 			this.pickedUIE = pickedII;
 		}

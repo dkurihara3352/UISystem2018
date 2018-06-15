@@ -42,7 +42,7 @@ namespace UISystem{
 		/* pick up imple */
 			protected override int GetMaxTransferableQuantity(){
 				IItemTemplate thisItemTemp = this.eqpItem.GetItemTemplate();
-				int thisQuantity = this.GetQuantity();
+				int thisQuantity = this.GetItemQuantity();
 				if(this.IsBowOrWearItemIcon()){
 					if(thisQuantity != 0)
 						return 1;
@@ -118,27 +118,10 @@ namespace UISystem{
 				else{
 					if(this.ItemTempFamilyIsSameAs(pickedEqpII.GetItemTemplate())){
 						if(this.IsInPoolIG()){//picked from equipIG to pool
-							if(this.IsBowOrWearItemIcon()){
-								if(this.eqpItem.IsSameAs(pickedEqpII.GetUIItem()))
-									return false;
-								else
-									return true;//swapping equipped bow/wear
-							}else{
-								if(this.eqpItem.IsSameAs(pickedEqpII.GetUIItem()))
-									return true;// unequipping
-								else{
-									if(this.GetQuantity() <= 0){
-										return false;//can't swap with zero item
-									}else{
-									// true only when eqpIG can accomodate this
-										IEqpToolEqpIG<ICarriedGearTemplate> eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
-										if(eqpCGIG.HasItemSpace(this.eqpItem)){
-											return true;
-										}else
-											return false;
-									}
-								}
-							}
+							if(this.IsTransferable())
+								return true;
+							else
+								return false;
 						}else//this.IsInEqpIG(), picked from pool
 							return true;
 					}else//diff family

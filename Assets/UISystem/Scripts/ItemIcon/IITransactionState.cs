@@ -25,7 +25,7 @@ namespace UISystem{
 		}
 		void SetUpIIAsPickedII(){
 			IUIItem item = itemIcon.GetUIItem();
-			int pickedQuantity = this.CalcPickedQuantity();
+			int pickedQuantity = itemIcon.CalcPickedQuantity();
 			if(this.ShouldCreateLeftoverII(item.GetQuantity(), pickedQuantity))
 				SetUpLeftoverII(pickedQuantity);
 			SetUpPickedQuantity(pickedQuantity);
@@ -42,16 +42,6 @@ namespace UISystem{
 					return true;
 			return false;
 		}
-		int CalcPickedQuantity(){
-			IUIItem item = itemIcon.GetUIItem();
-			IItemTemplate itemTemp = item.GetItemTemplate();
-			int transferableQ = itemIcon.CalcTransferableQuantity(0);
-			int pickUpStepQ = itemTemp.GetPickUpStepQuantity();
-			if( pickUpStepQ < transferableQ)
-				return pickUpStepQ;
-			else
-				return transferableQ;
-		}
 		void SetUpPickedQuantity(int pickedQ){
 			IUIItem item = itemIcon.GetUIItem();
 			item.SetQuantity(0);
@@ -60,20 +50,18 @@ namespace UISystem{
 		void LeaveUIImageBehind(){
 			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
 			IUIImage image = itemIcon.GetUIImage();
-			Vector2 curImagePosInContextSpace = image.GetCurPosInUIESpace(pickUpContextUIE);
-			image.SetParentUIE(pickUpContextUIE);
-			image.SetLocalPosition(curImagePosInContextSpace);
+			image.DetachTo(pickUpContextUIE);
 		}
 		void MoveToPickUpReservePos(){
 			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
-			Vector2 reservePosInWorldSpace = pickUpContextUIE.GetPickUpReserveWorldPos();
-			IIconGroup ig = itemIcon.GetIconGroup();
-			Vector2 reservePosInThisIGSpace = ig.GetLocalPosition(reservePosInWorldSpace);
-			itemIcon.SetLocalPosition(reservePosInThisIGSpace);
+			Vector2 reservePos = pickUpContextUIE.GetPickUpReservePosition();
+			itemIcon.SetParentUIE(pickUpContextUIE, true);
+			itemIcon.SetLocalPosition(reservePos);
 			itemIcon.SetSlotID(-1);
 		}
 		void SetUpLeftoverII(int pickedQuantity){
 			IItemIcon leftoverII = CreateLeftoverII(pickedQuantity);
+			leftoverII.UpdateTransferableQuantity(pickedQuantity);
 			this.itemIcon.HandOverTravel(leftoverII);
 		}
 		IItemIcon CreateLeftoverII(int pickedQuantity){
@@ -81,12 +69,12 @@ namespace UISystem{
 			IItemIcon leftoverII = iiTAM.CreateItemIcon(item);
 			IUIImage leftoverIIImage = leftoverII.GetUIImage();
 			IIconGroup thisIG = itemIcon.GetIconGroup();
-			leftoverII.SetParentUIE(itemIcon.GetParentUIE());
+			leftoverII.SetParentUIE(itemIcon.GetParentUIE(), true);
 			IUIImage thisIIImage = itemIcon.GetUIImage();
-			leftoverIIImage.SetLocalPosition(thisIIImage.GetCurPosInUIESpace(itemIcon));
+			leftoverIIImage.CopyPosition(thisIIImage);
 			thisIG.ReplaceAndUpdateII(itemIcon.GetSlotID(), leftoverII);
 			leftoverII.DisemptifyInstantly(item);
-			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: !leftoverII.LeavesGhost());
+			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true);
 			return leftoverII;
 		}
 		public override void OnExit(){

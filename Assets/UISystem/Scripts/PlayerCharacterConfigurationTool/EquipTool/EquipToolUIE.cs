@@ -6,7 +6,7 @@ namespace UISystem{
 	public interface IEquipToolUIE: IPickUpContextUIE{}
 	public class EquipToolUIE: AbsUIElement, IEquipToolUIE{
 		public EquipToolUIE(IUIElementConstArg arg): base(arg){}
-		public Vector2 GetPickUpReserveWorldPos(){
+		public Vector2 GetPickUpReservePosition(){
 			IEquipToolUIAdaptor eqpToolUIA = this.GetUIAdaptor() as IEquipToolUIAdaptor;
 			return eqpToolUIA.GetPickUpReserveWorldPos();
 		}

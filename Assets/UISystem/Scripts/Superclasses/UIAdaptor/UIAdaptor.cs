@@ -3,20 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace UISystem{
-	public interface IMBAdaptor{}
+	public interface IMBAdaptor{
+		Transform GetTransform();
+		Vector2 GetLocalPosition();
+		void SetLocalPosition(Vector2 localPos);
+		Vector2 GetWorldPosition();
+		void SetWorldPosition(Vector2 worldPos);
+		Vector2 GetPositionInThisSpace(Vector2 worldPos);
+		IUIAdaptor GetParentUIA();
+	}
 	public interface IUIAdaptor: IMBAdaptor{
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
-		void SetUIEParent(IUIElement newParentUIE);
+		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
 		List<IUIAdaptor> GetAllOffspringUIAs();
 		List<IUIElement> GetChildUIEs();
 		void GetReadyForActivation(IUIAActivationData passedArg);
 		/*  IPickUpContextUIA is fed with null factory
 				it needs to create its own domain factory and pass it to every domain elements
 		*/
-		Vector2 GetLocalPosition(Vector2 worldPos);
-		void SetLocalPosition(Vector2 localPos);
-		Transform GetParentTrans();
+		void SetParentUIA(IUIAdaptor uia, bool worldPositionStays);
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
@@ -54,6 +60,31 @@ namespace UISystem{
 			public IUIElement GetUIElement(){
 				return uiElement;
 			}
+			public Vector2 GetPositionInThisSpace(Vector2 worldPos){
+				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
+				return new Vector2(resultV3.x, resultV3.y);
+			}
+			public Vector2 GetWorldPosition(){
+				return new Vector2(this.transform.position.x, this.transform.position.y);
+			}
+			public void SetWorldPosition(Vector2 worldPos){
+				this.transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
+			}
+			public Vector2 GetLocalPosition(){
+				return new Vector2(this.transform.localPosition.x, this.transform.localPosition.y);
+			}
+			public void SetLocalPosition(Vector2 pos){
+				this.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
+			}
+			public IUIAdaptor GetParentUIA(){
+				return FindClosestParentUIAdaptor();
+			}
+			public void SetParentUIA(IUIAdaptor parentUIA, bool worldPositionStays){
+				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
+			}
+			public Transform GetTransform(){
+				return this.transform;
+			}
 			public IUIElement GetParentUIE(){
 				IUIAdaptor closestParentUIAdaptor = FindClosestParentUIAdaptor();
 				if(closestParentUIAdaptor != null)
@@ -61,13 +92,9 @@ namespace UISystem{
 				else
 					return null;/* this should be the top one */
 			}
-			public Transform GetParentTrans(){
-				return transform.parent;
-			}
-			public void SetUIEParent(IUIElement newParentUIE){
+			public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
 				IUIAdaptor newParUIA = newParentUIE.GetUIAdaptor();
-				Transform newParTrans = newParUIA.GetParentTrans();
-				this.transform.SetParent(newParTrans, worldPositionStays:true);
+				this.SetParentUIA(newParUIA, worldPositionStays);
 			}
 			IUIAdaptor FindClosestParentUIAdaptor(){
 				Transform parentToExamine = transform.parent;
@@ -159,13 +186,6 @@ namespace UISystem{
 				inputStateEngine.OnDrag(dragPos, dragDeltaP);
 			}
 		/*  */
-		public Vector2 GetLocalPosition(Vector2 worldPos){
-			Vector3 localPosV3 = transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
-			return new Vector3(localPosV3.x, localPosV3.y);
-		}
-		public void SetLocalPosition(Vector2 localPos){
-			transform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
-		}
 	}
 	public interface ICustomEventData{
 		Vector2 deltaP{get;}

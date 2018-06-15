@@ -5,20 +5,24 @@ using UnityEngine;
 namespace UISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
 		void EvaluatePickability();
+		void EvaluateHoverability(IItemIcon pickedII);
 		IUIItem GetUIItem();
 		IItemTemplate GetItemTemplate();
+		int GetItemQuantity();
+		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
+		bool HasSameItem(IItemIcon other);
 		int CalcTransferableQuantity(int pickedQ);
+		int CalcPickedQuantity();
+		bool IsTransferable();
 		void IncreaseBy(int quantity, bool doesIncrement);
-		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
+		void DecreaseBy(int quantity, bool doesIncrement);
+		void UpdateTransferableQuantity(int pickedQuantity);
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
 		bool LeavesGhost();
 		void HandOverTravel(IItemIcon other);
-		void SetRunningInterpolator(ITravelInterpolator irper);
-		void EvaluateHoverability(IItemIcon pickedII);
-		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
-		bool HasSameItem(IItemIcon other);
+		void SetRunningTravelInterpolator(ITravelInterpolator irper);
 	}
 	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -37,6 +41,16 @@ namespace UISystem{
 				WaitForPickUp();/* returns immediately in turn */
 			}
 		/* Pickability state handling */
+			public void EvaluatePickability(){
+				this.UpdateTransferableQuantity(pickedQuantity: 0);
+				if( !this.IsEmpty()){
+					if( this.IsReorderable() || this.IsTransferable()){
+						this.BecomePickable();
+						return;
+					}
+				}
+				this.BecomeUnpickable();
+			}
 			public void BecomePickable(){
 				iiTAStateEngine.BecomePickable();
 			}
@@ -52,17 +66,7 @@ namespace UISystem{
 			public bool IsPicked(){
 				return iiTAStateEngine.IsPicked();
 			}
-			public void EvaluatePickability(){
-				this.UpdateTransferableQuantity(0);
-				if( !this.IsEmpty()){
-					if( this.IsReorderable() || this.IsTransferable()){
-						this.BecomePickable();
-						return;
-					}
-				}
-				this.BecomeUnpickable();
-			}
-			void UpdateTransferableQuantity(int pickedQuantity){
+			public void UpdateTransferableQuantity(int pickedQuantity){
 				int transQ = this.CalcTransferableQuantity(pickedQuantity);
 				this.transferableQuantity = transQ;
 			}
@@ -71,10 +75,20 @@ namespace UISystem{
 			}
 			protected abstract int GetMaxTransferableQuantity();
 			int transferableQuantity;
-			bool IsTransferable(){
+			public bool IsTransferable(){
 				return transferableQuantity > 0;
 			}
-		/* IPickableUIE */
+		/* IPickableUIE imple */
+			void CheckAndCallPickUp(int touchCount){
+				if(touchCount == 1){
+					CheckForImmediatePickUp();
+				}else{
+					if(touchCount == 2){
+						CheckForSecondTouchPickUp();
+					}
+				}
+				return;
+			}
 			public void PickUp(){
 				this.BecomePicked();
 			}
@@ -145,7 +159,7 @@ namespace UISystem{
 			public IUIItem GetUIItem(){
 				return item;
 			}
-			protected int GetQuantity(){
+			public int GetItemQuantity(){
 				return this.item.GetQuantity();
 			}
 			void SetQuantity(int q){
@@ -160,21 +174,24 @@ namespace UISystem{
 			public abstract bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 			public abstract bool HasSameItem(IItemIcon other);
 		/* input handling */
-			readonly IItemIconPickUpInputTransmitter inputTransmitter;
 			public override void OnTouch(int touchCount){
-				inputTransmitter.OnTouch(touchCount);
-			}
+				CheckAndCallPickUp(touchCount);
+				CheckAndIncrementPickUpQuantity();
+			}			
 			public override void OnDelayedTouch(){
-				inputTransmitter.OnDelayedTouch();
+				CheckForDelayedPickUp();
 			}
 			public override void OnDrag(Vector2 pos, Vector2 deltaP){
-				inputTransmitter.OnDrag(pos, deltaP);
+				CheckForDragPickUp();
 				/* and do some smooth follow stuff */
 			}
 		/* Travelling */
-			ITravelInterpolator runningTravelIrper;
+			ITravelInterpolator runningTravelInterpolator;
 			public void SetRunningTravelInterpolator(ITravelInterpolator irper){
 				this.runningTravelInterpolator = irper;
+			}
+			public ITravelInterpolator GetRunningTravelInterpolator(){
+				return runningTravelInterpolator;
 			}
 			public void HandOverTravel(IItemIcon other){
 				/*  Update running travel Irper
@@ -187,7 +204,7 @@ namespace UISystem{
 			void UpdateTravelIrper(IItemIcon targetII){
 				if(runningTravelInterpolator != null){
 					runningTravelInterpolator.UpdateTravellingII(targetII);
-					SetRunningInterpolator(null);
+					SetRunningTravelInterpolator(null);
 				}
 			}
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
@@ -196,15 +213,37 @@ namespace UISystem{
 		/*  */
 		public abstract bool LeavesGhost();
 		public void DeclinePickUp(){}
-		public ITravelInterpolator GetRunningTravelInterpolator(){
-			return runningTravelInterpolator;
-		}
-		public void SetRunningInterpolator(ITravelInterpolator travelIrper){
-			this.runningTravelInterpolator = travelIrper;
-		}
-		ITravelInterpolator runningTravelInterpolator;
+		/* incrementing */
+			void CheckAndIncrementPickUpQuantity(){
+				if(this.iiTAM.IsInPickedUpState()){
+					int incrementQuantity = CalcPickedQuantity();
+					if(incrementQuantity > 0)
+						this.IncrementPickUpQuantityBy(incrementQuantity);
+					else
+						this.DeclineIncrementPickUpQuantity();
+				}
+			}
+			public int CalcPickedQuantity(){
+				int transferableQuantity = this.transferableQuantity;
+				int pickUpStepQuantity = GetItemTemplate().GetPickUpStepQuantity();
+				return Mathf.Min(transferableQuantity, pickUpStepQuantity);
+			}
+			void IncrementPickUpQuantityBy(int increQuantity){
+				IItemIcon pickedII = iiTAM.GetPickedII();
+				pickedII.IncreaseBy(increQuantity, doesIncrement:true);
+				this.DecreaseBy(increQuantity, doesIncrement:true);
+				int newPickedUpQuantity = pickedII.GetItemQuantity();
+				this.UpdateTransferableQuantity(newPickedUpQuantity);
+			}
+			void DeclineIncrementPickUpQuantity(){
+
+			}
 		public void IncreaseBy(int quantity, bool doesIncrement){}
-		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){}	
+		public void DecreaseBy(int quantity, bool doesIncrement){
+			/*  does not remove resultant empty
+				must be explicitly removed outside this
+			*/
+		}	
 	}
 	public interface IItemIconConstArg: IUIElementConstArg{
 		IItemIconTransactionManager iiTAM{get;}
