@@ -15,73 +15,17 @@ namespace UISystem{
 		public abstract void OnEnter();
 		public abstract void OnExit();
 	}
+	/* picked */
 	public class IIPickedState: AbsIITransactionState, IIIPickedState{
 		public IIPickedState(IIITransactionStateConstArg arg): base(arg){}
 		public override void OnEnter(){
-			SetUpIIAsPickedII();
+			itemIcon.SetUpAsPickedII();
 			iiTAM.SetToPickedState(itemIcon);
 			itemIcon.BecomeVisuallyPickedUp();
 			itemIcon.BecomeSelected();
 		}
-		void SetUpIIAsPickedII(){
-			IUIItem item = itemIcon.GetUIItem();
-			int pickedQuantity = itemIcon.CalcPickedQuantity();
-			if(this.ShouldCreateLeftoverII(item.GetQuantity(), pickedQuantity))
-				SetUpLeftoverII(pickedQuantity);
-			SetUpPickedQuantity(pickedQuantity);
-			LeaveUIImageBehind();
-			MoveToPickUpReservePos();
-			StartIIImageSmoothFollowDragPos();
-		}
-		bool ShouldCreateLeftoverII(int thisQuantity, int pickedQuantity){
-			int leftoverQ = thisQuantity - pickedQuantity;
-			if(leftoverQ > 0)
-				return true;
-			else
-				if(this.itemIcon.LeavesGhost())
-					return true;
-			return false;
-		}
-		void SetUpPickedQuantity(int pickedQ){
-			IUIItem item = itemIcon.GetUIItem();
-			item.SetQuantity(0);
-			itemIcon.IncreaseBy(pickedQ, doesIncrement: true);
-		}
-		void LeaveUIImageBehind(){
-			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
-			IUIImage image = itemIcon.GetUIImage();
-			image.DetachTo(pickUpContextUIE);
-		}
-		void MoveToPickUpReservePos(){
-			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
-			Vector2 reservePos = pickUpContextUIE.GetPickUpReservePosition();
-			itemIcon.SetParentUIE(pickUpContextUIE, true);
-			itemIcon.SetLocalPosition(reservePos);
-			itemIcon.SetSlotID(-1);
-		}
-		void SetUpLeftoverII(int pickedQuantity){
-			IItemIcon leftoverII = CreateLeftoverII(pickedQuantity);
-			leftoverII.UpdateTransferableQuantity(pickedQuantity);
-			this.itemIcon.HandOverTravel(leftoverII);
-		}
-		IItemIcon CreateLeftoverII(int pickedQuantity){
-			IUIItem item = itemIcon.GetUIItem();
-			IItemIcon leftoverII = iiTAM.CreateItemIcon(item);
-			IUIImage leftoverIIImage = leftoverII.GetUIImage();
-			IIconGroup thisIG = itemIcon.GetIconGroup();
-			leftoverII.SetParentUIE(itemIcon.GetParentUIE(), true);
-			IUIImage thisIIImage = itemIcon.GetUIImage();
-			leftoverIIImage.CopyPosition(thisIIImage);
-			thisIG.ReplaceAndUpdateII(itemIcon.GetSlotID(), leftoverII);
-			leftoverII.DisemptifyInstantly(item);
-			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true);
-			return leftoverII;
-		}
 		public override void OnExit(){
 			itemIcon.BecomeVisuallyUnpicked();
-		}
-		void StartIIImageSmoothFollowDragPos(){
-
 		}
 	}
 	public interface IEqpIITransactionState: IIITransactionState{}
@@ -105,26 +49,31 @@ namespace UISystem{
 			base.OnEnter();
 		}
 	}
+	/* pickable */
 	public interface IIIPickableState: IIITransactionState{}
 	public class EqpIIPickableState: IIIPickableState{
 		public void OnEnter(){}
 		public void OnExit(){}
 	}
+	/* unpickable */
 	public interface IIIUnpickableState: IIITransactionState{}
 	public class EqpIIUnpickableState: IIIUnpickableState{
 		public void OnEnter(){}
 		public void OnExit(){}
 	}
+	/* hovered */
 	public interface IIIHoverableState: IIITransactionState{}
 	public class EqpIIHoverableState: IIIHoverableState{
 		public void OnEnter(){}
 		public void OnExit(){}
 	}
+	/* unhoverable */
 	public interface IIIUnhoverableState: IIITransactionState{}
 	public class EqpIIUnhoverableState: IIIUnhoverableState{
 		public void OnEnter(){}
 		public void OnExit(){}
 	}
+	/* hovered */
 	public interface IIIHoveredState: IIITransactionState{
 		void SetPickedItemIcon(IItemIcon pickedII);
 	}
@@ -181,6 +130,19 @@ namespace UISystem{
 				else
 					eqpIITAM.SetEqpIIToEquip(eqpII);
 			}
+		}
+	}
+	/* Dropped */
+	public interface IIIDroppedState: IIITransactionState{}
+	public class EqpIIDroppedState: AbsIITransactionState, IIIDroppedState{
+		public EqpIIDroppedState(IEqpIITAStateConstArg arg): base(arg){}
+		public override void OnEnter(){
+			itemIcon.StopIIImageSmoothFollowDragPos();
+			iiTAM.ExecuteTransaction();
+			iiTAM.SetToDefaultState();
+		}
+		public override void OnExit(){
+
 		}
 	}
 	/* Const */

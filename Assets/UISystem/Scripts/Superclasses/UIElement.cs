@@ -19,7 +19,7 @@ namespace UISystem{
 		public AbsUIElement(IUIElementConstArg arg){
 			this.uiManager = arg.uim;
 			this.uiAdaptor = arg.uia;
-			this.uiImage = arg.image;
+			this.thisImage = arg.image;
 			this.selectabilityEngine = new SelectabilityStateEngine(this, uiManager.GetProcessFactory());
 		}
 		IUIManager uiManager;
@@ -37,9 +37,9 @@ namespace UISystem{
 			return GetUIAdaptor().GetChildUIEs();
 		}
 		public IUIImage GetUIImage(){
-			return this.uiImage;
+			return this.thisImage;
 		}
-		protected IUIImage uiImage;
+		protected IUIImage thisImage;
 		public virtual void Activate(){
 			this.ActivateImple();
 			foreach(IUIElement childUIE in this.GetChildUIEs()){

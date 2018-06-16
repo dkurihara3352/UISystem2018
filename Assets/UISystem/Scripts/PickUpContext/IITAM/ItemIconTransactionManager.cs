@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IIITAMStateHandler{
-		void SetToPickedState(IItemIcon pickedII);
-		void SetToDefaultState();
-		bool IsInPickedUpState();
-		bool IsInDefaultState();
-	}
 	public interface IItemIconTransactionManager: IPickUpManager ,IIITAMStateHandler{
 		void SetPickedII(IItemIcon pickedII);
 		IItemIcon GetPickedII();
@@ -16,11 +10,13 @@ namespace UISystem{
 		void CheckAndActivateHoverPads();
 		void DeactivateHoverPads();
 		void EvaluateHoverability();
-		void ClearHoverability();
+		void ResetHoverability();
 		void HoverInitialPickUpReceiver();
 		void EvaluatePickability();
 		List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII);
 		IItemIcon CreateItemIcon(IUIItem item);
+		void ClearTAFields();
+		void ExecuteTransaction();
 	}
 	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
 		public AbsItemIconTransactionManager(){
@@ -44,45 +40,45 @@ namespace UISystem{
 				return this.stateEngine.IsInDefaultState();
 			}
 		/*  */
-		public void SetPickedII(IItemIcon pickedII){
-			this.pickedUIE = pickedII;
-		}
-		public IItemIcon GetPickedII(){
-			IPickableUIE pickedUIE = this.GetPickedUIE();
-			if(pickedUIE != null){
-				if(pickedUIE is IItemIcon)
-					return pickedUIE as IItemIcon;
-				else
-					throw new System.InvalidCastException("pickedUIE is not of type IItemIcon");
+			public void SetPickedII(IItemIcon pickedII){
+				this.thisPickedUIE = pickedII;
 			}
-			return null;
-		}
-		IIconPanel hoveredPanel;
-		IItemIcon hoveredII;
-		public void CheckAndActivateHoverPads(){
-			foreach(IIconGroup ig in GetAllRelevantIGs(this.GetPickedII())){
-				ig.ActivateHoverPads();
+			public IItemIcon GetPickedII(){
+				IPickableUIE pickedUIE = this.GetPickedUIE();
+				if(pickedUIE != null){
+					if(pickedUIE is IItemIcon)
+						return pickedUIE as IItemIcon;
+					else
+						throw new System.InvalidCastException("pickedUIE is not of type IItemIcon");
+				}
+				return null;
 			}
-		}
-		public void DeactivateHoverPads(){
-			foreach(IIconGroup ig in this.GetAllRelevantIGs(this.GetPickedII()))
-				ig.DeactivateHoverPads();
-		}
-		public abstract void EvaluateHoverability();
-		public abstract void ClearHoverability();
-		public abstract void HoverInitialPickUpReceiver();
-		public override void ClearTAFields(){
-			base.ClearTAFields();
-			this.hoveredPanel = null;
-			this.hoveredII = null;
-		}
-		public void EvaluatePickability(){
-			foreach(IIconGroup ig in GetAllRelevantIGs(null)){
-				ig.EvaluateAllIIsPickability();
+			public void CheckAndActivateHoverPads(){
+				foreach(IIconGroup ig in GetAllRelevantIGs(this.GetPickedII())){
+					ig.ActivateHoverPads();
+				}
 			}
-		}
-		public abstract List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII);
-		public abstract IItemIcon CreateItemIcon(IUIItem item);
+			public void DeactivateHoverPads(){
+				foreach(IIconGroup ig in this.GetAllRelevantIGs(this.GetPickedII()))
+					ig.DeactivateHoverPads();
+			}
+			public abstract void EvaluateHoverability();
+			public abstract void ResetHoverability();
+			public abstract void HoverInitialPickUpReceiver();
+			public virtual void ClearTAFields(){
+				this.ClearPickedUIE();
+				ClearHoverFields();
+			}
+			protected abstract void ClearHoverFields();
+			public void EvaluatePickability(){
+				foreach(IIconGroup ig in GetAllRelevantIGs(null)){
+					ig.EvaluateAllIIsPickability();
+				}
+			}
+			public abstract List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII);
+			public abstract IItemIcon CreateItemIcon(IUIItem item);
+			public abstract void ExecuteTransaction();
+		/*  */
 	}
 }
 

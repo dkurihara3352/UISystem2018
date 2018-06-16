@@ -5,28 +5,19 @@ using UnityEngine;
 namespace UISystem{
 	public interface IPickUpManager{
 		IPickableUIE GetPickedUIE();
-		IPickUpReceiver GetHoveredPUReceiver();
-		void ClearTAFields();
+		void ClearPickedUIE();
 		IPickUpContextUIE GetPickUpContextUIE();
 	}
 	public abstract class AbsPickUpManager: IPickUpManager{
 		public IPickableUIE GetPickedUIE(){
-			return pickedUIE;
+			return thisPickedUIE;
 		}
-		protected IPickableUIE pickedUIE;
+		protected IPickableUIE thisPickedUIE;
 		protected void SetPickedUIE(IPickableUIE pickedUIE){
-			this.pickedUIE = pickedUIE;
+			thisPickedUIE = pickedUIE;
 		}
-		public IPickUpReceiver GetHoveredPUReceiver(){
-			return hoveredPUReceiver;
-		}
-		protected IPickUpReceiver hoveredPUReceiver;
-		protected void SetHoveredPUReceiver(IPickUpReceiver puReceiver){
-			this.hoveredPUReceiver = puReceiver;
-		}
-		public virtual void ClearTAFields(){
-			SetPickedUIE(null);
-			SetHoveredPUReceiver(null);
+		public void ClearPickedUIE(){
+			thisPickedUIE = null;
 		}
 		public abstract IPickUpContextUIE GetPickUpContextUIE();
 	}

@@ -11,6 +11,7 @@ namespace UISystem{
 		void SetQuantity(int q);
 		bool IsSameAs(IUIItem other);
 		int GetItemID();
+		bool IsStackable();
 	}
 	public abstract class AbsUIItem: IUIItem{
 		public AbsUIItem(IItemTemplate itemTemp, int quantity, int itemID){
@@ -40,6 +41,9 @@ namespace UISystem{
 				return this.itemTemp == other.GetItemTemplate();
 			else/* non stackable */
 				return this.itemID == other.GetItemID();
+		}
+		public bool IsStackable(){
+			return this.itemTemp.IsStackable();
 		}
 	}
 	public interface IEquippableUIItem: IUIItem, IEquipStateHandler{

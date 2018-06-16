@@ -6,28 +6,39 @@ namespace UISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
 		void EvaluatePickability();
 		void EvaluateHoverability(IItemIcon pickedII);
+		void SetUpAsPickedII();
+
 		IUIItem GetUIItem();
 		IItemTemplate GetItemTemplate();
 		int GetItemQuantity();
 		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 		bool HasSameItem(IItemIcon other);
-		int CalcTransferableQuantity(int pickedQ);
-		int CalcPickedQuantity();
+		bool LeavesGhost();
+
 		bool IsTransferable();
+		int GetTransferableQuantity();
+		void UpdateTransferableQuantity(int pickedQuantity);
+
 		void IncreaseBy(int quantity, bool doesIncrement);
 		void DecreaseBy(int quantity, bool doesIncrement);
-		void UpdateTransferableQuantity(int pickedQuantity);
+
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
-		bool LeavesGhost();
+		
 		void HandOverTravel(IItemIcon other);
 		void SetRunningTravelInterpolator(ITravelInterpolator irper);
+
+		void BecomeVisuallyPickedUp();
+		void BecomeVisuallyUnpicked();
+
+		void StopIIImageSmoothFollowDragPos();
 	}
-	public abstract class AbsItemIcon : AbsUIElement, IItemIcon{
+	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
 			this.iiTAM = arg.iiTAM;
-			this.item = arg.item;
+			thisItem = arg.item;
+			thisPickUpImplementor = new ItemIconPickUpImplementor(this, this.iiTAM);
 		}
 		protected override void ActivateImple(){
 			base.ActivateImple();
@@ -51,53 +62,49 @@ namespace UISystem{
 				}
 				this.BecomeUnpickable();
 			}
-			public void BecomePickable(){
+			public override void PickUp(){
+				iiTAStateEngine.PickUp();
+			}
+			public override void Drop(){
+				iiTAStateEngine.Drop();
+			}
+			public override void BecomePickable(){
 				iiTAStateEngine.BecomePickable();
 			}
-			public void BecomeUnpickable(){
+			public override void BecomeUnpickable(){
 				iiTAStateEngine.BecomeUnpickable();
 			}
-			public void BecomePicked(){
-				iiTAStateEngine.BecomePicked();
-			}
-			public bool IsPickable(){
+			public override bool IsPickable(){
 				return iiTAStateEngine.IsPickable();
 			}
-			public bool IsPicked(){
+			public override bool IsPicked(){
 				return iiTAStateEngine.IsPicked();
 			}
 			public void UpdateTransferableQuantity(int pickedQuantity){
 				int transQ = this.CalcTransferableQuantity(pickedQuantity);
-				this.transferableQuantity = transQ;
+				this.thisTransferableQuantity = transQ;
 			}
-			public int CalcTransferableQuantity(int pickedQuantity){
+			int CalcTransferableQuantity(int pickedQuantity){
 				return this.GetMaxTransferableQuantity() - pickedQuantity;
 			}
 			protected abstract int GetMaxTransferableQuantity();
-			int transferableQuantity;
+			int thisTransferableQuantity;
+			public int GetTransferableQuantity(){
+				return thisTransferableQuantity;
+			}
 			public bool IsTransferable(){
-				return transferableQuantity > 0;
+				return thisTransferableQuantity > 0;
 			}
-		/* IPickableUIE imple */
-			void CheckAndCallPickUp(int touchCount){
-				if(touchCount == 1){
-					CheckForImmediatePickUp();
-				}else{
-					if(touchCount == 2){
-						CheckForSecondTouchPickUp();
-					}
-				}
-				return;
-			}
-			public void PickUp(){
-				this.BecomePicked();
-			}
-			public abstract void CheckForImmediatePickUp();
-			public abstract void CheckForDelayedPickUp();
-			public abstract void CheckForSecondTouchPickUp();
-			public abstract void CheckForDragPickUp();
+		/*  */
+			public override void DeclinePickUp(){}
 			public void BecomeVisuallyPickedUp(){}
 			public void BecomeVisuallyUnpicked(){}
+			public void StopIIImageSmoothFollowDragPos(){}
+		/* Picked Up Behaviour */
+			readonly IItemIconPickUpImplementor thisPickUpImplementor;
+			public void SetUpAsPickedII(){
+				thisPickUpImplementor.SetUpAsPickedII();
+			}
 		/* Hoverability state handling */
 			public void EvaluateHoverability(IItemIcon pickedII){
 				if(this.IsEligibleForHover(pickedII))
@@ -127,12 +134,11 @@ namespace UISystem{
 			public abstract void CheckForHover();
 		/* Emptiness State Handling */
 			void InitializeEmptinessState(){
-				IUIItem item = this.GetUIItem();
-				this.Disemptify(item);
+				this.Disemptify(thisItem);
 			}
-			readonly IEmptinessStateEngine engine;
+			readonly IEmptinessStateEngine emptinessEngine;
 			public bool IsEmpty(){
-				return engine.IsEmpty();
+				return emptinessEngine.IsEmpty();
 			}
 			public void DisemptifyInstantly(IUIItem item){
 			}
@@ -140,12 +146,12 @@ namespace UISystem{
 			public void Disemptify(IUIItem item){}
 			public void Emptify(){}
 		/* IG */
-			protected IIconGroup iconGroup;
+			protected IIconGroup thisIG;
 			public IIconGroup GetIconGroup(){
-				return iconGroup;
+				return thisIG;
 			}
 			bool IsReorderable(){
-				return this.iconGroup.AllowsInsert() && this.iconGroup.GetSize() > 1;
+				return thisIG.AllowsInsert() && thisIG.GetSize() > 1;
 			}
 			int slotID;
 			public void SetSlotID(int id){
@@ -155,35 +161,32 @@ namespace UISystem{
 				return slotID;
 			}
 		/* Item Handling */
-			protected IUIItem item;
+			protected IUIItem thisItem;
 			public IUIItem GetUIItem(){
-				return item;
+				return thisItem;
 			}
 			public int GetItemQuantity(){
-				return this.item.GetQuantity();
+				return thisQuantity;
+			}
+			protected int thisQuantity{
+				get{return thisItem.GetQuantity();}
 			}
 			void SetQuantity(int q){
-				this.item.SetQuantity(q);
+				thisItem.SetQuantity(q);
 			}
-			protected IItemTemplate itemTemp{
-				get{return this.item.GetItemTemplate();}
+			protected IItemTemplate thisItemTemp{
+				get{return thisItem.GetItemTemplate();}
 			}
 			public IItemTemplate GetItemTemplate(){
-				return this.itemTemp;
+				return thisItemTemp;
 			}
 			public abstract bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 			public abstract bool HasSameItem(IItemIcon other);
+			public abstract bool LeavesGhost();
 		/* input handling */
 			public override void OnTouch(int touchCount){
-				CheckAndCallPickUp(touchCount);
-				CheckAndIncrementPickUpQuantity();
-			}			
-			public override void OnDelayedTouch(){
-				CheckForDelayedPickUp();
-			}
-			public override void OnDrag(Vector2 pos, Vector2 deltaP){
-				CheckForDragPickUp();
-				/* and do some smooth follow stuff */
+				base.OnTouch(touchCount);
+				thisPickUpImplementor.CheckAndIncrementPickUpQuantity();
 			}
 		/* Travelling */
 			ITravelInterpolator runningTravelInterpolator;
@@ -209,34 +212,6 @@ namespace UISystem{
 			}
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
 				GetIconGroup().SwapIIInAllMutations(this, targetII);
-			}
-		/*  */
-		public abstract bool LeavesGhost();
-		public void DeclinePickUp(){}
-		/* incrementing */
-			void CheckAndIncrementPickUpQuantity(){
-				if(this.iiTAM.IsInPickedUpState()){
-					int incrementQuantity = CalcPickedQuantity();
-					if(incrementQuantity > 0)
-						this.IncrementPickUpQuantityBy(incrementQuantity);
-					else
-						this.DeclineIncrementPickUpQuantity();
-				}
-			}
-			public int CalcPickedQuantity(){
-				int transferableQuantity = this.transferableQuantity;
-				int pickUpStepQuantity = GetItemTemplate().GetPickUpStepQuantity();
-				return Mathf.Min(transferableQuantity, pickUpStepQuantity);
-			}
-			void IncrementPickUpQuantityBy(int increQuantity){
-				IItemIcon pickedII = iiTAM.GetPickedII();
-				pickedII.IncreaseBy(increQuantity, doesIncrement:true);
-				this.DecreaseBy(increQuantity, doesIncrement:true);
-				int newPickedUpQuantity = pickedII.GetItemQuantity();
-				this.UpdateTransferableQuantity(newPickedUpQuantity);
-			}
-			void DeclineIncrementPickUpQuantity(){
-
 			}
 		public void IncreaseBy(int quantity, bool doesIncrement){}
 		public void DecreaseBy(int quantity, bool doesIncrement){

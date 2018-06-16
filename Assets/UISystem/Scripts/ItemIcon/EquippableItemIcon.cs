@@ -21,7 +21,7 @@ namespace UISystem{
 			}
 			IEquippableUIItem eqpItem{
 				get{
-					return this.item as IEquippableUIItem;//safe
+					return this.thisItem as IEquippableUIItem;//safe
 				}
 			}
 			public IEquippableUIItem GetEquippableItem(){
@@ -29,8 +29,8 @@ namespace UISystem{
 			}
 			IEqpToolIG eqpToolIG{
 				get{
-					if(this.iconGroup is IEqpToolIG)
-						return this.iconGroup as IEqpToolIG;
+					if(this.thisIG is IEqpToolIG)
+						return this.thisIG as IEqpToolIG;
 					else 
 						throw new System.InvalidCastException("this.iconGroup must be of type IEqpToolIG");
 				}
@@ -52,7 +52,7 @@ namespace UISystem{
 					if(this.IsInEqpIG())
 						return thisQuantity;
 					else{
-						if(this.itemTemp.IsStackable())
+						if(this.thisItemTemp.IsStackable())
 							return thisQuantity;
 						else{
 							IIconGroup relevantEqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
@@ -83,6 +83,17 @@ namespace UISystem{
 					else
 						this.DeclinePickUp();
 				}
+			}
+			protected override bool IsEligibleForQuickDrop(){
+				IEquippableItemIcon hoveredEqpII = eqpIITAM.GetHoveredEqpII();
+				if(this.GetEquippableItem().IsStackable() && this.HasSameItem(hoveredEqpII))
+					return false;
+				else
+					return true;
+			}
+			public override void Drop(){
+				base.Drop();
+				eqpIITAM.UpdateEquippedItems();
 			}
 		/* Equip imple */
 			public void Equip(){}
@@ -136,13 +147,13 @@ namespace UISystem{
 				return this.eqpToolIG is IEqpToolPoolIG;
 			}
 			public bool IsBowOrWearItemIcon(){
-				return this.itemTemp is IBowTemplate || this.itemTemp is IWearTemplate;
+				return this.thisItemTemp is IBowTemplate || this.thisItemTemp is IWearTemplate;
 			}
 			public override bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp){
 				if(
-					(this.itemTemp is IBowTemplate && itemTemp is IBowTemplate)
-					||(this.itemTemp is IWearTemplate && itemTemp is IWearTemplate)
-					||(this.itemTemp is ICarriedGearTemplate && itemTemp is ICarriedGearTemplate)
+					(this.thisItemTemp is IBowTemplate && itemTemp is IBowTemplate)
+					||(this.thisItemTemp is IWearTemplate && itemTemp is IWearTemplate)
+					||(this.thisItemTemp is ICarriedGearTemplate && itemTemp is ICarriedGearTemplate)
 				)
 					return true;
 				else

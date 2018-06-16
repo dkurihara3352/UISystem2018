@@ -12,13 +12,14 @@ namespace UISystem{
 		readonly IIIHoverableState hoverableState;
 		readonly IIIUnhoverableState unhoverableState;
 		readonly IIIHoveredState hoveredState;
+		readonly IIIDroppedState droppedState;
 		public bool IsPickable(){
 			return curState is IIIPickedState;
 		}
 		public bool IsPicked(){
 			return curState is IIIPickedState;
 		}
-		public void BecomePicked(){
+		public void PickUp(){
 			if(this.IsPickable())
 				TrySwitchState(pickedState);
 			else
@@ -29,6 +30,9 @@ namespace UISystem{
 		}
 		public void BecomeUnpickable(){
 			TrySwitchState(unpickableState);
+		}
+		public void Drop(){
+			TrySwitchState(droppedState);
 		}
 		public void WaitForPickUp(){
 			return;

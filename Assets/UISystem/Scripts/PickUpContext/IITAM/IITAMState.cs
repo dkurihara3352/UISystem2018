@@ -3,6 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
+	public interface IIITAMStateHandler{
+		void SetToPickedState(IItemIcon pickedII);
+		void SetToDefaultState();
+		bool IsInPickedUpState();
+		bool IsInDefaultState();
+	}
+	public interface IItemIcomTAManagerStateEngine: ISwitchableStateEngine<IItemIconTAManagerState>, IIITAMStateHandler{
+	}
+	public class ItemIconTAManagerStateEngine: AbsSwitchableStateEngine<IItemIconTAManagerState>, IItemIcomTAManagerStateEngine{
+		public ItemIconTAManagerStateEngine(){
+			/* init states here */
+			/* set to init state here */
+		}
+		public void SetToPickedState(IItemIcon pickedII){
+			pickedState.SetPickedII(pickedII);
+			this.TrySwitchState(pickedState);
+		}
+		readonly IIITAMPickedState pickedState;
+		public void SetToDefaultState(){
+			this.TrySwitchState(defaultState);
+		}
+		readonly IIITAMDefaultState defaultState;
+		public bool IsInPickedUpState(){
+			return curState is IIITAMPickedState;
+		}
+		public bool IsInDefaultState(){
+			return curState is IIITAMDefaultState;
+		}
+	}
 	public interface IItemIconTAManagerState: ISwitchableState{}
 	public abstract class AbsItemIconTAManagerState: IItemIconTAManagerState{
 		public AbsItemIconTAManagerState(IItemIconTransactionManager tam){
@@ -26,7 +55,7 @@ namespace UISystem{
 		public override void OnExit(){
 			tam.ClearTAFields();
 			tam.DeactivateHoverPads();
-			tam.ClearHoverability();
+			tam.ResetHoverability();
 			SetPickedII( null);
 		}
 		public void SetPickedII(IItemIcon pickedII){
@@ -53,29 +82,6 @@ namespace UISystem{
 			tam.EvaluatePickability();
 		}
 		public override void OnExit(){}
-	}
-	public interface IItemIcomTAManagerStateEngine: ISwitchableStateEngine<IItemIconTAManagerState>, IIITAMStateHandler{
-	}
-	public class ItemIconTAManagerStateEngine: AbsSwitchableStateEngine<IItemIconTAManagerState>, IItemIcomTAManagerStateEngine{
-		public ItemIconTAManagerStateEngine(){
-			/* init states here */
-			/* set to init state here */
-		}
-		public void SetToPickedState(IItemIcon pickedII){
-			pickedState.SetPickedII(pickedII);
-			this.TrySwitchState(pickedState);
-		}
-		readonly IIITAMPickedState pickedState;
-		public void SetToDefaultState(){
-			this.TrySwitchState(defaultState);
-		}
-		readonly IIITAMDefaultState defaultState;
-		public bool IsInPickedUpState(){
-			return curState is IIITAMPickedState;
-		}
-		public bool IsInDefaultState(){
-			return curState is IIITAMDefaultState;
-		}
 	}
 }
 
