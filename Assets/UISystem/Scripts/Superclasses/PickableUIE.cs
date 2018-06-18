@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IPickabilityStateHandler{
-		void PickUp();
-		void BecomePickable();
-		void BecomeUnpickable();
-		void Drop();
-		bool IsPickable();
-		bool IsPicked();
-	}
-	public interface IPickableUIE: IUIElement, IPickabilityStateHandler, IPickUpTransactionElement{
-		bool IsEligibleForQuickDrop();
+	public interface IPickableUIE: IUIElement, IPickUpTransactionElement{
 		void DeclinePickUp();
 		void CheckForImmediatePickUp();
 		void CheckForDelayedPickUp();
 		void CheckForSecondTouchPickUp();
 		void CheckForDragPickUp(Vector2 pos, Vector2 deltaP);
+		void CheckForQuickDrop();
+		void CheckForDelayedDrop();
 	}
 	public abstract class AbsPickableUIE: AbsUIElement, IPickableUIE{
 		public AbsPickableUIE(IUIElementConstArg arg): base(arg){}
@@ -25,14 +18,13 @@ namespace UISystem{
 			CheckAndCallTouchPickUp(touchCount);
 		}
 		void CheckAndCallTouchPickUp(int touchCount){
-			if(!this.IsPicked())
-				if(touchCount == 1){
-					this.CheckForImmediatePickUp();
-				}else{
-					if(touchCount == 2){
-						this.CheckForSecondTouchPickUp();
-					}
+			if(touchCount == 1){
+				this.CheckForImmediatePickUp();
+			}else{
+				if(touchCount == 2){
+					this.CheckForSecondTouchPickUp();
 				}
+			}
 			return;
 		}
 		public override void OnDelayedTouch(){
@@ -42,25 +34,17 @@ namespace UISystem{
 			this.CheckForDragPickUp(pos, deltaP);
 		}
 		public override void OnRelease(){
-			if(this.IsPicked() && this.IsEligibleForQuickDrop())
-				this.Drop();
+			this.CheckForQuickDrop();
 		}
 		public override void OnDelayedRelease(){
-			if(this.IsPicked())
-				this.Drop();
+			this.CheckForDelayedDrop();
 		}
 		public abstract void CheckForImmediatePickUp();
 		public abstract void CheckForSecondTouchPickUp();
 		public abstract void CheckForDelayedPickUp();
 		public abstract void CheckForDragPickUp(Vector2 pos, Vector2 deltaP);
-
-		public abstract void PickUp();
-		public abstract void BecomePickable();
-		public abstract void BecomeUnpickable();
-		public abstract bool IsPicked();
-		public abstract bool IsPickable();
-		public abstract void Drop();
-		public abstract bool IsEligibleForQuickDrop();
+		public abstract void CheckForQuickDrop();
+		public abstract void CheckForDelayedDrop();
 		public abstract void DeclinePickUp();
 	}
 }

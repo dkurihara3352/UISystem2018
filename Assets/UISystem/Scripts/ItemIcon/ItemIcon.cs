@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler{
+	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler{
 		void EvaluatePickability();
 		void EvaluateHoverability(IItemIcon pickedII);
 		void SetUpAsPickedII();
@@ -33,6 +33,9 @@ namespace UISystem{
 		void BecomeVisuallyUnpicked();
 
 		void StopIIImageSmoothFollowDragPos();
+
+		void Immigrate(IIconGroup destIG);
+		void Transfer(IIconGroup destIG);
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -47,7 +50,7 @@ namespace UISystem{
 		}
 		protected readonly IItemIconTransactionManager iiTAM;
 		/* IITransaction */
-			readonly IIITransactionStateEngine iiTAStateEngine;
+			protected IIITransactionStateEngine iiTAStateEngine;
 			void InitializeTransactionState(){
 				WaitForPickUp();/* returns immediately in turn */
 			}
@@ -62,22 +65,22 @@ namespace UISystem{
 				}
 				this.BecomeUnpickable();
 			}
-			public override void PickUp(){
+			public void PickUp(){
 				iiTAStateEngine.PickUp();
 			}
-			public override void Drop(){
+			public void Drop(){
 				iiTAStateEngine.Drop();
 			}
-			public override void BecomePickable(){
+			public void BecomePickable(){
 				iiTAStateEngine.BecomePickable();
 			}
-			public override void BecomeUnpickable(){
+			public void BecomeUnpickable(){
 				iiTAStateEngine.BecomeUnpickable();
 			}
-			public override bool IsPickable(){
+			public bool IsPickable(){
 				return iiTAStateEngine.IsPickable();
 			}
-			public override bool IsPicked(){
+			public bool IsPicked(){
 				return iiTAStateEngine.IsPicked();
 			}
 			public void UpdateTransferableQuantity(int pickedQuantity){
@@ -189,6 +192,12 @@ namespace UISystem{
 				thisPickUpImplementor.CheckAndIncrementPickUpQuantity();
 			}
 		/* Travelling */
+			public void Immigrate(IIconGroup destIG){
+				destIG.ReceiveImmigrant(this);
+			}
+			public void Transfer(IIconGroup destIG){
+				destIG.ReceiveTransfer(this);
+			}
 			ITravelInterpolator runningTravelInterpolator;
 			public void SetRunningTravelInterpolator(ITravelInterpolator irper){
 				this.runningTravelInterpolator = irper;

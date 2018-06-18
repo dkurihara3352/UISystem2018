@@ -19,11 +19,8 @@ namespace UISystem{
 		void ExecuteTransaction();
 	}
 	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
-		public AbsItemIconTransactionManager(){
-			this.stateEngine = new ItemIconTAManagerStateEngine();
-		}
 		/* tam state */
-			readonly IItemIcomTAManagerStateEngine stateEngine;
+			readonly IItemIconTAManagerStateEngine stateEngine;
 			public void Activate(){
 				SetToDefaultState();
 			}

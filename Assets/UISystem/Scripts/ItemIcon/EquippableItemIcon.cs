@@ -11,6 +11,7 @@ namespace UISystem{
 	public class EquippableItemIcon: AbsItemIcon, IEquippableItemIcon{
 		public EquippableItemIcon(IEquippableItemIconConstArg arg) :base(arg){
 			this.eqpTool = arg.tool;
+			this.iiTAStateEngine = new EqpIITransactionStateEngine(this, eqpIITAM, eqpTool);
 		}
 		/*  */
 			readonly IEquipTool eqpTool;
@@ -71,7 +72,7 @@ namespace UISystem{
 			public override void CheckForSecondTouchPickUp(){
 				this.CheckForPickUp();
 			}
-			public override void CheckForDragPickUp(){
+			public override void CheckForDragPickUp(Vector2 pos, Vector2 deltaP){
 				return;
 			}
 			void CheckForPickUp(){
@@ -84,16 +85,20 @@ namespace UISystem{
 						this.DeclinePickUp();
 				}
 			}
-			protected override bool IsEligibleForQuickDrop(){
+			bool IsEligibleForQuickDrop(){
 				IEquippableItemIcon hoveredEqpII = eqpIITAM.GetHoveredEqpII();
-				if(this.GetEquippableItem().IsStackable() && this.HasSameItem(hoveredEqpII))
+				if(thisItem.IsStackable() && this.HasSameItem(hoveredEqpII))
 					return false;
 				else
 					return true;
 			}
-			public override void Drop(){
-				base.Drop();
-				eqpIITAM.UpdateEquippedItems();
+			public override void CheckForQuickDrop(){
+				if(this.IsEligibleForQuickDrop())
+					Drop();
+			}
+			public override void CheckForDelayedDrop(){
+				if(!this.IsEligibleForQuickDrop())
+					Drop();
 			}
 		/* Equip imple */
 			public void Equip(){}

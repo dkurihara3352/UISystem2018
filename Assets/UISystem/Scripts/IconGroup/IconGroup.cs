@@ -20,6 +20,8 @@ namespace UISystem{
 		List<IItemIcon> GetAllItemIconWithItemTemplate(IItemTemplate itemTemp);
 		void AddEmptyAddTarget(IUIItem pickedItem);
 		void RemoveEmptyIIs();
+		void ReceiveImmigrant(IItemIcon immmigratingII);
+		void ReceiveTransfer(IItemIcon transferringII);
 	}
 	public abstract class AbsIconGroup: AbsUIElement, IIconGroup{
 		public AbsIconGroup(IIconGroupConstArg arg) :base(arg){
@@ -98,41 +100,41 @@ namespace UISystem{
 				return result;
 			}
 		/*  */
-		protected override void ActivateImple(){
-			base.ActivateImple();
-			DeactivateHoverPads();
-		}
-		public void EvaluateAllIIsPickability(){
-			foreach(IItemIcon ii in this.itemIcons){
-				ii.EvaluatePickability();
+			protected override void ActivateImple(){
+				base.ActivateImple();
+				DeactivateHoverPads();
 			}
-		}
-		public void EvaluateAllIIsHoverability(IItemIcon pickedII){
-			foreach(IItemIcon ii in this.itemIcons){
-				if(ii != pickedII){
-					ii.EvaluateHoverability(pickedII);
+			public void EvaluateAllIIsPickability(){
+				foreach(IItemIcon ii in this.itemIcons){
+					ii.EvaluatePickability();
 				}
 			}
-		}
-		public bool AllowsInsert(){
-			return true;
-		}
-		public void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII){
-			List<IItemIcon> newIIs = new List<IItemIcon>();
-			int i = 0;
-			foreach(IItemIcon ii in this.itemIcons)
-				newIIs[i++] = ii;
-			newIIs[indexToReplace] = replacingII;
-			UpdateIIs(newIIs);
-		}
-		public void UpdateIIs(List<IItemIcon> newIIs){}
-		IHoverPadsManager hoverPadsManager;
-		public void ActivateHoverPads(){
-			this.hoverPadsManager.ActivateHoverPads();
-		}
-		public void DeactivateHoverPads(){
-			this.hoverPadsManager.DeactivateHoverPads();
-		}
+			public void EvaluateAllIIsHoverability(IItemIcon pickedII){
+				foreach(IItemIcon ii in this.itemIcons){
+					if(ii != pickedII){
+						ii.EvaluateHoverability(pickedII);
+					}
+				}
+			}
+			public bool AllowsInsert(){
+				return true;
+			}
+			public void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII){
+				List<IItemIcon> newIIs = new List<IItemIcon>();
+				int i = 0;
+				foreach(IItemIcon ii in this.itemIcons)
+					newIIs[i++] = ii;
+				newIIs[indexToReplace] = replacingII;
+				UpdateIIs(newIIs);
+			}
+			public void UpdateIIs(List<IItemIcon> newIIs){}
+			IHoverPadsManager hoverPadsManager;
+			public void ActivateHoverPads(){
+				this.hoverPadsManager.ActivateHoverPads();
+			}
+			public void DeactivateHoverPads(){
+				this.hoverPadsManager.DeactivateHoverPads();
+			}
 		/* Mutation */
 			List<IMutation> mutationStack;
 			IMutation runningMutation{
@@ -155,7 +157,7 @@ namespace UISystem{
 			int GetProspectiveSlotID(IUIItem item){
 				List<IUIItem> items = this.GetItems();
 				items.Add(item);
-				// this.GetSorter().SortItems(items);
+				this.GetSorter().SortItems(items);
 				return items.IndexOf(item);
 			}
 
@@ -170,11 +172,22 @@ namespace UISystem{
 			public void RemoveEmptyIIs(){
 
 			}
-			// IUIItemSorter GetSorter(){
+			IUIItemSorter GetSorter(){
+				return null;
+			}
+			void AddItemAndMutate(IUIItem item, int idAtAdd){	
+			}
+			public void ReceiveImmigrant(IItemIcon immigratingII){
+				int destSlotID = GetProspectiveSlotID(immigratingII.GetUIItem());
+				this.ReceiveImmigrantAt(immigratingII, destSlotID);
+			}
+			void ReceiveImmigrantAt(IItemIcon immigratingII, int destSlotID){
 
-			// }
-			void AddItemAndMutate(IUIItem item, int idAtAdd){
-				
+			}
+			public void ReceiveTransfer(IItemIcon transferringII){
+				IUIItem addedItem = transferringII.GetUIItem();
+				int destSlotID = GetProspectiveSlotID(addedItem);
+				AddItemAndMutate(addedItem, destSlotID);
 			}
 		/*  */
 	}

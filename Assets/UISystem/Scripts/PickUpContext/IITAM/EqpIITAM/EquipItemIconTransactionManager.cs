@@ -16,6 +16,7 @@ namespace UISystem{
 		IEquipToolPanel GetHoveredEqpToolPanel();
 		void ClearHoveredEqpII();
 		void ClearEqpIIsToEquipAndUnequip();
+		void UpdateEquippedItems();
 	}
 
 	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
@@ -168,6 +169,8 @@ namespace UISystem{
 			void ClearHoveredEqpPanel(){
 				TrySwitchHoveredEqpII(null);
 			}
+		/*  */
+			public void UpdateEquippedItems(){}
 		/*  */
 	}
 }
