@@ -5,29 +5,33 @@ using UnityEngine;
 namespace UISystem{
 	public interface IIconGroup: IUIElement{
 		void EvaluateAllIIsPickability();
+		void EvaluateAllIIsHoverability(IItemIcon pickedII);
+
 		bool AllowsInsert();
 		int GetSize();
 		int GetItemQuantity(IUIItem item);
-		void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII);
 		void UpdateIIs(List<IItemIcon> newIIs);
-		void ActivateHoverPads();
-		void DeactivateHoverPads();
-		void SwapIIInAllMutations(IItemIcon sourceII, IItemIcon targetII);
+		void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII);
 		bool HasSlotSpace();
 		bool HasItemSpace(IUIItem item);
-		void EvaluateAllIIsHoverability(IItemIcon pickedII);
 		IItemIcon GetItemIconFromItem(IUIItem item);
 		List<IItemIcon> GetAllItemIconWithItemTemplate(IItemTemplate itemTemp);
+		
+		void ActivateHoverPads();
+		void DeactivateHoverPads();
+
 		void AddEmptyAddTarget(IUIItem pickedItem);
 		void RemoveEmptyIIs();
 		void ReceiveImmigrant(IItemIcon immmigratingII);
 		void ReceiveTransfer(IItemIcon transferringII);
+		void SwapIIInAllMutations(IItemIcon sourceII, IItemIcon targetII);
 	}
 	public abstract class AbsIconGroup: AbsUIElement, IIconGroup{
 		public AbsIconGroup(IIconGroupConstArg arg) :base(arg){
 			CheckSizeValidity(arg.minSize, arg.maxSize);
 			this.minSize = arg.minSize;
 			this.maxSize = arg.maxSize;
+			this.hoverPadsManager = arg.hoverPadsManager;
 		}
 		void CheckSizeValidity(int minSize, int maxSize){
 			if(maxSize < 1)
@@ -36,6 +40,23 @@ namespace UISystem{
 				if(maxSize < minSize)
 					throw new System.InvalidOperationException("minSize must not be greater than maxSize");
 		}
+		protected override void ActivateImple(){
+			base.ActivateImple();
+			DeactivateHoverPads();
+		}
+		/* TA evaluation */
+			public void EvaluateAllIIsPickability(){
+				foreach(IItemIcon ii in this.itemIcons){
+					ii.EvaluatePickability();
+				}
+			}
+			public void EvaluateAllIIsHoverability(IItemIcon pickedII){
+				foreach(IItemIcon ii in this.itemIcons){
+					if(ii != pickedII){
+						ii.EvaluateHoverability(pickedII);
+					}
+				}
+			}
 		/* slots and iis */
 			readonly int minSize;
 			readonly int maxSize;
@@ -47,6 +68,7 @@ namespace UISystem{
 						return true;
 				return false;
 			}
+			protected List<IItemIcon> itemIcons;
 			protected bool HasEmptySlot(){
 				foreach(IItemIcon ii in this.itemIcons){
 					if(ii.IsEmpty())
@@ -54,17 +76,19 @@ namespace UISystem{
 				}
 				return false;
 			}
-			public abstract bool HasItemSpace(IUIItem item);
 			public int GetSize(){
 				return itemIcons.Count;
 			}
-			protected List<IItemIcon> itemIcons;
 			public int GetItemQuantity(IUIItem item){
 				int result = 0;
 				foreach( IItemIcon ii in this.itemIcons){
-					IUIItem thisItem = ii.GetUIItem();
-					if(thisItem.IsSameAs(item))
-						result += thisItem.GetQuantity();
+					if(ii.IsEmpty())
+						continue;
+					else{
+						IUIItem thisItem = ii.GetUIItem();
+						if(thisItem.IsSameAs(item))
+							result += thisItem.GetQuantity();
+					}
 				}
 				return result;
 			}
@@ -81,7 +105,8 @@ namespace UISystem{
 					if(ii.IsEmpty())
 						continue;
 					else{
-						if(item.IsSameAs(ii.GetUIItem()))
+						IUIItem thisItem = ii.GetUIItem();
+						if(thisItem.IsSameAs(item))
 							return ii;
 					}
 				}
@@ -93,31 +118,12 @@ namespace UISystem{
 					if(ii.IsEmpty())
 						continue;
 					else{
-						if(itemTemp.IsSameAs(ii.GetItemTemplate()))
+						IItemTemplate thisItemTemp = ii.GetItemTemplate();
+						if(thisItemTemp.IsSameAs(itemTemp))
 							result.Add(ii);
 					}
 				}
 				return result;
-			}
-		/*  */
-			protected override void ActivateImple(){
-				base.ActivateImple();
-				DeactivateHoverPads();
-			}
-			public void EvaluateAllIIsPickability(){
-				foreach(IItemIcon ii in this.itemIcons){
-					ii.EvaluatePickability();
-				}
-			}
-			public void EvaluateAllIIsHoverability(IItemIcon pickedII){
-				foreach(IItemIcon ii in this.itemIcons){
-					if(ii != pickedII){
-						ii.EvaluateHoverability(pickedII);
-					}
-				}
-			}
-			public bool AllowsInsert(){
-				return true;
 			}
 			public void ReplaceAndUpdateII(int indexToReplace, IItemIcon replacingII){
 				List<IItemIcon> newIIs = new List<IItemIcon>();
@@ -128,7 +134,27 @@ namespace UISystem{
 				UpdateIIs(newIIs);
 			}
 			public void UpdateIIs(List<IItemIcon> newIIs){}
-			IHoverPadsManager hoverPadsManager;
+			List<IUIItem> GetItems(){
+				List<IUIItem> result = new List<IUIItem>();
+				foreach(IItemIcon ii in this.itemIcons){
+					IUIItem item = ii.GetUIItem();
+					result.Add(item);
+				}
+				return result;
+			}
+			public void RemoveEmptyIIs(){
+
+			}
+			public abstract bool HasItemSpace(IUIItem item);
+		/* Sorting */
+			IUIItemSorter GetSorter(){
+				return null;
+			}
+			public bool AllowsInsert(){
+				return true;
+			}
+		/* hover pads */
+			readonly IHoverPadsManager hoverPadsManager;
 			public void ActivateHoverPads(){
 				this.hoverPadsManager.ActivateHoverPads();
 			}
@@ -160,21 +186,6 @@ namespace UISystem{
 				this.GetSorter().SortItems(items);
 				return items.IndexOf(item);
 			}
-
-			List<IUIItem> GetItems(){
-				List<IUIItem> result = new List<IUIItem>();
-				foreach(IItemIcon ii in this.itemIcons){
-					IUIItem item = ii.GetUIItem();
-					result.Add(item);
-				}
-				return result;
-			}
-			public void RemoveEmptyIIs(){
-
-			}
-			IUIItemSorter GetSorter(){
-				return null;
-			}
 			void AddItemAndMutate(IUIItem item, int idAtAdd){	
 			}
 			public void ReceiveImmigrant(IItemIcon immigratingII){
@@ -194,24 +205,20 @@ namespace UISystem{
 	public interface IIconGroupConstArg: IUIElementConstArg{
 		int minSize{get;}
 		int maxSize{get;}
+		IHoverPadsManager hoverPadsManager{get;}
 	}
-	public class IconGroupConstArg: IIconGroupConstArg{
-		readonly IUIManager _uim;
-		readonly IUIAdaptor _uia;
-		readonly IUIImage _image;
-		readonly int _minSize;
-		readonly int _maxSize;
-		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, int minSize, int maxSize){
-			this._uim = uim;
-			this._uia = uia;
-			this._image = image;
-			this._minSize = minSize;
-			this._maxSize = maxSize;
+	public class IconGroupConstArg: UIElementConstArg, IIconGroupConstArg{
+		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, int minSize, int maxSize, IHoverPadsManager hoverPadsManager): base(uim, uia, image){
+			thisMinSize = minSize;
+			thisMaxSize = maxSize;
+			thisHoverPadsManager = hoverPadsManager;
 		}
-		public IUIManager uim{get{return _uim;}}
-		public IUIAdaptor uia{get{return _uia;}}
-		public IUIImage image{get{return _image;}}
-		public int minSize{get{return _minSize;}}
-		public int maxSize{get{return _maxSize;}}
+
+		readonly int thisMinSize;
+		readonly int thisMaxSize;
+		readonly IHoverPadsManager thisHoverPadsManager;
+		public int minSize{get{return thisMinSize;}}
+		public int maxSize{get{return thisMaxSize;}}
+		public IHoverPadsManager hoverPadsManager{get{return thisHoverPadsManager;}}
 	}
 }
