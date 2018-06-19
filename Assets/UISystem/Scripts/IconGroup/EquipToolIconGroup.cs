@@ -100,7 +100,8 @@ namespace UISystem{
 		public override bool HasItemSpace(IUIItem item){
 			CheckPassedIUIItemTypeValidity(item);
 			IEquippableUIItem eqpItem = item as IEquippableUIItem;//safe
-			if(item is ICarriedGearTemplate){
+			IItemTemplate eqpItemTemp = eqpItem.GetItemTemplate();
+			if(eqpItemTemp is ICarriedGearTemplate){
 				int maxEquippableQuantity = eqpItem.GetMaxEquippableQuantity();
 				int equippedQuantity = this.GetItemQuantity(eqpItem);
 				int space = maxEquippableQuantity - equippedQuantity;
