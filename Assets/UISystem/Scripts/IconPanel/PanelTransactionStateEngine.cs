@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IPanelTransactionStateEngine<T>: ISwitchableStateEngine<T>, IHoverabilityStateHandler where T: IPanelTransactionState{}
-	public class EquipToolPanelTransactionStateEngine: AbsSwitchableStateEngine<IEquipToolPanelTransactionState>, IPanelTransactionStateEngine<IEquipToolPanelTransactionState>{
+	public interface IPanelTransactionStateEngine: ISwitchableStateEngine<IPanelTransactionState>, IHoverabilityStateHandler{}
+	public class EquipToolPanelTransactionStateEngine: AbsSwitchableStateEngine<IPanelTransactionState>, IPanelTransactionStateEngine{
 		public EquipToolPanelTransactionStateEngine(IEquippableIITAManager eqpIITAM, IEquipToolPanel panel, IEquipTool tool){
 			IEquipToolPanelTransactionStateConstArg arg = new EquipToolPanelTransactionStateConstArg(eqpIITAM, panel, tool);
 			this.waitingForPickUpState = new EquipToolPanelWaitingForPickUpState(arg);

@@ -356,8 +356,9 @@ public class IconGroupTest{
 		IUIAdaptor uia = Substitute.For<IUIAdaptor>();
 		IUIImage image = Substitute.For<IUIImage>();
 		IHoverPadsManager hoverPadsManager = Substitute.For<IHoverPadsManager>();
+		List<IItemIcon> iis = new List<IItemIcon>();
 
-		IIconGroupConstArg thisArg = new IconGroupConstArg(uim, uia, image, minSize, maxSize, hoverPadsManager);
+		IIconGroupConstArg thisArg = new IconGroupConstArg(uim, uia, image, minSize, maxSize, hoverPadsManager, iis);
 		TestIG testIG = new TestIG(thisArg);
 		arg = thisArg;
 		return testIG;

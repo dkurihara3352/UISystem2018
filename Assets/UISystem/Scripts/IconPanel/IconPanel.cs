@@ -14,7 +14,7 @@ namespace UISystem{
 			WaitForPickUp();
 		}
 		public abstract void CheckForHover();
-		protected IPanelTransactionStateEngine<IPanelTransactionState> panTAStateEngine;
+		protected IPanelTransactionStateEngine panelTransactionStateEngine;
 		public void EvaluateHoverability(IItemIcon pickedII){
 			if(this.IsEligibleForHover(pickedII))
 				BecomeHoverable();
@@ -23,22 +23,22 @@ namespace UISystem{
 		}
 		protected abstract bool IsEligibleForHover(IItemIcon pickedII);
 		public void WaitForPickUp(){
-			panTAStateEngine.WaitForPickUp();
+			panelTransactionStateEngine.WaitForPickUp();
 		}
 		public void BecomeHoverable(){
-			panTAStateEngine.BecomeHoverable();
+			panelTransactionStateEngine.BecomeHoverable();
 		}
 		public void BecomeUnhoverable(){
-			panTAStateEngine.BecomeUnhoverable();
+			panelTransactionStateEngine.BecomeUnhoverable();
 		}
 		public void BecomeHovered(){
-			panTAStateEngine.BecomeHovered();
+			panelTransactionStateEngine.BecomeHovered();
 		}
 		public bool IsHoverable(){
-			return panTAStateEngine.IsHoverable();
+			return panelTransactionStateEngine.IsHoverable();
 		}
 		public bool IsHovered(){
-			return panTAStateEngine.IsHovered();
+			return panelTransactionStateEngine.IsHovered();
 		}
 	}
 }

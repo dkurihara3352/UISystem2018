@@ -32,6 +32,7 @@ namespace UISystem{
 			this.minSize = arg.minSize;
 			this.maxSize = arg.maxSize;
 			this.hoverPadsManager = arg.hoverPadsManager;
+			this.itemIcons = arg.iis;
 		}
 		void CheckSizeValidity(int minSize, int maxSize){
 			if(maxSize < 1)
@@ -206,12 +207,14 @@ namespace UISystem{
 		int minSize{get;}
 		int maxSize{get;}
 		IHoverPadsManager hoverPadsManager{get;}
+		List<IItemIcon> iis{get;}
 	}
 	public class IconGroupConstArg: UIElementConstArg, IIconGroupConstArg{
-		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, int minSize, int maxSize, IHoverPadsManager hoverPadsManager): base(uim, uia, image){
+		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, int minSize, int maxSize, IHoverPadsManager hoverPadsManager, List<IItemIcon> iis): base(uim, uia, image){
 			thisMinSize = minSize;
 			thisMaxSize = maxSize;
 			thisHoverPadsManager = hoverPadsManager;
+			thisIIs = iis;
 		}
 
 		readonly int thisMinSize;
@@ -220,5 +223,7 @@ namespace UISystem{
 		public int minSize{get{return thisMinSize;}}
 		public int maxSize{get{return thisMaxSize;}}
 		public IHoverPadsManager hoverPadsManager{get{return thisHoverPadsManager;}}
+		readonly List<IItemIcon> thisIIs;
+		public List<IItemIcon> iis{get{return thisIIs;}}
 	}
 }

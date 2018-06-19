@@ -12,7 +12,7 @@ namespace UISystem{
 		public AbsEquipToolPanel(IEquipToolPanelConstArg arg): base(arg){
 			this.eqpIITAM = arg.eqpIITAM;
 			this.eqpTool = arg.eqpTool;
-			this.panTAStateEngine = new EquipToolPanelTransactionStateEngine(arg.eqpIITAM, this, arg.eqpTool) as IPanelTransactionStateEngine<IPanelTransactionState>;
+			this.panelTransactionStateEngine = arg.panelTransactionStateEngine;
 		}
 		readonly protected IEquippableIITAManager eqpIITAM;
 		readonly protected IEquipTool eqpTool;
@@ -114,8 +114,23 @@ namespace UISystem{
 			return;
 		}
 	}
+	/* const  */
 	public interface IEquipToolPanelConstArg: IUIElementConstArg{
 		IEquippableIITAManager eqpIITAM{get;}
 		IEquipTool eqpTool{get;}
-	}	
+		IPanelTransactionStateEngine panelTransactionStateEngine{get;}
+	}
+	public class EquipToolPanelConstArg: UIElementConstArg ,IEquipToolPanelConstArg{
+		public EquipToolPanelConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool, IPanelTransactionStateEngine engine): base(uim, uia, image){
+			thisEqpIITAM = eqpIITAM;
+			thisEqpTool = eqpTool;
+			thisPanelTransactionStateEngine = engine;
+		}
+		readonly IEquippableIITAManager thisEqpIITAM;
+		public IEquippableIITAManager eqpIITAM{get{return thisEqpIITAM;}}
+		readonly IEquipTool thisEqpTool;
+		public IEquipTool eqpTool{get{return thisEqpTool;}}
+		readonly IPanelTransactionStateEngine thisPanelTransactionStateEngine;
+		public IPanelTransactionStateEngine panelTransactionStateEngine{get{return thisPanelTransactionStateEngine;}}
+	}
 }

@@ -7,83 +7,99 @@ namespace UISystem{
 		public interface IPanelTransactionState: ISwitchableState{}
 		public abstract class AbsPanelTransactionState: IPanelTransactionState{
 			public AbsPanelTransactionState(IPanelTransactionStateConstArg arg){
-				this.panel = arg.panel;
+				thisPanel = arg.panel;
 			}
-			protected readonly IIconPanel panel;
+			protected readonly IIconPanel thisPanel;
 			public abstract void OnEnter();
 			public abstract void OnExit();
 		}
-		public interface IPanelWaitingForPickUpState: IPanelTransactionState{}
-		public interface IPanelHoverableState: IPanelTransactionState{}
-		public interface IPanelUnhoverableState: IPanelTransactionState{}
-		public interface IPanelHoveredState: IPanelTransactionState{}
-		/* eqp tool super */
 		public interface IEquipToolPanelTransactionState: IPanelTransactionState{}
-		public abstract class AbsEquipToolPanelTransactionState: IEquipToolPanelTransactionState{
-			public AbsEquipToolPanelTransactionState(IEquipToolPanelTransactionStateConstArg arg){
-				this.eqpToolPanel = arg.eqpToolPanel;
-				this.eqpIITAM = arg.eqpIITAM;
-			}
-			protected readonly IEquipToolPanel eqpToolPanel;
-			protected readonly IEquippableIITAManager eqpIITAM;
-			public abstract void OnEnter();
-			public abstract void OnExit();
+	/* sub */
+		/* WFPickUpState */
+		public interface IPanelWaitingForPickUpState: IPanelTransactionState{}
+		public abstract class AbsPanelWaitingForPickUpState: AbsPanelTransactionState, IPanelWaitingForPickUpState{
+			public AbsPanelWaitingForPickUpState(IPanelTransactionStateConstArg arg): base(arg){}
 		}
 		public interface IEquipToolPanelWaitingForPickUpState: IPanelWaitingForPickUpState, IEquipToolPanelTransactionState{}
+		public class EquipToolPanelWaitingForPickUpState: AbsPanelWaitingForPickUpState, IEquipToolPanelWaitingForPickUpState{
+			public EquipToolPanelWaitingForPickUpState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
+			IEquipToolPanel thisEqpToolPanel{
+				get{return (IEquipToolPanel)thisPanel;}
+			}
+			public override void OnEnter(){
+				thisEqpToolPanel.BecomeSelectable();
+			}
+			public override void OnExit(){
+
+			}
+		}
+		/* hoverable */
+		public interface IPanelHoverableState: IPanelTransactionState{}
+		public abstract class AbsPanelHoverableState: AbsPanelTransactionState, IPanelHoverableState{
+			public AbsPanelHoverableState(IPanelTransactionStateConstArg arg): base(arg){}
+		}
 		public interface IEquipToolPanelHoverableState: IPanelHoverableState, IEquipToolPanelTransactionState{}
+		public class EquipToolPanelHoverableState: AbsPanelHoverableState, IEquipToolPanelHoverableState{
+			public EquipToolPanelHoverableState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
+			IEquipToolPanel thisEqpToolPanel{
+				get{return (IEquipToolPanel)thisPanel;}
+			}
+			public override void OnEnter(){
+				thisEqpToolPanel.BecomeSelectable();
+			}
+			public override void OnExit(){
+
+			}
+		}
+		/* unhoverable */
+		public interface IPanelUnhoverableState: IPanelTransactionState{}
+		public abstract class AbsPanelUnhoverableState: AbsPanelTransactionState, IPanelUnhoverableState{
+			public AbsPanelUnhoverableState(IPanelTransactionStateConstArg arg): base(arg){}
+		}
 		public interface IEquipToolPanelUnhoverableState: IPanelUnhoverableState, IEquipToolPanelTransactionState{}
+		public class EquipToolPanelUnhoverableState: AbsPanelUnhoverableState, IEquipToolPanelUnhoverableState{
+			public EquipToolPanelUnhoverableState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
+			IEquipToolPanel thisEqpToolPanel{get{return (IEquipToolPanel)thisPanel;}}
+			public override void OnEnter(){
+				thisEqpToolPanel.BecomeUnselectable();
+			}
+			public override void OnExit(){
+
+			}
+		}
+		/* hovered */
+		public interface IPanelHoveredState: IPanelTransactionState{}
+		public abstract class AbsPanelHoveredState: AbsPanelTransactionState, IPanelHoveredState{
+			public AbsPanelHoveredState(IPanelTransactionStateConstArg arg): base(arg){}
+		}
 		public interface IEquipToolPanelHoveredState: IPanelHoveredState, IEquipToolPanelTransactionState{
 			void SetPickedEquippableII(IEquippableItemIcon pickedEqpII);
 		}
-	/* sub */
-		public class EquipToolPanelWaitingForPickUpState: AbsEquipToolPanelTransactionState, IEquipToolPanelWaitingForPickUpState{
-			public EquipToolPanelWaitingForPickUpState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){
-				eqpToolPanel.BecomeSelectable();
+		public class EquipToolPanelHoveredState: AbsPanelHoveredState, IEquipToolPanelHoveredState{
+			public EquipToolPanelHoveredState(IEquipToolPanelTransactionStateConstArg arg): base(arg){
+				thisEqpIITAM = arg.eqpIITAM;
 			}
-			public override void OnExit(){
-
-			}
-		}
-		public class EquipToolPanelHoverableState: AbsEquipToolPanelTransactionState, IEquipToolPanelHoverableState{
-			public EquipToolPanelHoverableState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){
-				eqpToolPanel.BecomeSelectable();
-			}
-			public override void OnExit(){
-
-			}
-		}
-		public class EquipToolPanelUnhoverableState: AbsEquipToolPanelTransactionState, IEquipToolPanelUnhoverableState{
-			public EquipToolPanelUnhoverableState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){
-				eqpToolPanel.BecomeUnselectable();
-			}
-			public override void OnExit(){
-
-			}
-		}
-		public class EquipToolPanelHoveredState: AbsEquipToolPanelTransactionState, IEquipToolPanelHoveredState{
-			public EquipToolPanelHoveredState(IEquipToolPanelTransactionStateConstArg arg): base(arg){}
 			IEquippableItemIcon pickedEqpII;
+			IEquipToolPanel thisEqpToolPanel{get{return (IEquipToolPanel)thisPanel;}}
+			readonly IEquippableIITAManager thisEqpIITAM;
 			public void SetPickedEquippableII(IEquippableItemIcon pickedEqpII){
 				this.pickedEqpII = pickedEqpII;
 			}
 			public override void OnEnter(){
-				eqpToolPanel.BecomeSelected();
-				eqpToolPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
-				eqpToolPanel.HoverDefaultTransactionTargetEqpII(pickedEqpII);
-				if(eqpToolPanel is IEquipToolPoolItemsPanel){
-					eqpIITAM.SetEqpIIToUnequip(pickedEqpII);
+				thisEqpToolPanel.BecomeSelected();
+				thisEqpToolPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
+				thisEqpToolPanel.HoverDefaultTransactionTargetEqpII(pickedEqpII);
+				if(thisEqpToolPanel is IEquipToolPoolItemsPanel){
+					thisEqpIITAM.SetEqpIIToUnequip(pickedEqpII);
 				}else{
-					eqpIITAM.SetEqpIIToEquip(pickedEqpII);
+					thisEqpIITAM.SetEqpIIToEquip(pickedEqpII);
 				}
 			}
 			public override void OnExit(){
 				this.pickedEqpII = null;
-				eqpToolPanel.CheckAndRemoveEmptyEqpIIs();
-				eqpIITAM.ClearHoveredEqpII();
-				eqpIITAM.ClearEqpIIsToEquipAndUnequip();
+				thisEqpToolPanel.CheckAndRemoveEmptyEqpIIs();
+				thisEqpIITAM.ClearHoveredEqpII();
+				thisEqpIITAM.ClearEqpIIsToEquipAndUnequip();
 			}
 		}
 	/* Const */
@@ -92,29 +108,25 @@ namespace UISystem{
 		}
 		public class PanelTransactionStateConstArg: IPanelTransactionStateConstArg{
 			public PanelTransactionStateConstArg(IIconPanel panel){
-				this._panel = panel;
+				thisPanel = panel;
 			}
-			public IIconPanel panel{
-				get{return _panel;}
-			}
-			readonly IIconPanel _panel;
+			public IIconPanel panel{get{return thisPanel;}}
+			readonly IIconPanel thisPanel;
 		}
-		public interface IEquipToolPanelTransactionStateConstArg{
+		public interface IEquipToolPanelTransactionStateConstArg: IPanelTransactionStateConstArg{
 			IEquipToolPanel eqpToolPanel{get;}
 			IEquippableIITAManager eqpIITAM{get;}
 		}
 		public class EquipToolPanelTransactionStateConstArg: PanelTransactionStateConstArg,IEquipToolPanelTransactionStateConstArg{
 			public EquipToolPanelTransactionStateConstArg(IEquippableIITAManager eqpIITAM, IEquipToolPanel eqpToolPanel, IEquipTool eqpTool) :base(eqpToolPanel){
-				this._eqpIITAM = eqpIITAM;
+				thisEqpIITAM = eqpIITAM;
 			}
 			public IEquipToolPanel eqpToolPanel{
-				get{
-					return this.panel as IEquipToolPanel;//safe
-				}
+				get{return (IEquipToolPanel)this.panel;}
 			}
-			readonly IEquippableIITAManager _eqpIITAM;
+			readonly IEquippableIITAManager thisEqpIITAM;
 			public IEquippableIITAManager eqpIITAM{
-				get{return this._eqpIITAM;}
+				get{return this.thisEqpIITAM;}
 			}
 		}
 	/*  */
