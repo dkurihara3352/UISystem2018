@@ -27,12 +27,15 @@ namespace UISystem{
 			return null;
 		}
 		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia, IEquippableUIItem item){
-			IUIImage image = CreateEquippableItemIconUIImage(item);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(uim, uia, image, eqpIITAM, item, eqpTool);
+			UIImage image = CreateEquippableItemIconUIImage(item);
+			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(eqpIITAM);
+			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(eqpIITAM, eqpTool);
+			ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(uim, uia, image, eqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, eqpTool);
 			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
 			return eqpII;
 		}
-		IUIImage CreateEquippableItemIconUIImage(IEquippableUIItem item){
+		UIImage CreateEquippableItemIconUIImage(IEquippableUIItem item){
 			return null;
 		}
 	}

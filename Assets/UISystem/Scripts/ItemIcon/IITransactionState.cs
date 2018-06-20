@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IIITransactionState: ISwitchableState{}
+	public interface IIITransactionState: ISwitchableState{
+		void SetItemIcon(IItemIcon itemIcon);
+	}
 	public interface IEqpIITransactionState: IIITransactionState{}
 	public abstract class AbsIITransactionState: IIITransactionState{
 		public AbsIITransactionState(IIITransactionStateConstArg arg){
-			thisItemIcon = arg.itemIcon;
 			thisIITAM = arg.iiTAM;
 		}
-		protected readonly IItemIcon thisItemIcon;
+		public void SetItemIcon(IItemIcon itemIcon){
+			thisItemIcon = itemIcon;
+		}
+		protected IItemIcon thisItemIcon;
 		protected readonly IItemIconTransactionManager thisIITAM;
 		public abstract void OnEnter();
 		public abstract void OnExit();
@@ -187,30 +191,22 @@ namespace UISystem{
 	}
 	/* Const */
 		public interface IIITransactionStateConstArg{
-			IItemIcon itemIcon{get;}
 			IItemIconTransactionManager iiTAM{get;}
 		}
 		public class IITransactionStateConstArg: IIITransactionStateConstArg{
-			public IITransactionStateConstArg(IItemIcon itemIcon, IItemIconTransactionManager iiTAM){
-				thisItemIcon = itemIcon;
+			public IITransactionStateConstArg(IItemIconTransactionManager iiTAM){
 				thisIITAM = iiTAM;
 			}
-			protected IItemIcon thisItemIcon;
-			public IItemIcon itemIcon{get{return thisItemIcon;}}
 			protected IItemIconTransactionManager thisIITAM;
 			public IItemIconTransactionManager iiTAM{get{return thisIITAM;}}
 		}
 		public interface IEqpIITAStateConstArg: IIITransactionStateConstArg{
-			IEquippableItemIcon eqpII{get;}
 			IEquippableIITAManager eqpIITAM{get;}
 			IEquipTool eqpTool{get;}
 		}
 		public class EqpIITAStateConstArg: IITransactionStateConstArg, IEqpIITAStateConstArg{
-			public EqpIITAStateConstArg(IEquippableItemIcon eqpII, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool): base(eqpII, eqpIITAM){
+			public EqpIITAStateConstArg(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool): base(eqpIITAM){
 				thisTool = eqpTool;
-			}
-			public IEquippableItemIcon eqpII{
-				get{return (IEquippableItemIcon)thisItemIcon;}
 			}
 			public IEquippableIITAManager eqpIITAM{
 				get{return (IEquippableIITAManager)thisIITAM;}

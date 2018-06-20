@@ -11,7 +11,6 @@ namespace UISystem{
 	public class EquippableItemIcon: AbsItemIcon, IEquippableItemIcon{
 		public EquippableItemIcon(IEquippableItemIconConstArg arg) :base(arg){
 			this.eqpTool = arg.tool;
-			this.iiTAStateEngine = new EqpIITransactionStateEngine(this, eqpIITAM, eqpTool);
 		}
 		/*  */
 			readonly IEquipTool eqpTool;
@@ -179,21 +178,11 @@ namespace UISystem{
 	public interface IEquippableItemIconConstArg: IItemIconConstArg{
 		IEquipTool tool{get;}
 	}
-	public class EquippableItemIconConstArg: IEquippableItemIconConstArg{
-		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEquipTool tool){
-
+	public class EquippableItemIconConstArg: ItemIconConstArg, IEquippableItemIconConstArg{
+		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, IEquipTool tool): base(uim, uia, image, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
+			thisTool = tool;
 		}
-		readonly IUIManager _uim;
-		readonly IEquippableItemIconUIA _eqpIIUIA;
-		readonly IUIImage _image;
-		readonly IEquippableIITAManager _eqpIITAM;
-		readonly IEquippableUIItem _eqpItem;
-		readonly IEquipTool _tool;
-		public IUIManager uim{get{return this._uim;}}
-		public IUIAdaptor uia{get{return this._eqpIIUIA;}}
-		public IUIImage image{get{return this._image;}}
-		public IItemIconTransactionManager iiTAM{get{return this._eqpIITAM;}}
-		public IUIItem item{get{return this._eqpItem;}}
-		public IEquipTool tool{get{return this._tool;}}
+		readonly IEquipTool thisTool;
+		public IEquipTool tool{get{return this.thisTool;}}
 	}
 }

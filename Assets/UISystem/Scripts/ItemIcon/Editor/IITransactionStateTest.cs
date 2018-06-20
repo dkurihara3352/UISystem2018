@@ -11,88 +11,93 @@ public class IITransactionStateTest{
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIsInEqpIG_ThisEqpIIIsEmpty_DoesNotCallEqpIITAM(){
 		IEqpIITAStateConstArg arg;
-		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg);
-		arg.eqpII.IsInEqpIG().Returns(true);
-		arg.eqpII.IsEmpty().Returns(true);
+		IEquippableItemIcon eqpII;
+		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg, out eqpII);
+		eqpII.IsInEqpIG().Returns(true);
+		eqpII.IsEmpty().Returns(true);
 
 		state.OnEnter();
 
 		IEquippableIITAManager mockEqpIITAM = arg.eqpIITAM;
-		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(arg.eqpII);
-		mockEqpIITAM.DidNotReceive().SetEqpIIToUnequip(arg.eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToUnequip(eqpII);
 	}
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIsInEqpIG_ThisEqpIIIsNotEmpty_ThisEqpIIHasSameItemAsPicked_DoesNotCallEqpIITAM(){
 		IEqpIITAStateConstArg arg;
-		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg);
-		arg.eqpII.IsInEqpIG().Returns(true);
-		arg.eqpII.IsEmpty().Returns(false);
+		IEquippableItemIcon eqpII;
+		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg, out eqpII);
+		eqpII.IsInEqpIG().Returns(true);
+		eqpII.IsEmpty().Returns(false);
 		IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-		arg.eqpII.HasSameItem(pickedEqpII).Returns(true);
+		eqpII.HasSameItem(pickedEqpII).Returns(true);
 		state.SetPickedItemIcon(pickedEqpII);
 
 		state.OnEnter();
 
 		IEquippableIITAManager mockEqpIITAM = arg.eqpIITAM;
-		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(arg.eqpII);
-		mockEqpIITAM.DidNotReceive().SetEqpIIToUnequip(arg.eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToUnequip(eqpII);
 	}
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIsInEqpIG_ThisEqpIIIsNotEmpty_ThisEqpIIDoesNotHaveSameItemAsPicked_CallsEqpIITAMSetEqpIIToUnequipThis(){
 		IEqpIITAStateConstArg arg;
-		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg);
-		arg.eqpII.IsInEqpIG().Returns(true);
-		arg.eqpII.IsEmpty().Returns(false);
+		IEquippableItemIcon eqpII;
+		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg, out eqpII);
+		eqpII.IsInEqpIG().Returns(true);
+		eqpII.IsEmpty().Returns(false);
 		IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-		arg.eqpII.HasSameItem(pickedEqpII).Returns(false);
+		eqpII.HasSameItem(pickedEqpII).Returns(false);
 		state.SetPickedItemIcon(pickedEqpII);
 
 		state.OnEnter();
 
 		IEquippableIITAManager mockEqpIITAM = arg.eqpIITAM;
-		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(arg.eqpII);
-		mockEqpIITAM.Received(1).SetEqpIIToUnequip(arg.eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(eqpII);
+		mockEqpIITAM.Received(1).SetEqpIIToUnequip(eqpII);
 	}
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIInPoolIG_ThisEqpIIHasSameItemAsPicked_DoesNotCallEqpIITAMSetEqpIIToEquipThis(){
 		IEqpIITAStateConstArg arg;
-		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg);
-		arg.eqpII.IsInEqpIG().Returns(false);
+		IEquippableItemIcon eqpII;
+		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg, out eqpII);
+		eqpII.IsInEqpIG().Returns(false);
 		IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-		arg.eqpII.HasSameItem(pickedEqpII).Returns(true);
+		eqpII.HasSameItem(pickedEqpII).Returns(true);
 		state.SetPickedItemIcon(pickedEqpII);
 
 		state.OnEnter();
 
 		IEquippableIITAManager mockEqpIITAM = arg.eqpIITAM;
-		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(arg.eqpII);
+		mockEqpIITAM.DidNotReceive().SetEqpIIToEquip(eqpII);
 	}
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIInPoolIG_ThisEqpIIDoesNotHaveSameItemAsPicked_CallsEqpIITAMSetEqpIIToEquipThis(){
 		IEqpIITAStateConstArg arg;
-		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg);
-		arg.eqpII.IsInEqpIG().Returns(false);
+		IEquippableItemIcon eqpII;
+		EqpIIHoveredState state = CreateEqpIIHoveredState(out arg, out eqpII);
+		eqpII.IsInEqpIG().Returns(false);
 		IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-		arg.eqpII.HasSameItem(pickedEqpII).Returns(false);
+		eqpII.HasSameItem(pickedEqpII).Returns(false);
 		state.SetPickedItemIcon(pickedEqpII);
 
 		state.OnEnter();
 
 		IEquippableIITAManager mockEqpIITAM = arg.eqpIITAM;
-		mockEqpIITAM.Received(1).SetEqpIIToEquip(arg.eqpII);
+		mockEqpIITAM.Received(1).SetEqpIIToEquip(eqpII);
 	}
-	public EqpIIHoveredState CreateEqpIIHoveredState(out IEqpIITAStateConstArg arg){
+	public EqpIIHoveredState CreateEqpIIHoveredState(out IEqpIITAStateConstArg arg, out IEquippableItemIcon eqpII){
 		IEqpIITAStateConstArg thisArg = Substitute.For<IEqpIITAStateConstArg>();
-		IEquippableItemIcon thisEqpII = Substitute.For<IEquippableItemIcon>();
-		thisArg.itemIcon.Returns(thisEqpII);
-		thisArg.eqpII.Returns(thisEqpII);
 		IEquippableIITAManager thisEqpIITAM = Substitute.For<IEquippableIITAManager>();
 		thisArg.iiTAM.Returns(thisEqpIITAM);
 		thisArg.eqpIITAM.Returns(thisEqpIITAM);
 		thisArg.eqpTool.Returns(Substitute.For<IEquipTool>());
 
 		EqpIIHoveredState hoveredState = new EqpIIHoveredState(thisArg);
+		IEquippableItemIcon thisEqpII = Substitute.For<IEquippableItemIcon>();
+		hoveredState.SetItemIcon(thisEqpII);
 		arg = thisArg;
+		eqpII = thisEqpII;
 		return hoveredState;
 	}
 }

@@ -11,8 +11,16 @@ namespace UISystem{
 		bool IsPickable();
 		bool IsPicked();
 	}
-	public interface IIITransactionStateEngine: IPickabilityStateHandler, IHoverabilityStateHandler{}
-	public abstract class AbsIITransactionStateEngine: AbsSwitchableStateEngine<IIITransactionState>, IIITransactionStateEngine{
+	public interface IItemIconTransactionStateEngine: IPickabilityStateHandler, IHoverabilityStateHandler{
+		void SetItemIcon(IItemIcon itemIcon);
+	}
+	public abstract class AbsIITransactionStateEngine: AbsSwitchableStateEngine<IIITransactionState>, IItemIconTransactionStateEngine{
+		public void SetItemIcon(IItemIcon itemIcon){
+			foreach(IIITransactionState state in thisStates){
+				state.SetItemIcon(itemIcon);
+			}
+		}
+		protected List<IIITransactionState> thisStates;
 		protected IIIPickableState pickableState;
 		protected IIIUnpickableState unpickableState;
 		protected IIIPickedState pickedState;
@@ -60,10 +68,10 @@ namespace UISystem{
 			return curState is IIIHoveredState;
 		}
 	}
-	public interface IEqpIITransactionStateEngine: IIITransactionStateEngine{}
+	public interface IEqpIITransactionStateEngine: IItemIconTransactionStateEngine{}
 	public class EqpIITransactionStateEngine: AbsIITransactionStateEngine, IEqpIITransactionStateEngine{
-		public EqpIITransactionStateEngine(IEquippableItemIcon eqpII, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool){
-			IEqpIITAStateConstArg arg = new EqpIITAStateConstArg(eqpII, eqpIITAM, eqpTool);
+		public EqpIITransactionStateEngine(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool){
+			IEqpIITAStateConstArg arg = new EqpIITAStateConstArg(eqpIITAM, eqpTool);
 			InitializeStates(arg);
 		}
 		void InitializeStates(IEqpIITAStateConstArg arg){
@@ -74,6 +82,13 @@ namespace UISystem{
 			this.unhoverableState = new EqpIIUnhoverableState(arg);
 			this.hoveredState = new EqpIIHoveredState(arg);
 			this.droppedState = new EqpIIDroppedState(arg);
+			thisStates.Add(pickableState);
+			thisStates.Add(unpickableState);
+			thisStates.Add(pickedState);
+			thisStates.Add(hoverableState);
+			thisStates.Add(unhoverableState);
+			thisStates.Add(hoveredState);
+			thisStates.Add(droppedState);
 		}
 	}
 }

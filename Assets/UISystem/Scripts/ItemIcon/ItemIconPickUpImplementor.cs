@@ -4,16 +4,19 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IItemIconPickUpImplementor{
+		void SetItemIcon(IItemIcon itemIcon);
 		void CheckAndIncrementPickUpQuantity();
 		void SetUpAsPickedII();
 	}
 	public class ItemIconPickUpImplementor: IItemIconPickUpImplementor{
-		public ItemIconPickUpImplementor(IItemIcon itemIcon, IItemIconTransactionManager iiTAM){
-			thisItemIcon = itemIcon;
-			this.iiTAM = iiTAM;
+		public ItemIconPickUpImplementor(IItemIconTransactionManager iiTAM){
+			thisIITAM = iiTAM;
 		}
-		readonly IItemIcon thisItemIcon;
-		readonly IItemIconTransactionManager iiTAM;
+		public void SetItemIcon(IItemIcon itemIcon){
+			thisItemIcon = itemIcon;
+		}
+		IItemIcon thisItemIcon;
+		readonly IItemIconTransactionManager thisIITAM;
 		IUIImage thisImage{
 			get{return thisItemIcon.GetUIImage();}
 		}
@@ -34,7 +37,7 @@ namespace UISystem{
 		}
 		public void SetUpAsPickedII(){
 			int pickedQuantity = this.CalcPickedQuantity();
-			IPickUpContextUIE pickUpContextUIE = iiTAM.GetPickUpContextUIE();
+			IPickUpContextUIE pickUpContextUIE = thisIITAM.GetPickUpContextUIE();
 
 			if(this.ShouldCreateLeftoverII(pickedQuantity))
 				SetUpLeftoverII(pickedQuantity);
@@ -62,7 +65,7 @@ namespace UISystem{
 			thisItemIcon.IncreaseBy(pickedQ, doesIncrement: true);
 		}
 		void MoveToPickUpReservePos(){
-			IPickUpContextUIE pickUpContextUIE = this.iiTAM.GetPickUpContextUIE();
+			IPickUpContextUIE pickUpContextUIE = this.thisIITAM.GetPickUpContextUIE();
 			Vector2 reservePos = pickUpContextUIE.GetPickUpReservePosition();
 			thisItemIcon.SetParentUIE(pickUpContextUIE, true);
 			thisItemIcon.SetLocalPosition(reservePos);
@@ -76,7 +79,7 @@ namespace UISystem{
 			thisItemIcon.HandOverTravel(leftoverII);
 		}
 		IItemIcon CreateLeftoverII(int pickedQuantity){
-			IItemIcon leftoverII = iiTAM.CreateItemIcon(thisItem);
+			IItemIcon leftoverII = thisIITAM.CreateItemIcon(thisItem);
 			IUIImage leftoverIIImage = leftoverII.GetUIImage();
 
 			leftoverII.SetParentUIE(thisItemIcon.GetParentUIE(), true);
@@ -89,7 +92,7 @@ namespace UISystem{
 		}
 		void StartIImageSmoothFollowDragPos(){}
 		public void CheckAndIncrementPickUpQuantity(){
-			if(this.iiTAM.IsInPickedUpState()){
+			if(thisIITAM.IsInPickedUpState()){
 				int incrementQuantity = CalcPickedQuantity();
 				if(incrementQuantity > 0)
 					this.IncrementPickUpQuantityBy(incrementQuantity);
@@ -98,7 +101,7 @@ namespace UISystem{
 			}
 		}
 		void IncrementPickUpQuantityBy(int increQuantity){
-			IItemIcon pickedII = iiTAM.GetPickedII();
+			IItemIcon pickedII = thisIITAM.GetPickedII();
 			pickedII.IncreaseBy(increQuantity, doesIncrement:true);
 			thisItemIcon.DecreaseBy(increQuantity, doesIncrement:true);
 			int newPickedUpQuantity = pickedII.GetItemQuantity();
