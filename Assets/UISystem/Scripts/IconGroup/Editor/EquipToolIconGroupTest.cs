@@ -285,7 +285,7 @@ public class EquipToolIconGroupTest{
         arg = thisArg;
         return ig;
     }
-    public class TestEqpToolEqpCGIG: EqpToolEqpCarriedGearIG{
+    public class TestEqpToolEqpCGIG: EqpToolEqpCarriedGearsIG{
         public TestEqpToolEqpCGIG(IIconGroupConstArg arg): base(arg){}
         public void SetItemIcons(List<IItemIcon> iis){
             this.itemIcons = iis;

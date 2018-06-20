@@ -53,8 +53,9 @@ namespace UISystem{
 			return GetSameItemEqpII(pickedEqpII);
 		}
 	}
-	public interface IEqpToolEqpIG<T> : IEqpToolIG where T: IItemTemplate{}
-	public class EqpToolEqpBowIG: AbsEqpToolIG, IEqpToolEqpIG<IBowTemplate>{
+	public interface IEqpToolEqpIG : IEqpToolIG{}
+	public interface IEqpToolEqpBowIG: IEqpToolEqpIG{}
+	public class EqpToolEqpBowIG: AbsEqpToolIG, IEqpToolEqpBowIG{
 		public EqpToolEqpBowIG(IIconGroupConstArg arg) :base(arg){}
 		public override bool HasItemSpace(IUIItem item){
 			CheckPassedIUIItemTypeValidity(item);
@@ -72,7 +73,8 @@ namespace UISystem{
 			return this.eqpItemIcons[0];
 		}
 	}
-	public class EqpToolEqpWearIG: AbsEqpToolIG, IEqpToolEqpIG<IWearTemplate>{
+	public interface IEqpToolEqpWearIG: IEqpToolEqpIG{}
+	public class EqpToolEqpWearIG: AbsEqpToolIG, IEqpToolEqpWearIG{
 		public EqpToolEqpWearIG(IIconGroupConstArg arg) :base(arg){}
 		public override bool HasItemSpace(IUIItem item){
 			CheckPassedIUIItemTypeValidity(item);
@@ -90,8 +92,9 @@ namespace UISystem{
 			return this.eqpItemIcons[0];
 		}
 	}
-	public class EqpToolEqpCarriedGearIG: AbsEqpToolIG, IEqpToolEqpIG<ICarriedGearTemplate>{
-		public EqpToolEqpCarriedGearIG(IIconGroupConstArg arg) :base(arg){}
+	public interface IEqpToolEqpCarriedGearsIG: IEqpToolEqpIG{}
+	public class EqpToolEqpCarriedGearsIG: AbsEqpToolIG, IEqpToolEqpCarriedGearsIG{
+		public EqpToolEqpCarriedGearsIG(IIconGroupConstArg arg) :base(arg){}
 		public override bool HasItemSpace(IUIItem item){
 			CheckPassedIUIItemTypeValidity(item);
 			IEquippableUIItem eqpItem = item as IEquippableUIItem;//safe

@@ -146,7 +146,7 @@ namespace UISystem{
 			}
 		/*  */
 			public bool IsInEqpIG(){
-				return this.eqpToolIG is IEqpToolEqpIG<IItemTemplate>;
+				return this.eqpToolIG is IEqpToolEqpIG;
 			}
 			public bool IsInPoolIG(){
 				return this.eqpToolIG is IEqpToolPoolIG;

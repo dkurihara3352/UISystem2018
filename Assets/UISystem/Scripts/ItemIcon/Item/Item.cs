@@ -15,35 +15,35 @@ namespace UISystem{
 	}
 	public abstract class AbsUIItem: IUIItem{
 		public AbsUIItem(IItemTemplate itemTemp, int quantity, int itemID){
-			this.itemTemp = itemTemp;
-			this.quantity = quantity;
-			this.itemID = itemID;
+			thisItemTemp = itemTemp;
+			thisQuantity = quantity;
+			thisItemID = itemID;
 		}
 		public int GetItemID(){
-			return itemID;
+			return thisItemID;
 		}
-		readonly int itemID;/* item instance ID, as opposed to templateID */
+		readonly int thisItemID;/* item instance ID, as opposed to templateID */
 		public IItemTemplate GetItemTemplate(){
-			return itemTemp;
+			return thisItemTemp;
 		}
-		readonly IItemTemplate itemTemp;
+		readonly IItemTemplate thisItemTemp;
 		public int GetQuantity(){
-			return quantity;
+			return thisQuantity;
 		}
 		public void SetQuantity(int q){
-			this.quantity = q;
+			thisQuantity = q;
 		}
-		int quantity;
+		int thisQuantity;
 		public bool IsSameAs(IUIItem other){
 			/*  Ghost is treated as same, sharing the same item instance with picked
 			*/
-			if(this.itemTemp.IsStackable())
-				return this.itemTemp == other.GetItemTemplate();
+			if(thisItemTemp.IsStackable())
+				return thisItemTemp == other.GetItemTemplate();
 			else/* non stackable */
-				return this.itemID == other.GetItemID();
+				return thisItemID == other.GetItemID();
 		}
 		public bool IsStackable(){
-			return this.itemTemp.IsStackable();
+			return thisItemTemp.IsStackable();
 		}
 	}
 	public interface IEquippableUIItem: IUIItem, IEquipStateHandler{
@@ -51,20 +51,20 @@ namespace UISystem{
 	}
 	public class EquippableUIItem: AbsUIItem, IEquippableUIItem{
 		public EquippableUIItem(IItemTemplate itemTemp, int quantity, int itemID, bool isEquipped): base(itemTemp, quantity, itemID){
-			this.isEquipped = isEquipped;
+			thisIsEquipped = isEquipped;
 		}
 		public int GetMaxEquippableQuantity(){
 			return GetItemTemplate().GetMaxEquippableQuantity();
 		}
 		public void Equip(){
-			this.isEquipped = true;
+			thisIsEquipped = true;
 		}
 		public void Unequip(){
-			this.isEquipped = false;
+			thisIsEquipped = false;
 		}
-		bool isEquipped;
+		bool thisIsEquipped;
 		public bool IsEquipped(){
-			return this.isEquipped;
+			return thisIsEquipped;
 		}
 	}
 }

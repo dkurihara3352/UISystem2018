@@ -5,8 +5,8 @@ using UnityEngine;
 namespace UISystem{
 	public interface IEquippableIITAManager: IItemIconTransactionManager{
 		IEqpToolPoolIG GetRelevantEqpToolPoolIG();
-		IEqpToolEqpIG<ICarriedGearTemplate> GetRelevantEqpCGearsIG();
-		IEqpToolEqpIG<IItemTemplate> GetRelevantEquipIG(IEquippableItemIcon pickedEqpII);
+		IEqpToolEqpCarriedGearsIG GetRelevantEqpCGearsIG();
+		IEqpToolEqpIG GetRelevantEquipIG(IEquippableItemIcon pickedEqpII);
 		void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII);
 		void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel);
 		void SetEqpIIToEquip(IEquippableItemIcon eqpII);
@@ -56,11 +56,11 @@ namespace UISystem{
 				IEqpToolPoolIG relevPoolIG = GetRelevantEqpToolPoolIG();
 				result.Add(relevPoolIG);
 				if(pickedEqpII != null){
-					IEqpToolEqpIG<IItemTemplate> relevEqpIG = GetRelevantEquipIG((IEquippableItemIcon)pickedII);
+					IEqpToolEqpIG relevEqpIG = GetRelevantEquipIG((IEquippableItemIcon)pickedII);
 					result.Add(relevEqpIG);
 				}else{
-					List<IEqpToolEqpIG<IItemTemplate>> allRelevantEqpIGs = GetAllRelevantEqpIGs();
-					foreach(IEqpToolEqpIG<IItemTemplate> eqpIG in allRelevantEqpIGs)
+					List<IEqpToolEqpIG> allRelevantEqpIGs = GetAllRelevantEqpIGs();
+					foreach(IEqpToolEqpIG eqpIG in allRelevantEqpIGs)
 						result.Add(eqpIG);
 				}
 				return result;
@@ -68,29 +68,29 @@ namespace UISystem{
 			public IEqpToolPoolIG GetRelevantEqpToolPoolIG(){
 				return null;
 			}
-			public IEqpToolEqpIG<ICarriedGearTemplate> GetRelevantEqpCGearsIG(){
+			public IEqpToolEqpCarriedGearsIG GetRelevantEqpCGearsIG(){
 				return null;
 			}
-			IEqpToolEqpIG<IBowTemplate> GetRelevantEqpBowIG(){
+			IEqpToolEqpBowIG GetRelevantEqpBowIG(){
 				return null;
 			}
-			IEqpToolEqpIG<IWearTemplate> GetRelevantEqpWearIG(){
+			IEqpToolEqpWearIG GetRelevantEqpWearIG(){
 				return null;
 			}
-			public IEqpToolEqpIG<IItemTemplate> GetRelevantEquipIG(IEquippableItemIcon eqpII){
+			public IEqpToolEqpIG GetRelevantEquipIG(IEquippableItemIcon eqpII){
 				IItemTemplate itemTemp = eqpII.GetItemTemplate();
 				if(itemTemp is IBowTemplate)
-					return GetRelevantEqpBowIG() as IEqpToolEqpIG<IItemTemplate>;
+					return GetRelevantEqpBowIG();
 				else if(itemTemp is IWearTemplate)
-					return GetRelevantEqpWearIG() as IEqpToolEqpIG<IItemTemplate>;
+					return GetRelevantEqpWearIG();
 				else
-					return GetRelevantEqpCGearsIG() as IEqpToolEqpIG<IItemTemplate>;
+					return GetRelevantEqpCGearsIG();
 			}
-			List<IEqpToolEqpIG<IItemTemplate>> GetAllRelevantEqpIGs(){
-				List<IEqpToolEqpIG<IItemTemplate>> result = new List<IEqpToolEqpIG<IItemTemplate>>();
-				result.Add((IEqpToolEqpIG<IItemTemplate>)GetRelevantEqpBowIG());
-				result.Add((IEqpToolEqpIG<IItemTemplate>)GetRelevantEqpWearIG());
-				result.Add((IEqpToolEqpIG<IItemTemplate>)GetRelevantEqpCGearsIG());
+			List<IEqpToolEqpIG> GetAllRelevantEqpIGs(){
+				List<IEqpToolEqpIG> result = new List<IEqpToolEqpIG>();
+				result.Add(GetRelevantEqpBowIG());
+				result.Add(GetRelevantEqpWearIG());
+				result.Add(GetRelevantEqpCGearsIG());
 				return result;
 			}
 		/* PUM */

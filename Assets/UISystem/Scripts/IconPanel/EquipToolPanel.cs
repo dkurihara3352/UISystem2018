@@ -38,7 +38,7 @@ namespace UISystem{
 				IEquippableItemIcon pickedEqpII = pickedII as IEquippableItemIcon;
 				IUIItem pickedItem = pickedEqpII.GetUIItem();
 				IItemTemplate pickedItemTemp = pickedItem.GetItemTemplate();
-				if(pickedItemTemp is IBowTemplate || pickedItemTemp is IWearTemplate)// always swapped
+				if(pickedEqpII.IsBowOrWearItemIcon())// always swapped
 					return true;
 				else{
 					if(pickedEqpII.IsInEqpIG()){
@@ -67,13 +67,13 @@ namespace UISystem{
 		}
 		public override void CheckAndAddEmptyAddTarget(IEquippableItemIcon pickedEqpII){
 			if(this.IsEligibleForEmptyAddTargetAddition(pickedEqpII)){
-				IEqpToolEqpIG<ICarriedGearTemplate> eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+				IEqpToolEqpCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
 				eqpCGIG.AddEmptyAddTarget((pickedEqpII.GetEquippableItem()));
 			}
 		}
 		public override void CheckAndRemoveEmptyEqpIIs(){
-			IEqpToolEqpIG<IItemTemplate> relevantEqpIG = eqpIITAM.GetRelevantEquipIG(eqpIITAM.GetPickedEqpII());
-			if(relevantEqpIG is IEqpToolEqpIG<ICarriedGearTemplate>)
+			IEqpToolEqpIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(eqpIITAM.GetPickedEqpII());
+			if(relevantEqpIG is IEqpToolEqpCarriedGearsIG)
 				relevantEqpIG.RemoveEmptyIIs();
 
 		}
@@ -81,7 +81,7 @@ namespace UISystem{
 			if(pickedEqpII.IsBowOrWearItemIcon())
 				return false;
 			else{
-				IEqpToolEqpIG<ICarriedGearTemplate> eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+				IEqpToolEqpCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
 				IEquippableItemIcon sameItemEqpII = (IEquippableItemIcon)eqpCGIG.GetItemIconFromItem(pickedEqpII.GetEquippableItem());
 				if(sameItemEqpII != null)
 					return false;
@@ -95,9 +95,8 @@ namespace UISystem{
 		public EqpToolPoolItemsPanel(IEquipToolPanelConstArg arg) :base(arg){}
 		protected override bool IsEligibleForHover(IItemIcon pickedII){
 			if(pickedII is IEquippableItemIcon){
-				IEquippableUIItem eqpItem = ((IEquippableItemIcon)pickedII).GetUIItem() as IEquippableUIItem;
-				IItemTemplate itemTemp = eqpItem.GetItemTemplate();
-				if(itemTemp is IBowTemplate || itemTemp is IWearTemplate)
+				IEquippableItemIcon pickedEqpII = (IEquippableItemIcon)pickedII;
+				if(pickedEqpII.IsBowOrWearItemIcon())
 					return false;//can't specify target
 				else
 					return true;//always slot out from equipIG
