@@ -14,10 +14,10 @@ namespace UISystem{
 		bool IsStackable();
 	}
 	public abstract class AbsUIItem: IUIItem{
-		public AbsUIItem(IItemTemplate itemTemp, int quantity, int itemID){
-			thisItemTemp = itemTemp;
-			thisQuantity = quantity;
-			thisItemID = itemID;
+		public AbsUIItem(IUIItemConstArg arg){
+			thisItemTemp = arg.itemTemp;
+			thisQuantity = arg.quantity;
+			thisItemID = arg.itemID;
 		}
 		public int GetItemID(){
 			return thisItemID;
@@ -50,8 +50,8 @@ namespace UISystem{
 		int GetMaxEquippableQuantity();
 	}
 	public class EquippableUIItem: AbsUIItem, IEquippableUIItem{
-		public EquippableUIItem(IItemTemplate itemTemp, int quantity, int itemID, bool isEquipped): base(itemTemp, quantity, itemID){
-			thisIsEquipped = isEquipped;
+		public EquippableUIItem(IEquippableUIItemConstArg arg): base(arg){
+			thisIsEquipped = arg.isEquipped;
 		}
 		public int GetMaxEquippableQuantity(){
 			return GetItemTemplate().GetMaxEquippableQuantity();
@@ -66,6 +66,15 @@ namespace UISystem{
 		public bool IsEquipped(){
 			return thisIsEquipped;
 		}
+	}
+	/* const */
+	public interface IUIItemConstArg{
+		IItemTemplate itemTemp{get;}
+		int quantity{get;}
+		int itemID{get;}
+	}
+	public interface IEquippableUIItemConstArg: IUIItemConstArg{
+		bool isEquipped{get;}
 	}
 }
 
