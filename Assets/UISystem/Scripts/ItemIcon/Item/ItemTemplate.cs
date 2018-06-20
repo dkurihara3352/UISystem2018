@@ -10,13 +10,13 @@ namespace UISystem{
 		bool IsSameAs(IItemTemplate itemTemp);
 	}
 	public abstract class AbsItemTemplate: IItemTemplate{
-		public AbsItemTemplate(IItemTemplateArg arg){
+		public AbsItemTemplate(IItemTemplateConstArg arg){
 			CheckConstArgValidity(arg);
 			this.pickupStepQuantity = arg.pickupStepQuantity;
 			this.maxEquippableQuantity = arg.maxEquippableQuantity;
 			this.maxQuantityPerSlot = arg.maxQuantityPerSlot;
 		}
-		void CheckConstArgValidity(IItemTemplateArg arg){
+		void CheckConstArgValidity(IItemTemplateConstArg arg){
 			int pickupStepQuantity = arg.pickupStepQuantity;
 			if(pickupStepQuantity < 1)
 				throw new System.InvalidOperationException("pickupStepQuantity must be at least 1");
@@ -43,12 +43,12 @@ namespace UISystem{
 			return Object.ReferenceEquals(other, this);
 		}
 	}
-	public interface IItemTemplateArg{
+	public interface IItemTemplateConstArg{
 		int pickupStepQuantity{get;}
 		int maxEquippableQuantity{get;}
 		int maxQuantityPerSlot{get;}
 	}
-	public class ItemTemplateArg: IItemTemplateArg{
+	public class ItemTemplateArg: IItemTemplateConstArg{
 		public ItemTemplateArg(int pickupStepQuantity, int maxEquippableQuantity, int maxQuantityPerSlot){
 			this._pickupStepQuantity = pickupStepQuantity;
 			this._maxEquippableQuantity = maxEquippableQuantity;
