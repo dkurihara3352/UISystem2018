@@ -7,135 +7,131 @@ namespace UISystem{
 	public interface IEqpIITransactionState: IIITransactionState{}
 	public abstract class AbsIITransactionState: IIITransactionState{
 		public AbsIITransactionState(IIITransactionStateConstArg arg){
-			this.itemIcon = arg.itemIcon;
-			this.iiTAM = arg.iiTAM;
+			thisItemIcon = arg.itemIcon;
+			thisIITAM = arg.iiTAM;
 		}
-		protected readonly IItemIcon itemIcon;
-		protected readonly IItemIconTransactionManager iiTAM;
+		protected readonly IItemIcon thisItemIcon;
+		protected readonly IItemIconTransactionManager thisIITAM;
 		public abstract void OnEnter();
 		public abstract void OnExit();
 	}
 	/* picked */
 		public interface IIIPickedState: IIITransactionState{}
-		public class IIPickedState: AbsIITransactionState, IIIPickedState{
-			public IIPickedState(IIITransactionStateConstArg arg): base(arg){}
+		public abstract class AbsIIPickedState: AbsIITransactionState, IIIPickedState{
+			public AbsIIPickedState(IIITransactionStateConstArg arg): base(arg){}
 			public override void OnEnter(){
-				itemIcon.SetUpAsPickedII();
-				iiTAM.SetToPickedState(itemIcon);
-				itemIcon.BecomeVisuallyPickedUp();
-				itemIcon.BecomeSelected();
+				thisItemIcon.SetUpAsPickedII();
+				thisIITAM.SetToPickedState(thisItemIcon);
+				thisItemIcon.BecomeVisuallyPickedUp();
+				thisItemIcon.BecomeSelected();
 			}
 			public override void OnExit(){
-				itemIcon.BecomeVisuallyUnpicked();
+				thisItemIcon.BecomeVisuallyUnpicked();
 			}
 		}
 		public interface IEqpIIPickedState: IIIPickedState, IEqpIITransactionState{}
-		public class EqpIIPickedState: IIPickedState, IEqpIIPickedState{
+		public class EqpIIPickedState: AbsIIPickedState, IEqpIIPickedState{
 			public EqpIIPickedState(IEqpIITAStateConstArg arg): base(arg){
-				this.eqpTool = arg.eqpTool;
+				thisEqpTool = arg.eqpTool;
 			}
-			IEquippableItemIcon eqpII{
-				get{return this.itemIcon as IEquippableItemIcon;}//safe
+			IEquippableItemIcon thisEqpII{
+				get{return (IEquippableItemIcon)thisItemIcon;}//safe
 			}
-			IEquippableIITAManager eqpIITAM{
-				get{ return this.iiTAM as IEquippableIITAManager;}//safe
+			IEquippableIITAManager thisEqpIITAM{
+				get{ return (IEquippableIITAManager)thisIITAM;}//safe
 			}
-			readonly IEquipTool eqpTool;
+			readonly IEquipTool thisEqpTool;
 			public override void OnEnter(){
-				IItemTemplate eqpItemTemp = eqpII.GetItemTemplate();
-				eqpTool.TrySwitchItemMode(eqpItemTemp);
-				if(this.eqpII.IsInEqpIG())
-					eqpTool.TrySwitchItemFilter(eqpItemTemp);
+				IItemTemplate eqpItemTemp = thisEqpII.GetItemTemplate();
+				thisEqpTool.TrySwitchItemMode(eqpItemTemp);
+				if(thisEqpII.IsInEqpIG())
+					thisEqpTool.TrySwitchItemFilter(eqpItemTemp);
 				base.OnEnter();
 			}
 		}
 	/* pickable */
 		public interface IIIPickableState: IIITransactionState{}
-		public class IIPickableState: AbsIITransactionState, IIIPickableState{
-			public IIPickableState(IIITransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){}
-			public override void OnExit(){}
+		public abstract class AbsIIPickableState: AbsIITransactionState, IIIPickableState{
+			public AbsIIPickableState(IIITransactionStateConstArg arg): base(arg){}
 
 		}
 		public interface IEqpIIPickableState: IIIPickableState, IEqpIITransactionState{}
-		public class EqpIIPickableState: IIPickableState, IEqpIIPickableState{
+		public class EqpIIPickableState: AbsIIPickableState, IEqpIIPickableState{
 			public EqpIIPickableState(IEqpIITAStateConstArg arg): base(arg){}
 			public override void OnEnter(){
-				base.OnEnter();
 			}
 			public override void OnExit(){
-				base.OnExit();
 			}
 		}
 	/* unpickable */
 		public interface IIIUnpickableState: IIITransactionState{}
-		public class IIUnpickableState: AbsIITransactionState, IIIUnpickableState{
-			public IIUnpickableState(IIITransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){}
-			public override void OnExit(){}
+		public abstract class AbsIIUnpickableState: AbsIITransactionState, IIIUnpickableState{
+			public AbsIIUnpickableState(IIITransactionStateConstArg arg): base(arg){}
 		}
 		public interface IEqpIIUnpickableState: IIIUnpickableState, IEqpIITransactionState{}
-		public class EqpIIUnpickableState: IIUnpickableState, IEqpIIUnpickableState{
+		public class EqpIIUnpickableState: AbsIIUnpickableState, IEqpIIUnpickableState{
 			public EqpIIUnpickableState(IEqpIITAStateConstArg arg): base(arg){}
-			public override void OnEnter(){base.OnEnter();}
-			public override void OnExit(){base.OnExit();}
+			public override void OnEnter(){
+			}
+			public override void OnExit(){
+			}
 		}
 	/* hovered */
 		public interface IIIHoverableState: IIITransactionState{}
-		public class IIHoverableState: AbsIITransactionState, IIIHoverableState{
-			public IIHoverableState(IIITransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){}
-			public override void OnExit(){}
+		public abstract class AbsIIHoverableState: AbsIITransactionState, IIIHoverableState{
+			public AbsIIHoverableState(IIITransactionStateConstArg arg): base(arg){}
 		}
 		public interface IEqpIIHoverableState: IIIHoverableState, IEqpIITransactionState{}
-		public class EqpIIHoverableState: IIHoverableState, IEqpIIHoverableState{
+		public class EqpIIHoverableState: AbsIIHoverableState, IEqpIIHoverableState{
 			public EqpIIHoverableState(IEqpIITAStateConstArg arg): base(arg){}
-			public override void OnEnter(){base.OnEnter();}
-			public override void OnExit(){base.OnExit();}
+			public override void OnEnter(){
+			}
+			public override void OnExit(){
+			}
 		}
 	/* unhoverable */
 		public interface IIIUnhoverableState: IIITransactionState{}
-		public class IIUnhoverableState: AbsIITransactionState, IIIUnhoverableState{
-			public IIUnhoverableState(IIITransactionStateConstArg arg): base(arg){}
-			public override void OnEnter(){}
-			public override void OnExit(){}
+		public abstract class AbsIIUnhoverableState: AbsIITransactionState, IIIUnhoverableState{
+			public AbsIIUnhoverableState(IIITransactionStateConstArg arg): base(arg){}
 		}
 		public interface IEqpIIUnhoverableState: IIIUnhoverableState, IEqpIITransactionState{}
-		public class EqpIIUnhoverableState: IIUnhoverableState, IEqpIIUnhoverableState{
+		public class EqpIIUnhoverableState: AbsIIUnhoverableState, IEqpIIUnhoverableState{
 			public EqpIIUnhoverableState(IEqpIITAStateConstArg arg): base(arg){}
-			public override void OnEnter(){base.OnEnter();}
-			public override void OnExit(){base.OnExit();}
+			public override void OnEnter(){
+			}
+			public override void OnExit(){
+			}
 		}
 	/* hovered */
 	public interface IIIHoveredState: IIITransactionState{
 		void SetPickedItemIcon(IItemIcon pickedII);
 	}
-	public class IIHoveredState: AbsIITransactionState, IIIHoveredState{
-		public IIHoveredState(IIITransactionStateConstArg arg): base(arg){}
+	public abstract class AbsIIHoveredState: AbsIITransactionState, IIIHoveredState{
+		public AbsIIHoveredState(IIITransactionStateConstArg arg): base(arg){}
 		public void SetPickedItemIcon(IItemIcon pickedII){
-			this.pickedII = pickedII;
+			this.thisPickedII = pickedII;
 		}
-		protected IItemIcon pickedII;
+		protected IItemIcon thisPickedII;
 		public override void OnEnter(){
-			this.itemIcon.BecomeSelected();
+			this.thisItemIcon.BecomeSelected();
 		}
 		public override void OnExit(){
-			itemIcon.BecomeSelectable();
-			pickedII = null;
+			thisItemIcon.BecomeSelectable();
+			thisPickedII = null;
 		}
 	}
 	public interface IEqpIIHoveredState: IIIHoveredState, IEqpIITransactionState{}
-	public class EqpIIHoveredState: IIHoveredState, IEqpIIHoveredState{
+	public class EqpIIHoveredState: AbsIIHoveredState, IEqpIIHoveredState{
 		public EqpIIHoveredState(IEqpIITAStateConstArg arg): base(arg){
-			this.eqpTool = arg.eqpTool;
+			thisEqpTool = arg.eqpTool;
 		}
-		readonly IEquipTool eqpTool;
-		IEquippableItemIcon eqpII{get{return this.itemIcon as IEquippableItemIcon;}}//safe
-		IEquippableIITAManager eqpIITAM{get{return this.iiTAM as IEquippableIITAManager;}}//safe
+		readonly IEquipTool thisEqpTool;
+		IEquippableItemIcon thisEqpII{get{return (IEquippableItemIcon)thisItemIcon;}}//safe
+		IEquippableIITAManager thisEqpIITAM{get{return (IEquippableIITAManager)thisIITAM;}}//safe
 		IEquippableItemIcon pickedEqpII{
 			get{
-				if(this.pickedII is IEquippableItemIcon)
-					return this.pickedII as IEquippableItemIcon;
+				if(thisPickedII is IEquippableItemIcon)
+					return (IEquippableItemIcon)thisPickedII;
 				else
 					throw new System.InvalidOperationException("this.pickedII must be of type IEquippableItemIcon");
 			}
@@ -148,45 +144,42 @@ namespace UISystem{
 			base.OnExit();
 		}
 		void CheckAndSetAsTransactionTargetEqpII(){
-			if(eqpII.IsInEqpIG()){
-				if(eqpII.IsEmpty())
+			if(thisEqpII.IsInEqpIG()){
+				if(thisEqpII.IsEmpty())
 					return;
 				else{
-					if(eqpII.HasSameItem(pickedEqpII))
+					if(thisEqpII.HasSameItem(pickedEqpII))
 						return;
 					else
-						eqpIITAM.SetEqpIIToUnequip(eqpII);
+						thisEqpIITAM.SetEqpIIToUnequip(thisEqpII);
 				}
 			}else{//in pool
-				if(eqpII.HasSameItem(pickedEqpII))
+				if(thisEqpII.HasSameItem(pickedEqpII))
 					return;
 				else
-					eqpIITAM.SetEqpIIToEquip(eqpII);
+					thisEqpIITAM.SetEqpIIToEquip(thisEqpII);
 			}
 		}
 	}
 	/* Dropped */
 	public interface IIIDroppedState: IIITransactionState{}
-	public class IIDroppedState: AbsIITransactionState, IIIDroppedState{
-		public IIDroppedState(IIITransactionStateConstArg arg): base(arg){}
+	public  abstract class AbsIIDroppedState: AbsIITransactionState, IIIDroppedState{
+		public AbsIIDroppedState(IIITransactionStateConstArg arg): base(arg){}
 		public override void OnEnter(){
-			itemIcon.StopIIImageSmoothFollowDragPos();
-			iiTAM.ExecuteTransaction();
-			iiTAM.SetToDefaultState();
-		}
-		public override void OnExit(){
-
+			thisItemIcon.StopIIImageSmoothFollowDragPos();
+			thisIITAM.ExecuteTransaction();
+			thisIITAM.SetToDefaultState();
 		}
 	}
 	public interface IEqpIIDroppedState: IIIDroppedState, IEqpIITransactionState{}
-	public class EqpIIDroppedState: IIDroppedState, IEqpIIDroppedState{
+	public class EqpIIDroppedState: AbsIIDroppedState, IEqpIIDroppedState{
 		public EqpIIDroppedState(IEqpIITAStateConstArg arg): base(arg){}
-		IEquippableIITAManager eqpIITAM{
-			get{return (IEquippableIITAManager)iiTAM;}//safe
+		IEquippableIITAManager thisEqpIITAM{
+			get{return (IEquippableIITAManager)thisIITAM;}//safe
 		}
 		public override void OnEnter(){
 			base.OnEnter();
-			eqpIITAM.UpdateEquippedItems();
+			thisEqpIITAM.UpdateEquippedItems();
 		}
 		public override void OnExit(){
 
