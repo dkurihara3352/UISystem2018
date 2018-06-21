@@ -32,10 +32,10 @@ namespace UISystem{
 			TrySwitchState(hoveredState);
 		}
 		public bool IsHoverable(){
-			return curState is IPanelHoverableState;
+			return thisCurState is IPanelHoverableState;
 		}
 		public bool IsHovered(){
-			return curState is IPanelHoveredState;
+			return thisCurState is IPanelHoveredState;
 		}
 	}
 }

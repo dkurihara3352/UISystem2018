@@ -99,7 +99,7 @@ public class SwitchableStateTest{
 		public interface ITestSwitchableStateB: ITestSwitchableState{}
 		public class TestSwitchableStateEngine: AbsSwitchableStateEngine<ITestSwitchableState>{
 			public ITestSwitchableState GetCurState(){
-				return this.curState;
+				return this.thisCurState;
 			}
 		}
 	/*  */

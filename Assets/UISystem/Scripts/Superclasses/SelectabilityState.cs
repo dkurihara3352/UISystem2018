@@ -53,10 +53,10 @@ namespace UISystem{
 					throw new System.InvalidOperationException("This method should not be called while this is not selectable");
 			}
 			public bool IsSelectable(){
-				return curState is SelectableState;
+				return thisCurState is SelectableState;
 			}
 			public bool IsSelected(){
-				return curState is SelectedState;
+				return thisCurState is SelectedState;
 			}
 	}
 	public interface ISelectabilityState: ISwitchableState{

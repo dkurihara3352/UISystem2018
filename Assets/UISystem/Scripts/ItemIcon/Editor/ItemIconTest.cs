@@ -161,7 +161,7 @@ public class ItemIconTest{
         public override void CheckForDelayedDrop(){}
         public override void CheckForImmediatePickUp(){}
         public override void CheckForQuickDrop(){}
-        public override void CheckForDragPickUp(Vector2 pos, Vector2 deltaP){}
+        public override void CheckForDragPickUp(ICustomEventData eventData){}
     }
     public TestItemIcon CreateTestItemIcon(int maxTransferableQuantity, out IItemIconConstArg arg){
         IItemIconConstArg thisArg = Substitute.For<IItemIconConstArg>();

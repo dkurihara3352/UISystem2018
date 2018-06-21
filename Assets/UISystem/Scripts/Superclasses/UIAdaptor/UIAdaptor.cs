@@ -26,39 +26,31 @@ namespace UISystem{
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
-			protected IUIAActivationData activationData;
+			protected IUIAActivationData thisActivationData;
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
-				/* Perform all initialization here */
-				IUIAActivationData domainData = null;
-					/*  pick up context activation data
-							factory
-							tool ?
-							transaction manager
-					*/
-				if(this is IPickUpContextUIAdaptor){
-					domainData = ((IPickUpContextUIAdaptor)this).CreateDomainActivationData(passedData.uim);
-				}else{
-					domainData = passedData;
-				}
-				IUIElementFactory factory = domainData.factory;
-				this.uiElement = this.CreateUIElement(factory);
+				IUIAActivationData domainData = CheckAndCreateDomainData(passedData);
+				thisUIElement = CreateUIElement(domainData.uieFactory);
+				thisInputStateEngine = new UIAdaptorStateEngine(this, domainData.processFactory);
+				thisActivationData = domainData;
 				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
 					childUIA.GetReadyForActivation(domainData);
 				}
-				IUIManager uim = domainData.uim;
-				IUIAdaptorStateEngine engine = new UIAdaptorStateEngine(this, uim.GetProcessFactory());
-				SetInputStateEngine(engine);
-				this.activationData = domainData;
 			}
-			void SetInputStateEngine(IUIAdaptorStateEngine engine){
-				this.inputStateEngine = engine;
+			IUIAActivationData CheckAndCreateDomainData(IUIAActivationData passedData){
+				IUIAActivationData result = null;
+				if(this is IPickUpContextUIAdaptor){
+					result = ((IPickUpContextUIAdaptor)this).CreateDomainActivationData(passedData);
+				}else{
+					result = passedData;
+				}
+				return result;
 			}
-			IUIAdaptorStateEngine inputStateEngine;
+
 		/*  Hierarchy stuff */
 			protected abstract T CreateUIElement(IUIElementFactory factory);
-			T uiElement;
+			T thisUIElement;
 			public IUIElement GetUIElement(){
-				return uiElement;
+				return thisUIElement;
 			}
 			public Vector2 GetPositionInThisSpace(Vector2 worldPos){
 				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
@@ -156,49 +148,42 @@ namespace UISystem{
 				return FindAllNextOffspringsWithComponent<IUIAdaptor>(transToExamine);
 			}
 		/* Event System Imple */
-			CustomEventData CreateCustomEventData(PointerEventData sourceData){
-				CustomEventData result = new CustomEventData(sourceData);
-				return result;
-			}
-			Vector2 CalcPointerPos(PointerEventData eventData){
-				return Vector2.zero;
-			}
-			Vector2 CalcPointerDelta(PointerEventData eventData){
-				return Vector2.zero;
-			}
+			IUIAdaptorStateEngine thisInputStateEngine;
 			public void OnPointerEnter(PointerEventData eventData){
 				if(this.GetUIElement() is IPickUpReceiver){
 					IPickUpReceiver receiver = (IPickUpReceiver)this.GetUIElement();
 					receiver.CheckForHover();
 				}
+				ICustomEventData customEventData = new CustomEventData(eventData);
+				thisInputStateEngine.OnPointerEnter(customEventData);
 			}
 			public void OnPointerDown(PointerEventData eventData){
-				CustomEventData customEventData = CreateCustomEventData(eventData);
-				inputStateEngine.OnPointerDown(customEventData);
+				ICustomEventData customEventData = new CustomEventData(eventData);
+				thisInputStateEngine.OnPointerDown(customEventData);
 			}
 			public void OnPointerUp(PointerEventData eventData){
-				CustomEventData customEventData = CreateCustomEventData(eventData);
-				inputStateEngine.OnPointerUp(customEventData);
+				ICustomEventData customEventData = new CustomEventData(eventData);
+				thisInputStateEngine.OnPointerUp(customEventData);
 			}
 			public void OnDrag(PointerEventData eventData){
-				Vector2 dragPos = this.CalcPointerPos(eventData);
-				Vector2 dragDeltaP = this.CalcPointerDelta(eventData);
-				inputStateEngine.OnDrag(dragPos, dragDeltaP);
+				ICustomEventData customEventData = new CustomEventData(eventData);
+				thisInputStateEngine.OnDrag(customEventData);
 			}
 		/*  */
 	}
 	public interface ICustomEventData{
 		Vector2 deltaP{get;}
+		Vector2 position{get;}
 	}
-	public class CustomEventData: ICustomEventData{
+	public struct CustomEventData: ICustomEventData{
 		public CustomEventData(PointerEventData sourceData){
 			/* do some conversion here */
+			thisDeltaP = sourceData.delta;
+			thisPosition = sourceData.position;
 		}
-		public Vector2 deltaP{
-			get{return Vector2.zero;}
-		}
-	}
-	public interface IPreactivationArg{
-		IUIManager uim{get;}
+		public Vector2 deltaP{get{return thisDeltaP;}}
+		Vector2 thisDeltaP;
+		public Vector2 position{get{return thisPosition;}}
+		Vector2 thisPosition;
 	}
 }

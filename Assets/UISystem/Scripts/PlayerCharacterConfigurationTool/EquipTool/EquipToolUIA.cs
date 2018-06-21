@@ -11,13 +11,13 @@ namespace UISystem{
 			public IIconPanel poolItemsPanel;
 		/*  */
 		IEquipToolActivationData eqpUIAActivationData{
-			get{return this.activationData as IEquipToolActivationData;}
+			get{return this.thisActivationData as IEquipToolActivationData;}
 		}
 		IEquipToolUIE eqpToolUIE;
 		protected override IEquipToolUIE GetPickUpContextUIE(){
 			return eqpToolUIE;
 		}
-		public override IUIAActivationData CreateDomainActivationData(IUIManager uim){
+		public override IUIAActivationData CreateDomainActivationData(IUIAActivationData passedData){
 			/*  Instantiate and set up
 					IITAM
 					Tool
@@ -26,9 +26,9 @@ namespace UISystem{
 			*/
 			IEquipTool eqpTool = new EquipTool();
 			IEquippableIITAManager eqpIITAM  = new EquippableIITAManager(this.eqpItemsPanel, this.poolItemsPanel, eqpTool);
-			IEquipToolUIEFactory factory = new EquipToolUIEFactory(uim, eqpTool, eqpIITAM);
+			IEquipToolUIEFactory factory = new EquipToolUIEFactory(passedData.uim, eqpTool, eqpIITAM);
 
-			return new EquipToolUIAActivationData(uim, factory, eqpIITAM, eqpTool);
+			return new EquipToolUIAActivationData(passedData.uim, factory, eqpIITAM, eqpTool);
 		}
 		protected override IEquipToolUIE CreateUIElement(IUIElementFactory factory){
 			if(factory is IEquipToolUIEFactory){

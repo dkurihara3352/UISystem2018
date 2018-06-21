@@ -22,10 +22,10 @@ namespace UISystem{
 		}
 		protected IIITAMDefaultState defaultState;
 		public bool IsInPickedUpState(){
-			return curState is IIITAMPickedState;
+			return thisCurState is IIITAMPickedState;
 		}
 		public bool IsInDefaultState(){
-			return curState is IIITAMDefaultState;
+			return thisCurState is IIITAMDefaultState;
 		}
 	}
 	public interface IEqpIITAMStateEngine: IItemIconTAManagerStateEngine{}

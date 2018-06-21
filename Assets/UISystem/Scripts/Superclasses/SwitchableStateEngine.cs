@@ -14,23 +14,23 @@ namespace UISystem{
 	public class AbsSwitchableStateEngine<T>: ISwitchableStateEngine<T> where T: ISwitchableState{
 		public void TrySwitchState(T state){
 			if(state != null){
-				if( curState != null){
-					if(curState.GetType().Equals(state.GetType())){
+				if( thisCurState != null){
+					if(thisCurState.GetType().Equals(state.GetType())){
 						return;/* no state change */
 					}else{
-						curState.OnExit();
-						curState = state;
+						thisCurState.OnExit();
+						thisCurState = state;
 						state.OnEnter();
 					}
 				}else{
-					curState = state;
+					thisCurState = state;
 					state.OnEnter();
 				}
 			}else{
 				throw new System.ArgumentNullException("state", "switching to null state is not allowed");
 			}
 		}
-		protected T curState;
+		protected T thisCurState;
 	}
 }
 

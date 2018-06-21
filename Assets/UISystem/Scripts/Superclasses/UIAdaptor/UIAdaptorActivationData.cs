@@ -5,20 +5,22 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIAActivationData{
 		IUIManager uim{get;}
-		IUIElementFactory factory{get;}
+		IUIElementFactory uieFactory{get;}
+		IProcessFactory processFactory{get;}
 	}
 	public abstract class AbsUIAActivationData: IUIAActivationData{
-		public AbsUIAActivationData(IUIManager uim, IUIElementFactory factory){
-			this._uim = uim;
-			this._factory = factory;
+		public AbsUIAActivationData(IUIManager uim, IUIElementFactory uieFactory){
+			thisUIM = uim;
+			thisUIEFactory = uieFactory;
 		}
-		readonly IUIManager _uim;
-		public IUIManager uim{get{return _uim;}}
-		readonly IUIElementFactory _factory;
-		public IUIElementFactory factory{get{return _factory;}}
+		readonly IUIManager thisUIM;
+		public IUIManager uim{get{return thisUIM;}}
+		readonly IUIElementFactory thisUIEFactory;
+		public IUIElementFactory uieFactory{get{return thisUIEFactory;}}
+		public IProcessFactory processFactory{get{return thisUIM.GetProcessFactory();}}
 	}
 	public class RootUIAActivationData: AbsUIAActivationData{
-		public RootUIAActivationData(IUIManager uim, IUIElementFactory factory): base(uim, factory){}
+		public RootUIAActivationData(IUIManager uim, IUIElementFactory uieFactory): base(uim, uieFactory){}
 	}
 	public interface IEquipToolActivationData: IUIAActivationData{
 		IEquippableIITAManager eqpIITAM{get;}
@@ -26,14 +28,14 @@ namespace UISystem{
 		IEquipToolUIEFactory eqpToolUIEFactory{get;}
 	}
 	public class EquipToolUIAActivationData: AbsUIAActivationData, IEquipToolActivationData{
-		public EquipToolUIAActivationData(IUIManager uim, IEquipToolUIEFactory factory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, factory){
-			this._eqpIITAM = eqpIITAM;
-			this._eqpTool = eqpTool;
+		public EquipToolUIAActivationData(IUIManager uim, IEquipToolUIEFactory eqpToolUIEFactory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, eqpToolUIEFactory){
+			thisEqpIITAM = eqpIITAM;
+			thisEqpTool = eqpTool;
 		}
-		readonly IEquippableIITAManager _eqpIITAM;
-		public IEquippableIITAManager eqpIITAM{get{return _eqpIITAM;}}
-		readonly IEquipTool _eqpTool;
-		public IEquipTool eqpTool{get{return _eqpTool;}}
-		public IEquipToolUIEFactory eqpToolUIEFactory{get{return factory as IEquipToolUIEFactory;}}
+		readonly IEquippableIITAManager thisEqpIITAM;
+		public IEquippableIITAManager eqpIITAM{get{return thisEqpIITAM;}}
+		readonly IEquipTool thisEqpTool;
+		public IEquipTool eqpTool{get{return thisEqpTool;}}
+		public IEquipToolUIEFactory eqpToolUIEFactory{get{return (IEquipToolUIEFactory)uieFactory;}}
 	}
 }

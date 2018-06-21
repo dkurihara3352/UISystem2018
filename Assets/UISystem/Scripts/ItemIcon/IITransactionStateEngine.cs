@@ -29,10 +29,10 @@ namespace UISystem{
 		protected IIIHoveredState hoveredState;
 		protected IIIDroppedState droppedState;
 		public bool IsPickable(){
-			return curState is IIIPickedState;
+			return thisCurState is IIIPickedState;
 		}
 		public bool IsPicked(){
-			return curState is IIIPickedState;
+			return thisCurState is IIIPickedState;
 		}
 		public void PickUp(){
 			if(this.IsPickable())
@@ -62,10 +62,10 @@ namespace UISystem{
 			TrySwitchState(hoveredState);
 		}
 		public bool IsHoverable(){
-			return curState is IIIHoverableState;
+			return thisCurState is IIIHoverableState;
 		}
 		public bool IsHovered(){
-			return curState is IIIHoveredState;
+			return thisCurState is IIIHoveredState;
 		}
 	}
 	public interface IEqpIITransactionStateEngine: IItemIconTransactionStateEngine{}

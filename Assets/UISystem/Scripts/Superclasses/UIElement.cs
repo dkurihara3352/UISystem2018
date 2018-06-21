@@ -84,9 +84,9 @@ namespace UISystem{
 			public virtual void OnRelease(){}
 			public virtual void OnDelayedRelease(){}
 			public virtual void OnTap( int tapCount){}
-			public virtual void OnDrag( Vector2 pos, Vector2 deltaP){}
+			public virtual void OnDrag( ICustomEventData eventData){}
 			public virtual void OnHold( float elapsedT){}
-			public virtual void OnSwipe( Vector2 deltaP){}
+			public virtual void OnSwipe( ICustomEventData eventData){}
 		/*  */
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
 			return this.uiAdaptor.GetPositionInThisSpace(worldPos);
@@ -133,10 +133,10 @@ namespace UISystem{
 		void OnDelayedRelease();
 		/* called after both OnRelease and OnTap */
 		void OnTap( int tapCount);
-		void OnDrag( Vector2 pos, Vector2 deltaP);
+		void OnDrag( ICustomEventData eventData);
 		void OnHold( float deltaT);
 		/* called every frame from pointer down to up */
-		void OnSwipe( Vector2 deltaP);
+		void OnSwipe( ICustomEventData eventData);
 	}
 	public interface IVisibilitySwitcher{
 		/* subclassed by same uies that are also IRootActivator?

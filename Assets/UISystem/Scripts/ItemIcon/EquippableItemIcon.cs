@@ -62,7 +62,7 @@ namespace UISystem{
 			public override void CheckForSecondTouchPickUp(){
 				this.CheckForPickUp();
 			}
-			public override void CheckForDragPickUp(Vector2 pos, Vector2 deltaP){
+			public override void CheckForDragPickUp(ICustomEventData eventData){
 				return;
 			}
 			protected void CheckForPickUp(){

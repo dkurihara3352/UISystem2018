@@ -29,7 +29,7 @@ public class UIAdaptorInputStateTest{
 		IUIAdaptorStateEngine engine = Substitute.For<IUIAdaptorStateEngine>();
 		TestPointerUpInputState state = new TestPointerUpInputState(engine);
 
-		Assert.Throws(typeof(System.InvalidOperationException), () => state.OnDrag(Vector2.zero, Vector2.zero));
+		Assert.Throws(typeof(System.InvalidOperationException), () => state.OnDrag(Substitute.For<ICustomEventData>()));
 	}
 	[Test]
 	public void TestUIAStateEngine_Construction_WhenCalled_StatesAreAllSet(){
@@ -124,7 +124,7 @@ public class UIAdaptorInputStateTest{
 		
 		engine.OnPointerUp(eventData);
 
-		uie.DidNotReceive().OnSwipe(Arg.Any<Vector2>());
+		uie.DidNotReceive().OnSwipe(Arg.Any<ICustomEventData>());
 		uie.Received(1).OnTap(1);
 	}
 	[Test][TestCaseSource(typeof(PointerUpDeltaCase), "overThreshCases")]
@@ -140,7 +140,7 @@ public class UIAdaptorInputStateTest{
 		engine.OnPointerUp(eventData);
 		
 		uie.DidNotReceive().OnTap(Arg.Any<int>());
-		uie.Received(1).OnSwipe(eventData.deltaP);
+		uie.Received(1).OnSwipe(eventData);
 	}
 		class PointerUpDeltaCase{
 			static object[] overThreshCases = {
@@ -332,7 +332,7 @@ public class UIAdaptorInputStateTest{
 
 		engine.OnPointerUp(eventData);
 
-		uie.Received(1).OnSwipe(eventData.deltaP);
+		uie.Received(1).OnSwipe(eventData);
 	}
 	[Test, TestCaseSource(typeof(PointerUpDeltaCase), "underThreshCases")]
 	public void TestUIAStateEngine_OnPointerUp_WhileWFRelease_DeltaPIsNotOverThreshold_DoesNotCallUIEOnSwipe(float vector2X){
@@ -348,7 +348,7 @@ public class UIAdaptorInputStateTest{
 
 		engine.OnPointerUp(eventData);
 
-		uie.DidNotReceive().OnSwipe(Arg.Any<Vector2>());
+		uie.DidNotReceive().OnSwipe(Arg.Any<ICustomEventData>());
 	}
 	[Test]
 	public void TestUIAStateEngine_OnPointerDown_WhileInWFNextTouch_BecomesWFTapState(){
@@ -454,18 +454,20 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		IUIElement uie = arg.uie;
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
 		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
+		eventData.deltaP.Returns(dragDeltaP);
 		engine.OnPointerDown(Substitute.For<ICustomEventData>());
 		Assert.That(engine.GetCurState(), Is.InstanceOf(typeof(PointerDownInputState)));
 
-		engine.OnDrag(Vector2.zero, dragDeltaP);
+		engine.OnDrag(eventData);
 		
 		if(dragDeltaP.sqrMagnitude >= engine.GetDragThreshold() * engine.GetDragThreshold()){
 			Assert.That(overThreshold, Is.True);
-			uie.Received(1).OnDrag(Vector2.zero, dragDeltaP);
+			uie.Received(1).OnDrag(eventData);
 		}else{
 			Assert.That(overThreshold, Is.False);
-			uie.DidNotReceive().OnDrag(Vector2.zero, dragDeltaP);
+			uie.DidNotReceive().OnDrag(eventData);
 		}
 	}
 	class OnDragTestCase{
@@ -491,11 +493,13 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		IUIElement uie = arg.uie;
+		ICustomEventData eventData = Substitute.For<ICustomEventData>();
 		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
+		eventData.deltaP.Returns(dragDeltaP);
 		engine.OnPointerDown(Substitute.For<ICustomEventData>());
 		Assert.That(engine.IsWaitingForTap(), Is.True);
 		
-		engine.OnDrag(Vector2.zero, dragDeltaP);
+		engine.OnDrag(eventData);
 		
 		Assert.That(engine.IsWaitingForTap(), Is.True);
 	}
@@ -521,7 +525,7 @@ public class UIAdaptorInputStateTest{
 			public override void OnEnter(){}
 			public override void OnExit(){}
 			public override void OnPointerUp(ICustomEventData eventData){}
-			public override void OnDrag(Vector2 dragPos, Vector2 dragDeltaP){}
+			public override void OnDrag(ICustomEventData eventData){}
 			public override void OnPointerEnter(ICustomEventData eventData){}
 			public override void OnPointerExit(ICustomEventData eventData){}
 		}
@@ -545,38 +549,38 @@ public class UIAdaptorInputStateTest{
 		class TestUIAStateEngine: UIAdaptorStateEngine{
 			public TestUIAStateEngine(IUIAdaptor uia, IProcessFactory procFac): base(uia, procFac){}
 			public IUIAdaptorInputState GetCurState(){
-				return this.curState;
+				return this.thisCurState;
 			}
 			public bool IsWaitingForFirstTouch(){
-				return this.curState is WaitingForFirstTouchState;
+				return this.thisCurState is WaitingForFirstTouchState;
 			}
 			public WaitingForFirstTouchState GetWFFirstTouchState(){
-				return this.waitingForFirstTouchState;
+				return this.thisWaitingForFirstTouchState;
 			}
 			public bool IsWaitingForTap(){
-				return this.curState is WaitingForTapState;
+				return this.thisCurState is WaitingForTapState;
 			}
 			public WaitingForTapState GetWFTapState(){
-				return this.waitingForTapState;
+				return this.thisWaitingForTapState;
 			}
 			public bool IsWaitingForRelease(){
-				return this.curState is WaitingForReleaseState;
+				return this.thisCurState is WaitingForReleaseState;
 			}
 			public WaitingForReleaseState GetWFReleaseState(){
-				return this.waitingForReleaseState;
+				return this.thisWaitingForReleaseState;
 			}
 			public bool IsWaitingForNextTouch(){
-				return this.curState is WaitingForNextTouchState;
+				return this.thisCurState is WaitingForNextTouchState;
 			}
 			public WaitingForNextTouchState GetWFNextTouchState(){
-				return this.waitingForNextTouchState;
+				return this.thisWaitingForNextTouchState;
 			}
 			public bool StatesAreAllSet(){
 				return 
-					this.waitingForFirstTouchState != null &&
-					this.waitingForTapState != null &&
-					this.waitingForReleaseState != null &&
-					this.waitingForNextTouchState != null;
+					this.thisWaitingForFirstTouchState != null &&
+					this.thisWaitingForTapState != null &&
+					this.thisWaitingForReleaseState != null &&
+					this.thisWaitingForNextTouchState != null;
 			}
 			public float GetDragThreshold(){
 				return this.dragDeltaPThreshold;

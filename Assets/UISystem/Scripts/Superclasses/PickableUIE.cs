@@ -8,7 +8,7 @@ namespace UISystem{
 		void CheckForImmediatePickUp();
 		void CheckForDelayedPickUp();
 		void CheckForSecondTouchPickUp();
-		void CheckForDragPickUp(Vector2 pos, Vector2 deltaP);
+		void CheckForDragPickUp(ICustomEventData eventData);
 		void CheckForQuickDrop();
 		void CheckForDelayedDrop();
 	}
@@ -30,8 +30,8 @@ namespace UISystem{
 		public override void OnDelayedTouch(){
 			this.CheckForDelayedPickUp();
 		}
-		public override void OnDrag(Vector2 pos, Vector2 deltaP){
-			this.CheckForDragPickUp(pos, deltaP);
+		public override void OnDrag(ICustomEventData eventData){
+			this.CheckForDragPickUp(eventData);
 		}
 		public override void OnRelease(){
 			this.CheckForQuickDrop();
@@ -42,7 +42,7 @@ namespace UISystem{
 		public abstract void CheckForImmediatePickUp();
 		public abstract void CheckForSecondTouchPickUp();
 		public abstract void CheckForDelayedPickUp();
-		public abstract void CheckForDragPickUp(Vector2 pos, Vector2 deltaP);
+		public abstract void CheckForDragPickUp(ICustomEventData eventData);
 		public abstract void CheckForQuickDrop();
 		public abstract void CheckForDelayedDrop();
 		public abstract void DeclinePickUp();

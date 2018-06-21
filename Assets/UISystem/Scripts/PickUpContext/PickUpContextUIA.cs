@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPickUpContextUIAdaptor: IUIAdaptor{
-		IUIAActivationData CreateDomainActivationData(IUIManager uim);
+		IUIAActivationData CreateDomainActivationData(IUIAActivationData passedData);
 		Vector2 GetPickUpReserveWorldPos();
 	}
 	public abstract class AbsPickUpContextUIAdaptor<T>: AbsUIAdaptor<T>, IPickUpContextUIAdaptor where T: IPickUpContextUIE{
@@ -35,7 +35,7 @@ namespace UISystem{
 			}
 			return result;
 		}
-		public abstract IUIAActivationData CreateDomainActivationData(IUIManager uim);
+		public abstract IUIAActivationData CreateDomainActivationData(IUIAActivationData passedData);
 		public Transform pickUpReserveTrans;/* assigned in the inspector */
 		public Vector2 GetPickUpReserveWorldPos(){
 			return new Vector2(pickUpReserveTrans.position.x, pickUpReserveTrans.position.y);
