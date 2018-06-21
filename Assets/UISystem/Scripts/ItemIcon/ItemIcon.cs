@@ -11,7 +11,6 @@ namespace UISystem{
 		IUIItem GetUIItem();
 		IItemTemplate GetItemTemplate();
 		int GetItemQuantity();
-		bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 		bool HasSameItem(IItemIcon other);
 		bool LeavesGhost();
 
@@ -192,7 +191,6 @@ namespace UISystem{
 			public IItemTemplate GetItemTemplate(){
 				return thisItemTemp;
 			}
-			public abstract bool ItemTempFamilyIsSameAs(IItemTemplate itemTemp);
 			public abstract bool HasSameItem(IItemIcon other);
 			public abstract bool LeavesGhost();
 		/* input handling */
