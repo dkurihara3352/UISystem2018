@@ -25,7 +25,6 @@ public class ItemIconTest{
         TestItemIcon testItemIcon = CreateTestItemIcon(maxTransferableQuantity, out arg);
         testItemIcon.UpdateTransferableQuantity(pickedQuantity);
     }
-
     public class UpdateTransferableQuantity_TestCases{
         public static object[] validCases = {
             new object[]{1, 2},
@@ -78,7 +77,52 @@ public class ItemIconTest{
         iiTAStateEngine.DidNotReceive().BecomePickable();
         iiTAStateEngine.Received(1).BecomeUnpickable();
     }
+    [Test]
+    public void EvaluatePickability_ThisIsNotEmpty_ThisIsReorderable_ThisIsNotIsTransferable_CallsEngineBecomePickable(){
+        IItemIconConstArg arg;
+        TestItemIcon itemIcon = CreateTestItemIcon(isEmpty: false, isReorderable: true, isTransferable: false, arg: out arg);
+        IItemIconTransactionStateEngine iiTAStateEngine = arg.iiTAStateEngine;
 
+        itemIcon.EvaluatePickability();
+
+        iiTAStateEngine.Received(1).BecomePickable();
+        iiTAStateEngine.DidNotReceive().BecomeUnpickable();
+    }
+    [Test]
+    public void EvaluatePickability_ThisIsNotEmpty_ThisIsNotReorderable_ThisIsTransferable_CallsEngineBecomePickable(){
+        IItemIconConstArg arg;
+        TestItemIcon itemIcon = CreateTestItemIcon(isEmpty: false, isReorderable: false, isTransferable: true, arg: out arg);
+        IItemIconTransactionStateEngine iiTAStateEngine = arg.iiTAStateEngine;
+
+        itemIcon.EvaluatePickability();
+
+        iiTAStateEngine.Received(1).BecomePickable();
+        iiTAStateEngine.DidNotReceive().BecomeUnpickable();
+    }
+    [Test]
+    public void HandOverTravel_IrperNotNull_SetsRunningTravelIrperNull(){
+        IItemIconConstArg arg;
+        TestItemIcon itemIcon = CreateTestItemIconWithIG(0, out arg);
+        ITravelInterpolator irper = Substitute.For<ITravelInterpolator>();
+        itemIcon.SetRunningTravelInterpolator(irper);
+        IItemIcon other = Substitute.For<IItemIcon>();
+
+        itemIcon.HandOverTravel(other);
+
+        Assert.That(itemIcon.GetRunningTravelInterpolator(), Is.Null);
+    }
+    [Test]
+    public void HandOverTravel_IrperNotNull_CallsIrperUpdateTravellingII(){
+        IItemIconConstArg arg;
+        TestItemIcon itemIcon = CreateTestItemIconWithIG(0, out arg);
+        ITravelInterpolator irper = Substitute.For<ITravelInterpolator>();
+        itemIcon.SetRunningTravelInterpolator(irper);
+        IItemIcon other = Substitute.For<IItemIcon>();
+
+        itemIcon.HandOverTravel(other);
+
+        irper.Received(1).UpdateTravellingII(other);
+    }
     public class IsTransferable_TestCases{
         public static object[] greaterCases = {
             new object[]{1, 2},
@@ -146,8 +190,7 @@ public class ItemIconTest{
     }
     public TestItemIcon CreateTestItemIcon(bool isEmpty, bool isReorderable, bool isTransferable, out IItemIconConstArg arg){
         IItemIconConstArg thisArg;
-        const int sharedQ = 0;
-        TestItemIcon itemIcon = CreateTestItemIcon(sharedQ, out thisArg);
+        TestItemIcon itemIcon = CreateTestItemIcon(isTransferable? 2 : 0, out thisArg);
         IItemIconEmptinessStateEngine emptinessStateEngine = thisArg.emptinessStateEngine;
         emptinessStateEngine.IsEmpty().Returns(isEmpty);
         IIconGroup ig = Substitute.For<IIconGroup>();
@@ -160,7 +203,16 @@ public class ItemIconTest{
         if(isTransferable)
             itemIcon.UpdateTransferableQuantity(1);
         else
-            itemIcon.UpdateTransferableQuantity(sharedQ);
+            itemIcon.UpdateTransferableQuantity(0);
+        
+        arg = thisArg;
+        return itemIcon;
+    }
+    public TestItemIcon CreateTestItemIconWithIG(int maxTransferableQuantity, out IItemIconConstArg arg){
+        IItemIconConstArg thisArg;
+        TestItemIcon itemIcon = CreateTestItemIcon(maxTransferableQuantity, out thisArg);
+        IIconGroup ig = Substitute.For<IIconGroup>();
+        itemIcon.SetIconGroup(ig);
         
         arg = thisArg;
         return itemIcon;
