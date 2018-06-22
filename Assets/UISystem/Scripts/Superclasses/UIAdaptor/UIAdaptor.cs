@@ -11,32 +11,29 @@ namespace UISystem{
 		void SetWorldPosition(Vector2 worldPos);
 		Vector2 GetPositionInThisSpace(Vector2 worldPos);
 		IUIAdaptor GetParentUIA();
+		void SetParentUIA(IUIAdaptor parent, bool worldPositionStays);
 	}
 	public interface IUIAdaptor: IMBAdaptor{
+		void GetReadyForActivation(IUIAActivationData passedData);
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
 		List<IUIAdaptor> GetAllOffspringUIAs();
 		List<IUIElement> GetChildUIEs();
-		void GetReadyForActivation(IUIAActivationData passedArg);
-		/*  IPickUpContextUIA is fed with null factory
-				it needs to create its own domain factory and pass it to every domain elements
-		*/
-		void SetParentUIA(IUIAdaptor uia, bool worldPositionStays);
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
-			protected IUIAActivationData thisActivationData;
-			public virtual void GetReadyForActivation(IUIAActivationData passedData){
-				IUIAActivationData domainData = CheckAndCreateDomainData(passedData);
-				thisUIElement = CreateUIElement(domainData.uieFactory);
-				thisInputStateEngine = new UIAdaptorStateEngine(this, domainData.processFactory);
-				thisActivationData = domainData;
-				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
-					childUIA.GetReadyForActivation(domainData);
-				}
+			public void Awake(){
+
 			}
-			IUIAActivationData CheckAndCreateDomainData(IUIAActivationData passedData){
+			public virtual void GetReadyForActivation(IUIAActivationData passedData){
+				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
+				thisUIElement = CreateUIElement(thisDomainActivationData.uieFactory);
+				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory);
+				GetAllChildUIAsReadyForActivation(this.GetChildUIAdaptors(), thisDomainActivationData);
+			}
+			protected IUIAActivationData thisDomainActivationData;
+			IUIAActivationData CheckAndCreateDomainActivationData(IUIAActivationData passedData){
 				IUIAActivationData result = null;
 				if(this is IPickUpContextUIAdaptor){
 					result = ((IPickUpContextUIAdaptor)this).CreateDomainActivationData(passedData);
@@ -45,16 +42,13 @@ namespace UISystem{
 				}
 				return result;
 			}
-
-		/*  Hierarchy stuff */
-			protected abstract T CreateUIElement(IUIElementFactory factory);
-			T thisUIElement;
-			public IUIElement GetUIElement(){
-				return thisUIElement;
+			void GetAllChildUIAsReadyForActivation(List<IUIAdaptor> childUIAs, IUIAActivationData passedData){
+				foreach(IUIAdaptor childUIA in childUIAs)
+					childUIA.GetReadyForActivation(passedData);
 			}
-			public Vector2 GetPositionInThisSpace(Vector2 worldPos){
-				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
-				return new Vector2(resultV3.x, resultV3.y);
+		/* MB adaptor */
+			public Transform GetTransform(){
+				return this.transform;
 			}
 			public Vector2 GetWorldPosition(){
 				return new Vector2(this.transform.position.x, this.transform.position.y);
@@ -68,14 +62,21 @@ namespace UISystem{
 			public void SetLocalPosition(Vector2 pos){
 				this.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
 			}
+			public Vector2 GetPositionInThisSpace(Vector2 worldPos){
+				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
+				return new Vector2(resultV3.x, resultV3.y);
+			}
 			public IUIAdaptor GetParentUIA(){
 				return FindClosestParentUIAdaptor();
 			}
 			public void SetParentUIA(IUIAdaptor parentUIA, bool worldPositionStays){
 				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
 			}
-			public Transform GetTransform(){
-				return this.transform;
+		/*  Hierarchy stuff */
+			protected abstract T CreateUIElement(IUIElementFactory factory);
+			T thisUIElement;
+			public IUIElement GetUIElement(){
+				return thisUIElement;
 			}
 			public IUIElement GetParentUIE(){
 				IUIAdaptor closestParentUIAdaptor = FindClosestParentUIAdaptor();
@@ -88,7 +89,7 @@ namespace UISystem{
 				IUIAdaptor newParUIA = newParentUIE.GetUIAdaptor();
 				this.SetParentUIA(newParUIA, worldPositionStays);
 			}
-			IUIAdaptor FindClosestParentUIAdaptor(){
+			IUIAdaptor FindClosestParentUIAdaptor(){/* any change in this must be reflected in corresponding pseudo transform test */
 				Transform parentToExamine = transform.parent;
 				while(true){
 					if(parentToExamine != null){

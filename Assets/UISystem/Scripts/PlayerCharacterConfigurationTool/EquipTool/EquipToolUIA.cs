@@ -11,7 +11,7 @@ namespace UISystem{
 			public IIconPanel poolItemsPanel;
 		/*  */
 		IEquipToolActivationData eqpUIAActivationData{
-			get{return this.thisActivationData as IEquipToolActivationData;}
+			get{return this.thisDomainActivationData as IEquipToolActivationData;}
 		}
 		IEquipToolUIE eqpToolUIE;
 		protected override IEquipToolUIE GetPickUpContextUIE(){
