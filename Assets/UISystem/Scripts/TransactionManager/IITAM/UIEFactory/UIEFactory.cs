@@ -11,15 +11,16 @@ namespace UISystem{
 	}
 	public class EquipToolUIEFactory: IEquipToolUIEFactory{
 		public EquipToolUIEFactory(IUIManager uim, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM){
-			this.eqpTool = eqpTool;
-			this.eqpIITAM = eqpIITAM;
+			thisUIM = uim;
+			thisEqpTool = eqpTool;
+			thisEqpIITAM = eqpIITAM;
 		}
-		readonly IUIManager uim;
-		readonly IEquipTool eqpTool;
-		readonly IEquippableIITAManager eqpIITAM;
+		readonly IUIManager thisUIM;
+		readonly IEquipTool thisEqpTool;
+		readonly IEquippableIITAManager thisEqpIITAM;
 		public IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia){
 			IUIImage image = CreateEquipToolUIImage();
-			IUIElementConstArg arg = new UIElementConstArg(uim, uia, image);
+			IUIElementConstArg arg = new UIElementConstArg(thisUIM, uia, image);
 			EquipToolUIE uie = new EquipToolUIE(arg);
 			return uie;
 		}
@@ -28,10 +29,10 @@ namespace UISystem{
 		}
 		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia, IEquippableUIItem item){
 			UIImage image = CreateEquippableItemIconUIImage(item);
-			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(eqpIITAM);
-			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(eqpIITAM, eqpTool);
+			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
+			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(uim, uia, image, eqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, eqpTool);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, uia, image, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
 			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
 			return eqpII;
 		}

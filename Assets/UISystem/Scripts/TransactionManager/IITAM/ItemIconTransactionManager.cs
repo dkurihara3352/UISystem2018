@@ -19,34 +19,35 @@ namespace UISystem{
 		void ExecuteTransaction();
 	}
 	public abstract class AbsItemIconTransactionManager: AbsPickUpManager, IItemIconTransactionManager{
+		public AbsItemIconTransactionManager(IItemIconTAManagerStateEngine stateEngine){
+			stateEngine.SetIITAM(this);
+			thisStateEngine = stateEngine;
+		}
 		/* tam state */
-			readonly IItemIconTAManagerStateEngine stateEngine;
+			readonly IItemIconTAManagerStateEngine thisStateEngine;
 			public void Activate(){
 				SetToDefaultState();
 			}
 			public void SetToPickedState(IItemIcon pickedII){
-				this.stateEngine.SetToPickedState(pickedII);
+				thisStateEngine.SetToPickedState(pickedII);
 			}
 			public void SetToDefaultState(){
-				this.stateEngine.SetToDefaultState();
+				thisStateEngine.SetToDefaultState();
 			}
 			public bool IsInPickedUpState(){
-				return this.stateEngine.IsInPickedUpState();
+				return thisStateEngine.IsInPickedUpState();
 			}
 			public bool IsInDefaultState(){
-				return this.stateEngine.IsInDefaultState();
+				return thisStateEngine.IsInDefaultState();
 			}
 		/*  */
 			public void SetPickedII(IItemIcon pickedII){
-				this.thisPickedUIE = pickedII;
+				thisPickedUIE = pickedII;
 			}
 			public IItemIcon GetPickedII(){
 				IPickableUIE pickedUIE = this.GetPickedUIE();
 				if(pickedUIE != null){
-					if(pickedUIE is IItemIcon)
-						return pickedUIE as IItemIcon;
-					else
-						throw new System.InvalidCastException("pickedUIE is not of type IItemIcon");
+					return (IItemIcon)pickedUIE;
 				}
 				return null;
 			}

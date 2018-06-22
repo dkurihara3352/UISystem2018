@@ -20,35 +20,35 @@ namespace UISystem{
 	}
 
 	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
-		public EquippableIITAManager(IIconPanel equippedItemsPanel, IIconPanel poolItemsPanel, IEquipTool eqpTool){
-			this.equippedItemsPanel = equippedItemsPanel;
-			this.poolItemsPanel = poolItemsPanel;
-			this.hoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
-			this.hoveredPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
+		public EquippableIITAManager(IEqpIITAMStateEngine eqpIITAMStateEngine, IIconPanel equippedItemsPanel, IIconPanel poolItemsPanel, IEquipTool eqpTool): base(eqpIITAMStateEngine){
+			thisEquippedItemsPanel = equippedItemsPanel;
+			thisPoolItemsPanel = poolItemsPanel;
+			thishoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
+			thisHoveredPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
 		}
 		public override IItemIcon CreateItemIcon(IUIItem item){
 			return null;
 		}
 		/* TA fields */
 			readonly IPickUpContextUIE eqpToolUIE;
-			readonly IIconPanel equippedItemsPanel;
-			readonly IIconPanel poolItemsPanel;
-			IEquippableItemIcon eiiToEquip;
-			IEquippableItemIcon eiiToUnequip;
+			readonly IIconPanel thisEquippedItemsPanel;
+			readonly IIconPanel thisPoolItemsPanel;
+			IEquippableItemIcon thisEIIToEquip;
+			IEquippableItemIcon thisEIIToUnequip;
 			public void SetEqpIIToEquip(IEquippableItemIcon eqpII){
-				this.eiiToEquip = eqpII;
+				thisEIIToEquip = eqpII;
 			}
 			public void SetEqpIIToUnequip(IEquippableItemIcon eqpII){
-				this.eiiToUnequip = eqpII;
+				thisEIIToUnequip = eqpII;
 			}
 			public override void ClearTAFields(){
 				base.ClearTAFields();
-				this.eiiToEquip = null;
-				this.eiiToUnequip = null;
+				thisEIIToEquip = null;
+				thisEIIToUnequip = null;
 			}
 			public void ClearEqpIIsToEquipAndUnequip(){
-				eiiToEquip = null;
-				eiiToUnequip = null;
+				thisEIIToEquip = null;
+				thisEIIToUnequip = null;
 			}
 		/* getting igs */
 			public override List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII){
@@ -111,29 +111,29 @@ namespace UISystem{
 			}
 		/*  */
 			public override void EvaluateHoverability(){
-				this.equippedItemsPanel.EvaluateHoverability(pickedEqpII);
-				this.poolItemsPanel.EvaluateHoverability(pickedEqpII);
+				this.thisEquippedItemsPanel.EvaluateHoverability(pickedEqpII);
+				this.thisPoolItemsPanel.EvaluateHoverability(pickedEqpII);
 				foreach(IIconGroup ig in this.GetAllRelevantIGs(pickedEqpII))
 					ig.EvaluateAllIIsHoverability(pickedEqpII);
 			}
 			public override void ResetHoverability(){
-				equippedItemsPanel.WaitForPickUp();
-				poolItemsPanel.WaitForPickUp();
+				thisEquippedItemsPanel.WaitForPickUp();
+				thisPoolItemsPanel.WaitForPickUp();
 			}
 			public override void ExecuteTransaction(){
-				if(eiiToUnequip != null){
-					eiiToUnequip.Unequip();
-					if(eiiToUnequip == pickedEqpII)
-						eiiToUnequip.Immigrate(GetRelevantEqpToolPoolIG());
+				if(thisEIIToUnequip != null){
+					thisEIIToUnequip.Unequip();
+					if(thisEIIToUnequip == pickedEqpII)
+						thisEIIToUnequip.Immigrate(GetRelevantEqpToolPoolIG());
 					else
-						eiiToUnequip.Transfer(GetRelevantEqpToolPoolIG());
+						thisEIIToUnequip.Transfer(GetRelevantEqpToolPoolIG());
 				}
-				if(eiiToEquip != null){
-					eiiToEquip.Equip();
-					if(eiiToEquip == pickedEqpII)
-						eiiToEquip.Immigrate(GetRelevantEquipIG(eiiToEquip));
+				if(thisEIIToEquip != null){
+					thisEIIToEquip.Equip();
+					if(thisEIIToEquip == pickedEqpII)
+						thisEIIToEquip.Immigrate(GetRelevantEquipIG(thisEIIToEquip));
 					else
-						eiiToEquip.Transfer(GetRelevantEquipIG(eiiToEquip));
+						thisEIIToEquip.Transfer(GetRelevantEquipIG(thisEIIToEquip));
 				}
 			}
 		/* hover switch */
@@ -141,23 +141,23 @@ namespace UISystem{
 				/*  EqpII to hover is infered
 				*/
 				if(pickedEqpII.IsInEqpIG())
-					equippedItemsPanel.CheckForHover();
+					thisEquippedItemsPanel.CheckForHover();
 				else
-					poolItemsPanel.CheckForHover();
+					thisPoolItemsPanel.CheckForHover();
 			}
-			readonly IPickUpReceiverSwitch<IEquipToolPanel> hoveredPanelSwitch;
+			readonly IPickUpReceiverSwitch<IEquipToolPanel> thisHoveredPanelSwitch;
 			public IEquipToolPanel GetHoveredEqpToolPanel(){
-				return hoveredPanelSwitch.GetHoveredPUReceiver();
+				return thisHoveredPanelSwitch.GetHoveredPUReceiver();
 			}
-			readonly IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch;
+			readonly IPickUpReceiverSwitch<IEquippableItemIcon> thishoveredEqpIISwitch;
 			public IEquippableItemIcon GetHoveredEqpII(){
-				return hoveredEqpIISwitch.GetHoveredPUReceiver();
+				return thishoveredEqpIISwitch.GetHoveredPUReceiver();
 			}
 			public void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel){
-				hoveredPanelSwitch.TrySwitchHoveredPUReceiver(panel);
+				thisHoveredPanelSwitch.TrySwitchHoveredPUReceiver(panel);
 			}
 			public void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII){
-				hoveredEqpIISwitch.TrySwitchHoveredPUReceiver(eqpII);
+				thishoveredEqpIISwitch.TrySwitchHoveredPUReceiver(eqpII);
 			}
 			public void ClearHoveredEqpII(){
 				TrySwitchHoveredEqpII(null);

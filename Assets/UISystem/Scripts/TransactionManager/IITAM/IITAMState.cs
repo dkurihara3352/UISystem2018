@@ -10,17 +10,22 @@ namespace UISystem{
 		bool IsInDefaultState();
 	}
 	public interface IItemIconTAManagerStateEngine: ISwitchableStateEngine<IItemIconTAManagerState>, IIITAMStateHandler{
+		void SetIITAM(IItemIconTransactionManager iiTAM);
 	}
 	public abstract class AbsItemIconTAManagerStateEngine: AbsSwitchableStateEngine<IItemIconTAManagerState>, IItemIconTAManagerStateEngine{
+		public void SetIITAM(IItemIconTransactionManager iiTAM){
+			thisPickedState.SetIITAM(iiTAM);
+			thisDefaultState.SetIITAM(iiTAM);
+		}
 		public void SetToPickedState(IItemIcon pickedII){
-			pickedState.SetPickedII(pickedII);
-			this.TrySwitchState(pickedState);
+			thisPickedState.SetPickedII(pickedII);
+			this.TrySwitchState(thisPickedState);
 		}
-		protected IIITAMPickedState pickedState;
+		protected IIITAMPickedState thisPickedState;
 		public void SetToDefaultState(){
-			this.TrySwitchState(defaultState);
+			this.TrySwitchState(thisDefaultState);
 		}
-		protected IIITAMDefaultState defaultState;
+		protected IIITAMDefaultState thisDefaultState;
 		public bool IsInPickedUpState(){
 			return thisCurState is IIITAMPickedState;
 		}
@@ -30,19 +35,21 @@ namespace UISystem{
 	}
 	public interface IEqpIITAMStateEngine: IItemIconTAManagerStateEngine{}
 	public class EqpIITAMStateEngine: AbsItemIconTAManagerStateEngine, IEqpIITAMStateEngine{
-		public EqpIITAMStateEngine(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool){
-			this.pickedState = new EqpIITAMPickedState(eqpIITAM, eqpTool);
-			this.defaultState = new IITAMDefaultState(eqpIITAM);
+		public EqpIITAMStateEngine(IEquipTool eqpTool){
+			thisPickedState = new EqpIITAMPickedState(eqpTool);
+			thisDefaultState = new IITAMDefaultState();
 		}
 	}
 
-	public interface IItemIconTAManagerState: ISwitchableState{}
+	public interface IItemIconTAManagerState: ISwitchableState{
+		void SetIITAM(IItemIconTransactionManager iiTAM);
+	}
 	public interface IEqpIITAMState: IItemIconTAManagerState{}
 	public abstract class AbsItemIconTAManagerState: IItemIconTAManagerState{
-		public AbsItemIconTAManagerState(IItemIconTransactionManager iiTAM){
-			this.iiTAM = iiTAM;
+		public void SetIITAM(IItemIconTransactionManager iiTAM){
+			thisIITAM = iiTAM;
 		}
-		protected readonly IItemIconTransactionManager iiTAM;
+		protected IItemIconTransactionManager thisIITAM;
 		public abstract void OnEnter();
 		public abstract void OnExit();
 	}
@@ -51,41 +58,39 @@ namespace UISystem{
 			void SetPickedII(IItemIcon itemIcon);
 		}
 		public class IITAMPickedState: AbsItemIconTAManagerState, IIITAMPickedState{
-			public IITAMPickedState(IItemIconTransactionManager tam): base(tam){}
 			public override void OnEnter(){
-				iiTAM.SetPickedII(pickedII);
-				iiTAM.CheckAndActivateHoverPads();
-				iiTAM.EvaluateHoverability();
-				iiTAM.HoverInitialPickUpReceiver();
+				thisIITAM.SetPickedII(thisPickedII);
+				thisIITAM.CheckAndActivateHoverPads();
+				thisIITAM.EvaluateHoverability();
+				thisIITAM.HoverInitialPickUpReceiver();
 			}
 			public override void OnExit(){
-				iiTAM.ClearTAFields();
-				iiTAM.DeactivateHoverPads();
-				iiTAM.ResetHoverability();
+				thisIITAM.ClearTAFields();
+				thisIITAM.DeactivateHoverPads();
+				thisIITAM.ResetHoverability();
 				SetPickedII( null);
 			}
 			public void SetPickedII(IItemIcon pickedII){
-				this.pickedII = pickedII;
+				thisPickedII = pickedII;
 			}
-			IItemIcon pickedII;
+			IItemIcon thisPickedII;
 		}
 		public interface IEqpIITAMPickedState: IIITAMPickedState, IEqpIITAMState{}
 		public class EqpIITAMPickedState: IITAMPickedState, IEqpIITAMPickedState{
-			public EqpIITAMPickedState(IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(eqpIITAM){
-				this.eqpTool = eqpTool;
+			public EqpIITAMPickedState(IEquipTool eqpTool){
+				thisEqpTool = eqpTool;
 			}
-			readonly IEquipTool eqpTool;
+			readonly IEquipTool thisEqpTool;
 			public override void OnExit(){
 				base.OnExit();
-				eqpTool.ResetMode();/* or, EvalueateMode ? */
+				thisEqpTool.ResetMode();/* or, EvalueateMode ? */
 			}
 		}
 	/* default */
 		public interface IIITAMDefaultState: IItemIconTAManagerState{}
 		public class IITAMDefaultState: AbsItemIconTAManagerState, IIITAMDefaultState{
-			public IITAMDefaultState(IItemIconTransactionManager tam): base(tam){}
 			public override void OnEnter(){
-				iiTAM.EvaluatePickability();
+				thisIITAM.EvaluatePickability();
 			}
 			public override void OnExit(){}
 		}

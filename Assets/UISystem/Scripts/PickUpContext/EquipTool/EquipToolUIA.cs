@@ -25,18 +25,15 @@ namespace UISystem{
 				pass them
 			*/
 			IEquipTool eqpTool = new EquipTool();
-			IEquippableIITAManager eqpIITAM  = new EquippableIITAManager(this.eqpItemsPanel, this.poolItemsPanel, eqpTool);
+			IEqpIITAMStateEngine eqpIITAMStateEngine = new EqpIITAMStateEngine(eqpTool);
+			IEquippableIITAManager eqpIITAM  = new EquippableIITAManager(eqpIITAMStateEngine, this.eqpItemsPanel, this.poolItemsPanel, eqpTool);
 			IEquipToolUIEFactory factory = new EquipToolUIEFactory(passedData.uim, eqpTool, eqpIITAM);
 
 			return new EquipToolUIAActivationData(passedData.uim, factory, eqpIITAM, eqpTool);
 		}
 		protected override IEquipToolUIE CreateUIElement(IUIElementFactory factory){
-			if(factory is IEquipToolUIEFactory){
-				IEquipToolUIEFactory eqpToolFactory = factory as IEquipToolUIEFactory;
-				return eqpToolFactory.CreateEquipToolUIE(this);
-			}
-			else
-				throw new System.ArgumentException("factory must be of type IEquipToolUIEFactory");
+			IEquipToolUIEFactory eqpToolFactory = (IEquipToolUIEFactory)factory;
+			return eqpToolFactory.CreateEquipToolUIE(this);
 		}
 
 	}
