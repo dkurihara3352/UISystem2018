@@ -10,27 +10,22 @@ namespace UISystem{
 		Vector2 GetWorldPosition();
 		void SetWorldPosition(Vector2 worldPos);
 		Vector2 GetPositionInThisSpace(Vector2 worldPos);
-		IUIAdaptor GetParentUIA();
-		void SetParentUIA(IUIAdaptor parent, bool worldPositionStays);
 	}
 	public interface IUIAdaptor: IMBAdaptor{
 		void GetReadyForActivation(IUIAActivationData passedData);
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
-		List<IUIAdaptor> GetAllOffspringUIAs();
+		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
-			public void Awake(){
-
-			}
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				thisUIElement = CreateUIElement(thisDomainActivationData.uieFactory);
 				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory);
-				GetAllChildUIAsReadyForActivation(this.GetChildUIAdaptors(), thisDomainActivationData);
+				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
 			IUIAActivationData CheckAndCreateDomainActivationData(IUIAActivationData passedData){
@@ -66,9 +61,6 @@ namespace UISystem{
 				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
 				return new Vector2(resultV3.x, resultV3.y);
 			}
-			public IUIAdaptor GetParentUIA(){
-				return FindClosestParentUIAdaptor();
-			}
 			public void SetParentUIA(IUIAdaptor parentUIA, bool worldPositionStays){
 				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
 			}
@@ -79,74 +71,41 @@ namespace UISystem{
 				return thisUIElement;
 			}
 			public IUIElement GetParentUIE(){
-				IUIAdaptor closestParentUIAdaptor = FindClosestParentUIAdaptor();
-				if(closestParentUIAdaptor != null)
-					return closestParentUIAdaptor.GetUIElement();
+				Transform parentTrans = transform.parent;
+				IUIAdaptor parentUIA = parentTrans.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
+				if(parentUIA != null)
+					return parentUIA.GetUIElement();
 				else
-					return null;/* this should be the top one */
+					return null;//must be top
 			}
 			public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
-				IUIAdaptor newParUIA = newParentUIE.GetUIAdaptor();
-				this.SetParentUIA(newParUIA, worldPositionStays);
-			}
-			IUIAdaptor FindClosestParentUIAdaptor(){/* any change in this must be reflected in corresponding pseudo transform test */
-				Transform parentToExamine = transform.parent;
-				while(true){
-					if(parentToExamine != null){
-						IUIAdaptor parentUIAdaptor = parentToExamine.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
-						if(parentUIAdaptor != null){
-							return parentUIAdaptor;
-						}else{
-							parentToExamine = parentToExamine.parent;
-						}
-					}else{
-						return null;/* top of the hierarchy */
-					}
-				}
+				IUIAdaptor newParentUIA = newParentUIE.GetUIAdaptor();
+				Transform parentTransform = newParentUIA.GetTransform();
+				this.transform.SetParent(parentTransform, worldPositionStays);
 			}
 			public List<IUIElement> GetChildUIEs(){
 				List<IUIElement> result = new List<IUIElement>();
-				List<IUIAdaptor> childUIAs = this.GetChildUIAdaptors();
-				foreach(IUIAdaptor uia in childUIAs)
-					result.Add(uia.GetUIElement());
+				foreach(IUIAdaptor childUIA in this.GetAllChildUIAs()){
+					result.Add(childUIA.GetUIElement());
+				}
 				return result;
 			}
-			List<IUIAdaptor> GetChildUIAdaptors(){
-				return FindAllClosestChildUIAdaptors(this.transform);
-			}
-			public List<IUIAdaptor> GetAllOffspringUIAs(){
+			List<IUIAdaptor> GetAllChildUIAs(){
 				List<IUIAdaptor> result = new List<IUIAdaptor>();
-				foreach(IUIAdaptor childUIA in this.GetChildUIAdaptors()){
-					result.AddRange(childUIA.GetAllOffspringUIAs());
+				for(int i = 0; i < transform.childCount; i ++){
+					Transform child = transform.GetChild(i);
+					IUIAdaptor childUIA = child.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
+					if(childUIA != null)
+						result.Add(childUIA);
 				}
 				return result;
 			}
-			protected List<U> FindAllNextOffspringsWithComponent<U>(Transform transToExamine) where U: class{
-				/* 
-					find and return all most proximate child Components
-					in all children branches
-					i.e. if any children does not have the component,
-					then the child transform must try search down its offsprings for hits
-					and return them
-
-					Make sure the component inherits both from mono behaviour and from T
-				*/
-				List<U> result = new List<U>();
-				for(int i = 0; i < transToExamine.childCount; i ++){
-					Transform child = transToExamine.GetChild(i);
-					U childComp = child.GetComponent(typeof(U)) as U;
-					if(childComp != null){
-						result.Add(childComp);
-					}else{
-						List<U> allChildCompsOfThisChild = FindAllNextOffspringsWithComponent<U>(child);
-						if(allChildCompsOfThisChild.Count != 0)
-							result.AddRange(allChildCompsOfThisChild);
-					}
+			public List<IUIElement> GetAllOffspringUIEs(){
+				List<IUIElement> result = new List<IUIElement>();
+				foreach(IUIAdaptor childUIA in this.GetAllChildUIAs()){
+					result.AddRange(childUIA.GetAllOffspringUIEs());
 				}
 				return result;
-			}
-			List<IUIAdaptor> FindAllClosestChildUIAdaptors (Transform transToExamine){
-				return FindAllNextOffspringsWithComponent<IUIAdaptor>(transToExamine);
 			}
 		/* Event System Imple */
 			IUIAdaptorStateEngine thisInputStateEngine;
