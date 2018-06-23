@@ -13,7 +13,7 @@ namespace UISystem{
 	}
 	public interface IEquipToolIGManager: IEquipToolIGHandler{}
 	public class EquipToolIGManager: IEquipToolIGManager{
-		public IEquipToolPoolIG GetRelevantPoolIG(){return null;}
+		public virtual IEquipToolPoolIG GetRelevantPoolIG(){return null;}
 		public IEquipToolEquipIG GetRelevantEquipIG(IEquippableItemIcon pickedEqpII){
 			IItemTemplate itemTemp = pickedEqpII.GetItemTemplate();
 			if(itemTemp is IBowTemplate)
@@ -23,9 +23,9 @@ namespace UISystem{
 			else
 				return GetRelevantEquippedCarriedGearsIG();
 		}
-		public IEquipToolEquippedBowIG GetRelevantEquippedBowIG(){return null;}
-		public IEquipToolEquippedWearIG GetRelevantEquippedWearIG(){return null;}
-		public IEquipToolEquippedCarriedGearsIG GetRelevantEquippedCarriedGearsIG(){return null;}
+		public virtual IEquipToolEquippedBowIG GetRelevantEquippedBowIG(){return null;}
+		public virtual IEquipToolEquippedWearIG GetRelevantEquippedWearIG(){return null;}
+		public virtual IEquipToolEquippedCarriedGearsIG GetRelevantEquippedCarriedGearsIG(){return null;}
 		public List<IEquipToolEquipIG> GetAllRelevantEquipIGs(){
 			List<IEquipToolEquipIG> result = new List<IEquipToolEquipIG>();
 			result.Add(GetRelevantEquippedBowIG());
