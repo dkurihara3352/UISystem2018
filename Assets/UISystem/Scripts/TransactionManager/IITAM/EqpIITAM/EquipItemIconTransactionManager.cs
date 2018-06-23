@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IEquippableIITAManager: IItemIconTransactionManager{
-		IEqpToolPoolIG GetRelevantEqpToolPoolIG();
-		IEqpToolEqpCarriedGearsIG GetRelevantEqpCGearsIG();
-		IEqpToolEqpIG GetRelevantEquipIG(IEquippableItemIcon pickedEqpII);
+	public interface IEquippableIITAManager: IItemIconTransactionManager, IEquipToolIGHandler{
 		void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII);
 		void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel);
 		void SetEqpIIToEquip(IEquippableItemIcon eqpII);
@@ -19,22 +16,23 @@ namespace UISystem{
 		void UpdateEquippedItems();
 	}
 
-	public class EquippableIITAManager: AbsItemIconTransactionManager, IEquippableIITAManager{
-		public EquippableIITAManager(IEqpIITAMStateEngine eqpIITAMStateEngine, IIconPanel equippedItemsPanel, IIconPanel poolItemsPanel, IEquipTool eqpTool): base(eqpIITAMStateEngine){
-			thisEquippedItemsPanel = equippedItemsPanel;
-			thisPoolItemsPanel = poolItemsPanel;
-			thishoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
-			thisHoveredPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
+	public class EquippableItemIconTransactionManager: AbsItemIconTransactionManager, IEquippableIITAManager{
+		public EquippableItemIconTransactionManager(IEqpIITAMConstArg arg): base(arg.eqpIITAMStateEngine){
+			thisEquippedItemsPanel = arg.equippedItemsPanel;
+			thisPoolItemsPanel = arg.poolItemsPanel;
+			thishoveredEqpIISwitch = arg.hoveredEqpIISwitch;
+			thisHoveredPanelSwitch = arg.hoveredEqpToolPanelSwitch;
+			thisEqpToolIGManager = arg.eqpToolIGManager;
 		}
 		public override IItemIcon CreateItemIcon(IUIItem item){
 			return null;
 		}
 		/* TA fields */
-			readonly IPickUpContextUIE eqpToolUIE;
+			readonly IPickUpContextUIE thisEqpToolUIE;
 			readonly IIconPanel thisEquippedItemsPanel;
 			readonly IIconPanel thisPoolItemsPanel;
-			IEquippableItemIcon thisEIIToEquip;
-			IEquippableItemIcon thisEIIToUnequip;
+			protected IEquippableItemIcon thisEIIToEquip;
+			protected IEquippableItemIcon thisEIIToUnequip;
 			public void SetEqpIIToEquip(IEquippableItemIcon eqpII){
 				thisEIIToEquip = eqpII;
 			}
@@ -51,70 +49,53 @@ namespace UISystem{
 				thisEIIToUnequip = null;
 			}
 		/* getting igs */
+			protected IEquipToolIGManager thisEqpToolIGManager;
 			public override List<IIconGroup> GetAllRelevantIGs(IItemIcon pickedII){
 				List<IIconGroup> result = new List<IIconGroup>();
-				IEqpToolPoolIG relevPoolIG = GetRelevantEqpToolPoolIG();
+				IEquipToolPoolIG relevPoolIG = GetRelevantPoolIG();
 				result.Add(relevPoolIG);
-				if(pickedEqpII != null){
-					IEqpToolEqpIG relevEqpIG = GetRelevantEquipIG((IEquippableItemIcon)pickedII);
+				if(pickedII != null){
+					IEquipToolEquipIG relevEqpIG = GetRelevantEquipIG((IEquippableItemIcon)pickedII);
 					result.Add(relevEqpIG);
 				}else{
-					List<IEqpToolEqpIG> allRelevantEqpIGs = GetAllRelevantEqpIGs();
-					foreach(IEqpToolEqpIG eqpIG in allRelevantEqpIGs)
+					List<IEquipToolEquipIG> allRelevantEqpIGs = GetAllRelevantEquipIGs();
+					foreach(IEquipToolEquipIG eqpIG in allRelevantEqpIGs)
 						result.Add(eqpIG);
 				}
 				return result;
 			}
-			public IEqpToolPoolIG GetRelevantEqpToolPoolIG(){
-				return null;
+			public IEquipToolPoolIG GetRelevantPoolIG(){
+				return thisEqpToolIGManager.GetRelevantPoolIG();
 			}
-			public IEqpToolEqpCarriedGearsIG GetRelevantEqpCGearsIG(){
-				return null;
+			public IEquipToolEquipIG GetRelevantEquipIG(IEquippableItemIcon pickedEqpII){
+				return thisEqpToolIGManager.GetRelevantEquipIG(pickedEqpII);
 			}
-			IEqpToolEqpBowIG GetRelevantEqpBowIG(){
-				return null;
+			public IEquipToolEquippedBowIG GetRelevantEquippedBowIG(){
+				return thisEqpToolIGManager.GetRelevantEquippedBowIG();
 			}
-			IEqpToolEqpWearIG GetRelevantEqpWearIG(){
-				return null;
+			public IEquipToolEquippedWearIG GetRelevantEquippedWearIG(){
+				return thisEqpToolIGManager.GetRelevantEquippedWearIG();
 			}
-			public IEqpToolEqpIG GetRelevantEquipIG(IEquippableItemIcon eqpII){
-				IItemTemplate itemTemp = eqpII.GetItemTemplate();
-				if(itemTemp is IBowTemplate)
-					return GetRelevantEqpBowIG();
-				else if(itemTemp is IWearTemplate)
-					return GetRelevantEqpWearIG();
-				else
-					return GetRelevantEqpCGearsIG();
+			public IEquipToolEquippedCarriedGearsIG GetRelevantEquippedCarriedGearsIG(){
+				return thisEqpToolIGManager.GetRelevantEquippedCarriedGearsIG();
 			}
-			List<IEqpToolEqpIG> GetAllRelevantEqpIGs(){
-				List<IEqpToolEqpIG> result = new List<IEqpToolEqpIG>();
-				result.Add(GetRelevantEqpBowIG());
-				result.Add(GetRelevantEqpWearIG());
-				result.Add(GetRelevantEqpCGearsIG());
-				return result;
+			public List<IEquipToolEquipIG> GetAllRelevantEquipIGs(){
+				return thisEqpToolIGManager.GetAllRelevantEquipIGs();
 			}
 		/* PUM */
 			public IEquippableItemIcon GetPickedEqpII(){
-				return pickedEqpII;
+				return thisPickedEqpII;
 			}
-			IEquippableItemIcon pickedEqpII{
-				get{
-					IEquippableItemIcon pickedEqpII = thisPickedUIE as IEquippableItemIcon;
-					if(pickedEqpII != null)
-						return pickedEqpII;
-					else
-						throw new System.InvalidOperationException("this.GetPickedII() must return instance of IEquippableItemIcon");
-				}
-			}
+			IEquippableItemIcon thisPickedEqpII{get{return (IEquippableItemIcon)thisPickedUIE;}}
 			public override IPickUpContextUIE GetPickUpContextUIE(){
-				return eqpToolUIE;
+				return thisEqpToolUIE;
 			}
 		/*  */
 			public override void EvaluateHoverability(){
-				this.thisEquippedItemsPanel.EvaluateHoverability(pickedEqpII);
-				this.thisPoolItemsPanel.EvaluateHoverability(pickedEqpII);
-				foreach(IIconGroup ig in this.GetAllRelevantIGs(pickedEqpII))
-					ig.EvaluateAllIIsHoverability(pickedEqpII);
+				this.thisEquippedItemsPanel.EvaluateHoverability(thisPickedEqpII);
+				this.thisPoolItemsPanel.EvaluateHoverability(thisPickedEqpII);
+				foreach(IIconGroup ig in this.GetAllRelevantIGs(thisPickedEqpII))
+					ig.EvaluateAllIIsHoverability(thisPickedEqpII);
 			}
 			public override void ResetHoverability(){
 				thisEquippedItemsPanel.WaitForPickUp();
@@ -123,14 +104,14 @@ namespace UISystem{
 			public override void ExecuteTransaction(){
 				if(thisEIIToUnequip != null){
 					thisEIIToUnequip.Unequip();
-					if(thisEIIToUnequip == pickedEqpII)
-						thisEIIToUnequip.Immigrate(GetRelevantEqpToolPoolIG());
+					if(thisEIIToUnequip == thisPickedEqpII)
+						thisEIIToUnequip.Immigrate(GetRelevantPoolIG());
 					else
-						thisEIIToUnequip.Transfer(GetRelevantEqpToolPoolIG());
+						thisEIIToUnequip.Transfer(GetRelevantPoolIG());
 				}
 				if(thisEIIToEquip != null){
 					thisEIIToEquip.Equip();
-					if(thisEIIToEquip == pickedEqpII)
+					if(thisEIIToEquip == thisPickedEqpII)
 						thisEIIToEquip.Immigrate(GetRelevantEquipIG(thisEIIToEquip));
 					else
 						thisEIIToEquip.Transfer(GetRelevantEquipIG(thisEIIToEquip));
@@ -140,7 +121,7 @@ namespace UISystem{
 			public override void HoverInitialPickUpReceiver(){
 				/*  EqpII to hover is infered
 				*/
-				if(pickedEqpII.IsInEqpIG())
+				if(thisPickedEqpII.IsInEqpIG())
 					thisEquippedItemsPanel.CheckForHover();
 				else
 					thisPoolItemsPanel.CheckForHover();
@@ -172,5 +153,40 @@ namespace UISystem{
 		/*  */
 			public void UpdateEquippedItems(){}
 		/*  */
+	}
+	/* Const */
+	public interface IEqpIITAMConstArg{
+		IEqpIITAMStateEngine eqpIITAMStateEngine{get;}
+		IEquipToolPanel equippedItemsPanel{get;}
+		IEquipToolPanel poolItemsPanel{get;}
+		IEquipTool equipTool{get;}
+		IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch{get;}
+		IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch{get;}
+		IEquipToolIGManager eqpToolIGManager{get;}
+	}
+	public class EqpIITAMConstArg: IEqpIITAMConstArg{
+		public EqpIITAMConstArg(IEqpIITAMStateEngine eqpIITAMStateEngine,IEquipToolPanel equippedItemsPanel,IEquipToolPanel poolItemsPanel,IEquipTool equipTool,IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch,IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch, IEquipToolIGManager eqpToolIGManager){
+			thisEqpIITAMStateEngine = eqpIITAMStateEngine;
+			thisEquippedItemsPanel = equippedItemsPanel;
+			thisPoolItemsPanel = poolItemsPanel;
+			thisEquipTool = equipTool;
+			thisHoveredEqpIISwitch = hoveredEqpIISwitch;
+			thisHoveredEqpToolPanelSwitch = hoveredEqpToolPanelSwitch;
+			thisEqpToolIGManager = eqpToolIGManager;
+		}
+		public IEqpIITAMStateEngine eqpIITAMStateEngine{get{return thisEqpIITAMStateEngine;}}
+		readonly IEqpIITAMStateEngine thisEqpIITAMStateEngine;
+		public IEquipToolPanel equippedItemsPanel{get{return thisEquippedItemsPanel;}}
+		readonly IEquipToolPanel thisEquippedItemsPanel;
+		public IEquipToolPanel poolItemsPanel{get{return thisPoolItemsPanel;}}
+		readonly IEquipToolPanel thisPoolItemsPanel;
+		public IEquipTool equipTool{get{return thisEquipTool;}}
+		readonly IEquipTool thisEquipTool;
+		public IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch{get{return thisHoveredEqpIISwitch;}}
+		readonly IPickUpReceiverSwitch<IEquippableItemIcon> thisHoveredEqpIISwitch;
+		public IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch{get{return thisHoveredEqpToolPanelSwitch;}}
+		readonly IPickUpReceiverSwitch<IEquipToolPanel> thisHoveredEqpToolPanelSwitch;
+		public IEquipToolIGManager eqpToolIGManager{get{return thisEqpToolIGManager;}}
+		readonly IEquipToolIGManager thisEqpToolIGManager;
 	}
 }

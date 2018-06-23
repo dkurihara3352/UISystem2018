@@ -48,7 +48,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 		EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
 		IEquippableItemIcon pickedEqpII = CreateStubEqpII(isBowOrWear: false, isInEqpIG:false, isEquipped: false);
 		IPanelTransactionStateEngine mockEngine = arg.panelTransactionStateEngine;
-		IEqpToolEqpIG relevantIG = Substitute.For<IEqpToolEqpIG>();
+		IEquipToolEquipIG relevantIG = Substitute.For<IEquipToolEquipIG>();
 		relevantIG.GetSize().Returns(1);
 		arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevantIG);
 
@@ -63,7 +63,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 		EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
 		IEquippableItemIcon pickedEqpII = CreateStubEqpII(isBowOrWear: false, isInEqpIG:false, isEquipped: false);
 		IPanelTransactionStateEngine mockEngine = arg.panelTransactionStateEngine;
-		IEqpToolEqpIG relevantIG = Substitute.For<IEqpToolEqpIG>();
+		IEquipToolEquipIG relevantIG = Substitute.For<IEquipToolEquipIG>();
 		relevantIG.GetSize().Returns(2);
 		relevantIG.HasSlotSpace().Returns(true);
 		arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevantIG);
@@ -79,7 +79,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 		EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
 		IEquippableItemIcon pickedEqpII = CreateStubEqpII(isBowOrWear: false, isInEqpIG:false, isEquipped: false);
 		IPanelTransactionStateEngine mockEngine = arg.panelTransactionStateEngine;
-		IEqpToolEqpIG relevantIG = Substitute.For<IEqpToolEqpIG>();
+		IEquipToolEquipIG relevantIG = Substitute.For<IEquipToolEquipIG>();
 		relevantIG.GetSize().Returns(2);
 		relevantIG.HasSlotSpace().Returns(false);
 		arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevantIG);
@@ -95,7 +95,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 		IEquipToolPanelConstArg arg;
 		EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
 		IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-		IEqpToolEqpIG relevantIG = Substitute.For<IEqpToolEqpIG>();
+		IEquipToolEquipIG relevantIG = Substitute.For<IEquipToolEquipIG>();
 		IEquippableItemIcon mockTarEqpII = Substitute.For<IEquippableItemIcon>();
 		relevantIG.GetDefaultTATargetEqpII(pickedEqpII).Returns(mockTarEqpII);
 		arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevantIG);
@@ -110,8 +110,8 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
         EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
         pickedEqpII.IsBowOrWearItemIcon().Returns(true);
-        IEqpToolEqpIG relevEqpCGIG = Substitute.For<IEqpToolEqpIG>();
-        arg.eqpIITAM.GetRelevantEqpCGearsIG().Returns(relevEqpCGIG);
+        IEquipToolEquipIG relevEqpCGIG = Substitute.For<IEquipToolEquipIG>();
+        arg.eqpIITAM.GetRelevantEquippedCarriedGearsIG().Returns(relevEqpCGIG);
 
         eqpItemsPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
 
@@ -125,8 +125,8 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
         pickedEqpII.IsBowOrWearItemIcon().Returns(false);
         IEquippableUIItem pickedEqpItem = Substitute.For<IEquippableUIItem>();
         pickedEqpII.GetEquippableItem().Returns(pickedEqpItem);
-        IEqpToolEqpCarriedGearsIG relevEqpCGIG = Substitute.For<IEqpToolEqpCarriedGearsIG>();
-        arg.eqpIITAM.GetRelevantEqpCGearsIG().Returns(relevEqpCGIG);
+        IEquipToolEquippedCarriedGearsIG relevEqpCGIG = Substitute.For<IEquipToolEquippedCarriedGearsIG>();
+        arg.eqpIITAM.GetRelevantEquippedCarriedGearsIG().Returns(relevEqpCGIG);
         relevEqpCGIG.GetItemIconFromItem(pickedEqpItem).Returns(Substitute.For<IEquippableItemIcon>());
 
         eqpItemsPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
@@ -141,8 +141,8 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
         pickedEqpII.IsBowOrWearItemIcon().Returns(false);
         IEquippableUIItem pickedEqpItem = Substitute.For<IEquippableUIItem>();
         pickedEqpII.GetEquippableItem().Returns(pickedEqpItem);
-        IEqpToolEqpCarriedGearsIG relevEqpCGIG = Substitute.For<IEqpToolEqpCarriedGearsIG>();
-        arg.eqpIITAM.GetRelevantEqpCGearsIG().Returns(relevEqpCGIG);
+        IEquipToolEquippedCarriedGearsIG relevEqpCGIG = Substitute.For<IEquipToolEquippedCarriedGearsIG>();
+        arg.eqpIITAM.GetRelevantEquippedCarriedGearsIG().Returns(relevEqpCGIG);
         relevEqpCGIG.GetItemIconFromItem(pickedEqpItem).Returns((IEquippableItemIcon)null);
 
         eqpItemsPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
@@ -153,7 +153,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
     public void CheckAndRemoveEmptyEqpIIs_RelevEqpCGIGIsOfBowTemp_DoesNotCallRelevIGRemoveEmpty(){
         IEquipToolPanelConstArg arg;
         EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
-        IEqpToolEqpBowIG relevEqpIG = Substitute.For<IEqpToolEqpBowIG>();
+        IEquipToolEquippedBowIG relevEqpIG = Substitute.For<IEquipToolEquippedBowIG>();
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
         arg.eqpIITAM.GetPickedEqpII().Returns(pickedEqpII);
         arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevEqpIG);
@@ -166,7 +166,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
     public void CheckAndRemoveEmptyEqpIIs_RelevEqpCGIGIsOfWearTemp_DoesNotCallRelevIGRemoveEmpty(){
         IEquipToolPanelConstArg arg;
         EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
-        IEqpToolEqpWearIG relevEqpIG = Substitute.For<IEqpToolEqpWearIG>();
+        IEquipToolEquippedWearIG relevEqpIG = Substitute.For<IEquipToolEquippedWearIG>();
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
         arg.eqpIITAM.GetPickedEqpII().Returns(pickedEqpII);
         arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevEqpIG);
@@ -179,7 +179,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
     public void CheckAndRemoveEmptyEqpIIs_RelevEqpCGIGIsOfCarriedGearsTemp_CallsRelevIGRemoveEmpty(){
         IEquipToolPanelConstArg arg;
         EquipToolEquippedItemsPanel eqpItemsPanel = CreateEqpToolEqpItemsPanel(out arg);
-        IEqpToolEqpCarriedGearsIG relevEqpIG = Substitute.For<IEqpToolEqpCarriedGearsIG>();
+        IEquipToolEquippedCarriedGearsIG relevEqpIG = Substitute.For<IEquipToolEquippedCarriedGearsIG>();
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
         arg.eqpIITAM.GetPickedEqpII().Returns(pickedEqpII);
         arg.eqpIITAM.GetRelevantEquipIG(pickedEqpII).Returns(relevEqpIG);

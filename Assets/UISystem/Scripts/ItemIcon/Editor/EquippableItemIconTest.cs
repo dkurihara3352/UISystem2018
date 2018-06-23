@@ -40,9 +40,9 @@ public class EquippableItemIconTest {
     public void GetMaxTransferableQuantity_ThisIsNotBowOrWearII_ThisIsNotInEqpIG_ThisIsNotStackable_ReturnsLesserOfThisQuantAndRelevIGSpace(int quantity, int itemQInIG, int maxEquippableQ, int expectedQ){
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(isStackable: false, isInEqpIG: false, quantity: quantity, tempType: typeof(ICarriedGearTemplate), arg: out arg);
-        IEqpToolEqpCarriedGearsIG relevEqpCGIG = Substitute.For<IEqpToolEqpCarriedGearsIG>();
+        IEquipToolEquippedCarriedGearsIG relevEqpCGIG = Substitute.For<IEquipToolEquippedCarriedGearsIG>();
         relevEqpCGIG.GetItemQuantity(arg.item).Returns(itemQInIG);
-        ((IEquippableIITAManager)arg.iiTAM).GetRelevantEqpCGearsIG().Returns(relevEqpCGIG);
+        ((IEquippableIITAManager)arg.iiTAM).GetRelevantEquippedCarriedGearsIG().Returns(relevEqpCGIG);
         ((IEquippableUIItem)arg.item).GetMaxEquippableQuantity().Returns(maxEquippableQ);
 
         Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(expectedQ));
@@ -193,7 +193,7 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-        IEqpToolPoolIG thisPoolIG = Substitute.For<IEqpToolPoolIG>();
+        IEquipToolPoolIG thisPoolIG = Substitute.For<IEquipToolPoolIG>();
         testEqpII.SetIconGroup(thisPoolIG);
         IIconGroup otherIG = Substitute.For<IIconGroup>();
         pickedEqpII.GetIconGroup().Returns(otherIG);
@@ -210,7 +210,7 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-        IEqpToolPoolIG thisPoolIG = Substitute.For<IEqpToolPoolIG>();
+        IEquipToolPoolIG thisPoolIG = Substitute.For<IEquipToolPoolIG>();
         testEqpII.SetIconGroup(thisPoolIG);
         IIconGroup otherIG = Substitute.For<IIconGroup>();
         pickedEqpII.GetIconGroup().Returns(otherIG);
@@ -227,7 +227,7 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-        IEqpToolEqpBowIG thisEqpIG = Substitute.For<IEqpToolEqpBowIG>();
+        IEquipToolEquippedBowIG thisEqpIG = Substitute.For<IEquipToolEquippedBowIG>();
         testEqpII.SetIconGroup(thisEqpIG);
         IIconGroup otherIG = Substitute.For<IIconGroup>();
         pickedEqpII.GetIconGroup().Returns(otherIG);
@@ -242,7 +242,7 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
         IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-        IEqpToolEqpBowIG thisEqpIG = Substitute.For<IEqpToolEqpBowIG>();
+        IEquipToolEquippedBowIG thisEqpIG = Substitute.For<IEquipToolEquippedBowIG>();
         testEqpII.SetIconGroup(thisEqpIG);
         IIconGroup otherIG = Substitute.For<IIconGroup>();
         pickedEqpII.GetIconGroup().Returns(otherIG);
@@ -299,7 +299,7 @@ public class EquippableItemIconTest {
     public void IsInPoolIG_ThisIGIsEqpToolPoolIG_ReturnsTrue(){
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(out arg);
-        IEqpToolPoolIG poolIG = Substitute.For<IEqpToolPoolIG>();
+        IEquipToolPoolIG poolIG = Substitute.For<IEquipToolPoolIG>();
         testEqpII.SetIconGroup(poolIG);
 
         Assert.That(testEqpII.IsInPoolIG(), Is.True);
@@ -360,9 +360,9 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg thisArg;
         TestEqpII testEqpII = CreateTestEqpII(quantity, tempType, out thisArg);
         if(isInEqpIG)
-            testEqpII.SetIconGroup(Substitute.For<IEqpToolEqpIG>());
+            testEqpII.SetIconGroup(Substitute.For<IEquipToolEquipIG>());
         else
-            testEqpII.SetIconGroup(Substitute.For<IEqpToolPoolIG>());
+            testEqpII.SetIconGroup(Substitute.For<IEquipToolPoolIG>());
         
         arg = thisArg;
         return testEqpII;

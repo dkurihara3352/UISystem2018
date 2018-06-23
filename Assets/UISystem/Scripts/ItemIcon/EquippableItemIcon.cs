@@ -17,10 +17,10 @@ namespace UISystem{
 			IEquippableIITAManager eqpIITAM{get{return (IEquippableIITAManager)this.iiTAM;}}
 			IEquippableUIItem thisEqpItem{get{return thisItem as IEquippableUIItem;}}
 			public IEquippableUIItem GetEquippableItem(){return thisEqpItem;}
-			IEqpToolIG eqpToolIG{
+			IEquipToolIG eqpToolIG{
 				get{
-					if(thisIG is IEqpToolIG)
-						return (IEqpToolIG)thisIG;
+					if(thisIG is IEquipToolIG)
+						return (IEquipToolIG)thisIG;
 					else 
 						throw new System.InvalidCastException("this.iconGroup must be of type IEqpToolIG");
 				}
@@ -45,7 +45,7 @@ namespace UISystem{
 						if(thisItemTemp.IsStackable())
 							return thisQuantity;
 						else{
-							IEqpToolEqpCarriedGearsIG relevantEqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+							IEquipToolEquippedCarriedGearsIG relevantEqpCGIG = eqpIITAM.GetRelevantEquippedCarriedGearsIG();
 							int equippedQuantity = relevantEqpCGIG.GetItemQuantity(thisEqpItem);
 							int spaceInEqpIG = thisEqpItem.GetMaxEquippableQuantity() - equippedQuantity;
 							return Mathf.Min(spaceInEqpIG, thisQuantity);
@@ -143,10 +143,10 @@ namespace UISystem{
 			}
 		/*  */
 			public bool IsInEqpIG(){
-				return this.eqpToolIG is IEqpToolEqpIG;
+				return this.eqpToolIG is IEquipToolEquipIG;
 			}
 			public bool IsInPoolIG(){
-				return this.eqpToolIG is IEqpToolPoolIG;
+				return this.eqpToolIG is IEquipToolPoolIG;
 			}
 			public bool IsBowOrWearItemIcon(){
 				return thisItemTemp is IBowTemplate || thisItemTemp is IWearTemplate;

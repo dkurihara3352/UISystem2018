@@ -7,8 +7,8 @@ namespace UISystem{
 	}
 	public class EquipToolUIAdaptor: AbsPickUpContextUIAdaptor<IEquipToolUIE>, IEquipToolUIAdaptor{
 		/* assigned in the insp */
-			public IIconPanel eqpItemsPanel;
-			public IIconPanel poolItemsPanel;
+			public IEquipToolPanel thisEqpItemsPanel;
+			public IEquipToolPanel thisPoolItemsPanel;
 		/*  */
 		IEquipToolActivationData eqpUIAActivationData{
 			get{return this.thisDomainActivationData as IEquipToolActivationData;}
@@ -26,7 +26,11 @@ namespace UISystem{
 			*/
 			IEquipTool eqpTool = new EquipTool();
 			IEqpIITAMStateEngine eqpIITAMStateEngine = new EqpIITAMStateEngine(eqpTool);
-			IEquippableIITAManager eqpIITAM  = new EquippableIITAManager(eqpIITAMStateEngine, this.eqpItemsPanel, this.poolItemsPanel, eqpTool);
+			IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
+			IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
+			IEquipToolIGManager eqpToolIGManager = new EquipToolIGManager();
+			IEqpIITAMConstArg arg = new EqpIITAMConstArg(eqpIITAMStateEngine, thisEqpItemsPanel, thisPoolItemsPanel, eqpTool, hoveredEqpIISwitch, hoveredEqpToolPanelSwitch, eqpToolIGManager);
+			IEquippableIITAManager eqpIITAM  = new EquippableItemIconTransactionManager(arg);
 			IEquipToolUIEFactory factory = new EquipToolUIEFactory(passedData.uim, eqpTool, eqpIITAM);
 
 			return new EquipToolUIAActivationData(passedData.uim, factory, eqpIITAM, eqpTool);

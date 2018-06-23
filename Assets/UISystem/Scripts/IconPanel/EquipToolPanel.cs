@@ -20,12 +20,12 @@ namespace UISystem{
 			eqpIITAM.TrySwitchHoveredEqpToolPanel(this);
 		}
 		public void HoverDefaultTransactionTargetEqpII(IEquippableItemIcon pickedEqpII){
-			IEqpToolIG relevantIG = this.GetRelevantEqpToolIG(pickedEqpII);
+			IEquipToolIG relevantIG = this.GetRelevantEqpToolIG(pickedEqpII);
 			IEquippableItemIcon defaultTATargetEqpII = relevantIG.GetDefaultTATargetEqpII(pickedEqpII);
 			if(defaultTATargetEqpII != null)
 				defaultTATargetEqpII.CheckForHover();
 		}
-		protected abstract IEqpToolIG GetRelevantEqpToolIG(IEquippableItemIcon eqpII);
+		protected abstract IEquipToolIG GetRelevantEqpToolIG(IEquippableItemIcon eqpII);
 		public abstract void CheckAndAddEmptyAddTarget(IEquippableItemIcon pickedEqpII);
 		public abstract void CheckAndRemoveEmptyEqpIIs();
 	}
@@ -47,7 +47,7 @@ namespace UISystem{
 						if(pickedEqpII.IsEquipped()){//always has the same partially picked item
 							return true;
 						}else{
-							IEqpToolIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(pickedEqpII);
+							IEquipToolIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(pickedEqpII);
 							if(relevantEqpIG.GetSize() == 1){//swap target is deduced
 								return true;
 							}else{
@@ -62,18 +62,18 @@ namespace UISystem{
 			}else
 				throw new System.ArgumentException("pickedII must be of type IEquippableItemIcon");
 		}
-		protected override IEqpToolIG GetRelevantEqpToolIG(IEquippableItemIcon pickedEqpII){
+		protected override IEquipToolIG GetRelevantEqpToolIG(IEquippableItemIcon pickedEqpII){
 			return eqpIITAM.GetRelevantEquipIG(pickedEqpII);
 		}
 		public override void CheckAndAddEmptyAddTarget(IEquippableItemIcon pickedEqpII){
 			if(this.IsEligibleForEmptyAddTargetAddition(pickedEqpII)){
-				IEqpToolEqpCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+				IEquipToolEquippedCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEquippedCarriedGearsIG();
 				eqpCGIG.AddEmptyAddTarget((pickedEqpII.GetEquippableItem()));
 			}
 		}
 		public override void CheckAndRemoveEmptyEqpIIs(){
-			IEqpToolEqpIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(eqpIITAM.GetPickedEqpII());
-			if(relevantEqpIG is IEqpToolEqpCarriedGearsIG)
+			IEquipToolEquipIG relevantEqpIG = eqpIITAM.GetRelevantEquipIG(eqpIITAM.GetPickedEqpII());
+			if(relevantEqpIG is IEquipToolEquippedCarriedGearsIG)
 				relevantEqpIG.RemoveEmptyIIs();
 
 		}
@@ -81,7 +81,7 @@ namespace UISystem{
 			if(pickedEqpII.IsBowOrWearItemIcon())
 				return false;
 			else{
-				IEqpToolEqpCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEqpCGearsIG();
+				IEquipToolEquippedCarriedGearsIG eqpCGIG = eqpIITAM.GetRelevantEquippedCarriedGearsIG();
 				IEquippableItemIcon sameItemEqpII = (IEquippableItemIcon)eqpCGIG.GetItemIconFromItem(pickedEqpII.GetEquippableItem());
 				if(sameItemEqpII != null)
 					return false;
@@ -103,8 +103,8 @@ namespace UISystem{
 			}else
 				throw new System.ArgumentException("pickedII must be of type IEquippableItemIcon");
 		}
-		protected override IEqpToolIG GetRelevantEqpToolIG(IEquippableItemIcon pickedEqpII){
-			return eqpIITAM.GetRelevantEqpToolPoolIG();
+		protected override IEquipToolIG GetRelevantEqpToolIG(IEquippableItemIcon pickedEqpII){
+			return eqpIITAM.GetRelevantPoolIG();
 		}
 		public override void CheckAndAddEmptyAddTarget(IEquippableItemIcon pickedEqpII){
 			return;
