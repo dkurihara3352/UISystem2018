@@ -32,7 +32,8 @@ namespace UISystem{
 			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
 			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, uia, image, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
+			IDragImageImplementor dragImageImplementor = new DragImageImplementor();
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, uia, image, dragImageImplementor, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
 			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
 			return eqpII;
 		}

@@ -105,16 +105,16 @@ namespace UISystem{
 				if(thisEIIToUnequip != null){
 					thisEIIToUnequip.Unequip();
 					if(thisEIIToUnequip == thisPickedEqpII)
-						thisEIIToUnequip.Immigrate(GetRelevantPoolIG());
+						thisEIIToUnequip.TravelTransfer(GetRelevantPoolIG());
 					else
-						thisEIIToUnequip.Transfer(GetRelevantPoolIG());
+						thisEIIToUnequip.SpotTransfer(GetRelevantPoolIG());
 				}
 				if(thisEIIToEquip != null){
 					thisEIIToEquip.Equip();
 					if(thisEIIToEquip == thisPickedEqpII)
-						thisEIIToEquip.Immigrate(GetRelevantEquipIG(thisEIIToEquip));
+						thisEIIToEquip.TravelTransfer(GetRelevantEquipIG(thisEIIToEquip));
 					else
-						thisEIIToEquip.Transfer(GetRelevantEquipIG(thisEIIToEquip));
+						thisEIIToEquip.SpotTransfer(GetRelevantEquipIG(thisEIIToEquip));
 				}
 			}
 		/* hover switch */

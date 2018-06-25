@@ -170,7 +170,7 @@ namespace UISystem{
 	public  abstract class AbsIIDroppedState: AbsIITransactionState, IIIDroppedState{
 		public AbsIIDroppedState(IIITransactionStateConstArg arg): base(arg){}
 		public override void OnEnter(){
-			thisItemIcon.StopIIImageSmoothFollowDragPos();
+			thisItemIcon.StopImageSmoothFollowDragPosition();
 			thisIITAM.ExecuteTransaction();
 			thisIITAM.SetToDefaultState();
 		}

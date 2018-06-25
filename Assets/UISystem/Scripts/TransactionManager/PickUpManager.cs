@@ -7,6 +7,8 @@ namespace UISystem{
 		IPickableUIE GetPickedUIE();
 		void ClearPickedUIE();
 		IPickUpContextUIE GetPickUpContextUIE();
+		Vector2 GetDragWorldPosition();
+		void SetDragWorldPosition(Vector2 dragWorldPos);
 	}
 	public abstract class AbsPickUpManager: IPickUpManager{
 		public IPickableUIE GetPickedUIE(){
@@ -20,5 +22,12 @@ namespace UISystem{
 			thisPickedUIE = null;
 		}
 		public abstract IPickUpContextUIE GetPickUpContextUIE();
+		public Vector2 GetDragWorldPosition(){
+			return thisDragWorldPosition;
+		}
+		Vector2 thisDragWorldPosition;
+		public void SetDragWorldPosition(Vector2 dragWorldPos){
+			thisDragWorldPosition = dragWorldPos;
+		}
 	}
 }

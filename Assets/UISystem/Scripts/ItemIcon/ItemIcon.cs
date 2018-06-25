@@ -3,38 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler{
-		void EvaluatePickability();
-		void EvaluateHoverability(IItemIcon pickedII);
+	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferableUIElement{
 		void SetUpAsPickedII();
-
-		IUIItem GetUIItem();
-		IItemTemplate GetItemTemplate();
-		int GetItemQuantity();
-		bool HasSameItem(IItemIcon other);
-		bool LeavesGhost();
-
-		bool IsTransferable();
-		int GetTransferableQuantity();
-		void UpdateTransferableQuantity(int pickedQuantity);
-
-		void IncreaseBy(int quantity, bool doesIncrement);
-		void DecreaseBy(int quantity, bool doesIncrement);
 
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
-		
+
 		void HandOverTravel(IItemIcon other);
-		void SetRunningTravelInterpolator(ITravelInterpolator irper);
 
-		void BecomeVisuallyPickedUp();
-		void BecomeVisuallyUnpicked();
-
-		void StopIIImageSmoothFollowDragPos();
-
-		void Immigrate(IIconGroup destIG);
-		void Transfer(IIconGroup destIG);
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -52,14 +29,14 @@ namespace UISystem{
 			InitializeTransactionState();
 			InitializeEmptinessState();
 		}
-		protected readonly IItemIconTransactionManager iiTAM;
 		/* IITransaction */
+			protected readonly IItemIconTransactionManager iiTAM;
 			protected IItemIconTransactionStateEngine thisIITAStateEngine;
 			void InitializeTransactionState(){
 				WaitForPickUp();/* returns immediately in turn */
 			}
-		/* Pickability state handling */
-			public void EvaluatePickability(){
+		/* PickableUIE imple */
+			public override void EvaluatePickability(){
 				this.UpdateTransferableQuantity(pickedQuantity: 0);
 				if( !this.IsEmpty()){
 					if( this.IsReorderable() || this.IsTransferable()){
@@ -69,6 +46,17 @@ namespace UISystem{
 				}
 				this.BecomeUnpickable();
 			}
+			public override void StartImageSmoothFollowDragPosition(){
+				base.StartImageSmoothFollowDragPosition();
+				if(this.IsWaitingForImageInit())
+					InitImage();
+			}
+			/*  might be better to implement these three below in superclass
+			*/
+			public override void DeclinePickUp(){}
+			public override void BecomeVisuallyPickedUp(){}
+			public override void BecomeVisuallyUnpicked(){}
+		/* Pickability state handling */
 			public void PickUp(){
 				thisIITAStateEngine.PickUp();
 			}
@@ -87,37 +75,14 @@ namespace UISystem{
 			public bool IsPicked(){
 				return thisIITAStateEngine.IsPicked();
 			}
-			public void UpdateTransferableQuantity(int pickedQuantity){
-				int transQ = this.CalcTransferableQuantity(pickedQuantity);
-				thisTransferableQuantity = transQ;
-			}
-			int CalcTransferableQuantity(int pickedQuantity){
-				int diff = GetMaxTransferableQuantity() - pickedQuantity;
-				if(diff >= 0)
-					return diff;
-				else
-					throw new System.InvalidOperationException("pickedQuantity must not exceed max transferable quantity");
-			}
-			protected abstract int GetMaxTransferableQuantity();
-			int thisTransferableQuantity;
-			public int GetTransferableQuantity(){
-				return thisTransferableQuantity;
-			}
-			public bool IsTransferable(){
-				return thisTransferableQuantity > 0;
-			}
-		/*  */
-			public override void DeclinePickUp(){}
-			public void BecomeVisuallyPickedUp(){}
-			public void BecomeVisuallyUnpicked(){}
-			public void StopIIImageSmoothFollowDragPos(){}
 		/* Picked Up Behaviour */
 			readonly IItemIconPickUpImplementor thisPickUpImplementor;
 			public void SetUpAsPickedII(){
 				thisPickUpImplementor.SetUpAsPickedII();
 			}
 		/* Hoverability state handling */
-			public void EvaluateHoverability(IItemIcon pickedII){
+			public void EvaluateHoverability(IPickableUIE pickedUIE){
+				IItemIcon pickedII = (IItemIcon)pickedUIE;
 				if(this.IsEligibleForHover(pickedII))
 					BecomeHoverable();
 				else
@@ -152,10 +117,23 @@ namespace UISystem{
 				return thisEmptinessStateEngine.IsEmpty();
 			}
 			public void DisemptifyInstantly(IUIItem item){
+				thisEmptinessStateEngine.DisemptifyInstantly(item);
 			}
-			public void EmptifyInstantly(){}
-			public void Disemptify(IUIItem item){}
-			public void Emptify(){}
+			public void EmptifyInstantly(){
+				thisEmptinessStateEngine.EmptifyInstantly();
+			}
+			public void Disemptify(IUIItem item){
+				thisEmptinessStateEngine.Disemptify(item);
+			}
+			public void Emptify(){
+				thisEmptinessStateEngine.Emptify();
+			}
+			public bool IsWaitingForImageInit(){
+				return thisEmptinessStateEngine.IsWaitingForImageInit();
+			}
+			public void InitImage(){
+				thisEmptinessStateEngine.InitImage();
+			}
 		/* IG */
 			protected IIconGroup thisIG;
 			public IIconGroup GetIconGroup(){
@@ -164,12 +142,12 @@ namespace UISystem{
 			bool IsReorderable(){
 				return thisIG.AllowsInsert() && thisIG.GetSize() > 1;
 			}
-			int slotID;
+			int thisSlotID;
 			public void SetSlotID(int id){
-				this.slotID = id;
+				thisSlotID = id;
 			}
 			public int GetSlotID(){
-				return slotID;
+				return thisSlotID;
 			}
 		/* Item Handling */
 			protected IUIItem thisItem;
@@ -193,18 +171,44 @@ namespace UISystem{
 			}
 			public abstract bool HasSameItem(IItemIcon other);
 			public abstract bool LeavesGhost();
+			public void IncreaseBy(int quantity, bool doesIncrement){}
+			public void DecreaseBy(int quantity, bool doesIncrement){
+				/*  does not remove resultant empty
+					must be explicitly removed outside this
+				*/
+			}	
 		/* input handling */
 			public override void OnTouch(int touchCount){
 				base.OnTouch(touchCount);
 				thisPickUpImplementor.CheckAndIncrementPickUpQuantity();
 			}
+		/* TransferableElement imple */
+			public void UpdateTransferableQuantity(int pickedQuantity){
+				int transQ = this.CalcTransferableQuantity(pickedQuantity);
+				thisTransferableQuantity = transQ;
+			}
+			int CalcTransferableQuantity(int pickedQuantity){
+				int diff = GetMaxTransferableQuantity() - pickedQuantity;
+				if(diff >= 0)
+					return diff;
+				else
+					throw new System.InvalidOperationException("pickedQuantity must not exceed max transferable quantity");
+			}
+			protected abstract int GetMaxTransferableQuantity();
+			int thisTransferableQuantity;
+			public int GetTransferableQuantity(){
+				return thisTransferableQuantity;
+			}
+			public bool IsTransferable(){
+				return thisTransferableQuantity > 0;
+			}
+			public void TravelTransfer(IIconGroup destIG){
+				destIG.ReceiveTravelTransfer(this);
+			}
+			public void SpotTransfer(IIconGroup destIG){
+				destIG.ReceiveSpotTransfer(this);
+			}
 		/* Travelling */
-			public void Immigrate(IIconGroup destIG){
-				destIG.ReceiveImmigrant(this);
-			}
-			public void Transfer(IIconGroup destIG){
-				destIG.ReceiveTransfer(this);
-			}
 			ITravelInterpolator runningTravelInterpolator;
 			public void SetRunningTravelInterpolator(ITravelInterpolator irper){
 				this.runningTravelInterpolator = irper;
@@ -229,22 +233,17 @@ namespace UISystem{
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
 				GetIconGroup().SwapIIInAllMutations(this, targetII);
 			}
-		public void IncreaseBy(int quantity, bool doesIncrement){}
-		public void DecreaseBy(int quantity, bool doesIncrement){
-			/*  does not remove resultant empty
-				must be explicitly removed outside this
-			*/
-		}	
+		/*  */
 	}
-	public interface IItemIconConstArg: IUIElementConstArg{
+	public interface IItemIconConstArg: IPickableUIEConstArg{
 		IItemIconTransactionManager iiTAM{get;}
 		IUIItem item{get;}
 		IItemIconTransactionStateEngine iiTAStateEngine{get;}
 		IItemIconPickUpImplementor iiPickUpImplementor{get;}
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
 	}
-	public class ItemIconConstArg: UIElementConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IUIImage image, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, image){
+	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
+		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IUIImage image, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, image, dragImageImplementor){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;

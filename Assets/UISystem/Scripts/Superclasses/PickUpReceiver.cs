@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IPickUpTransactionElement{
-	}
 	public interface IHoverabilityStateHandler{
 		void WaitForPickUp();
 		void BecomeHoverable();
@@ -13,7 +11,8 @@ namespace UISystem{
 		bool IsHoverable();
 		bool IsHovered();
 	}
-	public interface IPickUpReceiver: IUIElement, IHoverabilityStateHandler, IPickUpTransactionElement{
+	public interface IPickUpReceiver: IUIElement, IHoverabilityStateHandler{
+		void EvaluateHoverability(IPickableUIE pickedUIE);
 		void CheckForHover();
 	}
 }

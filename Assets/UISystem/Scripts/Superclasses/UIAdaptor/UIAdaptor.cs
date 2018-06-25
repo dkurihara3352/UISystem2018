@@ -24,7 +24,7 @@ namespace UISystem{
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				thisUIElement = CreateUIElement(thisDomainActivationData.uieFactory);
-				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory);
+				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory, passedData.pickUpManager);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;

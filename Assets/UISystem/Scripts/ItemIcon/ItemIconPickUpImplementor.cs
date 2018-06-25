@@ -45,7 +45,7 @@ namespace UISystem{
 			thisImage.DetachTo(pickUpContextUIE);
 			this.MoveToPickUpReservePos();
 			this.SlotOut();
-			StartIImageSmoothFollowDragPos();
+			thisItemIcon.StartImageSmoothFollowDragPosition();
 		}
 		int CalcPickedQuantity(){
 			int pickUpStepQuantity = thisItemTemp.GetPickUpStepQuantity();
@@ -90,7 +90,6 @@ namespace UISystem{
 
 			return leftoverII;
 		}
-		void StartIImageSmoothFollowDragPos(){}
 		public void CheckAndIncrementPickUpQuantity(){
 			if(thisIITAM.IsInPickedUpState()){
 				int incrementQuantity = CalcPickedQuantity();

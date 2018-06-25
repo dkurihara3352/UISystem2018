@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IIconPanel: IPickUpReceiver, IUIElement{
-		void EvaluateHoverability(IItemIcon pickedII);
 	}
 	public abstract class AbsIconPanel: AbsUIElement, IIconPanel{
 		public AbsIconPanel(IUIElementConstArg arg) :base(arg){
@@ -15,7 +14,8 @@ namespace UISystem{
 		}
 		public abstract void CheckForHover();
 		protected IPanelTransactionStateEngine panelTransactionStateEngine;
-		public void EvaluateHoverability(IItemIcon pickedII){
+		public void EvaluateHoverability(IPickableUIE pickedUIE){
+			IItemIcon pickedII = (IItemIcon)pickedUIE;
 			if(this.IsEligibleForHover(pickedII))
 				BecomeHoverable();
 			else

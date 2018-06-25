@@ -100,7 +100,7 @@ public class EquipItemIconTransactionManagerTest {
 
         testEqpIITAM.ExecuteTransaction();
 
-        eii.Received(1).Immigrate(poolIG);
+        eii.Received(1).TravelTransfer(poolIG);
     }
     [Test]
     public void ExcecuteTransaction_ThisEIIToEquipIsNotNull_ThisEIIToEquipIsSameAsPickedEqpII_CallsItImmigrateToRelevEqpIG(){
@@ -115,7 +115,7 @@ public class EquipItemIconTransactionManagerTest {
 
         testEqpIITAM.ExecuteTransaction();
 
-        eii.Received(1).Immigrate(eqpIG);
+        eii.Received(1).TravelTransfer(eqpIG);
     }
     [Test]
     public void ExcecuteTransaction_ThisEIIToUnequipIsNotNull_ThisEIIToUnequipIsNotSameAsPickedEqpII_CallsItTransferToPool(){
@@ -131,7 +131,7 @@ public class EquipItemIconTransactionManagerTest {
 
         testEqpIITAM.ExecuteTransaction();
 
-        eii.Received(1).Transfer(poolIG);
+        eii.Received(1).SpotTransfer(poolIG);
     }
     [Test]
     public void ExcecuteTransaction_ThisEIIToUnequipIsNotNull_ThisEIIToEquipIsNotSameAsPickedEqpII_CallsItTransferToRelevEqpIG(){
@@ -147,7 +147,7 @@ public class EquipItemIconTransactionManagerTest {
 
         testEqpIITAM.ExecuteTransaction();
 
-        eii.Received(1).Transfer(eqpIG);
+        eii.Received(1).SpotTransfer(eqpIG);
     }
     [Test]
     public void HoverInitialPickUpReceiver_PickedEqpIIIsInEqpIG_CallsEqpPanelCheckForHover(){

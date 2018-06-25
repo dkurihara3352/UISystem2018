@@ -22,8 +22,8 @@ namespace UISystem{
 
 		void AddEmptyAddTarget(IUIItem pickedItem);
 		void RemoveEmptyIIs();
-		void ReceiveImmigrant(IItemIcon immmigratingII);
-		void ReceiveTransfer(IItemIcon transferringII);
+		void ReceiveTravelTransfer(IItemIcon immmigratingII);
+		void ReceiveSpotTransfer(IItemIcon transferringII);
 		void SwapIIInAllMutations(IItemIcon sourceII, IItemIcon targetII);
 	}
 	public abstract class AbsIconGroup: AbsUIElement, IIconGroup{
@@ -189,14 +189,14 @@ namespace UISystem{
 			}
 			void AddItemAndMutate(IUIItem item, int idAtAdd){	
 			}
-			public void ReceiveImmigrant(IItemIcon immigratingII){
+			public void ReceiveTravelTransfer(IItemIcon immigratingII){
 				int destSlotID = GetProspectiveSlotID(immigratingII.GetUIItem());
 				this.ReceiveImmigrantAt(immigratingII, destSlotID);
 			}
 			void ReceiveImmigrantAt(IItemIcon immigratingII, int destSlotID){
 
 			}
-			public void ReceiveTransfer(IItemIcon transferringII){
+			public void ReceiveSpotTransfer(IItemIcon transferringII){
 				IUIItem addedItem = transferringII.GetUIItem();
 				int destSlotID = GetProspectiveSlotID(addedItem);
 				AddItemAndMutate(addedItem, destSlotID);

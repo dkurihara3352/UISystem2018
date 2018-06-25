@@ -164,7 +164,7 @@ namespace UISystem{
 		IEquipTool tool{get;}
 	}
 	public class EquippableItemIconConstArg: ItemIconConstArg, IEquippableItemIconConstArg{
-		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, IEquipTool tool): base(uim, uia, image, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
+		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IDragImageImplementor dragImageImplementor , IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, IEquipTool tool): base(uim, uia, image, dragImageImplementor, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
 			thisTool = tool;
 		}
 		readonly IEquipTool thisTool;

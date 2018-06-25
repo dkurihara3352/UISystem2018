@@ -24,7 +24,7 @@ namespace UISystem{
 		public IPickUpContextUIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public void Awake(){
 			uiManager = new UIManager();
-			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, uieFactory:null);
+			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, uieFactory:null, pum:null);
 			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
 		}
 	}
