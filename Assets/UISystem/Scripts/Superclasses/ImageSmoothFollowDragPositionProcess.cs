@@ -6,16 +6,17 @@ namespace UISystem{
 	public interface IInterpolatorProcess{
 		void DisconnectInterpolater(IInterpolator interpolator);
 	}
-	public interface IImageSmoothFollowDragPositionProcess: IProcess{
+	public interface IImageSmoothFollowDragPositionProcess: ITravelProcess{
 	}
-	public class ImageSmoothFollowDragPositionProcess: AbsProcess,  IImageSmoothFollowDragPositionProcess {
-		public ImageSmoothFollowDragPositionProcess(IUIImage image, IPickUpManager pum, float dragThreshold, float smoothCoefficient, IProcessManager procMan): base(procMan){
-			thisImage = image;
+	public class ImageSmoothFollowDragPositionProcess: AbsSingleTravellerTravelProcess,  IImageSmoothFollowDragPositionProcess {
+		public ImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient, IProcessManager procMan): base(travelableUIE, procMan){
 			thisPUM = pum;
 			thisDragThreshold = dragThreshold;
 			thisSmoothCoefficient = smoothCoefficient;
 		}
-		readonly IUIImage thisImage;
+		IUIImage thisImage{
+			get{return thisTravellingUIE.GetUIImage();}
+		}
 		readonly IPickUpManager thisPUM;
 		readonly float thisDragThreshold;
 		readonly float thisSmoothCoefficient;
@@ -34,7 +35,7 @@ namespace UISystem{
 			return displacement * thisSmoothCoefficient * deltaT; 
 		}
 		public override void Reset(){
-
+			return;
 		}
 	}
 }

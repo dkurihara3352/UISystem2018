@@ -24,6 +24,7 @@ namespace UISystem{
 					Factory
 				pass them
 			*/
+			IUIManager uim = passedData.uim;
 			IEquipTool eqpTool = new EquipTool();
 			IEqpIITAMStateEngine eqpIITAMStateEngine = new EqpIITAMStateEngine(eqpTool);
 			IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
@@ -31,9 +32,9 @@ namespace UISystem{
 			IEquipToolIGManager eqpToolIGManager = new EquipToolIGManager();
 			IEqpIITAMConstArg arg = new EqpIITAMConstArg(eqpIITAMStateEngine, thisEqpItemsPanel, thisPoolItemsPanel, eqpTool, hoveredEqpIISwitch, hoveredEqpToolPanelSwitch, eqpToolIGManager);
 			IEquippableIITAManager eqpIITAM  = new EquippableItemIconTransactionManager(arg);
-			IEquipToolUIEFactory factory = new EquipToolUIEFactory(passedData.uim, eqpTool, eqpIITAM);
+			IEquipToolUIEFactory eqpUIEFactory = new EquipToolUIEFactory(uim, eqpTool, eqpIITAM);
 
-			return new EquipToolUIAActivationData(passedData.uim, factory, eqpIITAM, eqpTool);
+			return new EquipToolUIAActivationData(uim, eqpUIEFactory, eqpIITAM, eqpTool);
 		}
 		protected override IEquipToolUIE CreateUIElement(IUIElementFactory factory){
 			IEquipToolUIEFactory eqpToolFactory = (IEquipToolUIEFactory)factory;

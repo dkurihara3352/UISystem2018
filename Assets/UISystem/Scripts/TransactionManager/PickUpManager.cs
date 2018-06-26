@@ -9,6 +9,8 @@ namespace UISystem{
 		IPickUpContextUIE GetPickUpContextUIE();
 		Vector2 GetDragWorldPosition();
 		void SetDragWorldPosition(Vector2 dragWorldPos);
+		float GetDragThreshold();
+		float GetSmoothCoefficient();
 	}
 	public abstract class AbsPickUpManager: IPickUpManager{
 		public IPickableUIE GetPickedUIE(){
@@ -29,5 +31,7 @@ namespace UISystem{
 		public void SetDragWorldPosition(Vector2 dragWorldPos){
 			thisDragWorldPosition = dragWorldPos;
 		}
+		public float GetDragThreshold(){return 1f;}
+		public float GetSmoothCoefficient(){return 1f;}
 	}
 }

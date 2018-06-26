@@ -9,9 +9,6 @@ namespace UISystem{
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
-
-		void HandOverTravel(IItemIcon other);
-
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -209,26 +206,14 @@ namespace UISystem{
 				destIG.ReceiveSpotTransfer(this);
 			}
 		/* Travelling */
-			ITravelInterpolator runningTravelInterpolator;
-			public void SetRunningTravelInterpolator(ITravelInterpolator irper){
-				this.runningTravelInterpolator = irper;
-			}
-			public ITravelInterpolator GetRunningTravelInterpolator(){
-				return runningTravelInterpolator;
-			}
-			public void HandOverTravel(IItemIcon other){
+
+			public override void HandOverTravel(ITravelableUIE other){
 				/*  Update running travel Irper
 					update mutation
 					pass image trans info to other's ?
 				*/
-				UpdateTravelIrper(other);
-				FindAndSwapIIInAllMutations(other);
-			}
-			void UpdateTravelIrper(IItemIcon targetII){
-				if(runningTravelInterpolator != null){
-					runningTravelInterpolator.UpdateTravellingII(targetII);
-					SetRunningTravelInterpolator(null);
-				}
+				base.HandOverTravel(other);
+				FindAndSwapIIInAllMutations((IItemIcon)other);
 			}
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
 				GetIconGroup().SwapIIInAllMutations(this, targetII);

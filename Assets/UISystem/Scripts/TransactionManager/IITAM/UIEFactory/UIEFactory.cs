@@ -14,10 +14,12 @@ namespace UISystem{
 			thisUIM = uim;
 			thisEqpTool = eqpTool;
 			thisEqpIITAM = eqpIITAM;
+			thisProcessFactory = uim.GetProcessFactory();
 		}
 		readonly IUIManager thisUIM;
 		readonly IEquipTool thisEqpTool;
 		readonly IEquippableIITAManager thisEqpIITAM;
+		readonly IProcessFactory thisProcessFactory;
 		public IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia){
 			IUIImage image = CreateEquipToolUIImage();
 			IUIElementConstArg arg = new UIElementConstArg(thisUIM, uia, image);
@@ -27,13 +29,14 @@ namespace UISystem{
 		IUIImage CreateEquipToolUIImage(){
 			return null;
 		}
-		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia, IEquippableUIItem item){
+		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA eqpIIUIA, IEquippableUIItem item){
 			UIImage image = CreateEquippableItemIconUIImage(item);
 			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
 			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
-			IDragImageImplementor dragImageImplementor = new DragImageImplementor();
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, uia, image, dragImageImplementor, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
+			DragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(thisEqpIITAM.GetDragThreshold(), thisEqpIITAM.GetSmoothCoefficient(), thisProcessFactory, thisEqpIITAM);
+			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, eqpIIUIA, image, dragImageImplementor, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
 			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
 			return eqpII;
 		}

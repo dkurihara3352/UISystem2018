@@ -4,8 +4,10 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface ITravelableUIE: IUIElement{
-		void SetRunningTravelInterpolator(ITravelInterpolator travelIrper);
-		void AbortRunningTravelInterpolator();
+		void SetRunningTravelProcess(ITravelProcess process);
+		ITravelProcess GetRunningTravelProcess();
+		void AbortRunningTravelProcess();
+		void HandOverTravel(ITravelableUIE other);
 	}
 	public interface IPickableUIE: ITravelableUIE, IImageSmoothFollowHandler{
 		void EvaluatePickability();
@@ -62,19 +64,30 @@ namespace UISystem{
 
 		public abstract void BecomeVisuallyPickedUp();
 		public abstract void BecomeVisuallyUnpicked();
-
+		/* ImageSmoothFollowHandler imple */
 		readonly IDragImageImplementor thisDragImageImplementor;
 		public virtual void StartImageSmoothFollowDragPosition(){
 			thisDragImageImplementor.StartImageSmoothFollowDragPosition();
 		}
-		public virtual void StopImageSmoothFollowDragPosition(){}
-		ITravelInterpolator thisRunningTravelInterpolator;
-		public void SetRunningTravelInterpolator(ITravelInterpolator travelIrper){
-			thisRunningTravelInterpolator = travelIrper;
+		public virtual void StopImageSmoothFollowDragPosition(){
+			thisDragImageImplementor.StopImageSmoothFollowDragPosition();
 		}
-		public void AbortRunningTravelInterpolator(){
-			thisRunningTravelInterpolator.DisconnectFromDrivingInterpolatorProcess();
-			SetRunningTravelInterpolator(null);
+		/* Travelable UIE implementation */
+			/*  updating thisRunningTravelProcess field is taken care by 		travel process
+			*/
+		public virtual void HandOverTravel(ITravelableUIE other){
+			if(thisRunningTravelProcess != null)
+				thisRunningTravelProcess.UpdateTravellingUIEFromTo(this, other);
+		}
+		ITravelProcess thisRunningTravelProcess;
+		public void SetRunningTravelProcess(ITravelProcess travelProcess){
+			thisRunningTravelProcess = travelProcess;
+		}
+		public ITravelProcess GetRunningTravelProcess(){
+			return thisRunningTravelProcess;
+		}
+		public void AbortRunningTravelProcess(){
+			thisRunningTravelProcess.UnregisterTravellingUIE(this);
 		}
 	}
 	public interface IPickableUIEConstArg: IUIElementConstArg{

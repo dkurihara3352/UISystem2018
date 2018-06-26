@@ -6,6 +6,7 @@ namespace UISystem{
 	public interface IProcessFactory{
 		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
+		IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient);
 	}
 	public class ProcessFactory: IProcessFactory{
 		public ProcessFactory(IProcessManager procManager, IUIManager uim){
@@ -27,6 +28,10 @@ namespace UISystem{
 		}
 		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){
 			IWaitAndExpireProcess process = new WaitAndExpireProcess(thisProcessManager, state, waitTime);
+			return process;
+		}
+		public IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient){
+			ImageSmoothFollowDragPositionProcess process = new ImageSmoothFollowDragPositionProcess(travelableUIE, pum, dragThreshold, smoothCoefficient, thisProcessManager);
 			return process;
 		}
 	}

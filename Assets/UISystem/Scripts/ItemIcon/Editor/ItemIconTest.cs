@@ -100,28 +100,28 @@ public class ItemIconTest{
         iiTAStateEngine.DidNotReceive().BecomeUnpickable();
     }
     [Test]
-    public void HandOverTravel_IrperNotNull_SetsRunningTravelIrperNull(){
+    public void HandOverTravel_IrperNotNull_SetsRunningTravelProcessNull(){
         IItemIconConstArg arg;
         TestItemIcon itemIcon = CreateTestItemIconWithIG(0, out arg);
-        ITravelInterpolator irper = Substitute.For<ITravelInterpolator>();
-        itemIcon.SetRunningTravelInterpolator(irper);
+        ITravelProcess process = Substitute.For<ITravelProcess>();
+        itemIcon.SetRunningTravelProcess(process);
         IItemIcon other = Substitute.For<IItemIcon>();
 
         itemIcon.HandOverTravel(other);
 
-        Assert.That(itemIcon.GetRunningTravelInterpolator(), Is.Null);
+        Assert.That(itemIcon.GetRunningTravelProcess(), Is.Null);
     }
     [Test]
-    public void HandOverTravel_IrperNotNull_CallsIrperUpdateTravellingII(){
+    public void HandOverTravel_IrperNotNull_CallsProcessUpdateTravellingII(){
         IItemIconConstArg arg;
         TestItemIcon itemIcon = CreateTestItemIconWithIG(0, out arg);
-        ITravelInterpolator irper = Substitute.For<ITravelInterpolator>();
-        itemIcon.SetRunningTravelInterpolator(irper);
+        ITravelProcess process = Substitute.For<ITravelProcess>();
+        itemIcon.SetRunningTravelProcess(process);
         IItemIcon other = Substitute.For<IItemIcon>();
 
         itemIcon.HandOverTravel(other);
 
-        irper.Received(1).UpdateTravellingII(other);
+        process.Received(1).UpdateTravellingUIEFromTo(itemIcon, other);
     }
     public class IsTransferable_TestCases{
         public static object[] greaterCases = {
