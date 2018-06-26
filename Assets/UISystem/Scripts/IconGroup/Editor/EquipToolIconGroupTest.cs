@@ -288,7 +288,7 @@ public class EquipToolIconGroupTest{
     public class TestEqpToolEqpCGIG: EqpToolEqpCarriedGearsIG{
         public TestEqpToolEqpCGIG(IIconGroupConstArg arg): base(arg){}
         public void SetItemIcons(List<IItemIcon> iis){
-            this.itemIcons = iis;
+            this.thisItemIcons = iis;
         }
     }
     IIconGroupConstArg CreateStubIconGroupConstArg(int minSize, int maxSize){

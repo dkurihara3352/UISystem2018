@@ -8,8 +8,8 @@ namespace UISystem{
 		IItemTemplate GetItemTemplate();
 		int GetItemQuantity();
 		bool HasSameItem(IItemIcon other);
+		bool HasSameItem(IUIItem item);
 		bool LeavesGhost();
-		void IncreaseBy(int quantity, bool doesIncrement);
-		void DecreaseBy(int quantity, bool doesIncrement);
+		void UpdateQuantity(int souceQuantity, int targetQuantity, bool doesIncrement);
 	}
 }

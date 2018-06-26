@@ -155,6 +155,9 @@ public class ItemIconTest{
         public override bool HasSameItem(IItemIcon other){
             return false;
         }
+        public override bool HasSameItem(IUIItem item){
+            return false;
+        }
         public override void CheckForHover(){}
         public override void CheckForDelayedPickUp(){}
         public override void CheckForSecondTouchPickUp(){}

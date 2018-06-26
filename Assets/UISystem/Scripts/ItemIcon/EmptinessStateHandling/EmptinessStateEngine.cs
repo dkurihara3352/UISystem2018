@@ -11,6 +11,8 @@ namespace UISystem{
 		void Emptify();
 		bool IsWaitingForImageInit();
 		void InitImage();
+		void IncreaseBy(int quantity, bool doesIncrement);
+		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
 	}
 	public interface IItemIconEmptinessStateEngine: IEmptinessStateHandler{
 		void SetItemIcon(IItemIcon itemIcon);
@@ -28,7 +30,7 @@ namespace UISystem{
 		}
 		IItemIcon thisItemIcon;
 		public bool IsEmpty(){
-			return false;
+			return thisCurState is IItemIconEmptyState;
 		}
 		public void DisemptifyInstantly(IUIItem item){}
 		public void EmptifyInstantly(){}
@@ -39,10 +41,11 @@ namespace UISystem{
 		}
 		readonly IWaitingForImageInitState thisWFImageInitState;
 		public void InitImage(){}
-	}
-	public interface IItemIconEmptinessState: ISwitchableState{
-		void SetItemIcon(IItemIcon itemIcon);
-	}
-	public interface IWaitingForImageInitState: IItemIconEmptinessState{
+		public void IncreaseBy(int quantity, bool doesIncrement){
+			thisCurState.IncreaseBy(quantity, doesIncrement);
+		}
+		public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
+			thisCurState.DecreaseBy(quantity, doesIncrement, removesEmpty);
+		}
 	}
 }

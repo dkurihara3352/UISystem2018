@@ -348,7 +348,7 @@ public class IconGroupTest{
 			return false;
 		}
 		public void SetItemIcons(List<IItemIcon> itemIcons){
-			this.itemIcons = itemIcons;
+			this.thisItemIcons = itemIcons;
 		}
 	}
 	public TestIG CreateTestIG(int minSize, int maxSize, out IIconGroupConstArg arg){

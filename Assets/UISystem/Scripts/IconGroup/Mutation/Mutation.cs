@@ -6,7 +6,4 @@ namespace UISystem{
 	public interface IMutation{
 		void FindInProspectiveIIsAndSwap(IItemIcon soueceII, IItemIcon targetII);
 	}
-	public interface IReformation{
-
-	}
 }

@@ -12,7 +12,7 @@ namespace UISystem{
 		protected List<IEquippableItemIcon> eqpItemIcons{
 			get{
 				List<IEquippableItemIcon> result = new List<IEquippableItemIcon>();
-				foreach(IItemIcon ii in this.itemIcons)
+				foreach(IItemIcon ii in this.thisItemIcons)
 					result.Add((IEquippableItemIcon)ii);
 				return result;
 			}

@@ -156,7 +156,10 @@ namespace UISystem{
 			}
 			public override bool HasSameItem(IItemIcon other){
 				IEquippableItemIcon otherEqpII = (IEquippableItemIcon)other;
-				return thisEqpItem.IsSameAs(otherEqpII.GetEquippableItem());
+				return this.HasSameItem(otherEqpII.GetEquippableItem());
+			}
+			public override bool HasSameItem(IUIItem item){
+				return thisEqpItem.IsSameAs(item);
 			}
 		/*  */
 	}

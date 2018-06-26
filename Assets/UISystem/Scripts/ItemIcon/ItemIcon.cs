@@ -9,6 +9,12 @@ namespace UISystem{
 		IIconGroup GetIconGroup();
 		void SetSlotID(int id);
 		int GetSlotID();
+
+		void RemoveAndMutate();
+		void Ghostify();
+		void Deghostify();
+		bool IsGhostified();
+		void EmptifyAndRemove();
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -167,13 +173,20 @@ namespace UISystem{
 				return thisItemTemp;
 			}
 			public abstract bool HasSameItem(IItemIcon other);
+			public abstract bool HasSameItem(IUIItem item);
 			public abstract bool LeavesGhost();
-			public void IncreaseBy(int quantity, bool doesIncrement){}
-			public void DecreaseBy(int quantity, bool doesIncrement){
+			public void IncreaseBy(int quantity, bool doesIncrement){
+				thisEmptinessStateEngine.IncreaseBy(quantity, doesIncrement);
+			}
+			public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
 				/*  does not remove resultant empty
 					must be explicitly removed outside this
 				*/
-			}	
+				thisEmptinessStateEngine.DecreaseBy(quantity, doesIncrement, removesEmpty);
+			}
+			public void UpdateQuantity(int sourceQuantity, int targetQuantity, bool doesIncrement){
+				
+			}
 		/* input handling */
 			public override void OnTouch(int touchCount){
 				base.OnTouch(touchCount);
@@ -218,6 +231,15 @@ namespace UISystem{
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
 				GetIconGroup().SwapIIInAllMutations(this, targetII);
 			}
+		/* mutation */
+			public void RemoveAndMutate(){
+				thisIG.RemoveIIAndMutate(this);
+			}
+			public void EmptifyAndRemove(){}
+		/* Ghostification */
+			public void Ghostify(){}
+			public void Deghostify(){}
+			public bool IsGhostified(){return false;}
 		/*  */
 	}
 	public interface IItemIconConstArg: IPickableUIEConstArg{
