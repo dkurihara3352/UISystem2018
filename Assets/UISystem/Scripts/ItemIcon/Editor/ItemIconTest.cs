@@ -100,7 +100,7 @@ public class ItemIconTest{
         iiTAStateEngine.DidNotReceive().BecomeUnpickable();
     }
     [Test]
-    public void HandOverTravel_IrperNotNull_SetsRunningTravelProcessNull(){
+    public void HandOverTravel_IrperNotNull_CallsTravelProcessUpdateTravellingUIEFromThisToOther(){
         IItemIconConstArg arg;
         TestItemIcon itemIcon = CreateTestItemIconWithIG(0, out arg);
         ITravelProcess process = Substitute.For<ITravelProcess>();
@@ -109,7 +109,7 @@ public class ItemIconTest{
 
         itemIcon.HandOverTravel(other);
 
-        Assert.That(itemIcon.GetRunningTravelProcess(), Is.Null);
+        process.Received(1).UpdateTravellingUIEFromTo(itemIcon, other);
     }
     [Test]
     public void HandOverTravel_IrperNotNull_CallsProcessUpdateTravellingII(){
