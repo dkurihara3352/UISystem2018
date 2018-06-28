@@ -4,6 +4,35 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IUIElementFactory{
+		IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller);
+		IDigitPanel CreateDigitPanel();
+	}
+	public class UIElementFactory: IUIElementFactory{
+		public UIElementFactory(IUIManager uim){
+			thisUIM = uim;
+			thisReserveTransformUIE = uim.GetReserveTransformUIE();
+		}
+		readonly IUIManager thisUIM;
+		IReserveTransformUIE thisReserveTransformUIE;
+		T CreateUIA<T>() where T: MonoBehaviour, IUIAdaptor{
+			GameObject go = new GameObject();
+			IUIAdaptor reserveUIA = thisReserveTransformUIE.GetUIAdaptor();
+			go.transform.SetParent(reserveUIA.GetTransform());
+			go.transform.position = thisReserveTransformUIE.GetReservePosition();
+			go.transform.SetAsLastSibling();
+			T uia = go.AddComponent<T>();
+			return uia;
+		}
+		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller){
+			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateUIA<DigitPanelSetAdaptor>();
+			digitPanelSetAdaptor.SetDigitPlace(digitPlace);
+			IUIAdaptor quantityRollerAdaptor = quantityRoller.GetUIAdaptor();
+			digitPanelSetAdaptor.SetParentUIA(quantityRollerAdaptor, true);
+			IUIAActivationData activationData = quantityRollerAdaptor.GetDomainActivationData();
+			digitPanelSetAdaptor.GetReadyForActivation(activationData);
+			DigitPanelSet digitPanelSet = (DigitPanelSet)digitPanelSetAdaptor.GetUIElement();
+			return digitPanelSet;
+		}
 	}
 	public interface IEquipToolUIEFactory: IUIElementFactory{
 		IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia);

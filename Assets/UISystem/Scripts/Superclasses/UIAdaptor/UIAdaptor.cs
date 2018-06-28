@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 namespace UISystem{
 	public interface IMBAdaptor{
 		Transform GetTransform();
+		Rect GetRect();
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
 		Vector2 GetWorldPosition();
@@ -18,16 +19,20 @@ namespace UISystem{
 		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
 		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
+		IUIAActivationData GetDomainActivationData();
 	}
 	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
-				thisUIElement = CreateUIElement(thisDomainActivationData.uieFactory);
+				thisUIElement = CreateUIElement();
 				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory, passedData.pickUpManager);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
+			public IUIAActivationData GetDomainActivationData(){
+				return thisDomainActivationData;
+			}
 			IUIAActivationData CheckAndCreateDomainActivationData(IUIAActivationData passedData){
 				IUIAActivationData result = null;
 				if(this is IPickUpContextUIAdaptor){
@@ -65,7 +70,7 @@ namespace UISystem{
 				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
 			}
 		/*  Hierarchy stuff */
-			protected abstract T CreateUIElement(IUIElementFactory factory);
+			protected abstract T CreateUIElement();
 			T thisUIElement;
 			public IUIElement GetUIElement(){
 				return thisUIElement;

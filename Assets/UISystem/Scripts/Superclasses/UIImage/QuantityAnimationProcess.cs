@@ -19,12 +19,28 @@ namespace UISystem{
 
 	}
 	public class IncrementalQuantityAnimationProcess: AbsQuantityAnimationProcess, IIncrementalQuantityAnimationProcess{
-		public IncrementalQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan, image, sourceQuantity, targetQuantity){}
-		float totalTime;
-		public override void UpdateProcess(float deltaT){
-			
+		public IncrementalQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan, image, sourceQuantity, targetQuantity){
+			totalTime = procMan.GetIncrementalQuantityAnimationProcessTotalTime();
 		}
-		public override void Reset(){}
+		readonly float totalTime;
+		float elapsedTime = 0f;
+		readonly IQuantityRoller thisQuantityRoller;
+		public override void UpdateProcess(float deltaT){
+			elapsedTime += deltaT;
+			float normalizedT = elapsedTime/ totalTime;
+			float springT = CalcSpringT(normalizedT);
+			float rollerTargetValue = Mathf.Lerp(thisSourceQuantity/1f, thisTargetQuantity/1f, springT);
+			thisQuantityRoller.Roll(rollerTargetValue);
+			if(elapsedTime >= totalTime)
+				this.Expire();
+		}
+		public override void Reset(){
+			elapsedTime = 0f;
+		}
+		public override void Expire(){
+			base.Expire();
+			thisQuantityRoller.Roll(thisTargetQuantity/1f);
+		}
 	}
 	public interface IOneshotQuantityAnimationProcess: IQuantityAnimationProcess{
 	}

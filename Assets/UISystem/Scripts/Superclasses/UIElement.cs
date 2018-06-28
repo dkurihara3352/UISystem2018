@@ -9,7 +9,6 @@ namespace UISystem{
 		List<IUIElement> GetChildUIEs();
 		Vector2 GetPositionInThisSpace(Vector2 worldPos);
 		void SetLocalPosition(Vector2 localPos);
-		IUIManager GetUIM();
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		void Activate();
@@ -17,19 +16,21 @@ namespace UISystem{
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
-			this.uiManager = arg.uim;
-			this.uiAdaptor = arg.uia;
-			this.thisImage = arg.image;
-			this.selectabilityEngine = new SelectabilityStateEngine(this, uiManager.GetProcessFactory());
+			thisUIM = arg.uim;
+			thisUIA = arg.uia;
+			thisTool = arg.tool;
+			thisImage = arg.image;
+			thisSelectabilityEngine = new SelectabilityStateEngine(this, thisUIM.GetProcessFactory());
 		}
-		IUIManager uiManager;
+		protected readonly IUIManager thisUIM;
 		public IUIManager GetUIM(){
-			return uiManager;
+			return thisUIM;
 		}
-		IUIAdaptor uiAdaptor;
+		protected readonly IUIAdaptor thisUIA;
 		public IUIAdaptor GetUIAdaptor(){
-			return uiAdaptor;
+			return thisUIA;
 		}
+		protected readonly IUITool thisTool;
 		public IUIElement GetParentUIE(){
 			return GetUIAdaptor().GetParentUIE();
 		}
@@ -37,7 +38,7 @@ namespace UISystem{
 			return GetUIAdaptor().GetChildUIEs();
 		}
 		public IUIImage GetUIImage(){
-			return this.thisImage;
+			return thisImage;
 		}
 		protected IUIImage thisImage;
 		public virtual void Activate(){
@@ -62,21 +63,21 @@ namespace UISystem{
 			void InitializeSelectabilityState(){
 				BecomeSelectable();
 			}
-			ISelectabilityStateEngine selectabilityEngine;
+			ISelectabilityStateEngine thisSelectabilityEngine;
 			public void BecomeSelectable(){
-				selectabilityEngine.BecomeSelectable();
+				thisSelectabilityEngine.BecomeSelectable();
 			}
 			public void BecomeUnselectable(){
-				selectabilityEngine.BecomeUnselectable();
+				thisSelectabilityEngine.BecomeUnselectable();
 			}
 			public void BecomeSelected(){
-				selectabilityEngine.BecomeSelected();
+				thisSelectabilityEngine.BecomeSelected();
 			}
 			public bool IsSelectable(){
-				return selectabilityEngine.IsSelectable();
+				return thisSelectabilityEngine.IsSelectable();
 			}
 			public bool IsSelected(){
-				return selectabilityEngine.IsSelected();
+				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
 			public virtual void OnTouch( int touchCount){}
@@ -89,32 +90,36 @@ namespace UISystem{
 			public virtual void OnSwipe( ICustomEventData eventData){}
 		/*  */
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
-			return this.uiAdaptor.GetPositionInThisSpace(worldPos);
+			return this.thisUIA.GetPositionInThisSpace(worldPos);
 		}
 		public void SetLocalPosition(Vector2 localPos){
-			this.uiAdaptor.SetLocalPosition(localPos);
+			this.thisUIA.SetLocalPosition(localPos);
 		}
 		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
-			this.uiAdaptor.SetParentUIE(newParentUIE, worldPositionStays);
+			this.thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
 		}
 	}
 	public interface IUIElementConstArg{
 		IUIManager uim{get;}
 		IUIAdaptor uia{get;}
 		IUIImage image{get;}
+		IUITool tool{get;}
 	}
 	public class UIElementConstArg: IUIElementConstArg{
-		readonly IUIManager _uim;
-		readonly IUIAdaptor _uia;
-		readonly IUIImage _image;
-		public UIElementConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image){
-			this._uim = uim;
-			this._uia = uia;
-			this._image = image;
+		readonly IUIManager thisUIM;
+		readonly IUIAdaptor thisUIA;
+		readonly IUIImage thisImage;
+		readonly IUITool thisTool;
+		public UIElementConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IUITool tool){
+			thisUIM = uim;
+			thisUIA = uia;
+			thisImage = image;
+			thisTool = tool;
 		}
-		public IUIManager uim{get{return _uim;}}
-		public IUIAdaptor uia{get{return _uia;}}
-		public IUIImage image{get{return _image;}}
+		public IUIManager uim{get{return thisUIM;}}
+		public IUIAdaptor uia{get{return thisUIA;}}
+		public IUIImage image{get{return thisImage;}}
+		public IUITool tool{get{return thisTool;}}
 	}
 	public interface IUIInputHandler{
 		/* Releasing
