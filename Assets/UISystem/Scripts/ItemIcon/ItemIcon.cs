@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferableUIElement{
+	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferableUIElement, IGhostificationStateHandler{
 		void SetUpAsPickedII();
 
 		IIconGroup GetIconGroup();
@@ -11,9 +11,6 @@ namespace UISystem{
 		int GetSlotID();
 
 		void RemoveAndMutate();
-		void Ghostify();
-		void Deghostify();
-		bool IsGhostified();
 		void EmptifyAndRemove();
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
@@ -137,6 +134,12 @@ namespace UISystem{
 			public void InitImage(){
 				thisEmptinessStateEngine.InitImage();
 			}
+			public void IncreaseBy(int quantity, bool doesIncrement){
+				thisEmptinessStateEngine.IncreaseBy(quantity, doesIncrement);
+			}
+			public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
+				thisEmptinessStateEngine.DecreaseBy(quantity, doesIncrement, removesEmpty);
+			}
 		/* IG */
 			protected IIconGroup thisIG;
 			public IIconGroup GetIconGroup(){
@@ -175,17 +178,15 @@ namespace UISystem{
 			public abstract bool HasSameItem(IItemIcon other);
 			public abstract bool HasSameItem(IUIItem item);
 			public abstract bool LeavesGhost();
-			public void IncreaseBy(int quantity, bool doesIncrement){
-				thisEmptinessStateEngine.IncreaseBy(quantity, doesIncrement);
-			}
-			public void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
-				/*  does not remove resultant empty
-					must be explicitly removed outside this
-				*/
-				thisEmptinessStateEngine.DecreaseBy(quantity, doesIncrement, removesEmpty);
-			}
 			public void UpdateQuantity(int sourceQuantity, int targetQuantity, bool doesIncrement){
-				
+				SetQuantity(targetQuantity);
+				if(thisItem.IsStackable()){
+					thisImage.StopQuantityAnimation();
+					if(doesIncrement)
+						thisImage.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
+					else
+						thisImage.AnimateQuantityImageAtOnce(sourceQuantity, targetQuantity);
+				}
 			}
 		/* input handling */
 			public override void OnTouch(int touchCount){
@@ -219,7 +220,6 @@ namespace UISystem{
 				destIG.ReceiveSpotTransfer(this);
 			}
 		/* Travelling */
-
 			public override void HandOverTravel(ITravelableUIE other){
 				/*  Update running travel Irper
 					update mutation
@@ -231,15 +231,15 @@ namespace UISystem{
 			void FindAndSwapIIInAllMutations(IItemIcon targetII){
 				GetIconGroup().SwapIIInAllMutations(this, targetII);
 			}
+		/* Ghostification */
+			public void Ghostify(){}
+			public void Deghostify(){}
+			public bool IsGhostified(){return false;}
 		/* mutation */
 			public void RemoveAndMutate(){
 				thisIG.RemoveIIAndMutate(this);
 			}
 			public void EmptifyAndRemove(){}
-		/* Ghostification */
-			public void Ghostify(){}
-			public void Deghostify(){}
-			public bool IsGhostified(){return false;}
 		/*  */
 	}
 	public interface IItemIconConstArg: IPickableUIEConstArg{
