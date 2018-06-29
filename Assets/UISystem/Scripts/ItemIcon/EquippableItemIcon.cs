@@ -10,10 +10,8 @@ namespace UISystem{
 	}
 	public class EquippableItemIcon: AbsItemIcon, IEquippableItemIcon{
 		public EquippableItemIcon(IEquippableItemIconConstArg arg) :base(arg){
-			this.eqpTool = arg.tool;
 		}
 		/*  */
-			readonly IEquipTool eqpTool;
 			IEquippableIITAManager eqpIITAM{get{return (IEquippableIITAManager)this.iiTAM;}}
 			IEquippableUIItem thisEqpItem{get{return thisItem as IEquippableUIItem;}}
 			public IEquippableUIItem GetEquippableItem(){return thisEqpItem;}
@@ -164,13 +162,9 @@ namespace UISystem{
 		/*  */
 	}
 	public interface IEquippableItemIconConstArg: IItemIconConstArg{
-		IEquipTool tool{get;}
 	}
 	public class EquippableItemIconConstArg: ItemIconConstArg, IEquippableItemIconConstArg{
-		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IDragImageImplementor dragImageImplementor , IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, IEquipTool tool): base(uim, uia, image, dragImageImplementor, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
-			thisTool = tool;
+		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IEquipTool tool, IDragImageImplementor dragImageImplementor , IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, uia, image, tool, dragImageImplementor, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
 		}
-		readonly IEquipTool thisTool;
-		public IEquipTool tool{get{return this.thisTool;}}
 	}
 }

@@ -94,7 +94,7 @@ namespace UISystem{
 		IDragImageImplementor dragImageImplementor{get;}
 	}
 	public class PickableUIEConstArg: UIElementConstArg, IPickableUIEConstArg{
-		public PickableUIEConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IDragImageImplementor dragImageImplementor): base(uim, uia, image){
+		public PickableUIEConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IUITool tool, IDragImageImplementor dragImageImplementor): base(uim, uia, image, tool){
 			thisDragImageImplementor = dragImageImplementor;
 		}
 		readonly IDragImageImplementor thisDragImageImplementor;

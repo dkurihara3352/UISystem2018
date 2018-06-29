@@ -264,7 +264,7 @@ namespace UISystem{
 		List<IItemIcon> iis{get;}
 	}
 	public class IconGroupConstArg: UIElementConstArg, IIconGroupConstArg{
-		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IItemIconTransactionManager iiTAM, int minSize, int maxSize, IHoverPadsManager hoverPadsManager, List<IItemIcon> iis): base(uim, uia, image){
+		public IconGroupConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IUITool tool, IItemIconTransactionManager iiTAM, int minSize, int maxSize, IHoverPadsManager hoverPadsManager, List<IItemIcon> iis): base(uim, uia, image, tool){
 			thisIITAM = iiTAM;
 			thisMinSize = minSize;
 			thisMaxSize = maxSize;

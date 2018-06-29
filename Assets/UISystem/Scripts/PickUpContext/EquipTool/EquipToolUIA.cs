@@ -25,20 +25,20 @@ namespace UISystem{
 				pass them
 			*/
 			IUIManager uim = passedData.uim;
-			IEquipTool eqpTool = new EquipTool();
-			IEqpIITAMStateEngine eqpIITAMStateEngine = new EqpIITAMStateEngine(eqpTool);
+			IEqpIITAMStateEngine eqpIITAMStateEngine = new EqpIITAMStateEngine();
 			IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch = new PickUpReceiverSwitch<IEquippableItemIcon>();
 			IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch = new PickUpReceiverSwitch<IEquipToolPanel>();
 			IEquipToolIGManager eqpToolIGManager = new EquipToolIGManager();
-			IEqpIITAMConstArg arg = new EqpIITAMConstArg(eqpIITAMStateEngine, thisEqpItemsPanel, thisPoolItemsPanel, eqpTool, hoveredEqpIISwitch, hoveredEqpToolPanelSwitch, eqpToolIGManager);
+			IEqpIITAMConstArg arg = new EqpIITAMConstArg(eqpIITAMStateEngine, thisEqpItemsPanel, thisPoolItemsPanel,hoveredEqpIISwitch, hoveredEqpToolPanelSwitch, eqpToolIGManager);
 			IEquippableIITAManager eqpIITAM  = new EquippableItemIconTransactionManager(arg);
-			IEquipToolUIEFactory eqpUIEFactory = new EquipToolUIEFactory(uim, eqpTool, eqpIITAM);
+			IEquipTool eqpTool = new EquipTool(uim, eqpIITAM);
 
-			return new EquipToolUIAActivationData(uim, eqpUIEFactory, eqpIITAM, eqpTool);
+			return new EquipToolUIAActivationData(uim, eqpIITAM, eqpTool);
 		}
-		protected override IEquipToolUIE CreateUIElement(IUIElementFactory factory){
-			IEquipToolUIEFactory eqpToolFactory = (IEquipToolUIEFactory)factory;
-			return eqpToolFactory.CreateEquipToolUIE(this);
+		protected override IEquipToolUIE CreateUIElement(){
+			IUIElementConstArg arg = new UIElementConstArg(thisDomainActivationData.uim, this, null, thisDomainActivationData.tool);
+			IEquipToolUIE uie = new EquipToolUIE(arg);
+			return uie;
 		}
 
 	}

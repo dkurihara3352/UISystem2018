@@ -196,7 +196,7 @@ public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 		IEquippableIITAManager eqpIITAM = Substitute.For<IEquippableIITAManager>();
 		IEquipTool eqpTool = Substitute.For<IEquipTool>();
 		IPanelTransactionStateEngine engine = Substitute.For<IPanelTransactionStateEngine>();
-		IEquipToolPanelConstArg thisArg = new EquipToolPanelConstArg(uim, uia, image, eqpIITAM, eqpTool, engine);
+		IEquipToolPanelConstArg thisArg = new EquipToolPanelConstArg(uim, uia, image, eqpTool, eqpIITAM, engine);
 		EquipToolEquippedItemsPanel eqpItemsPanel = new EquipToolEquippedItemsPanel(thisArg);
 
 		arg = thisArg;

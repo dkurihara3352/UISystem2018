@@ -24,7 +24,7 @@ namespace UISystem{
 			thisStateEngine = stateEngine;
 		}
 		/* tam state */
-			readonly IItemIconTAManagerStateEngine thisStateEngine;
+			protected readonly IItemIconTAManagerStateEngine thisStateEngine;
 			public void Activate(){
 				SetToDefaultState();
 			}

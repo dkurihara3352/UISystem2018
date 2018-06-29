@@ -120,15 +120,13 @@ namespace UISystem{
 		IPanelTransactionStateEngine panelTransactionStateEngine{get;}
 	}
 	public class EquipToolPanelConstArg: UIElementConstArg ,IEquipToolPanelConstArg{
-		public EquipToolPanelConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool, IPanelTransactionStateEngine engine): base(uim, uia, image){
+		public EquipToolPanelConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM,IPanelTransactionStateEngine engine): base(uim, uia, image, eqpTool){
 			thisEqpIITAM = eqpIITAM;
-			thisEqpTool = eqpTool;
 			thisPanelTransactionStateEngine = engine;
 		}
 		readonly IEquippableIITAManager thisEqpIITAM;
 		public IEquippableIITAManager eqpIITAM{get{return thisEqpIITAM;}}
-		readonly IEquipTool thisEqpTool;
-		public IEquipTool eqpTool{get{return thisEqpTool;}}
+		public IEquipTool eqpTool{get{return (IEquipTool)tool;}}
 		readonly IPanelTransactionStateEngine thisPanelTransactionStateEngine;
 		public IPanelTransactionStateEngine panelTransactionStateEngine{get{return thisPanelTransactionStateEngine;}}
 	}

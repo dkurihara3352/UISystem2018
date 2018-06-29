@@ -181,7 +181,6 @@ namespace UISystem{
 			public void UpdateQuantity(int sourceQuantity, int targetQuantity, bool doesIncrement){
 				SetQuantity(targetQuantity);
 				if(thisItem.IsStackable()){
-					thisImage.StopQuantityAnimation();
 					if(doesIncrement)
 						thisImage.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
 					else
@@ -250,7 +249,7 @@ namespace UISystem{
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
 	}
 	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IUIImage image, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, image, dragImageImplementor){
+		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IUIImage image, IUITool tool, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, image, tool, dragImageImplementor){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;

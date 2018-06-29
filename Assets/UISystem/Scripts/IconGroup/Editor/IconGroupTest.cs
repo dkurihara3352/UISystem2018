@@ -355,10 +355,12 @@ public class IconGroupTest{
 		IUIManager uim = Substitute.For<IUIManager>();
 		IUIAdaptor uia = Substitute.For<IUIAdaptor>();
 		IUIImage image = Substitute.For<IUIImage>();
+		IUITool tool = Substitute.For<IUITool>();
+		IItemIconTransactionManager iiTAM = Substitute.For<IItemIconTransactionManager>();
 		IHoverPadsManager hoverPadsManager = Substitute.For<IHoverPadsManager>();
 		List<IItemIcon> iis = new List<IItemIcon>();
 
-		IIconGroupConstArg thisArg = new IconGroupConstArg(uim, uia, image, minSize, maxSize, hoverPadsManager, iis);
+		IIconGroupConstArg thisArg = new IconGroupConstArg(uim, uia, image, tool, iiTAM, minSize, maxSize, hoverPadsManager, iis);
 		TestIG testIG = new TestIG(thisArg);
 		arg = thisArg;
 		return testIG;

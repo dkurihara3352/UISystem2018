@@ -8,23 +8,25 @@ namespace UISystem{
 		IUIElementFactory uieFactory{get;}
 		IProcessFactory processFactory{get;}
 		IPickUpManager pickUpManager{get;}
+		IUITool tool{get;}
 	}
 	public abstract class AbsUIAActivationData: IUIAActivationData{
-		public AbsUIAActivationData(IUIManager uim, IUIElementFactory uieFactory, IPickUpManager pum){
+		public AbsUIAActivationData(IUIManager uim, IPickUpManager pum, IUITool tool){
 			thisUIM = uim;
-			thisUIEFactory = uieFactory;
 			thisPUM = pum;
+			thisTool = tool;
 		}
 		readonly IUIManager thisUIM;
 		public IUIManager uim{get{return thisUIM;}}
-		readonly IUIElementFactory thisUIEFactory;
-		public IUIElementFactory uieFactory{get{return thisUIEFactory;}}
+		public IUIElementFactory uieFactory{get{return tool.GetUIElementFactory();}}
 		public IProcessFactory processFactory{get{return thisUIM.GetProcessFactory();}}
 		readonly IPickUpManager thisPUM;
 		public IPickUpManager pickUpManager{get{return thisPUM;}}
+		readonly IUITool thisTool;
+		public IUITool tool{get{return thisTool;}}
 	}
 	public class RootUIAActivationData: AbsUIAActivationData{
-		public RootUIAActivationData(IUIManager uim, IUIElementFactory uieFactory, IPickUpManager pum): base(uim, uieFactory, pum){}
+		public RootUIAActivationData(IUIManager uim, IPickUpManager pum, IUITool tool): base(uim, pum, tool){}
 	}
 	public interface IEquipToolActivationData: IUIAActivationData{
 		IEquippableIITAManager eqpIITAM{get;}
@@ -32,14 +34,12 @@ namespace UISystem{
 		IEquipToolUIEFactory eqpToolUIEFactory{get;}
 	}
 	public class EquipToolUIAActivationData: AbsUIAActivationData, IEquipToolActivationData{
-		public EquipToolUIAActivationData(IUIManager uim, IEquipToolUIEFactory eqpToolUIEFactory, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, eqpToolUIEFactory, eqpIITAM){
+		public EquipToolUIAActivationData(IUIManager uim, IEquippableIITAManager eqpIITAM, IEquipTool eqpTool) :base(uim, eqpIITAM, eqpTool){
 			thisEqpIITAM = eqpIITAM;
-			thisEqpTool = eqpTool;
 		}
 		readonly IEquippableIITAManager thisEqpIITAM;
 		public IEquippableIITAManager eqpIITAM{get{return thisEqpIITAM;}}
-		readonly IEquipTool thisEqpTool;
-		public IEquipTool eqpTool{get{return thisEqpTool;}}
-		public IEquipToolUIEFactory eqpToolUIEFactory{get{return (IEquipToolUIEFactory)uieFactory;}}
+		public IEquipTool eqpTool{get{return (IEquipTool)tool;}}
+		public IEquipToolUIEFactory eqpToolUIEFactory{get{return (IEquipToolUIEFactory)eqpTool.GetUIElementFactory();}}
 	}
 }

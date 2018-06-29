@@ -8,8 +8,8 @@ namespace UISystem{
 		void TrySwitchItemMode(IItemTemplate itemTemp);
 		void TrySwitchItemFilter(IItemTemplate itemTemp);
 	}
-	public class EquipTool: IEquipTool{
-		public EquipTool(){
+	public class EquipTool: AbsUITool, IEquipTool{
+		public EquipTool(IUIManager uim, IEquippableIITAManager eqpIITAM): base(uim, eqpIITAM){
 			this.modeEngine = new EquipToolItemModeEngine();
 			this.allItemMode = new EquipToolAllItemMode();
 			this.bowMode = new EquipToolBowMode();
@@ -21,6 +21,9 @@ namespace UISystem{
 			this.bowFilter = new EquipToolBowFilter();
 			this.wearFilter = new EquipToolWearFilter();
 			this.cgFilter = new EquipToolCarriedGearFilter();
+
+			thisEqpToolUIEFactory = new EquipToolUIEFactory(thisUIM, this, (IEquippableIITAManager)thisIITAM);
+			eqpIITAM.SetEqpTool(this);
 		}
 		public void ResetMode(){}
 		/* mode switch */
@@ -59,5 +62,10 @@ namespace UISystem{
 				else/* cg */
 					return this.cgFilter;
 			}
+		/*  */
+		readonly IEquipToolUIEFactory thisEqpToolUIEFactory;
+		public override IUIElementFactory GetUIElementFactory(){
+			return thisEqpToolUIEFactory;
+		}
 	}
 }

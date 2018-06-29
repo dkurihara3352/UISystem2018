@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IEquippableIITAManager: IItemIconTransactionManager, IEquipToolIGHandler{
+		void SetEqpTool(IEquipTool eqpTool);
 		void TrySwitchHoveredEqpII(IEquippableItemIcon eqpII);
 		void TrySwitchHoveredEqpToolPanel(IEquipToolPanel panel);
 		void SetEqpIIToEquip(IEquippableItemIcon eqpII);
@@ -23,6 +24,10 @@ namespace UISystem{
 			thishoveredEqpIISwitch = arg.hoveredEqpIISwitch;
 			thisHoveredPanelSwitch = arg.hoveredEqpToolPanelSwitch;
 			thisEqpToolIGManager = arg.eqpToolIGManager;
+		}
+		IEqpIITAMStateEngine thisEqpIITAMStateEngine{get{return (IEqpIITAMStateEngine)thisStateEngine;}}
+		public void SetEqpTool(IEquipTool eqpTool){
+			thisEqpIITAMStateEngine.SetEqpTool(eqpTool);
 		}
 		public override IItemIcon CreateItemIcon(IUIItem item){
 			return null;
@@ -159,17 +164,15 @@ namespace UISystem{
 		IEqpIITAMStateEngine eqpIITAMStateEngine{get;}
 		IEquipToolPanel equippedItemsPanel{get;}
 		IEquipToolPanel poolItemsPanel{get;}
-		IEquipTool equipTool{get;}
 		IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch{get;}
 		IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch{get;}
 		IEquipToolIGManager eqpToolIGManager{get;}
 	}
 	public class EqpIITAMConstArg: IEqpIITAMConstArg{
-		public EqpIITAMConstArg(IEqpIITAMStateEngine eqpIITAMStateEngine,IEquipToolPanel equippedItemsPanel,IEquipToolPanel poolItemsPanel,IEquipTool equipTool,IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch,IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch, IEquipToolIGManager eqpToolIGManager){
+		public EqpIITAMConstArg(IEqpIITAMStateEngine eqpIITAMStateEngine,IEquipToolPanel equippedItemsPanel,IEquipToolPanel poolItemsPanel, IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch,IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch, IEquipToolIGManager eqpToolIGManager){
 			thisEqpIITAMStateEngine = eqpIITAMStateEngine;
 			thisEquippedItemsPanel = equippedItemsPanel;
 			thisPoolItemsPanel = poolItemsPanel;
-			thisEquipTool = equipTool;
 			thisHoveredEqpIISwitch = hoveredEqpIISwitch;
 			thisHoveredEqpToolPanelSwitch = hoveredEqpToolPanelSwitch;
 			thisEqpToolIGManager = eqpToolIGManager;
@@ -180,8 +183,6 @@ namespace UISystem{
 		readonly IEquipToolPanel thisEquippedItemsPanel;
 		public IEquipToolPanel poolItemsPanel{get{return thisPoolItemsPanel;}}
 		readonly IEquipToolPanel thisPoolItemsPanel;
-		public IEquipTool equipTool{get{return thisEquipTool;}}
-		readonly IEquipTool thisEquipTool;
 		public IPickUpReceiverSwitch<IEquippableItemIcon> hoveredEqpIISwitch{get{return thisHoveredEqpIISwitch;}}
 		readonly IPickUpReceiverSwitch<IEquippableItemIcon> thisHoveredEqpIISwitch;
 		public IPickUpReceiverSwitch<IEquipToolPanel> hoveredEqpToolPanelSwitch{get{return thisHoveredEqpToolPanelSwitch;}}

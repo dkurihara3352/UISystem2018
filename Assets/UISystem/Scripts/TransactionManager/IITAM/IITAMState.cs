@@ -33,11 +33,16 @@ namespace UISystem{
 			return thisCurState is IIITAMDefaultState;
 		}
 	}
-	public interface IEqpIITAMStateEngine: IItemIconTAManagerStateEngine{}
+	public interface IEqpIITAMStateEngine: IItemIconTAManagerStateEngine{
+		void SetEqpTool(IEquipTool eqpTool);
+	}
 	public class EqpIITAMStateEngine: AbsItemIconTAManagerStateEngine, IEqpIITAMStateEngine{
-		public EqpIITAMStateEngine(IEquipTool eqpTool){
-			thisPickedState = new EqpIITAMPickedState(eqpTool);
+		public EqpIITAMStateEngine(){
+			thisPickedState = new EqpIITAMPickedState();
 			thisDefaultState = new IITAMDefaultState();
+		}
+		public void SetEqpTool(IEquipTool eqpTool){
+			((IEqpIITAMPickedState)thisPickedState).SetEqpTool(eqpTool);
 		}
 	}
 
@@ -75,12 +80,14 @@ namespace UISystem{
 			}
 			IItemIcon thisPickedII;
 		}
-		public interface IEqpIITAMPickedState: IIITAMPickedState, IEqpIITAMState{}
+		public interface IEqpIITAMPickedState: IIITAMPickedState, IEqpIITAMState{
+			void SetEqpTool(IEquipTool eqpTool);
+		}
 		public class EqpIITAMPickedState: IITAMPickedState, IEqpIITAMPickedState{
-			public EqpIITAMPickedState(IEquipTool eqpTool){
+			public void SetEqpTool(IEquipTool eqpTool){
 				thisEqpTool = eqpTool;
 			}
-			readonly IEquipTool thisEqpTool;
+			IEquipTool thisEqpTool;
 			public override void OnExit(){
 				base.OnExit();
 				thisEqpTool.ResetMode();/* or, EvalueateMode ? */

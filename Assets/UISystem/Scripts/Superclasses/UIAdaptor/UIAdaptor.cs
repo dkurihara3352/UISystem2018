@@ -50,6 +50,9 @@ namespace UISystem{
 			public Transform GetTransform(){
 				return this.transform;
 			}
+			public Rect GetRect(){
+				return ((RectTransform)this.GetComponent<RectTransform>()).rect;
+			}
 			public Vector2 GetWorldPosition(){
 				return new Vector2(this.transform.position.x, this.transform.position.y);
 			}

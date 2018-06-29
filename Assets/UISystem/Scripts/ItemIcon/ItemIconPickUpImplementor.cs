@@ -86,7 +86,7 @@ namespace UISystem{
 			leftoverIIImage.CopyPosition(thisImage);
 			thisIG.ReplaceAndUpdateII(thisItemIcon.GetSlotID(), leftoverII);
 			leftoverII.DisemptifyInstantly(thisItem);
-			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true);
+			leftoverII.DecreaseBy(pickedQuantity, doesIncrement: true, removesEmpty: false);
 
 			return leftoverII;
 		}
@@ -102,7 +102,7 @@ namespace UISystem{
 		void IncrementPickUpQuantityBy(int increQuantity){
 			IItemIcon pickedII = thisIITAM.GetPickedII();
 			pickedII.IncreaseBy(increQuantity, doesIncrement:true);
-			thisItemIcon.DecreaseBy(increQuantity, doesIncrement:true);
+			thisItemIcon.DecreaseBy(increQuantity, doesIncrement:true, removesEmpty:false);
 			int newPickedUpQuantity = pickedII.GetItemQuantity();
 			thisItemIcon.UpdateTransferableQuantity(newPickedUpQuantity);
 		}
