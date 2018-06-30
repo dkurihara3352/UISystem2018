@@ -110,15 +110,15 @@ namespace UISystem{
 				WFRelease
 		*/
 		public WaitingForTapState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IPickUpManager pum): base(engine, pum){
-			waitingForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
+			thisWaitForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
 		}
-		readonly IWaitAndExpireProcess waitingForTapProcess;
+		readonly IWaitAndExpireProcess thisWaitForTapProcess;
 		public override void OnEnter(){
-			waitingForTapProcess.Run();
+			thisWaitForTapProcess.Run();
 		}
 		public override void OnExit(){
-			if(waitingForTapProcess.IsRunning())
-				waitingForTapProcess.Stop();
+			if(thisWaitForTapProcess.IsRunning())
+				thisWaitForTapProcess.Stop();
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
@@ -143,6 +143,10 @@ namespace UISystem{
 			engine.DragUIE(eventData);
 			base.OnDrag(eventData);
 		}
+		public void ExpireProcess(){
+			if(thisWaitForTapProcess.IsRunning())
+				thisWaitForTapProcess.Expire();
+		}
 	}
 	public class WaitingForReleaseState: PointerDownInputState, IWaitAndExpireProcessState{
 		/* 	DownState
@@ -165,16 +169,16 @@ namespace UISystem{
 				do nothing
 		*/
 		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IPickUpManager pum) :base(engine, pum){
-			this.wfReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
+			this.thisWaitForReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
 		}
-		readonly IWaitAndExpireProcess wfReleaseProcess;
+		readonly IWaitAndExpireProcess thisWaitForReleaseProcess;
 		public override void OnEnter(){
 			engine.ResetTouchCounter();
-			wfReleaseProcess.Run();
+			thisWaitForReleaseProcess.Run();
 		}
 		public override void OnExit(){
-			if(wfReleaseProcess.IsRunning())
-				wfReleaseProcess.Stop();
+			if(thisWaitForReleaseProcess.IsRunning())
+				thisWaitForReleaseProcess.Stop();
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
@@ -198,6 +202,10 @@ namespace UISystem{
 			engine.DragUIE(eventData);
 			base.OnDrag(eventData);
 		}
+		public void ExpireProcess(){
+			if(thisWaitForReleaseProcess.IsRunning())
+				thisWaitForReleaseProcess.Expire();
+		}
 	}
 	public class WaitingForNextTouchState: PointerUpInputState, IWaitAndExpireProcessState{
 		/*  UpState
@@ -212,15 +220,15 @@ namespace UISystem{
 						DelayedReleaseUIE
 		*/
 		public WaitingForNextTouchState(IUIAdaptorStateEngine engine, IProcessFactory procFac) :base(engine){
-			waitAndExpireProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());
+			thisWaitAndExpireProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());
 		}
-		readonly IProcess waitAndExpireProcess;
+		readonly IProcess thisWaitAndExpireProcess;
 		public override void OnEnter(){
-			waitAndExpireProcess.Run();
+			thisWaitAndExpireProcess.Run();
 		}
 		public override void OnExit(){
-			if(waitAndExpireProcess.IsRunning())
-				waitAndExpireProcess.Stop();
+			if(thisWaitAndExpireProcess.IsRunning())
+				thisWaitAndExpireProcess.Stop();
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
 			engine.IncrementTouchCounter();
@@ -233,6 +241,10 @@ namespace UISystem{
 		}
 		public void OnProcessUpdate(float deltaT){
 			return;
+		}
+		public void ExpireProcess(){
+			if(thisWaitAndExpireProcess.IsRunning())
+				thisWaitAndExpireProcess.Expire();
 		}
 	}
 }

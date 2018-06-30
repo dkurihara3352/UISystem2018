@@ -7,29 +7,29 @@ namespace UISystem{
 	public class EquipToolPanelTransactionStateEngine: AbsSwitchableStateEngine<IPanelTransactionState>, IPanelTransactionStateEngine{
 		public EquipToolPanelTransactionStateEngine(IEquippableIITAManager eqpIITAM, IEquipToolPanel panel, IEquipTool tool){
 			IEquipToolPanelTransactionStateConstArg arg = new EquipToolPanelTransactionStateConstArg(eqpIITAM, panel, tool);
-			this.waitingForPickUpState = new EquipToolPanelWaitingForPickUpState(arg);
-			this.hoverableState = new EquipToolPanelHoverableState(arg);
-			this.unhoverableState = new EquipToolPanelUnhoverableState(arg);
-			this.hoveredState = new EquipToolPanelHoveredState(arg);
-			this.eqpIITAM = eqpIITAM;
+			thisWaitingForPickUpState = new EquipToolPanelWaitingForPickUpState(arg);
+			thisHhoverableState = new EquipToolPanelHoverableState(arg);
+			thisUnhoverableState = new EquipToolPanelUnhoverableState(arg);
+			thisHoveredState = new EquipToolPanelHoveredState(arg);
+			thisEqpIITAM = eqpIITAM;
 		}
-		readonly IEquipToolPanelWaitingForPickUpState waitingForPickUpState;
-		readonly IEquipToolPanelHoverableState hoverableState;
-		readonly IEquipToolPanelUnhoverableState unhoverableState;
-		readonly IEquipToolPanelHoveredState hoveredState;
-		readonly IEquippableIITAManager eqpIITAM;
+		readonly IEquipToolPanelWaitingForPickUpState thisWaitingForPickUpState;
+		readonly IEquipToolPanelHoverableState thisHhoverableState;
+		readonly IEquipToolPanelUnhoverableState thisUnhoverableState;
+		readonly IEquipToolPanelHoveredState thisHoveredState;
+		readonly IEquippableIITAManager thisEqpIITAM;
 		public void WaitForPickUp(){
-			TrySwitchState(waitingForPickUpState);
+			TrySwitchState(thisWaitingForPickUpState);
 		}
 		public void BecomeHoverable(){
-			TrySwitchState(hoverableState);
+			TrySwitchState(thisHhoverableState);
 		}
 		public void BecomeUnhoverable(){
-			TrySwitchState(unhoverableState);
+			TrySwitchState(thisUnhoverableState);
 		}
 		public void BecomeHovered(){
-			hoveredState.SetPickedEquippableII(eqpIITAM.GetPickedEqpII());
-			TrySwitchState(hoveredState);
+			thisHoveredState.SetPickedEquippableII(thisEqpIITAM.GetPickedEqpII());
+			TrySwitchState(thisHoveredState);
 		}
 		public bool IsHoverable(){
 			return thisCurState is IPanelHoverableState;

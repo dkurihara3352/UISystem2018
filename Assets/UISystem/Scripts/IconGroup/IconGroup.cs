@@ -169,17 +169,17 @@ namespace UISystem{
 			void UpdateMutation(IReformation reformation, ITravelTransferData travelTransferData){
 
 			}
-			List<IMutation> mutationStack;
-			IMutation runningMutation{
+			List<IMutation> thisMutationStack;
+			IMutation thisRunningMutation{
 				get{
-					if(mutationStack.Count != 0){
-						return mutationStack[0];
+					if(thisMutationStack.Count != 0){
+						return thisMutationStack[0];
 					}else
 						return null;
 				}
 			}
 			public void SwapIIInAllMutations(IItemIcon sourceII, IItemIcon targetII){
-				foreach(IMutation mut in mutationStack){
+				foreach(IMutation mut in thisMutationStack){
 					mut.FindInProspectiveIIsAndSwap(sourceII, targetII);
 				}
 			}
@@ -274,10 +274,10 @@ namespace UISystem{
 		readonly IItemIconTransactionManager thisIITAM;
 		public IItemIconTransactionManager iiTAM{get{return thisIITAM;}}
 		readonly int thisMinSize;
-		readonly int thisMaxSize;
-		readonly IHoverPadsManager thisHoverPadsManager;
 		public int minSize{get{return thisMinSize;}}
+		readonly int thisMaxSize;
 		public int maxSize{get{return thisMaxSize;}}
+		readonly IHoverPadsManager thisHoverPadsManager;
 		public IHoverPadsManager hoverPadsManager{get{return thisHoverPadsManager;}}
 		readonly List<IItemIcon> thisIIs;
 		public List<IItemIcon> iis{get{return thisIIs;}}

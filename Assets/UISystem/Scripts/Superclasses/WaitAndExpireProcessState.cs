@@ -6,5 +6,6 @@ namespace UISystem{
 	public interface IWaitAndExpireProcessState{
 		void OnProcessExpire();
 		void OnProcessUpdate(float deltaT);
+		void ExpireProcess();
 	}
 }

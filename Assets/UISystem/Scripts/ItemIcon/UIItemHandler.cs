@@ -5,6 +5,7 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIItemHandler{
 		IUIItem GetUIItem();
+		void SetUIItem(IUIItem item);
 		IItemTemplate GetItemTemplate();
 		int GetItemQuantity();
 		bool HasSameItem(IItemIcon other);

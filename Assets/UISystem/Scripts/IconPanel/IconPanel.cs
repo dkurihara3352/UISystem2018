@@ -13,7 +13,7 @@ namespace UISystem{
 			WaitForPickUp();
 		}
 		public abstract void CheckForHover();
-		protected IPanelTransactionStateEngine panelTransactionStateEngine;
+		protected IPanelTransactionStateEngine thisPanelTransactionStateEngine;
 		public void EvaluateHoverability(IPickableUIE pickedUIE){
 			IItemIcon pickedII = (IItemIcon)pickedUIE;
 			if(this.IsEligibleForHover(pickedII))
@@ -23,22 +23,22 @@ namespace UISystem{
 		}
 		protected abstract bool IsEligibleForHover(IItemIcon pickedII);
 		public void WaitForPickUp(){
-			panelTransactionStateEngine.WaitForPickUp();
+			thisPanelTransactionStateEngine.WaitForPickUp();
 		}
 		public void BecomeHoverable(){
-			panelTransactionStateEngine.BecomeHoverable();
+			thisPanelTransactionStateEngine.BecomeHoverable();
 		}
 		public void BecomeUnhoverable(){
-			panelTransactionStateEngine.BecomeUnhoverable();
+			thisPanelTransactionStateEngine.BecomeUnhoverable();
 		}
 		public void BecomeHovered(){
-			panelTransactionStateEngine.BecomeHovered();
+			thisPanelTransactionStateEngine.BecomeHovered();
 		}
 		public bool IsHoverable(){
-			return panelTransactionStateEngine.IsHoverable();
+			return thisPanelTransactionStateEngine.IsHoverable();
 		}
 		public bool IsHovered(){
-			return panelTransactionStateEngine.IsHovered();
+			return thisPanelTransactionStateEngine.IsHovered();
 		}
 	}
 }

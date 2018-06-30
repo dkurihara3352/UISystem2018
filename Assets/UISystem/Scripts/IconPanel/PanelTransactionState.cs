@@ -79,24 +79,24 @@ namespace UISystem{
 			public EquipToolPanelHoveredState(IEquipToolPanelTransactionStateConstArg arg): base(arg){
 				thisEqpIITAM = arg.eqpIITAM;
 			}
-			IEquippableItemIcon pickedEqpII;
+			IEquippableItemIcon thisPickedEqpII;
 			IEquipToolPanel thisEqpToolPanel{get{return (IEquipToolPanel)thisPanel;}}
 			readonly IEquippableIITAManager thisEqpIITAM;
 			public void SetPickedEquippableII(IEquippableItemIcon pickedEqpII){
-				this.pickedEqpII = pickedEqpII;
+				thisPickedEqpII = pickedEqpII;
 			}
 			public override void OnEnter(){
 				thisEqpToolPanel.BecomeSelected();
-				thisEqpToolPanel.CheckAndAddEmptyAddTarget(pickedEqpII);
-				thisEqpToolPanel.HoverDefaultTransactionTargetEqpII(pickedEqpII);
+				thisEqpToolPanel.CheckAndAddEmptyAddTarget(thisPickedEqpII);
+				thisEqpToolPanel.HoverDefaultTransactionTargetEqpII(thisPickedEqpII);
 				if(thisEqpToolPanel is IEquipToolPoolItemsPanel){
-					thisEqpIITAM.SetEqpIIToUnequip(pickedEqpII);
+					thisEqpIITAM.SetEqpIIToUnequip(thisPickedEqpII);
 				}else{
-					thisEqpIITAM.SetEqpIIToEquip(pickedEqpII);
+					thisEqpIITAM.SetEqpIIToEquip(thisPickedEqpII);
 				}
 			}
 			public override void OnExit(){
-				this.pickedEqpII = null;
+				this.thisPickedEqpII = null;
 				thisEqpToolPanel.CheckAndRemoveEmptyEqpIIs();
 				thisEqpIITAM.ClearHoveredEqpII();
 				thisEqpIITAM.ClearEqpIIsToEquipAndUnequip();

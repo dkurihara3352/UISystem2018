@@ -157,6 +157,9 @@ namespace UISystem{
 			}
 		/* Item Handling */
 			protected IUIItem thisItem;
+			public void SetUIItem(IUIItem item){
+				thisItem = item;
+			}
 			public IUIItem GetUIItem(){
 				return thisItem;
 			}

@@ -12,14 +12,14 @@ namespace UISystem{
 		void DeactivateHoverPads();
 	}
 	public class HoverPadsManager: MonoBehaviour, IHoverPadsManager{
-		List<IHoverPad> hoverPads;
+		List<IHoverPad> thisHoverPads;
 		public void ActivateHoverPads(){
-			foreach(IHoverPad hoverPad in this.hoverPads){
+			foreach(IHoverPad hoverPad in thisHoverPads){
 				hoverPad.Activate();
 			}
 		}
 		public void DeactivateHoverPads(){
-			foreach(IHoverPad hoverPad in this.hoverPads){
+			foreach(IHoverPad hoverPad in thisHoverPads){
 				hoverPad.Deactivate();
 			}
 		}

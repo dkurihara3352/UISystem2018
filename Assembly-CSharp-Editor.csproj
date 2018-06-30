@@ -119,9 +119,6 @@
  <Reference Include="NSubstitute">
  <HintPath>/Users/dkurihara/UnityProjects/UISystem2018/Assets/Plugins/NSubstitute.dll</HintPath>
  </Reference>
- <ProjectReference Include="Assembly-CSharp.csproj">
- <HintPath>/Users/dkurihara/UnityProjects/UISystem2018/Assembly-CSharp.csproj</HintPath>
- </ProjectReference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
@@ -137,6 +134,10 @@
  <Reference Include="UnityEditor.iOS.Extensions.Common">
  <HintPath>/Applications/Unity/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{3E433350-0BB0-0945-4705-E29ABD924B78}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
