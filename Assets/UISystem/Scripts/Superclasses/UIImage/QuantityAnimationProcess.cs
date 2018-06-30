@@ -28,7 +28,7 @@ namespace UISystem{
 		public override void UpdateProcess(float deltaT){
 			elapsedTime += deltaT;
 			float normalizedT = elapsedTime/ totalTime;
-			float springT = CalcSpringT(normalizedT);
+			float springT = GetSpringT(normalizedT);
 			float rollerTargetValue = Mathf.Lerp(thisSourceQuantity/1f, thisTargetQuantity/1f, springT);
 			thisQuantityRoller.Roll(rollerTargetValue);
 			if(elapsedTime >= totalTime)

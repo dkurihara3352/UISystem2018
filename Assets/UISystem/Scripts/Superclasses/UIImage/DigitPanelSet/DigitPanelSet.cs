@@ -13,6 +13,8 @@ namespace UISystem{
 		public DigitPanelSet(IDigitPanelSetConstArg arg): base(arg){
 			/*  Create and set digit panels here
 			*/
+			thisLesserPanel = CreateDigitPanel(arg.panelDim, arg.padding, isLesser: true);
+			thisGreaterPanel = CreateDigitPanel(arg.panelDim, arg.padding, isLesser: false);
 			CalcAndSetRectDimension(arg.panelDim, arg.padding);
 			thisDigitPlace = arg.digitPlace;
 			thisPanelHeight = arg.panelDim.y;
@@ -24,6 +26,13 @@ namespace UISystem{
 		readonly float thisPanelHeight;
 		readonly float thisPaddingY;
 
+		IDigitPanel CreateDigitPanel(Vector2 panelDim, Vector2 padding, bool isLesser){
+			float lesserPanelLocalPosY = padding.y;
+			float greaterPanelLocalPosY = lesserPanelLocalPosY + panelDim.y + padding.y;
+			IEquipToolUIEFactory factory = (IEquipToolUIEFactory)thisTool.GetUIElementFactory();
+			IDigitPanel digitPanel = factory.CreateDigitPanel(this, panelDim, isLesser?lesserPanelLocalPosY: greaterPanelLocalPosY);
+			return digitPanel;
+		}
 		void CalcAndSetRectDimension(Vector2 panelDim, Vector2 padding){
 			IQuantityRoller roller = (IQuantityRoller)this.GetParentUIE();
 			IUIAdaptor rollerUIA = roller.GetUIAdaptor();

@@ -10,18 +10,19 @@ namespace UISystem{
 		void Expire();
 		void Reset();
 		bool IsRunning();
+		float GetSpringT(float normalizedT);
 	}
 	public abstract class AbsProcess: IProcess{
 		public AbsProcess(IProcessManager procManager){
-			this.processManager = procManager;
+			thisProcessManager = procManager;
 		}
-		IProcessManager processManager;
+		IProcessManager thisProcessManager;
 		public abstract void UpdateProcess(float deltaT);
 		public virtual void Run(){
-			processManager.AddRunningProcess(this);
+			thisProcessManager.AddRunningProcess(this);
 		}
 		public virtual void Stop(){
-			processManager.RemoveRunningProcess(this);
+			thisProcessManager.RemoveRunningProcess(this);
 		}
 		public virtual void Expire(){
 			this.Stop();
@@ -29,7 +30,10 @@ namespace UISystem{
 		}
 		public abstract void Reset();
 		public bool IsRunning(){
-			return processManager.RunningProcessesContains(this);
+			return thisProcessManager.RunningProcessesContains(this);
+		}
+		public float GetSpringT(float normlizedT){
+			return thisProcessManager.GetSpringT(normlizedT);
 		}
 	}
 	public interface IWaitAndExpireProcess: IProcess{}

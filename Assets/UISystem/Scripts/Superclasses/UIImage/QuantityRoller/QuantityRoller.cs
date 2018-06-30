@@ -11,15 +11,15 @@ namespace UISystem{
 			get{return thisTool.GetUIElementFactory();}
 		}
 		public QuantityRoller(IQuantityRollerConstArg arg): base(arg){
-			thisAllDigitPanelSets = CreateDigitPanelSets(arg.maxQuantity);
+			thisAllDigitPanelSets = CreateDigitPanelSets(arg.maxQuantity, arg.panelDim, arg.padding);
 			CalcAndSetRectDimension(arg.panelDim, arg.rollerNormalizedPos, arg.padding);
 		}
 		readonly List<IDigitPanelSet> thisAllDigitPanelSets;
-		List<IDigitPanelSet> CreateDigitPanelSets(int maxQuantity){
+		List<IDigitPanelSet> CreateDigitPanelSets(int maxQuantity, Vector2 panelDim, Vector2 padding){
 			int digitsCount = GetDigitsCountForPositiveInt(maxQuantity);
 			List<IDigitPanelSet> result = new List<IDigitPanelSet>();
 			for(int i = 0; i < digitsCount; i++){
-				IDigitPanelSet digitPanelSet = thisUIEFactory.CreateDigitPanelSet(i, this);
+				IDigitPanelSet digitPanelSet = thisUIEFactory.CreateDigitPanelSet(i, this, panelDim, padding);
 				thisAllDigitPanelSets.Add(digitPanelSet);
 			}
 			return result;
