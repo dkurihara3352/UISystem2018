@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IUIElementFactory{
-		IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller);
+		IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller, Vector2 panelDim, Vector2 padding);
 		IDigitPanel CreateDigitPanel();
 	}
 	public class UIElementFactory: IUIElementFactory{
@@ -12,9 +12,9 @@ namespace UISystem{
 			thisUIM = uim;
 			thisReserveTransformUIE = uim.GetReserveTransformUIE();
 		}
-		readonly IUIManager thisUIM;
+		protected readonly IUIManager thisUIM;
 		IReserveTransformUIE thisReserveTransformUIE;
-		T CreateUIA<T>() where T: MonoBehaviour, IUIAdaptor{
+		protected T CreateUIA<T>() where T: MonoBehaviour, IUIAdaptor{
 			GameObject go = new GameObject();
 			IUIAdaptor reserveUIA = thisReserveTransformUIE.GetUIAdaptor();
 			go.transform.SetParent(reserveUIA.GetTransform());
@@ -23,9 +23,9 @@ namespace UISystem{
 			T uia = go.AddComponent<T>();
 			return uia;
 		}
-		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller){
+		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller, Vector2 panelDim, Vector2 padding){
 			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateUIA<DigitPanelSetAdaptor>();
-			digitPanelSetAdaptor.SetDigitPlace(digitPlace);
+			digitPanelSetAdaptor.SetInitializationFields(digitPlace, panelDim, padding);
 			IUIAdaptor quantityRollerAdaptor = quantityRoller.GetUIAdaptor();
 			digitPanelSetAdaptor.SetParentUIA(quantityRollerAdaptor, true);
 			IUIAActivationData activationData = quantityRollerAdaptor.GetDomainActivationData();
@@ -35,39 +35,26 @@ namespace UISystem{
 		}
 	}
 	public interface IEquipToolUIEFactory: IUIElementFactory{
-		IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia);
-		IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA uia ,IEquippableUIItem eqpItem);
+		IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconAdaptor uia ,IEquippableUIItem eqpItem);
 	}
-	public class EquipToolUIEFactory: IEquipToolUIEFactory{
-		public EquipToolUIEFactory(IUIManager uim, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM){
-			thisUIM = uim;
+	public class EquipToolUIEFactory:UIElementFactory, IEquipToolUIEFactory{
+		public EquipToolUIEFactory(IUIManager uim, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM): base(uim){
 			thisEqpTool = eqpTool;
 			thisEqpIITAM = eqpIITAM;
-			thisProcessFactory = uim.GetProcessFactory();
 		}
-		readonly IUIManager thisUIM;
 		readonly IEquipTool thisEqpTool;
 		readonly IEquippableIITAManager thisEqpIITAM;
-		readonly IProcessFactory thisProcessFactory;
-		public IEquipToolUIE CreateEquipToolUIE(IEquipToolUIAdaptor uia){
-			IUIImage image = CreateEquipToolUIImage();
-			IUIElementConstArg arg = new UIElementConstArg(thisUIM, uia, image);
-			EquipToolUIE uie = new EquipToolUIE(arg);
-			return uie;
-		}
-		IUIImage CreateEquipToolUIImage(){
-			return null;
-		}
-		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconUIA eqpIIUIA, IEquippableUIItem item){
-			UIImage image = CreateEquippableItemIconUIImage(item);
-			ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
-			EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
-			ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
-			DragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(thisEqpIITAM.GetDragThreshold(), thisEqpIITAM.GetSmoothCoefficient(), thisProcessFactory, thisEqpIITAM);
-			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, eqpIIUIA, image, dragImageImplementor, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine, thisEqpTool);
-			EquippableItemIcon eqpII = new EquippableItemIcon(arg);
-			return eqpII;
+		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableItemIconAdaptor eqpIIUIA, IEquippableUIItem item){
+			// UIImage image = CreateEquippableItemIconUIImage(item);
+			// ItemIconPickUpImplementor iiPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
+			// EqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
+			// ItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
+			// DragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(thisEqpIITAM.GetDragThreshold(), thisEqpIITAM.GetSmoothCoefficient(), thisProcessFactory, thisEqpIITAM);
+			// IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
+			// IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(thisUIM, eqpIIUIA, image, thisEqpTool, dragImageImplementor, thisEqpIITAM, item, eqpIITAStateEngine, iiPickUpImplementor, emptinessStateEngine);
+			// EquippableItemIcon eqpII = new EquippableItemIcon(arg);
+			// return eqpII;
+			IEquippableItemIconAdaptor eqpIIAdaptor = this.CreateUIA<EquippableItemIconAdaptor>();
 		}
 		UIImage CreateEquippableItemIconUIImage(IEquippableUIItem item){
 			return null;

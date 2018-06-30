@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IDigitPanelSetAdaptor: IResizableRectUIAdaptor{
-		void SetAdaptorFields(int digitPlace, Vector2 panelDim, Vector2 padding);
+		void SetInitializationFields(int digitPlace, Vector2 panelDim, Vector2 padding);
 	}
 	public class DigitPanelSetAdaptor: AbsResizableRectUIAdaptor<DigitPanelSet>, IDigitPanelSetAdaptor{
-		public void SetAdaptorFields(int digitPlace, Vector2 panelDim, Vector2 padding){
+		public void SetInitializationFields(int digitPlace, Vector2 panelDim, Vector2 padding){
 			thisDigitPlace = digitPlace;
 			thisPanelDim = panelDim;
 			thisPadding = padding;

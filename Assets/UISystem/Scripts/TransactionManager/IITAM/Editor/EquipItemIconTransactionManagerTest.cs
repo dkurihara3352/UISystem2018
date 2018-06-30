@@ -189,7 +189,6 @@ public class EquipItemIconTransactionManagerTest {
     public IEqpIITAMConstArg CreateStubEqpIITAMConstArg(){
         IEqpIITAMConstArg arg = Substitute.For<IEqpIITAMConstArg>();
         arg.eqpIITAMStateEngine.Returns(Substitute.For<IEqpIITAMStateEngine>());
-        arg.equipTool.Returns(Substitute.For<IEquipTool>());
         arg.equippedItemsPanel.Returns(Substitute.For<IEquipToolPanel>());
         arg.poolItemsPanel.Returns(Substitute.For<IEquipToolPanel>());
         arg.hoveredEqpIISwitch.Returns(Substitute.For<IPickUpReceiverSwitch<IEquippableItemIcon>>());

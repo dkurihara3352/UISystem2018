@@ -309,7 +309,7 @@ public class EquippableItemIconTest {
         IEquippableItemIconConstArg thisArg = Substitute.For<IEquippableItemIconConstArg>();
         IUIManager uim = Substitute.For<IUIManager>();
         thisArg.uim.Returns(uim);
-        IEquippableItemIconUIA eqpIIUIA = Substitute.For<IEquippableItemIconUIA>();
+        IEquippableItemIconAdaptor eqpIIUIA = Substitute.For<IEquippableItemIconAdaptor>();
         thisArg.uia.Returns(eqpIIUIA);
         IUIImage image = Substitute.For<IUIImage>();
         thisArg.image.Returns(image);

@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{3E433350-0BB0-0945-4705-E29ABD924B78}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Temp\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_64;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_VIDEO;ENABLE_VR;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Temp\bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UnityEngine">
+      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor">
+      <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEditor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\UISystem\Scripts\HoverPads\HoverPads.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconGroup\EquipToolIconGroup.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconGroup\IconGroup.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconGroup\Mutation\Mutation.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconGroup\Mutation\Reformation.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconGroup\Sorter\UIItemSorter.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconPanel\EquipToolPanel.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconPanel\IconPanel.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconPanel\PanelTransactionState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\IconPanel\PanelTransactionStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIcon.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIconAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\GhostificationEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\IITransactionState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\IITransactionStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\Item.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\ItemTemplate.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIcon.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconPickUpImplementor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\TransferableUIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\TravelInterpolater.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\UIItemHandler.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipTool\EquipTool.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipTool\EquipToolItemFilter.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipTool\EquipToolItemMode.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipTool\EquipToolUIA.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipTool\EquipToolUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\EquipToolElementUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\PickUpContextUIA.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\PickUpContextUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PickUpContext\UITool.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\DragImageImplementor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\EquippableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\ImageSmoothFollowDragPositionProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickUpReceiver.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\Interpolator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\Process.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\ProcessFactory.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\ProcessManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\ImageDarknessInterpolator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\SelectabilityState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\SelectabilityStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\TurnImangeDarkenessProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SwitchableStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\TravelProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptorActivationData.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptorInputState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptorInputStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\DigitPanel.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\DigitPanelSet\DigitPanelSet.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\DigitPanelSet\DigitPanelSetAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\QuantityAnimationEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\QuantityAnimationProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\QuantityRoller\QuantityRoller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\QuantityRoller\QuantityRollerAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIImage\UIImage.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\UIManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\WaitAndExpireProcessState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\EqpIITAM\EquipItemIconTransactionManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\EqpIITAM\EquipToolIGManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\EqpIITAM\PickUpReceiverSwitch.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\IITAMState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\ItemIconTransactionManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\UIEFactory\UIEFactory.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TransactionManager\PickUpManager.cs" />
+ <Reference Include="UnityEngine.Analytics">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.PlaymodeTestsRunner">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/PlaymodeTestsRunner/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.Networking">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.UI">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.HoloLens">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.VR">
+ <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+ </Reference>
+ <Reference Include="NSubstitute">
+ <HintPath>/Users/dkurihara/UnityProjects/UISystem2018/Assets/Plugins/NSubstitute.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>

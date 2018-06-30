@@ -35,7 +35,7 @@ namespace UISystem{
 		public void Awake(){
 			uiManager = new UIManager();
 			uiManager.SetReserveTransformUIE(rootUIAdaptor.GetReserveTransformUIE());
-			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, uieFactory:null, pum:null);
+			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, pum:null, tool:null);
 			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
 		}
 	}

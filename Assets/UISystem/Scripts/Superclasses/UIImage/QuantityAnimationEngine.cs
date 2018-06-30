@@ -6,9 +6,9 @@ namespace UISystem{
 	public interface IQuantityAnimationHandler{
 		void AnimateQuantityImageIncrementally(int sourceQuantity, int targetQuantity);
 		void AnimateQuantityImageAtOnce(int sourceQuantity, int targetQuantity);
-		void SetUIImage(IUIImage image);
 	}
 	public interface IQuantityAnimationEngine: IQuantityAnimationHandler{
+		void SetUIImage(IUIImage image);
 	}
 	public class QuantityAnimationEngine: IQuantityAnimationEngine{
 		public QuantityAnimationEngine(IProcessFactory processFactory){

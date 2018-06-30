@@ -164,7 +164,7 @@ namespace UISystem{
 	public interface IEquippableItemIconConstArg: IItemIconConstArg{
 	}
 	public class EquippableItemIconConstArg: ItemIconConstArg, IEquippableItemIconConstArg{
-		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconUIA uia, IUIImage image, IEquipTool tool, IDragImageImplementor dragImageImplementor , IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, uia, image, tool, dragImageImplementor, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
+		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconAdaptor uia, IUIImage image, IEquipTool tool, IDragImageImplementor dragImageImplementor , IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, uia, image, tool, dragImageImplementor, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
 		}
 	}
 }

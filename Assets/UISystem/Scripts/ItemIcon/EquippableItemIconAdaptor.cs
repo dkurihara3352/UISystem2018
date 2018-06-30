@@ -5,10 +5,10 @@ using UnityEngine;
 namespace UISystem{
 	public interface IEquipToolElementUIA: IUIAdaptor{
 	}
-	public interface IEquippableItemIconUIA: IItemIconUIAdaptor, IEquipToolElementUIA{
+	public interface IEquippableItemIconAdaptor: IItemIconUIAdaptor, IEquipToolElementUIA{
 		void SetInitializationFields(IEquippableUIItem item);
 	}
-	public class EquippableItemIconUIA: AbsItemIconUIAdaptor<IEquippableItemIcon>, IEquippableItemIconUIA{
+	public class EquippableItemIconAdaptor: AbsItemIconUIAdaptor<IEquippableItemIcon>, IEquippableItemIconAdaptor{
 		public override void GetReadyForActivation(IUIAActivationData passedArg){
 			if(passedArg is IEquipToolActivationData){
 				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
