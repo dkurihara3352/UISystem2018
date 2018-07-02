@@ -9,6 +9,8 @@ namespace UISystem{
 		IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient);
 		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity);
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity);
+		IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage uiImage);
+		IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage uiImage, IItemIcon itemIcon);
 	}
 	public class ProcessFactory: IProcessFactory{
 		public ProcessFactory(IProcessManager procManager, IUIManager uim){
@@ -29,7 +31,7 @@ namespace UISystem{
 			return process;
 		}
 		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){
-			IWaitAndExpireProcess process = new WaitAndExpireProcess(thisProcessManager, state, waitTime);
+			IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(thisProcessManager, state, waitTime);
 			return process;
 		}
 		public IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient){
@@ -42,6 +44,16 @@ namespace UISystem{
 		}
 		public IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity){
 			OneshotQuantityAnimationProcess process = new OneshotQuantityAnimationProcess(thisProcessManager, image, sourceQuantity, targetQuantity);
+			return process;
+		}
+		public IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage itemIconImage){
+			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
+			IItemIconDisemptifyProcess process = new ItemIconDisemptifyProcess(thisProcessManager, disemptifyingState, expireT, itemIconImage);
+			return process;
+		}
+		public IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage itemIconImage, IItemIcon itemIcon){
+			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
+			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(thisProcessManager, emptifyingState, expireT, itemIconImage, itemIcon);
 			return process;
 		}
 	}

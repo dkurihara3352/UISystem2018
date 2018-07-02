@@ -25,7 +25,7 @@ namespace UISystem{
 			thisDrivingProcess.DisconnectInterpolater(this);
 			thisDrivingProcess = null;
 		}
-		public override void InterpolateImple(float zeroToOne){
+		protected override void InterpolateImple(float normalizedT){
 			
 		}
 		public override void Terminate(){}

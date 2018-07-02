@@ -11,16 +11,18 @@ namespace UISystem{
 			thisStateEngine = stateEngine;
 		}
 		protected IItemIcon thisItemIcon;
+		protected IItemIconImage thisItemIconImage;
 		protected IItemIconEmptinessStateEngine thisStateEngine;
 		public void SetItemIcon(IItemIcon itemIcon){
 			thisItemIcon = itemIcon;
+			thisItemIconImage = (IItemIconImage)thisItemIcon.GetUIImage();
 		}
 		public abstract void OnEnter();
 		public abstract void OnExit();
 		public abstract void DisemptifyInstantly(IUIItem item);
 		public abstract void EmptifyInstantly();
 		public abstract void Disemptify(IUIItem item);
-		public abstract void Emptify();
+		public abstract void Emptify(bool removesEmpty);
 		public abstract void InitImage();
 		public abstract void IncreaseBy(int quantity, bool doesIncrement);
 		public abstract void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
@@ -43,6 +45,21 @@ namespace UISystem{
 			this.CheckRemoval(removesEmpty);
 		}
 		protected abstract void CheckRemoval(bool removesEmpty);
+		public override void InitImage(){
+			throw new System.InvalidOperationException("this is disemptifying and already init'ed image");
+		}
+		public override void Disemptify(IUIItem item){
+			throw new System.InvalidOperationException("this is already disemptifying, no new disemptification is allowed");
+		}
+		public override void DisemptifyInstantly(IUIItem item){
+			throw new System.InvalidOperationException("this is already disemptifying, not new disemptification is allowed");
+		}
+		public override void Emptify(bool removesEmpty){
+			thisStateEngine.SetToEmptifyingState(removesEmpty);
+		}
+		public override void EmptifyInstantly(){
+			thisStateEngine.SetToWaitingForDisemptifyState();
+		}
 	}
 	public interface IWaitingForImageInitState: IItemIconNonEmptyState{
 	}
@@ -63,6 +80,11 @@ namespace UISystem{
 		public override void OnExit(){}
 		public override void InitImage(){
 			thisStateEngine.SetToDisemptifyingState();
+			if(thisItemIcon.GetItemQuantity() == 0 && thisItemIcon.LeavesGhost())
+				thisItemIcon.Ghostify();
+			IUIItem item = thisItemIcon.GetUIItem();
+			if(item.IsStackable())
+				thisItemIcon.UpdateQuantity(0, thisItemIcon.GetItemQuantity(), true);
 		}
 		public override void Disemptify(IUIItem item){
 			thisItemIcon.SetUIItem(item);
@@ -72,31 +94,27 @@ namespace UISystem{
 			thisItemIcon.SetUIItem(item);
 			thisStateEngine.SetToWaitingForEmptifyState();
 		}
-		public override void Emptify(){
+		public override void Emptify(bool removesEmpty){
 			this.EmptifyInstantly();
-		}
-		public override void EmptifyInstantly(){
-			thisItemIcon.SetUIItem(null);
-			thisStateEngine.SetToWaitingForDisemptifyState();
+			if(removesEmpty){
+				IIconGroup ig = thisItemIcon.GetIconGroup();
+				ig.RemoveIIAndMutate(thisItemIcon);
+			}
 		}
 	}
 	public interface IDisemptifyingState: IItemIconNonEmptyState, IWaitAndExpireProcessState{
 	}
 	public class DisemptifyingState: AbsItemIconNonEmptyState, IDisemptifyingState{
 		public DisemptifyingState(IItemIconEmptinessStateEngine stateEngine, IProcessFactory processFactory): base(stateEngine){
-			thisItemIconDisemptifyProcess = processFactory.CreateDisemptifyingProcess();
+			thisItemIconDisemptifyProcess = processFactory.CreateItemIconDisemptifyProcess(this, thisItemIconImage);
 		}
 		protected override void CheckRemoval(bool removesEmpty){
 			if(thisItemIcon.GetItemQuantity() == 0){
 				if(thisItemIcon.LeavesGhost())
 					thisItemIcon.Ghostify();
 				else{
-					if(removesEmpty)
-						thisItemIcon.EmptifyAndRemove();
-					else
-						thisItemIcon.Emptify();
+					thisItemIcon.Emptify(removesEmpty);
 				}
-
 			}
 		}
 		IItemIconDisemptifyProcess thisItemIconDisemptifyProcess;
@@ -116,38 +134,22 @@ namespace UISystem{
 		public void ExpireProcess(){
 			thisItemIconDisemptifyProcess.Expire();
 		}
-		public override void InitImage(){
-			throw new System.InvalidOperationException("this is disemptifying and already init'ed image");
-		}
-		public override void Disemptify(IUIItem item){
-			throw new System.InvalidOperationException("this is already disemptifying, no new disemptification is allowed");
-		}
-		public override void DisemptifyInstantly(IUIItem item){
-			throw new System.InvalidOperationException("this is already disemptifying, not new disemptification is allowed");
-		}
-		public override void Emptify(){
-			thisStateEngine.SetToEmptifyingState();
-		}
-		public override void EmptifyInstantly(){
-			thisStateEngine.SetToWaitingForDisemptifyState();
-		}
 	}
 	public interface IWaitingForEmptifyState: IItemIconNonEmptyState{}
-	public class WaitingForEmptifyingState: AbsItemIconNonEmptyState, IWaitingForEmptifyState{
+	public class WaitingForEmptifyState: AbsItemIconNonEmptyState, IWaitingForEmptifyState{
+		public WaitingForEmptifyState(IItemIconEmptinessStateEngine stateEngine): base(stateEngine){}
 		protected override void CheckRemoval(bool removesEmpty){
 			if(thisItemIcon.GetItemQuantity() == 0){
 				if(thisItemIcon.LeavesGhost())
 					thisItemIcon.Ghostify();
 				else{
-					if(removesEmpty)
-						thisItemIcon.EmptifyAndRemove();
-					else
-						thisItemIcon.Emptify();
+					thisItemIcon.Emptify(removesEmpty);
 				}
-
 			}
 		}
-		public override void OnEnter(){}
+		public override void OnEnter(){
+			thisItemIconImage.SetEmptiness(1f);
+		}
 		public override void OnExit(){}
 	}
 	/* EmptyState */
@@ -160,15 +162,67 @@ namespace UISystem{
 		public override void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
 			throw new System.InvalidOperationException("emptyItemIcon cannot be decreased.");
 		}
-		public override void Emptify(){
+		public override void Disemptify(IUIItem item){
+			thisItemIcon.SetUIItem(item);
+			thisStateEngine.SetToDisemptifyingState();
+		}
+		public override void DisemptifyInstantly(IUIItem item){
+			thisItemIcon.SetUIItem(item);
+			thisStateEngine.SetToWaitingForEmptifyState();
+		}
+		public override void Emptify(bool removesEmpty){
 			return;
 		}
 		public override void InitImage(){
 			throw new System.InvalidOperationException("this is empty and cannot init image");
 		}
 	}
-	public interface IEmptifyingState: IItemIconEmptyState{
-		void ExpireProcess();
+	public interface IEmptifyingState: IItemIconEmptyState, IWaitAndExpireProcessState{
+		void ToggleRemoval(bool removesEmpty);
+	}
+	public class EmptifyingState: AbsItemIconEmptyState, IEmptifyingState{
+		public EmptifyingState(IItemIconEmptinessStateEngine stateEngine, IProcessFactory processFactory): base(stateEngine){
+			thisItemIconEmptifyProcess = processFactory.CreateItemIconEmptifyProcess(this, thisItemIconImage, thisItemIcon);
+		}
+		readonly IItemIconEmptifyProcess thisItemIconEmptifyProcess;
+		bool thisRemovesEmpty;
+		public void ToggleRemoval(bool removesEmpty){
+			thisRemovesEmpty = removesEmpty;
+		}
+		public override void OnEnter(){
+			thisItemIconEmptifyProcess.ToggleRemoval(thisRemovesEmpty);
+			thisItemIconEmptifyProcess.Run();
+		}
+		public override void OnExit(){
+			if(thisItemIconEmptifyProcess.IsRunning())
+				thisItemIconEmptifyProcess.Stop();
+		}
+		public void OnProcessUpdate(float deltaT){
+			return;
+		}
+		public void OnProcessExpire(){
+			thisStateEngine.SetToWaitingForDisemptifyState();
+		}
+		public void ExpireProcess(){
+			if(thisItemIconEmptifyProcess.IsRunning())
+				thisItemIconEmptifyProcess.Expire();
+		}
+		public override void EmptifyInstantly(){
+			this.ExpireProcess();
+		}
 	}
 	public interface IWaitingForDisemptifyState: IItemIconEmptyState{}
+	public class WaitingForDisemptifyState: AbsItemIconEmptyState, IWaitingForDisemptifyState{
+		public WaitingForDisemptifyState(IItemIconEmptinessStateEngine stateEngine): base(stateEngine){}
+		public override void OnEnter(){
+			thisItemIconImage.SetEmptiness(0f);
+			thisItemIcon.RemoveFromContainingReformation();
+		}
+		public override void OnExit(){
+			return;
+		}
+		public override void EmptifyInstantly(){
+			return;
+		}
+	}
 }

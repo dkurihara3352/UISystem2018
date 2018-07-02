@@ -37,37 +37,47 @@ namespace UISystem{
 		}
 	}
 	public interface IWaitAndExpireProcess: IProcess{}
-	public class WaitAndExpireProcess: AbsProcess, IWaitAndExpireProcess{
-		public WaitAndExpireProcess(IProcessManager procMan, IWaitAndExpireProcessState state, float expireT): base(procMan){
-			this.expireT = expireT;
-			this.state = state;
+	public abstract class AbsWaitAndExpireProcess: AbsProcess, IWaitAndExpireProcess{
+		public AbsWaitAndExpireProcess(IProcessManager procMan, IWaitAndExpireProcessState state, float expireT): base(procMan){
+			thisExpireT = expireT;
+			thisState = state;
 			Reset();
 		}
-		readonly IWaitAndExpireProcessState state;
-		float elapsedT;
-		readonly float expireT;
-		public override void UpdateProcess(float deltaT){
-			state.OnProcessUpdate(deltaT);
-			elapsedT += deltaT;
+		readonly IWaitAndExpireProcessState thisState;
+		float thisElapsedT;
+		readonly float thisExpireT;
+		protected float thisNormlizedT{
+			get{return thisElapsedT/ thisExpireT;}
+		}
+		public sealed override void UpdateProcess(float deltaT){
+			thisState.OnProcessUpdate(deltaT);
+			thisElapsedT += deltaT;
+			UpdateProcessImple(deltaT);
 			if(this.ExpirationIsEnabled())
-				if(elapsedT >= expireT){
+				if(thisElapsedT >= thisExpireT){
 					this.Expire();
 				}
 		}
+		protected abstract void UpdateProcessImple(float deltaT);
 		bool ExpirationIsEnabled(){
-			return expireT > 0f;
+			return thisExpireT > 0f;
 		}
 		public override void Expire(){
 			base.Expire();
-			state.OnProcessExpire();
+			thisState.OnProcessExpire();
 		}
 		public override void Stop(){
 			base.Stop();
 			Reset();
 		}
 		public override void Reset(){
-			elapsedT = 0f;
+			thisElapsedT = 0f;
 		}
+	}
+	public class GenericWaitAndExpireProcess: AbsWaitAndExpireProcess{
+		public GenericWaitAndExpireProcess(IProcessManager processManager, IWaitAndExpireProcessState state, float expireT): base(processManager, state, expireT){
+		}
+		protected override void UpdateProcessImple(float deltaT){return;}
 	}
 }
 

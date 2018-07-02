@@ -7,13 +7,13 @@ namespace UISystem{
 		void DisemptifyInstantly(IUIItem item);
 		void EmptifyInstantly();
 		void Disemptify(IUIItem item);
-		void Emptify();
+		void Emptify(bool removesEmpty);
 		void InitImage();
 		void IncreaseBy(int quantity, bool doesIncrement);
 		void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty);
 	}
 	public interface IEmptinessStateSwitcher{
-		void SetToEmptifyingState();
+		void SetToEmptifyingState(bool removesEmpty);
 		void SetToDisemptifyingState();
 		void SetToWaitingForDisemptifyState();
 		void SetToWaitingForEmptifyState();
@@ -25,8 +25,13 @@ namespace UISystem{
 		bool IsWaitingForImageInit();
 	}
 	public class ItemIconEmptinessStateEngine: AbsSwitchableStateEngine<IItemIconEmptinessState>, IItemIconEmptinessStateEngine{
-		public ItemIconEmptinessStateEngine(){
+		public ItemIconEmptinessStateEngine(IProcessFactory processFactory){
 			/* inst and set states here */
+			thisWaitingForImageInitState = new WaitingForImageInitState(this);
+			thisDisemptifyingState = new DisemptifyingState(this, processFactory);
+			thisWaitingForEmptifyState = new WaitingForEmptifyState(this);
+			thisEmptifyingState = new EmptifyingState(this, processFactory);
+			thisWaitingForDisemptifyState = new WaitingForDisemptifyState(this);
 		}
 		public void SetItemIcon(IItemIcon itemIcon){
 			thisItemIcon = itemIcon;
@@ -52,8 +57,8 @@ namespace UISystem{
 		public void Disemptify(IUIItem item){
 			thisCurState.Disemptify(item);
 		}
-		public void Emptify(){
-			thisCurState.Emptify();
+		public void Emptify(bool removesEmpty){
+			thisCurState.Emptify(removesEmpty);
 		}
 		public void InitImage(){
 			thisCurState.InitImage();
@@ -81,7 +86,8 @@ namespace UISystem{
 		public void SetToWaitingForEmptifyState(){
 			TrySwitchState(thisWaitingForEmptifyState);
 		}
-		public void SetToEmptifyingState(){
+		public void SetToEmptifyingState(bool removesEmpty){
+			thisEmptifyingState.ToggleRemoval(removesEmpty);
 			TrySwitchState(thisEmptifyingState);
 		}
 		public void SetToWaitingForDisemptifyState(){

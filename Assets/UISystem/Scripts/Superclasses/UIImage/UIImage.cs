@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 namespace UISystem{
-	public interface IUIImage: IQuantityAnimationHandler{
+	public interface IUIImage{
 		/* Darkness */
 		float GetCurrentDarkness();/* range is from 0f to 1f */
 		float GetDefaultDarkness();/* usually, 1f */
@@ -18,11 +18,7 @@ namespace UISystem{
 	}
 
 	public class UIImage: MonoBehaviour, IUIImage{
-		public UIImage(IUIImageConstArg arg){
-			thisQuantityAnimationEngine = arg.quantityAnimationEngine;
-			thisQuantityAnimationEngine.SetUIImage(this);
-		}
-		public Image image;
+		public Image thisImage;
 		public float GetCurrentDarkness(){
 			return curDarkness;
 		}
@@ -37,7 +33,7 @@ namespace UISystem{
 		public float darkenedDarkness;
 		public void SetDarkness(float darkness){
 			Color newColor = GetColorFormDarkness(darkness);
-			image.color = newColor;
+			thisImage.color = newColor;
 			curDarkness = darkness;
 		}
 		Color GetColorFormDarkness(float darkness){
@@ -63,17 +59,5 @@ namespace UISystem{
 			Vector3 newWorldPosV3 = new Vector3(worldPos.x, worldPos.y, 0f);
 			GetTransform().position = newWorldPosV3;
 		}
-		/* Quantity Image animation handling */
-		readonly IQuantityAnimationEngine thisQuantityAnimationEngine;
-		public void AnimateQuantityImageIncrementally(int sourceQuantity, int targetQuantity){
-			thisQuantityAnimationEngine.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
-		}
-		public void AnimateQuantityImageAtOnce(int sourceQuantity, int targetQuantity){
-			thisQuantityAnimationEngine.AnimateQuantityImageAtOnce(sourceQuantity, targetQuantity);
-		}
-	}
-	/* const */
-	public interface IUIImageConstArg{
-		IQuantityAnimationEngine quantityAnimationEngine{get;}
 	}
 }

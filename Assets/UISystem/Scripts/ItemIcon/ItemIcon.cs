@@ -11,7 +11,7 @@ namespace UISystem{
 		int GetSlotID();
 
 		void RemoveAndMutate();
-		void EmptifyAndRemove();
+		bool IsEmpty();
 	}
 	public abstract class AbsItemIcon : AbsPickableUIE, IItemIcon{
 		public AbsItemIcon(IItemIconConstArg arg): base(arg){
@@ -125,8 +125,8 @@ namespace UISystem{
 			public void Disemptify(IUIItem item){
 				thisEmptinessStateEngine.Disemptify(item);
 			}
-			public void Emptify(){
-				thisEmptinessStateEngine.Emptify();
+			public void Emptify(bool removesEmpty){
+				thisEmptinessStateEngine.Emptify(removesEmpty);
 			}
 			public bool IsWaitingForImageInit(){
 				return thisEmptinessStateEngine.IsWaitingForImageInit();
@@ -157,6 +157,9 @@ namespace UISystem{
 			}
 		/* Item Handling */
 			protected IUIItem thisItem;
+			protected IItemIconImage thisItemIconImage{
+				get{return (IItemIconImage)thisImage;}
+			}
 			public void SetUIItem(IUIItem item){
 				thisItem = item;
 			}
@@ -185,9 +188,9 @@ namespace UISystem{
 				SetQuantity(targetQuantity);
 				if(thisItem.IsStackable()){
 					if(doesIncrement)
-						thisImage.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
+						thisItemIconImage.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
 					else
-						thisImage.AnimateQuantityImageAtOnce(sourceQuantity, targetQuantity);
+						thisItemIconImage.AnimateQuantityImageAtOnce(sourceQuantity, targetQuantity);
 				}
 			}
 		/* input handling */
@@ -241,7 +244,6 @@ namespace UISystem{
 			public void RemoveAndMutate(){
 				thisIG.RemoveIIAndMutate(this);
 			}
-			public void EmptifyAndRemove(){}
 		/*  */
 	}
 	public interface IItemIconConstArg: IPickableUIEConstArg{
@@ -252,7 +254,7 @@ namespace UISystem{
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
 	}
 	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IUIImage image, IUITool tool, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, image, tool, dragImageImplementor){
+		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, itemIconImage, tool, dragImageImplementor){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;

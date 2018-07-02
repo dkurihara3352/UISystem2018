@@ -58,6 +58,9 @@
      <Compile Include="Assets\UISystem\Scripts\IconPanel\PanelTransactionStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessState.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessStateEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\ImageEmptinessInterpolator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\ItemIconDisemptifyProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\EmptinessStateHandling\ItemIconEmptifyProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIcon.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIconAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\GhostificationEngine.cs" />
@@ -67,6 +70,7 @@
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIcon.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconImage.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconPickUpImplementor.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\TransferableUIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\TravelInterpolater.cs" />

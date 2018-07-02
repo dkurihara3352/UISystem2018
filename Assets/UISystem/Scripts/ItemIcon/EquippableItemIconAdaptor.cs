@@ -33,7 +33,7 @@ namespace UISystem{
 			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
 			IEqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			IItemIconPickUpImplementor itemIconPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
-			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine();
+			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine(data.processFactory);
 			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, this, null, thisEqpTool, dragImageImplementor, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine);
 			
 			return new EquippableItemIcon(arg);
