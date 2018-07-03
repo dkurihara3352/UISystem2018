@@ -11,6 +11,7 @@ namespace UISystem{
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity);
 		IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage uiImage);
 		IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage uiImage, IItemIcon itemIcon);
+		IVisualPickednessProcess CreateVisualPickednessProcess(IWaitAndExpireProcessState state, IPickableUIImage pickableUIImage, float sourcePickedness, float targetPickedness);
 	}
 	public class ProcessFactory: IProcessFactory{
 		public ProcessFactory(IProcessManager procManager, IUIManager uim){
@@ -54,6 +55,11 @@ namespace UISystem{
 		public IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage itemIconImage, IItemIcon itemIcon){
 			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
 			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(thisProcessManager, emptifyingState, expireT, itemIconImage, itemIcon);
+			return process;
+		}
+		public IVisualPickednessProcess CreateVisualPickednessProcess(IWaitAndExpireProcessState state, IPickableUIImage image, float sourcePickedness, float targetPickedness){
+			float expireT = thisProcessManager.GetVisualPickednessProcessExpireTime();
+			IVisualPickednessProcess process = new VisualPickednessProcess(thisProcessManager, state, expireT, image, sourcePickedness, targetPickedness);
 			return process;
 		}
 	}

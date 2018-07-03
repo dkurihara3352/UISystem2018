@@ -31,10 +31,11 @@ namespace UISystem{
 			IUIAActivationData data = thisDomainActivationData;
 			IDragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(1f, 1f, data.processFactory, data.pickUpManager);
 			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
+			IVisualPickednessStateEngine visualPickednessStateEngine = new VisualPickednessStateEngine(data.processFactory);
 			IEqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			IItemIconPickUpImplementor itemIconPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
 			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine(data.processFactory);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, this, null, thisEqpTool, dragImageImplementor, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine);
 			
 			return new EquippableItemIcon(arg);
 		}

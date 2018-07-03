@@ -64,14 +64,14 @@
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIcon.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\EquippableItemIconAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\GhostificationEngine.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\IITransactionState.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\IITransactionStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\Item.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIcon.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconImage.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\ItemIconPickUpImplementor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\TransactionState\IITransactionState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\ItemIcon\TransactionState\IITransactionStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\TransferableUIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\TravelInterpolater.cs" />
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\UIItemHandler.cs" />
@@ -88,7 +88,10 @@
      <Compile Include="Assets\UISystem\Scripts\Superclasses\EquippableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\ImageSmoothFollowDragPositionProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\PickUpReceiver.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE\PickableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\Interpolator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\Process.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\ProcessAndIrper\ProcessFactory.cs" />
@@ -99,6 +102,7 @@
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\TurnImangeDarkenessProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SwitchableStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\TravelProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\TravelableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptorActivationData.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\UIAdaptor\UIAdaptorInputState.cs" />

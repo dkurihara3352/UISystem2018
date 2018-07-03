@@ -20,7 +20,7 @@ namespace UISystem{
 	}
 	public class IncrementalQuantityAnimationProcess: AbsQuantityAnimationProcess, IIncrementalQuantityAnimationProcess{
 		public IncrementalQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan, image, sourceQuantity, targetQuantity){
-			totalTime = procMan.GetIncrementalQuantityAnimationProcessTotalTime();
+			totalTime = procMan.GetIncrementalQuantityAnimationProcessExpireTime();
 		}
 		readonly float totalTime;
 		float elapsedTime = 0f;

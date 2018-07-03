@@ -54,8 +54,6 @@ namespace UISystem{
 			/*  might be better to implement these three below in superclass
 			*/
 			public override void DeclinePickUp(){}
-			public override void BecomeVisuallyPickedUp(){}
-			public override void BecomeVisuallyUnpicked(){}
 		/* Pickability state handling */
 			public void PickUp(){
 				thisIITAStateEngine.PickUp();
@@ -254,7 +252,7 @@ namespace UISystem{
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
 	}
 	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, itemIconImage, tool, dragImageImplementor){
+		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;

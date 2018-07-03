@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIconImage: IUIImage, IQuantityAnimationHandler{
+	public interface IItemIconImage: IPickableUIImage, IQuantityAnimationHandler{
 		void SetItemImage(IUIItem item);
 		void SetEmptiness(float emptiness);
 		float GetEmptiness();
@@ -31,6 +31,8 @@ namespace UISystem{
 		public void SetItemImage(IUIItem item){
 			
 		}
+		public void SetVisualPickedness(float visualPickedness){}
+		public float GetVisualPickedness(){return 0f;}
 	}
 	public interface IItemIconImageConstArg{
 		IUIItem item{get;}

@@ -8,8 +8,9 @@ namespace UISystem{
 		void RemoveRunningProcess(IProcess process);
 		void UpdateAllRegisteredProcesses(float deltaT);
 		bool RunningProcessesContains(IProcess process);
-		float GetIncrementalQuantityAnimationProcessTotalTime();
+		float GetIncrementalQuantityAnimationProcessExpireTime();
 		float GetImageEmptificationExpireTime();
+		float GetVisualPickednessProcessExpireTime();
 		float GetSpringT(float normalizedT);
 	}
 }

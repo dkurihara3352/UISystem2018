@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface ITravelableUIE: IUIElement{
-		void SetRunningTravelProcess(ITravelProcess process);
-		ITravelProcess GetRunningTravelProcess();
-		void AbortRunningTravelProcess();
-		void HandOverTravel(ITravelableUIE other);
-	}
-	public interface IPickableUIE: ITravelableUIE, IImageSmoothFollowHandler{
+	public interface IPickableUIE: ITravelableUIE, IImageSmoothFollowHandler, IVisualPickednessHandler{
 		void EvaluatePickability();
 
 		void DeclinePickUp();
@@ -19,14 +13,16 @@ namespace UISystem{
 		void CheckForDragPickUp(ICustomEventData eventData);
 		void CheckForQuickDrop();
 		void CheckForDelayedDrop();
-
-		void BecomeVisuallyPickedUp();
-		void BecomeVisuallyUnpicked();
 	}
 	public abstract class AbsPickableUIE: AbsUIElement, IPickableUIE{
 		public AbsPickableUIE(IPickableUIEConstArg arg): base(arg){
 			thisDragImageImplementor = arg.dragImageImplementor;
 			thisDragImageImplementor.SetPickableUIE(this);
+			thisVisualPickednessStateEngine = arg.visualPickednessStateEngine;
+			thisVisualPickednessStateEngine.SetPickableUIImage(thisPickableUIImage);
+		}
+		IPickableUIImage thisPickableUIImage{
+			get{return (IPickableUIImage)thisImage;}
 		}
 		public abstract void EvaluatePickability();
 		public override void OnTouch(int touchCount){
@@ -61,9 +57,14 @@ namespace UISystem{
 		public abstract void CheckForQuickDrop();
 		public abstract void CheckForDelayedDrop();
 		public abstract void DeclinePickUp();
-
-		public abstract void BecomeVisuallyPickedUp();
-		public abstract void BecomeVisuallyUnpicked();
+		/* Visual pickedness */
+		readonly IVisualPickednessStateEngine thisVisualPickednessStateEngine;
+		public void BecomeVisuallyPickedUp(){
+			thisVisualPickednessStateEngine.BecomeVisuallyPickedUp();
+		}
+		public void BecomeVisuallyUnpicked(){
+			thisVisualPickednessStateEngine.BecomeVisuallyUnpicked();
+		}
 		/* ImageSmoothFollowHandler imple */
 		readonly IDragImageImplementor thisDragImageImplementor;
 		public virtual void StartImageSmoothFollowDragPosition(){
@@ -92,12 +93,18 @@ namespace UISystem{
 	}
 	public interface IPickableUIEConstArg: IUIElementConstArg{
 		IDragImageImplementor dragImageImplementor{get;}
+		IVisualPickednessStateEngine visualPickednessStateEngine{get;}
 	}
 	public class PickableUIEConstArg: UIElementConstArg, IPickableUIEConstArg{
-		public PickableUIEConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IUITool tool, IDragImageImplementor dragImageImplementor): base(uim, uia, image, tool){
+		public PickableUIEConstArg(IUIManager uim, IUIAdaptor uia, IPickableUIImage pickableUIImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine): base(uim, uia, pickableUIImage, tool){
 			thisDragImageImplementor = dragImageImplementor;
+			thisVisualPickednessStateEngien = visualPickednessStateEngine;
 		}
 		readonly IDragImageImplementor thisDragImageImplementor;
 		public IDragImageImplementor dragImageImplementor{get{return thisDragImageImplementor;}}
+		readonly IVisualPickednessStateEngine thisVisualPickednessStateEngien;
+		public IVisualPickednessStateEngine visualPickednessStateEngine{get{
+			return thisVisualPickednessStateEngien;
+		}}
 	}
 }
