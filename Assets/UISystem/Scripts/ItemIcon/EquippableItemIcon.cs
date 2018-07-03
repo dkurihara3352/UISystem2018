@@ -28,29 +28,6 @@ namespace UISystem{
 					throw new System.InvalidCastException("passed itemIcon must be of type IEquippableItemIcon");
 			}
 		/* pick up imple */
-			protected override int GetMaxTransferableQuantity(){
-				IItemTemplate thisItemTemp = thisEqpItem.GetItemTemplate();
-				int thisQuantity = GetItemQuantity();
-				if(this.IsBowOrWearItemIcon()){
-					if(thisQuantity != 0)
-						return 1;
-					else
-						return 0;
-				}else{
-					if(this.IsInEqpIG())
-						return thisQuantity;
-					else{
-						if(thisItemTemp.IsStackable())
-							return thisQuantity;
-						else{
-							IEquipToolEquippedCarriedGearsIG relevantEqpCGIG = eqpIITAM.GetRelevantEquippedCarriedGearsIG();
-							int equippedQuantity = relevantEqpCGIG.GetItemQuantity(thisEqpItem);
-							int spaceInEqpIG = thisEqpItem.GetMaxEquippableQuantity() - equippedQuantity;
-							return Mathf.Min(spaceInEqpIG, thisQuantity);
-						}
-					}
-				}
-			}
 			public override void CheckForImmediatePickUp(){
 				return;
 			}
@@ -164,7 +141,7 @@ namespace UISystem{
 	public interface IEquippableItemIconConstArg: IItemIconConstArg{
 	}
 	public class EquippableItemIconConstArg: ItemIconConstArg, IEquippableItemIconConstArg{
-		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconAdaptor uia, IItemIconImage itemIconImage, IEquipTool tool, IDragImageImplementor dragImageImplementor ,IVisualPickednessStateEngine visualPickednessStateEngine,  IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, uia, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine){
+		public EquippableItemIconConstArg(IUIManager uim, IEquippableItemIconAdaptor uia, IItemIconImage itemIconImage, IEquipTool tool, IDragImageImplementor dragImageImplementor ,IVisualPickednessStateEngine visualPickednessStateEngine,  IEquippableIITAManager eqpIITAM, IEquippableUIItem item, IEqpIITransactionStateEngine eqpIITAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, IEqpIITransferabilityHandlerImplementor eqpIITransferabilityHandlerImplementor): base(uim, uia, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine, eqpIITAM, item, eqpIITAStateEngine, pickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor){
 		}
 	}
 }

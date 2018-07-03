@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferableUIElement, IGhostificationStateHandler{
+	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferabilityHandler, IGhostificationStateHandler{
 		void SetUpAsPickedII();
 
 		IIconGroup GetIconGroup();
@@ -23,18 +23,19 @@ namespace UISystem{
 			thisIITAStateEngine.SetItemIcon(this);
 			thisEmptinessStateEngine = arg.emptinessStateEngine;
 			thisEmptinessStateEngine.SetItemIcon(this);
+			thisTransferabilityHandlerImplementor = arg.transferabilityHandlerImplementor;
+			thisTransferabilityHandlerImplementor.SetItemIcon(this);
 		}
 		protected override void ActivateImple(){
 			base.ActivateImple();
 			InitializeTransactionState();
 			InitializeEmptinessState();
 		}
-		/* IITransaction */
-			protected readonly IItemIconTransactionManager iiTAM;
-			protected IItemIconTransactionStateEngine thisIITAStateEngine;
-			void InitializeTransactionState(){
-				WaitForPickUp();/* returns immediately in turn */
-			}
+		void InitializeTransactionState(){
+			WaitForPickUp();/* returns immediately in turn */
+		}
+		protected readonly IItemIconTransactionManager iiTAM;
+		protected IItemIconTransactionStateEngine thisIITAStateEngine;
 		/* PickableUIE imple */
 			public override void EvaluatePickability(){
 				this.UpdateTransferableQuantity(pickedQuantity: 0);
@@ -78,7 +79,7 @@ namespace UISystem{
 			public void SetUpAsPickedII(){
 				thisPickUpImplementor.SetUpAsPickedII();
 			}
-		/* Hoverability state handling */
+		/* IPickUpReceiver imple */
 			public void EvaluateHoverability(IPickableUIE pickedUIE){
 				IItemIcon pickedII = (IItemIcon)pickedUIE;
 				if(this.IsEligibleForHover(pickedII))
@@ -87,6 +88,8 @@ namespace UISystem{
 					BecomeUnhoverable();
 			}
 			protected abstract bool IsEligibleForHover(IItemIcon pickedII);
+			public abstract void CheckForHover();
+		/* Hoverability state handling */
 			public void WaitForPickUp(){
 				thisIITAStateEngine.WaitForPickUp();
 			}
@@ -105,7 +108,6 @@ namespace UISystem{
 			public bool IsHovered(){
 				return thisIITAStateEngine.IsHovered();
 			}
-			public abstract void CheckForHover();
 		/* Emptiness State Handling */
 			void InitializeEmptinessState(){
 				this.Disemptify(thisItem);
@@ -197,30 +199,21 @@ namespace UISystem{
 				thisPickUpImplementor.CheckAndIncrementPickUpQuantity();
 			}
 		/* TransferableElement imple */
+			ITransferabilityHandlerImplementor thisTransferabilityHandlerImplementor;
 			public void UpdateTransferableQuantity(int pickedQuantity){
-				int transQ = this.CalcTransferableQuantity(pickedQuantity);
-				thisTransferableQuantity = transQ;
+				thisTransferabilityHandlerImplementor.UpdateTransferableQuantity(pickedQuantity);;
 			}
-			int CalcTransferableQuantity(int pickedQuantity){
-				int diff = GetMaxTransferableQuantity() - pickedQuantity;
-				if(diff >= 0)
-					return diff;
-				else
-					throw new System.InvalidOperationException("pickedQuantity must not exceed max transferable quantity");
-			}
-			protected abstract int GetMaxTransferableQuantity();
-			int thisTransferableQuantity;
 			public int GetTransferableQuantity(){
-				return thisTransferableQuantity;
+				return thisTransferabilityHandlerImplementor.GetTransferableQuantity();
 			}
 			public bool IsTransferable(){
-				return thisTransferableQuantity > 0;
+				return thisTransferabilityHandlerImplementor.IsTransferable();
 			}
 			public void TravelTransfer(IIconGroup destIG){
-				destIG.ReceiveTravelTransfer(this);
+				thisTransferabilityHandlerImplementor.TravelTransfer(destIG);
 			}
 			public void SpotTransfer(IIconGroup destIG){
-				destIG.ReceiveSpotTransfer(this);
+				thisTransferabilityHandlerImplementor.SpotTransfer(destIG);
 			}
 		/* Travelling */
 			public override void HandOverTravel(ITravelableUIE other){
@@ -250,9 +243,10 @@ namespace UISystem{
 		IItemIconTransactionStateEngine iiTAStateEngine{get;}
 		IItemIconPickUpImplementor iiPickUpImplementor{get;}
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
+		ITransferabilityHandlerImplementor transferabilityHandlerImplementor{get;}
 	}
 	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine): base(uim, iiUIA, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine){
+		public ItemIconConstArg(IUIManager uim, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, ITransferabilityHandlerImplementor transferabilityHandlerImplementor): base(uim, iiUIA, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;
@@ -269,5 +263,7 @@ namespace UISystem{
 		public IItemIconPickUpImplementor iiPickUpImplementor{get{return thisIIPickUpImplementor;}}
 		readonly IItemIconEmptinessStateEngine thisEmptinessStateEngine;
 		public IItemIconEmptinessStateEngine emptinessStateEngine{get{return thisEmptinessStateEngine;}}
+		readonly ITransferabilityHandlerImplementor thisTransferabilityHandlerImplementor;
+		public ITransferabilityHandlerImplementor transferabilityHandlerImplementor{get{return thisTransferabilityHandlerImplementor;}}
 	}
 }

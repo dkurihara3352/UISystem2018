@@ -35,7 +35,8 @@ namespace UISystem{
 			IEqpIITransactionStateEngine eqpIITAStateEngine = new EqpIITransactionStateEngine(thisEqpIITAM, thisEqpTool);
 			IItemIconPickUpImplementor itemIconPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM);
 			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine(data.processFactory);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine);
+			IEqpIITransferabilityHandlerImplementor eqpIITransferabilityHandlerImplementor = new EqpIITransferabilityHandlerImplementor(thisEqpIITAM);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor);
 			
 			return new EquippableItemIcon(arg);
 		}

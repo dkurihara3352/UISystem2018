@@ -8,55 +8,10 @@ using UISystem;
 
 [TestFixture]
 public class ItemIconTest{
-    [Test, TestCaseSource(typeof(UpdateTransferableQuantity_TestCases), "validCases")]
-    public void UpdateTransferableQuantity_DiffAtLeastZero_SetsDiffAsTransferableQuantity(int pickedQuantity, int maxTransferableQuantity){
-        IItemIconConstArg arg;
-        TestItemIcon testItemIcon = CreateTestItemIcon(maxTransferableQuantity, out arg);
-        testItemIcon.UpdateTransferableQuantity(pickedQuantity);
-
-        int actualQ = testItemIcon.GetTransferableQuantity();
-        int expectedQ = maxTransferableQuantity - pickedQuantity;
-
-        Assert.That(actualQ, Is.EqualTo(expectedQ));
-    }
-    [Test][ExpectedException(typeof(System.InvalidOperationException))][TestCaseSource(typeof(UpdateTransferableQuantity_TestCases), "invalidCases")]
-    public void UpdateTransferableQuantity_PickedQExceedsMaxTransQ_ThrowsException(int pickedQuantity, int maxTransferableQuantity){
-        IItemIconConstArg arg;
-        TestItemIcon testItemIcon = CreateTestItemIcon(maxTransferableQuantity, out arg);
-        testItemIcon.UpdateTransferableQuantity(pickedQuantity);
-    }
-    public class UpdateTransferableQuantity_TestCases{
-        public static object[] validCases = {
-            new object[]{1, 2},
-            new object[]{12, 26},
-            new object[]{0, 10},
-            new object[]{3, 3}
-        };
-        public static object[] invalidCases = {
-            new object[]{1, 0},
-            new object[]{2, 1}
-        };
-    }
-    [Test, TestCaseSource(typeof(IsTransferable_TestCases), "greaterCases")]
-    public void IsTransferable_DiffGreaterThanZero_ReturnsTrue(int pickedQuantity, int maxTransferableQuantity){
-        IItemIconConstArg arg;
-        TestItemIcon testItemIcon = CreateTestItemIcon(maxTransferableQuantity, out arg);
-        testItemIcon.UpdateTransferableQuantity(pickedQuantity);
-
-        Assert.That(testItemIcon.IsTransferable(), Is.True);
-    }
-    [Test, TestCaseSource(typeof(IsTransferable_TestCases), "equalCases")]
-    public void IsTransferable_PickedQEqualsToMaxTransQ_ReturnsFalse(int pickedQuantity, int maxTransferableQuantity){
-        IItemIconConstArg arg;
-        TestItemIcon testItemIcon = CreateTestItemIcon(maxTransferableQuantity, out arg);
-        testItemIcon.UpdateTransferableQuantity(pickedQuantity);
-
-        Assert.That(testItemIcon.IsTransferable(), Is.False);
-    }
     [Test]
     public void EvaluatePickability_ThisIsEmpty_CallsEngineBecomeUnpickable(){
         IItemIconConstArg arg;
-        IItemIcon itemIcon = CreateTestItemIcon(0, out arg);
+        IItemIcon itemIcon = CreateTestItemIcon(out arg);
         IItemIconTransactionStateEngine iiTAStateEngine = arg.iiTAStateEngine;
         IItemIconEmptinessStateEngine emptinessStateEngine = arg.emptinessStateEngine;
         emptinessStateEngine.IsEmpty().Returns(true);
@@ -136,8 +91,7 @@ public class ItemIconTest{
         };
     }
     public class TestItemIcon: AbsItemIcon{
-        public TestItemIcon(int maxTransferableQuantity, IItemIconConstArg arg): base(arg){  
-            thisMaxTransferableQuantity = maxTransferableQuantity;
+        public TestItemIcon(IItemIconConstArg arg): base(arg){
         }
         public void SetIconGroup(IIconGroup ig){
             thisIG = ig;
@@ -148,10 +102,6 @@ public class ItemIconTest{
         public override bool LeavesGhost(){
             return false;
         }
-        protected override int GetMaxTransferableQuantity(){
-            return thisMaxTransferableQuantity;
-        }
-        int thisMaxTransferableQuantity;
         public override bool HasSameItem(IItemIcon other){
             return false;
         }
@@ -166,14 +116,14 @@ public class ItemIconTest{
         public override void CheckForQuickDrop(){}
         public override void CheckForDragPickUp(ICustomEventData eventData){}
     }
-    public TestItemIcon CreateTestItemIcon(int maxTransferableQuantity, out IItemIconConstArg arg){
+    public TestItemIcon CreateTestItemIcon(out IItemIconConstArg arg){
         IItemIconConstArg thisArg = Substitute.For<IItemIconConstArg>();
         IUIManager uim = Substitute.For<IUIManager>();
         thisArg.uim.Returns(uim);
         IItemIconUIAdaptor iiUIA = Substitute.For<IItemIconUIAdaptor>();
         thisArg.uia.Returns(iiUIA);
-        IUIImage image = Substitute.For<IUIImage>();
-        thisArg.image.Returns(image);
+        IItemIconImage itemIconImage = Substitute.For<IItemIconImage>();
+        thisArg.image.Returns(itemIconImage);
         IItemIconTransactionManager iiTAM = Substitute.For<IItemIconTransactionManager>();
         thisArg.iiTAM.Returns(iiTAM);
         IUIItem item = Substitute.For<IUIItem>();
@@ -182,15 +132,17 @@ public class ItemIconTest{
         thisArg.iiTAStateEngine.Returns(iiTAStateEngine);
         IItemIconEmptinessStateEngine emptinessStateEngine = Substitute.For<IItemIconEmptinessStateEngine>();
         thisArg.emptinessStateEngine.Returns(emptinessStateEngine);
+        ITransferabilityHandlerImplementor transferabilityHandlerImplementor = Substitute.For<ITransferabilityHandlerImplementor>();
+        thisArg.transferabilityHandlerImplementor.Returns(transferabilityHandlerImplementor);
 
-        TestItemIcon testItemIcon = new TestItemIcon(maxTransferableQuantity, thisArg);
+        TestItemIcon testItemIcon = new TestItemIcon(thisArg);
 
         arg = thisArg;
         return testItemIcon;
     }
     public TestItemIcon CreateTestItemIcon(bool isEmpty, bool isReorderable, bool isTransferable, out IItemIconConstArg arg){
         IItemIconConstArg thisArg;
-        TestItemIcon itemIcon = CreateTestItemIcon(isTransferable? 2 : 0, out thisArg);
+        TestItemIcon itemIcon = CreateTestItemIcon(out thisArg);
         IItemIconEmptinessStateEngine emptinessStateEngine = thisArg.emptinessStateEngine;
         emptinessStateEngine.IsEmpty().Returns(isEmpty);
         IIconGroup ig = Substitute.For<IIconGroup>();
@@ -200,17 +152,14 @@ public class ItemIconTest{
             ig.AllowsInsert().Returns(true);
         else
             ig.AllowsInsert().Returns(false);
-        if(isTransferable)
-            itemIcon.UpdateTransferableQuantity(1);
-        else
-            itemIcon.UpdateTransferableQuantity(0);
+        thisArg.transferabilityHandlerImplementor.IsTransferable().Returns(isTransferable);
         
         arg = thisArg;
         return itemIcon;
     }
     public TestItemIcon CreateTestItemIconWithIG(int maxTransferableQuantity, out IItemIconConstArg arg){
         IItemIconConstArg thisArg;
-        TestItemIcon itemIcon = CreateTestItemIcon(maxTransferableQuantity, out thisArg);
+        TestItemIcon itemIcon = CreateTestItemIcon(out thisArg);
         IIconGroup ig = Substitute.For<IIconGroup>();
         itemIcon.SetIconGroup(ig);
         

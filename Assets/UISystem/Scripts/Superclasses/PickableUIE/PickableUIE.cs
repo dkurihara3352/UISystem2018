@@ -74,7 +74,7 @@ namespace UISystem{
 			thisDragImageImplementor.StopImageSmoothFollowDragPosition();
 		}
 		/* Travelable UIE implementation */
-			/*  updating thisRunningTravelProcess field is taken care by 		travel process
+			/*  updating thisRunningTravelProcess field is taken care by travel process
 			*/
 		public virtual void HandOverTravel(ITravelableUIE other){
 			if(thisRunningTravelProcess != null)

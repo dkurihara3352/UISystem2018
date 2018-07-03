@@ -6,12 +6,12 @@ namespace UISystem{
 	public interface ITurnImageDarknessProcess: IProcess{}
 	public class TurnImageDarknessProcess: AbsProcess, ITurnImageDarknessProcess{
 		public TurnImageDarknessProcess(IProcessManager procManager, IUIImage image, float targetDarkness): base(procManager){
-			this.image = image;
+			thisImage = image;
 			targetDarkness = CheckAndMakeDarknessValueIsInRange(targetDarkness);
-			this.targetDarkness = targetDarkness;
+			thisTargetDarkness = targetDarkness;
 		}
-		readonly IUIImage image;
-		readonly float targetDarkness;
+		readonly IUIImage thisImage;
+		readonly float thisTargetDarkness;
 		readonly float rateOfChange = 1f;
 			/*  time it takes from complete darkness 0f to zero darkness 1f
 				it's set to 1sec here
@@ -22,7 +22,7 @@ namespace UISystem{
 			/* actual time it takes from init to tarDarkness
 				,this is computed in CalcAndSetComputationFields
 			 */
-		ImageDarknessInterpolator irper;
+		ImageDarknessInterpolator thisIrper;
 		float CheckAndMakeDarknessValueIsInRange(float darkness){
 			/* clamp the given value within 0 - 1 range */
 			if(darkness < 0f)
@@ -34,16 +34,16 @@ namespace UISystem{
 		}
 		public override void Run(){
 			ResetFields();
-			float initDarkness = image.GetCurrentDarkness();
+			float initDarkness = thisImage.GetCurrentDarkness();
 			initDarkness = CheckAndMakeDarknessValueIsInRange(initDarkness);
-			if(DifferenceIsBigEnough(targetDarkness - initDarkness)){
-				ImageDarknessInterpolator newIrper = new ImageDarknessInterpolator(image, initDarkness, targetDarkness);
-				CalcAndSetComputationFields(initDarkness, targetDarkness);
-				irper = newIrper;
+			if(DifferenceIsBigEnough(thisTargetDarkness - initDarkness)){
+				ImageDarknessInterpolator newIrper = new ImageDarknessInterpolator(thisImage, initDarkness, thisTargetDarkness);
+				CalcAndSetComputationFields(initDarkness, thisTargetDarkness);
+				thisIrper = newIrper;
 				newIrper.Interpolate(0f);
 				base.Run();
 			}else{
-				image.SetDarkness(targetDarkness);
+				thisImage.SetDarkness(thisTargetDarkness);
 				return;
 			}
 		}
@@ -82,7 +82,7 @@ namespace UISystem{
 			totalReqTime = actualDiff/rateOfChange;
 		}
 		void ResetFields(){
-			irper = null;
+			thisIrper = null;
 			elapsedT = 0f;
 			totalReqTime = 0f;
 		}
@@ -91,9 +91,9 @@ namespace UISystem{
 			elapsedT += deltaT;
 			float irperT = elapsedT/ totalReqTime;
 			if(irperT < 1f)
-				irper.Interpolate(irperT);
+				thisIrper.Interpolate(irperT);
 			else{
-				irper.Interpolate(1f);
+				thisIrper.Interpolate(1f);
 				this.Expire();
 			}
 		}

@@ -216,7 +216,9 @@ namespace UISystem{
 		public WaitingForDisemptifyState(IItemIconEmptinessStateEngine stateEngine): base(stateEngine){}
 		public override void OnEnter(){
 			thisItemIconImage.SetEmptiness(0f);
-			thisItemIcon.RemoveFromContainingReformation();
+			// thisItemIcon.RemoveFromContainingReformation();
+			/*	uncomment this when mutation and reformation is done
+			*/
 		}
 		public override void OnExit(){
 			return;

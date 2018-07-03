@@ -9,52 +9,6 @@ using UISystem;
 [TestFixture]
 public class EquippableItemIconTest {
     [Test]
-    public void GetMaxTransferableQuantity_ThisIsBowOrWearII_ThisQuantityNotZero_ReturnsOne([Values(2, 10, 100)]int quantity){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(quantity, typeof(IBowTemplate), out arg);
-
-        Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(1));
-    }
-    [Test]
-    public void GetMaxTransferableQuantity_ThisIsBowOrWearII_ThisQuantityIsZero_ReturnsZero(){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(0, typeof(IBowTemplate), out arg);
-
-        Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(0));
-    }
-    [Test]
-    public void GetMaxTransferableQuantity_ThisIsNotBowOrWearII_ThisIsInEqpIG_ReturnsThisQuantity([Values(0, 1, 2, 10)]int quantity){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(true, quantity, typeof(ICarriedGearTemplate), out arg);
-
-        Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(quantity));
-    }
-    [Test]
-    public void GetMaxTransferableQuantity_ThisIsNotBowOrWearII_ThisIsNotInEqpIG_ThisIsStackable_ReturnsThisQuantity([Values(0, 1, 2, 10)]int quantity){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(isStackable: true, isInEqpIG: false, quantity: quantity, tempType: typeof(ICarriedGearTemplate), arg: out arg);
-
-        Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(quantity));
-    }
-    [Test, TestCaseSource(typeof(GetMaxTransaferableQuantity_TestCases), "cases")]
-    public void GetMaxTransferableQuantity_ThisIsNotBowOrWearII_ThisIsNotInEqpIG_ThisIsNotStackable_ReturnsLesserOfThisQuantAndRelevIGSpace(int quantity, int itemQInIG, int maxEquippableQ, int expectedQ){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(isStackable: false, isInEqpIG: false, quantity: quantity, tempType: typeof(ICarriedGearTemplate), arg: out arg);
-        IEquipToolEquippedCarriedGearsIG relevEqpCGIG = Substitute.For<IEquipToolEquippedCarriedGearsIG>();
-        relevEqpCGIG.GetItemQuantity(arg.item).Returns(itemQInIG);
-        ((IEquippableIITAManager)arg.iiTAM).GetRelevantEquippedCarriedGearsIG().Returns(relevEqpCGIG);
-        ((IEquippableUIItem)arg.item).GetMaxEquippableQuantity().Returns(maxEquippableQ);
-
-        Assert.That(testEqpII.TestGetMaxTrasferableQuantity(), Is.EqualTo(expectedQ));
-    }
-    public class GetMaxTransaferableQuantity_TestCases{
-        public static object[] cases = {
-            new object[]{0, 1, 2, 0},
-            new object[]{10, 1, 1, 0},
-            new object[]{10, 7, 10, 3}
-        };
-    }
-    [Test]
     public void CheckForPickUp_ThisIsPicked_DoesNotCallEnginePickUp(){
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpIIWithPickability(isPicked: true, arg: out arg);
@@ -189,23 +143,6 @@ public class EquippableItemIconTest {
         Assert.That(testEqpII.TestIsEligibleForHover(pickedEqpII), Is.True);
     }
     [Test]
-    public void IsEligibleForHover_ThisIsInDestIG_ThisIsNotEmpty_ThisHasSameItemTempAsPicked_ThisIsInPoolIG_ThisIsTransferable_ReturnsTrue(){
-        IEquippableItemIconConstArg arg;
-        TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
-        IEquippableItemIcon pickedEqpII = Substitute.For<IEquippableItemIcon>();
-        IEquipToolPoolIG thisPoolIG = Substitute.For<IEquipToolPoolIG>();
-        testEqpII.SetIconGroup(thisPoolIG);
-        IIconGroup otherIG = Substitute.For<IIconGroup>();
-        pickedEqpII.GetIconGroup().Returns(otherIG);
-        IItemIconEmptinessStateEngine emptinessStateEngine = arg.emptinessStateEngine;
-        emptinessStateEngine.IsEmpty().Returns(false);
-        pickedEqpII.GetItemTemplate().Returns(Substitute.For<IBowTemplate>());
-        testEqpII.UpdateTransferableQuantity(0);
-        Assert.That(testEqpII.IsTransferable(), Is.True);
-
-        Assert.That(testEqpII.TestIsEligibleForHover(pickedEqpII), Is.True);
-    }
-    [Test]
     public void IsEligibleForHover_ThisIsInDestIG_ThisIsNotEmpty_ThisHasSameItemTempAsPicked_ThisIsInPoolIG_ThisIsNotTransferable_ReturnsFalse(){
         IEquippableItemIconConstArg arg;
         TestEqpII testEqpII = CreateTestEqpII(quantity: 1, tempType: typeof(IBowTemplate) ,arg: out arg);
@@ -311,8 +248,8 @@ public class EquippableItemIconTest {
         thisArg.uim.Returns(uim);
         IEquippableItemIconAdaptor eqpIIUIA = Substitute.For<IEquippableItemIconAdaptor>();
         thisArg.uia.Returns(eqpIIUIA);
-        IUIImage image = Substitute.For<IUIImage>();
-        thisArg.image.Returns(image);
+        IItemIconImage itemIconImage = Substitute.For<IItemIconImage>();
+        thisArg.image.Returns(itemIconImage);
         IEquippableIITAManager eqpIITAM = Substitute.For<IEquippableIITAManager>();
         thisArg.iiTAM.Returns(eqpIITAM);
         IEquippableUIItem eqpItem = Substitute.For<IEquippableUIItem>();
@@ -391,9 +328,6 @@ public class EquippableItemIconTest {
         public TestEqpII(IEquippableItemIconConstArg arg): base(arg){}
         public void SetIconGroup(IIconGroup ig){
             thisIG = ig;
-        }
-        public int TestGetMaxTrasferableQuantity(){
-            return this.GetMaxTransferableQuantity();
         }
         public void TestCheckForPickUp(){
             this.CheckForPickUp();

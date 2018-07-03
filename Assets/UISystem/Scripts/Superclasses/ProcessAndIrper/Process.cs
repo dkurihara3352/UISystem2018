@@ -79,5 +79,132 @@ namespace UISystem{
 		}
 		protected override void UpdateProcessImple(float deltaT){return;}
 	}
+	public enum ProcessConstraint{
+		none,
+		rateOfChange,
+		expireTime
+	}
+	public abstract class AbsConstrainedProcess: AbsProcess{
+		public AbsConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, IWaitAndExpireProcessState processState, float differenceThreshold): base(processManager){
+			thisProcessConstraint = processConstraint;
+			thisConstraintValue = constraintValue;
+			thisProcessState = processState;
+			thisDifferenceThreshold = differenceThreshold;
+		}
+		readonly ProcessConstraint thisProcessConstraint;
+		readonly float thisConstraintValue;
+		IWaitAndExpireProcessState thisProcessState;
+		sealed public override void Run(){
+			Reset();
+			if(ValueDifferenceIsBigEnough()){
+				RunImple();
+				base.Run();
+			}else{
+				Expire();
+			}
+		}
+		bool ValueDifferenceIsBigEnough(){
+			float diff = GetNormalizedValueDiff();
+			if(diff >= 0f)
+				return diff > thisDifferenceThreshold;
+			else
+				return diff < - thisDifferenceThreshold;
+		}
+		readonly float thisDifferenceThreshold;
+		protected abstract float GetNormalizedValueDiff();
+		protected virtual void RunImple(){
+			CalcAndSetExpireTime();
+		}
+		void CalcAndSetExpireTime(){
+			/*	Comp detail
+				Dx (max possible diff: constant)
+				Tx (max possible total time: constant)
+				r (rate of Change: constant)
+				{
+					Dx/Tx = r
+					Dx = 1f
+					Tx = 1f sec
+					r = 1f
+				}
+				Da (actual diff)
+				Ta(time it takes to irp actual diff)
+				{
+					Da/Ta = r
+					Ta = Da/r
+				}
+				Ti (irperT)
+				Te (elapsedT)
+				{
+					Ti = Te/Ta
+				}
+			*/
+			if(thisProcessConstraint == ProcessConstraint.rateOfChange){
+				thisNormalizedRateOfChange = thisConstraintValue;
+				float normalizedValueDiff = GetNormalizedValueDiff();
+				if(normalizedValueDiff < 0)
+					normalizedValueDiff *= -1f;
+				thisExpireT = normalizedValueDiff / thisNormalizedRateOfChange;
+			}else if(thisProcessConstraint == ProcessConstraint.expireTime){
+				thisExpireT = thisConstraintValue;
+			}else{
+				return;
+			}
+		}
+		protected float thisExpireT;
+		float thisNormalizedRateOfChange;
+		sealed public override void UpdateProcess(float deltaT){
+			thisElapsedT += deltaT;
+			if(thisProcessState != null)
+				thisProcessState.OnProcessUpdate(deltaT);
+			UpdateProcessImple(deltaT);
+			if(thisProcessConstraint != ProcessConstraint.none){
+				if(thisElapsedT <= thisExpireT)
+					Expire();
+			}
+		}
+		protected abstract void UpdateProcessImple(float deltaT);
+		protected float thisElapsedT;
+		sealed public override void Expire(){
+			if(thisProcessState != null)
+				thisProcessState.OnProcessExpire();
+			SetTerminalValue();
+		}
+		protected abstract void SetTerminalValue();
+		public override void Reset(){
+			thisExpireT = 0f;
+			thisNormalizedRateOfChange = 0f;
+			thisElapsedT = 0f;
+		}	
+	}
+	public abstract class AbsInterpolatorProcess<T>: AbsConstrainedProcess, IProcess where T: class, IInterpolator{
+		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, IWaitAndExpireProcessState processState, float differenceThreshold): base(processManager, constraint, constraintValue, processState, differenceThreshold){
+		}
+		protected float thisNormalizedT{
+			get{
+				if(thisElapsedT == 0f)
+					return 0f;
+				else
+					return thisElapsedT/ thisExpireT;
+			}
+		}
+		protected T thisInterpolator;
+		protected abstract T InstantiateInterpolatorWithValues();
+		sealed protected override void RunImple(){
+			thisInterpolator = InstantiateInterpolatorWithValues();
+			base.RunImple();
+			thisInterpolator.Interpolate(0f);
+		}
+		protected override void UpdateProcessImple(float deltaT){
+			thisInterpolator.Interpolate(thisNormalizedT);
+		}
+		protected override void SetTerminalValue(){
+			thisInterpolator.Interpolate(1f);
+			thisInterpolator.Terminate();
+		}
+		public override void Reset(){
+			base.Reset();
+			thisInterpolator = null;
+		}
+	}
 }
 
