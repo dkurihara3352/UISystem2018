@@ -108,7 +108,7 @@
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\ImageDarknessInterpolator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\SelectabilityState.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\SelectabilityStateEngine.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\TurnImangeDarkenessProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\SelectabilityState\TurnImageDarknessProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\SwitchableStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\TravelProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\TravelableUIE.cs" />

@@ -28,7 +28,7 @@ namespace UISystem{
 		readonly IProcessManager thisProcessManager;
 		readonly IUIManager thisUIManager;
 		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
-			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, image, targetDarkness);
+			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, ProcessConstraint.rateOfChange, 1f, .05f, image, targetDarkness);
 			return process;
 		}
 		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){

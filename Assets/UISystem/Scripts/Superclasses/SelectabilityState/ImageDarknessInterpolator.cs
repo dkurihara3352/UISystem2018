@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public class ImageDarknessInterpolator: AbsInterpolator{
+	public interface IImageDarknessInterpolator: IInterpolator{}
+	public class ImageDarknessInterpolator: AbsInterpolator, IImageDarknessInterpolator{
 		public ImageDarknessInterpolator(IUIImage image, float sourceDarkness, float targetDarkness){
 			thisImage = image;
 			thisInitDarkness = sourceDarkness;

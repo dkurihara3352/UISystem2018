@@ -14,12 +14,15 @@ namespace UISystem{
 	}
 	public abstract class AbsProcess: IProcess{
 		public AbsProcess(IProcessManager procManager){
+			if(procManager == null)
+				throw new System.ArgumentException("process never works without processManager");
 			thisProcessManager = procManager;
 		}
 		IProcessManager thisProcessManager;
 		public abstract void UpdateProcess(float deltaT);
 		public virtual void Run(){
 			thisProcessManager.AddRunningProcess(this);
+			UpdateProcess(0f);
 		}
 		public virtual void Stop(){
 			thisProcessManager.RemoveRunningProcess(this);
@@ -89,6 +92,8 @@ namespace UISystem{
 			thisProcessConstraint = processConstraint;
 			thisConstraintValue = constraintValue;
 			thisProcessState = processState;
+			if(differenceThreshold < 0f)
+				throw new System.ArgumentException("diffThreshold must not be below zero");
 			thisDifferenceThreshold = differenceThreshold;
 		}
 		readonly ProcessConstraint thisProcessConstraint;
@@ -103,19 +108,23 @@ namespace UISystem{
 				Expire();
 			}
 		}
-		bool ValueDifferenceIsBigEnough(){
+		protected bool ValueDifferenceIsBigEnough(){
 			float diff = GetNormalizedValueDiff();
-			if(diff >= 0f)
-				return diff > thisDifferenceThreshold;
-			else
-				return diff < - thisDifferenceThreshold;
+			if(diff == 0)
+				return false;
+			else{
+				if(diff > 0f)
+					return diff > thisDifferenceThreshold;
+				else
+					return diff < - thisDifferenceThreshold;
+			}
 		}
 		readonly float thisDifferenceThreshold;
 		protected abstract float GetNormalizedValueDiff();
 		protected virtual void RunImple(){
-			CalcAndSetExpireTime();
+			CalcAndSetConstraintValues();
 		}
-		void CalcAndSetExpireTime(){
+		void CalcAndSetConstraintValues(){
 			/*	Comp detail
 				Dx (max possible diff: constant)
 				Tx (max possible total time: constant)
@@ -139,26 +148,29 @@ namespace UISystem{
 				}
 			*/
 			if(thisProcessConstraint == ProcessConstraint.rateOfChange){
-				thisNormalizedRateOfChange = thisConstraintValue;
+				thisRateOfChange = thisConstraintValue;
 				float normalizedValueDiff = GetNormalizedValueDiff();
-				if(normalizedValueDiff < 0)
-					normalizedValueDiff *= -1f;
-				thisExpireT = normalizedValueDiff / thisNormalizedRateOfChange;
+				thisExpireT = normalizedValueDiff / thisRateOfChange;
+				if(thisExpireT < 0f)
+					thisExpireT *= -1f;
 			}else if(thisProcessConstraint == ProcessConstraint.expireTime){
-				thisExpireT = thisConstraintValue;
+				float constVal = thisConstraintValue;
+				if(constVal < 0f)
+					constVal *= -1f;
+				thisExpireT = constVal;
 			}else{
 				return;
 			}
 		}
 		protected float thisExpireT;
-		float thisNormalizedRateOfChange;
+		protected float thisRateOfChange;
 		sealed public override void UpdateProcess(float deltaT){
 			thisElapsedT += deltaT;
 			if(thisProcessState != null)
 				thisProcessState.OnProcessUpdate(deltaT);
 			UpdateProcessImple(deltaT);
 			if(thisProcessConstraint != ProcessConstraint.none){
-				if(thisElapsedT <= thisExpireT)
+				if(thisElapsedT >= thisExpireT)
 					Expire();
 			}
 		}
@@ -168,13 +180,21 @@ namespace UISystem{
 			if(thisProcessState != null)
 				thisProcessState.OnProcessExpire();
 			SetTerminalValue();
+			base.Expire();
 		}
 		protected abstract void SetTerminalValue();
 		public override void Reset(){
 			thisExpireT = 0f;
-			thisNormalizedRateOfChange = 0f;
+			thisRateOfChange = 0f;
 			thisElapsedT = 0f;
-		}	
+		}
+		protected float ClampValueZeroToOne(float value){
+			if(value < 0f)
+				return 0f;
+			if(value > 1f)
+				return 1f;
+			return value;
+		}
 	}
 	public abstract class AbsInterpolatorProcess<T>: AbsConstrainedProcess, IProcess where T: class, IInterpolator{
 		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, IWaitAndExpireProcessState processState, float differenceThreshold): base(processManager, constraint, constraintValue, processState, differenceThreshold){
@@ -196,10 +216,6 @@ namespace UISystem{
 		}
 		protected override void UpdateProcessImple(float deltaT){
 			thisInterpolator.Interpolate(thisNormalizedT);
-		}
-		protected override void SetTerminalValue(){
-			thisInterpolator.Interpolate(1f);
-			thisInterpolator.Terminate();
 		}
 		public override void Reset(){
 			base.Reset();
