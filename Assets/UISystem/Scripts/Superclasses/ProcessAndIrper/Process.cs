@@ -203,8 +203,12 @@ namespace UISystem{
 			get{
 				if(thisElapsedT == 0f)
 					return 0f;
-				else
-					return thisElapsedT/ thisExpireT;
+				else{
+					float result = thisElapsedT/ thisExpireT;
+					if(result > 1f)
+						result = 1f;
+					return result;
+				}
 			}
 		}
 		protected T thisInterpolator;
@@ -212,7 +216,6 @@ namespace UISystem{
 		sealed protected override void RunImple(){
 			thisInterpolator = InstantiateInterpolatorWithValues();
 			base.RunImple();
-			thisInterpolator.Interpolate(0f);
 		}
 		protected override void UpdateProcessImple(float deltaT){
 			thisInterpolator.Interpolate(thisNormalizedT);

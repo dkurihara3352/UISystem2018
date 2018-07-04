@@ -61,6 +61,7 @@
      <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\Editor\ItemTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessAndIrperTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\ConstrainedProcessTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\InterpolatorProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\SelectabilityStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\SwitchableStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\UIAdaptorInputStateTest.cs" />
