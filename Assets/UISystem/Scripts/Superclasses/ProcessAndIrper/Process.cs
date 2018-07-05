@@ -166,13 +166,15 @@ namespace UISystem{
 		protected float thisRateOfChange;
 		sealed public override void UpdateProcess(float deltaT){
 			thisElapsedT += deltaT;
+			if(thisProcessConstraint != ProcessConstraint.none){
+				if(thisElapsedT >= thisExpireT){
+					Expire();
+					return;
+				}
+			}
 			if(thisProcessState != null)
 				thisProcessState.OnProcessUpdate(deltaT);
 			UpdateProcessImple(deltaT);
-			if(thisProcessConstraint != ProcessConstraint.none){
-				if(thisElapsedT >= thisExpireT)
-					Expire();
-			}
 		}
 		protected abstract void UpdateProcessImple(float deltaT);
 		protected float thisElapsedT;
@@ -219,6 +221,9 @@ namespace UISystem{
 		}
 		protected override void UpdateProcessImple(float deltaT){
 			thisInterpolator.Interpolate(thisNormalizedT);
+		}
+		sealed protected override void SetTerminalValue(){
+			thisInterpolator.Interpolate(1f);
 		}
 		public override void Reset(){
 			base.Reset();

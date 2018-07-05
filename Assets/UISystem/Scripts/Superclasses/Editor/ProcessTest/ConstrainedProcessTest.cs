@@ -102,32 +102,23 @@ public class ConstrainedProcessTest {
 			new object[]{- 10f}
 		};
 	}
-	[Test]
-	public void UpdateProcess_CallsProcessStateOnProcessUpdate(){
-		IWaitAndExpireProcessState processState;
-		TestConstrainedProcess testProcess = CreateTestConstrainedProcess(1f, out processState);
-
-		testProcess.UpdateProcess(0.1f);
-
-		processState.Received().OnProcessUpdate(.1f);
-	}
 	[Test][TestCaseSource(typeof(UpdateProcess_TestCases), "cases")]
 	public void UpdateProcess_ProcessConstraintNotNone_DeltaTimeVarious_CallsProcessStateOnProcessExpire(float expireT){
 		IWaitAndExpireProcessState processState;
 		IProcessManager processManager;
 		TestConstrainedProcess testProcess = CreateTestConstrainedProcess(expireT, out processState, out processManager);
-		testProcess.Run();
 
-		testProcess.UpdateProcess(0f);
+		testProcess.Run();
 		processState.Received().OnProcessUpdate(0f);
 
-		for(float f = .1f; f < expireT; f += 0.1f){
-			testProcess.UpdateProcess(.1f);
-			processState.Received().OnProcessUpdate(.1f);
+		float deltaT = .1f;
+		for(float f = deltaT; f < expireT; f += deltaT){
+			float elapsedT = f;
+			testProcess.UpdateProcess(deltaT);
+			processState.Received().OnProcessUpdate(deltaT);
 			processManager.DidNotReceive().RemoveRunningProcess(testProcess);
 		}
-		testProcess.UpdateProcess(.1f);
-
+		testProcess.UpdateProcess(deltaT);
 		processState.Received(1).OnProcessExpire();
 	}
 	public class UpdateProcess_TestCases{

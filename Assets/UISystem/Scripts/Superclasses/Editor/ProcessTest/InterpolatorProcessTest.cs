@@ -62,7 +62,6 @@ public class InterpolatorProcessTest{
         public IInterpolator GetInterpolator(){
             return thisInterpolator;
         }
-        protected override void SetTerminalValue(){return;}
         protected override float GetNormalizedValueDiff(){
             return thisNormalizedValueDiff;
         }

@@ -17,12 +17,7 @@ namespace UISystem{
 			float curD = thisImage.GetCurrentDarkness();
 			curD = ClampValueZeroToOne(curD);
 			float diff = thisTargetDarkness - curD;
-			if(diff < 0f)
-				diff *= -1f;
 			return diff;
-		}
-		protected override void SetTerminalValue(){
-			thisImage.SetDarkness(thisTargetDarkness);
 		}
 		protected override IImageDarknessInterpolator InstantiateInterpolatorWithValues(){
 			IImageDarknessInterpolator irper = new ImageDarknessInterpolator(thisImage, thisImage.GetCurrentDarkness(), thisTargetDarkness);
