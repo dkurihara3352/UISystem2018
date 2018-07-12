@@ -23,7 +23,7 @@ namespace UISystem{
 			stateEngine.SetIITAM(this);
 			thisStateEngine = stateEngine;
 		}
-		/* tam state */
+		/* tam state switch */
 			protected readonly IItemIconTAManagerStateEngine thisStateEngine;
 			public void Activate(){
 				SetToDefaultState();

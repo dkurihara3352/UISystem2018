@@ -28,9 +28,15 @@ namespace UISystem{
 		IEqpIITAMStateEngine thisEqpIITAMStateEngine{get{return (IEqpIITAMStateEngine)thisStateEngine;}}
 		public void SetEqpTool(IEquipTool eqpTool){
 			thisEqpIITAMStateEngine.SetEqpTool(eqpTool);
+			thisEquipTool = eqpTool;
 		}
 		public override IItemIcon CreateItemIcon(IUIItem item){
-			return null;
+			IEquippableUIItem eqpItem = (IEquippableUIItem)item;
+			return thisUIEFactory.CreateEquippableItemIcon(eqpItem);
+		}
+		IEquipTool thisEquipTool;
+		IEquipToolUIEFactory thisUIEFactory{
+			get{return (IEquipToolUIEFactory)thisEquipTool.GetUIElementFactory();}
 		}
 		/* TA fields */
 			readonly IPickUpContextUIE thisEqpToolUIE;

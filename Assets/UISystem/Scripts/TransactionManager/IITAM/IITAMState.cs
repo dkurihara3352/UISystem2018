@@ -90,7 +90,7 @@ namespace UISystem{
 			IEquipTool thisEqpTool;
 			public override void OnExit(){
 				base.OnExit();
-				thisEqpTool.ResetMode();/* or, EvalueateMode ? */
+				thisEqpTool.ResetMode();/* or, EvaluateMode ? */
 			}
 		}
 	/* default */
