@@ -26,11 +26,11 @@ namespace UISystem{
 		float GetSwipeThreshold();
 	}
 	public class UIAdaptorStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorStateEngine{
-		public UIAdaptorStateEngine(IUIAdaptor uia, IProcessFactory procFac, IPickUpManager pum){
+		public UIAdaptorStateEngine(IUIManager uim, IUIAdaptor uia, IProcessFactory procFac){
 			thisUIE = uia.GetUIElement();
 			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(this);
-			thisWaitingForTapState = new WaitingForTapState(this, procFac, pum);
-			thisWaitingForReleaseState = new WaitingForReleaseState(this, procFac, pum);
+			thisWaitingForTapState = new WaitingForTapState(this, procFac, uim);
+			thisWaitingForReleaseState = new WaitingForReleaseState(this, procFac, uim);
 			thisWaitingForNextTouchState = new WaitingForNextTouchState(this, procFac);
 			SetWithInitState();
 			ResetTouchCounter();

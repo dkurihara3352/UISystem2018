@@ -19,7 +19,7 @@ public class UIAdaptorInputStateTest{
 	[Test][ExpectedException(typeof(System.InvalidOperationException))]
 	public void PointerDownInputState_OnPointerDown_WhenCalled_ThrowsException(){
 		IUIAdaptorStateEngine engine = Substitute.For<IUIAdaptorStateEngine>();
-		TestPointerDownInputState state = new TestPointerDownInputState(engine, Substitute.For<IPickUpManager>());
+		TestPointerDownInputState state = new TestPointerDownInputState(engine, Substitute.For<IUIManager>());
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
 
 		state.OnPointerDown(eventData);
@@ -521,7 +521,7 @@ public class UIAdaptorInputStateTest{
 			public override void OnPointerDown(ICustomEventData eventData){}
 		}
 		class TestPointerDownInputState: PointerDownInputState{
-			public TestPointerDownInputState(IUIAdaptorStateEngine engine, IPickUpManager pum) :base(engine, pum){}
+			public TestPointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim) :base(engine, uim){}
 			public override void OnEnter(){}
 			public override void OnExit(){}
 			public override void OnPointerUp(ICustomEventData eventData){}
@@ -547,7 +547,7 @@ public class UIAdaptorInputStateTest{
 
 		}
 		class TestUIAStateEngine: UIAdaptorStateEngine{
-			public TestUIAStateEngine(IUIAdaptor uia, IProcessFactory procFac, IPickUpManager pum): base(uia, procFac, pum){}
+			public TestUIAStateEngine(IUIManager uim, IUIAdaptor uia, IProcessFactory procFac): base(uim, uia, procFac){}
 			public IUIAdaptorInputState GetCurState(){
 				return this.thisCurState;
 			}
@@ -590,6 +590,7 @@ public class UIAdaptorInputStateTest{
 			/*  ** Note **
 				tapExpT and ntExpT MUST be different value in order this to work properly
 			*/
+			IUIManager uim = Substitute.For<IUIManager>();
 			IUIAdaptor mockUIA = Substitute.For<IUIAdaptor>();
 				IUIElement mockUIE = Substitute.For<IUIElement>();
 				mockUIA.GetUIElement().Returns(mockUIE);
@@ -603,7 +604,7 @@ public class UIAdaptorInputStateTest{
 				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForTapState>(), Arg.Any<float>()).Returns(mockWFTapProcess);
 				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForNextTouchState>(), Arg.Any<float>()).Returns(mockWFNextTouchProcess);
 				mockProcFac.CreateWaitAndExpireProcess(Arg.Any<WaitingForReleaseState>(), Arg.Any<float>()).Returns(mockWFReleaseProcess);
-			TestUIAStateEngine engine = new TestUIAStateEngine(mockUIA, mockProcFac, Substitute.For<IPickUpManager>());
+			TestUIAStateEngine engine = new TestUIAStateEngine(uim, mockUIA, mockProcFac);
 				mockWFTapProcess.When(x => x.Expire()).Do(x => engine.GetWFTapState().OnProcessExpire());
 				mockWFNextTouchProcess.When(x => x.Expire()).Do(x => engine.GetWFNextTouchState().OnProcessExpire());
 				mockWFReleaseProcess.When(x => x.Expire()).Do(x => engine.GetWFReleaseState().OnProcessExpire());

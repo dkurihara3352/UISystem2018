@@ -17,10 +17,11 @@ namespace UISystem{
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
 			thisUIM = arg.uim;
+			thisProcessFactory = arg.processFactory;
+			thisUIElementFactory = arg.uiElementFactory;
 			thisUIA = arg.uia;
-			thisTool = arg.tool;
 			thisImage = arg.image;
-			thisSelectabilityEngine = new SelectabilityStateEngine(this, thisUIM.GetProcessFactory());
+			thisSelectabilityEngine = new SelectabilityStateEngine(this, thisProcessFactory);
 		}
 		protected readonly IUIManager thisUIM;
 		public IUIManager GetUIM(){
@@ -30,7 +31,8 @@ namespace UISystem{
 		public IUIAdaptor GetUIAdaptor(){
 			return thisUIA;
 		}
-		protected readonly IUITool thisTool;
+		protected readonly IProcessFactory thisProcessFactory;
+		protected readonly IUIElementFactory thisUIElementFactory;
 		public IUIElement GetParentUIE(){
 			return GetUIAdaptor().GetParentUIE();
 		}
@@ -101,55 +103,28 @@ namespace UISystem{
 	}
 	public interface IUIElementConstArg{
 		IUIManager uim{get;}
+		IProcessFactory processFactory{get;}
+		IUIElementFactory uiElementFactory{get;}
 		IUIAdaptor uia{get;}
 		IUIImage image{get;}
-		IUITool tool{get;}
 	}
 	public class UIElementConstArg: IUIElementConstArg{
-		readonly IUIManager thisUIM;
-		readonly IUIAdaptor thisUIA;
-		readonly IUIImage thisImage;
-		readonly IUITool thisTool;
-		public UIElementConstArg(IUIManager uim, IUIAdaptor uia, IUIImage image, IUITool tool){
+		public UIElementConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IUIAdaptor uia, IUIImage image){
 			thisUIM = uim;
+			thisProcessFactory = processFactory;
+			thisUIElementFactory = uiElementFactory;
 			thisUIA = uia;
 			thisImage = image;
-			thisTool = tool;
 		}
+		readonly IUIManager thisUIM;
 		public IUIManager uim{get{return thisUIM;}}
+		readonly IProcessFactory thisProcessFactory;
+		public IProcessFactory processFactory{get{return thisProcessFactory;}}
+		readonly IUIElementFactory thisUIElementFactory;
+		public IUIElementFactory uiElementFactory{get{return thisUIElementFactory;}}
+		readonly IUIAdaptor thisUIA;
 		public IUIAdaptor uia{get{return thisUIA;}}
+		readonly IUIImage thisImage;
 		public IUIImage image{get{return thisImage;}}
-		public IUITool tool{get{return thisTool;}}
-	}
-	public interface IUIInputHandler{
-		/* Releasing
-			pointer up =>
-				OnRelease
-				if deltaP over thresh
-					OnSwipe
-				else
-					if stays in-bound && within time frame
-						OnTap
-
-		*/
-		void OnTouch( int touchCount);
-		void OnDelayedTouch();
-		void OnRelease();
-		void OnDelayedRelease();
-		/* called after both OnRelease and OnTap */
-		void OnTap( int tapCount);
-		void OnDrag( ICustomEventData eventData);
-		void OnHold( float deltaT);
-		/* called every frame from pointer down to up */
-		void OnSwipe( ICustomEventData eventData);
-	}
-	public interface IVisibilitySwitcher{
-		/* subclassed by same uies that are also IRootActivator?
-			.Tools, Widgets
-			** implementation idea **
-			. CanvasGroup is assigned, and tweak its group alpha or like
-		 */
-		void Show();
-		void Hide();
 	}
 }

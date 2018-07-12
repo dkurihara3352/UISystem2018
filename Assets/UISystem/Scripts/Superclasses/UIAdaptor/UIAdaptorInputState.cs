@@ -43,8 +43,8 @@ namespace UISystem{
 		}
 	}
 	public abstract class PointerDownInputState: AbsUIAdaptorInputState{
-		public PointerDownInputState(IUIAdaptorStateEngine engine, IPickUpManager pum): base(engine){
-			thisPUM = pum;
+		public PointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim): base(engine){
+			thisUIM = uim;
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
@@ -55,9 +55,9 @@ namespace UISystem{
 				return true;
 			return false;
 		}
-		IPickUpManager thisPUM;
+		readonly IUIManager thisUIM;
 		void UpdateDragWorldPosition(Vector2 dragWorldPosition){
-			thisPUM.SetDragWorldPosition(dragWorldPosition);
+			thisUIM.SetDragWorldPosition(dragWorldPosition);
 		}
 		public override void OnDrag(ICustomEventData eventData){
 			UpdateDragWorldPosition(eventData.position);
@@ -109,7 +109,7 @@ namespace UISystem{
 			pointer exit =>
 				WFRelease
 		*/
-		public WaitingForTapState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IPickUpManager pum): base(engine, pum){
+		public WaitingForTapState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IUIManager uim): base(engine, uim){
 			thisWaitForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
 		}
 		readonly IWaitAndExpireProcess thisWaitForTapProcess;
@@ -168,7 +168,7 @@ namespace UISystem{
 			pointer exit =>
 				do nothing
 		*/
-		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IPickUpManager pum) :base(engine, pum){
+		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IUIManager uim) :base(engine, uim){
 			this.thisWaitForReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
 		}
 		readonly IWaitAndExpireProcess thisWaitForReleaseProcess;

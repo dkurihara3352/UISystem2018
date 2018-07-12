@@ -4,45 +4,37 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IUIManager{
-		IProcessFactory GetProcessFactory();
-		IReserveTransformUIE GetReserveTransformUIE();
-		void SetReserveTransformUIE(IReserveTransformUIE reserveTransformUIE);
+		IUIElement GetReserveTransformUIE();
+		void SetReserveTransformUIE(IUIElement reserveTransformUIE);
+		void SetDragWorldPosition(Vector2 dragPos);
+		Vector2 GetDragWorldPosition();
 	}
 	public class UIManager: IUIManager {
-		public UIManager(){
-			if(thisProcessManager != null)
-				thisProcessFactory = new ProcessFactory(thisProcessManager, this);
-			else
-				throw new System.InvalidOperationException("ProcessManager is not assigned to UIManager in the inspector");
-		}
-
-		public IProcessFactory GetProcessFactory(){
-			return thisProcessFactory;
-		}
-		readonly IProcessFactory thisProcessFactory;
-		public IProcessManager thisProcessManager;/* assigned in the inspector */
-		IReserveTransformUIE thisReserveTransformUIE;
-		public void SetReserveTransformUIE(IReserveTransformUIE reserveTransformUIE){
+		IUIElement thisReserveTransformUIE;
+		public void SetReserveTransformUIE(IUIElement reserveTransformUIE){
 			thisReserveTransformUIE = reserveTransformUIE;
 		}
-		public IReserveTransformUIE GetReserveTransformUIE(){
+		public IUIElement GetReserveTransformUIE(){
 			return thisReserveTransformUIE;
 		}
+		Vector2 thisDragWorldPosition;
+		public void SetDragWorldPosition(Vector2 dragPos){
+			thisDragWorldPosition = dragPos;
+		}
+		public Vector2 GetDragWorldPosition(){return thisDragWorldPosition;}
 	}
 	public class UIManagerAdaptor: MonoBehaviour{
 		IUIManager uiManager;
-		public IRootUIAdaptor rootUIAdaptor;/* assigned in inspector*/
+		public IProcessManager processManager;/* assigned in the inspector */
+		public IUIAdaptor rootUIAdaptor;/* assigned in inspector*/
+		public IUIElement reserveTransformUIE;
 		public void Awake(){
 			uiManager = new UIManager();
-			uiManager.SetReserveTransformUIE(rootUIAdaptor.GetReserveTransformUIE());
-			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, pum:null, tool:null);
+			uiManager.SetReserveTransformUIE(reserveTransformUIE);
+			IProcessFactory processFactory = new ProcessFactory(processManager, uiManager);
+			IUIElementFactory uiElementFactory = new UIElementFactory(uiManager);
+			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, processFactory, uiElementFactory);
 			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
 		}
-	}
-	public interface IRootUIAdaptor: IPickUpContextUIAdaptor{
-		IReserveTransformUIE GetReserveTransformUIE();
-	}
-	public interface IReserveTransformUIE: IUIElement{
-		Vector2 GetReservePosition();
 	}
 }

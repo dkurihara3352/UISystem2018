@@ -10,7 +10,6 @@ namespace UISystem{
 		float GetDarkenedDarkness();/* somewhere around .5f */
 		void SetDarkness(float darkness);
 		/* Transform */
-		void DetachTo(IPickUpContextUIE pickUpContextUIE);
 		void CopyPosition(IUIImage other);
 		Transform GetTransform();
 		Vector2 GetWorldPosition();
@@ -38,10 +37,6 @@ namespace UISystem{
 		}
 		Color GetColorFormDarkness(float darkness){
 			return Color.Lerp(Color.black, Color.white, darkness);
-		}
-		public void DetachTo(IPickUpContextUIE contextUIE){
-			IPickUpContextUIAdaptor contextUIA = (IPickUpContextUIAdaptor)contextUIE.GetUIAdaptor();
-			this.transform.SetParent(contextUIA.GetTransform(), worldPositionStays:true);
 		}
 		public Transform GetTransform(){
 			return this.transform;

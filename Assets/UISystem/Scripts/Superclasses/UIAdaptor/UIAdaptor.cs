@@ -26,7 +26,7 @@ namespace UISystem{
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				thisUIElement = CreateUIElement();
-				thisInputStateEngine = new UIAdaptorStateEngine(this, thisDomainActivationData.processFactory, passedData.pickUpManager);
+				thisInputStateEngine = new UIAdaptorStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
@@ -35,8 +35,8 @@ namespace UISystem{
 			}
 			IUIAActivationData CheckAndCreateDomainActivationData(IUIAActivationData passedData){
 				IUIAActivationData result = null;
-				if(this is IPickUpContextUIAdaptor){
-					result = ((IPickUpContextUIAdaptor)this).CreateDomainActivationData(passedData);
+				if(this is IUIDomainManager){
+					result = ((IUIDomainManager)this).CreateDomainActivationData(passedData);
 				}else{
 					result = passedData;
 				}
@@ -117,11 +117,7 @@ namespace UISystem{
 			}
 		/* Event System Imple */
 			IUIAdaptorStateEngine thisInputStateEngine;
-			public void OnPointerEnter(PointerEventData eventData){
-				if(this.GetUIElement() is IPickUpReceiver){
-					IPickUpReceiver receiver = (IPickUpReceiver)this.GetUIElement();
-					receiver.CheckForHover();
-				}
+			public virtual void OnPointerEnter(PointerEventData eventData){
 				ICustomEventData customEventData = new CustomEventData(eventData);
 				thisInputStateEngine.OnPointerEnter(customEventData);
 			}

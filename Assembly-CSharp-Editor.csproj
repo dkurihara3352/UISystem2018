@@ -46,19 +46,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\UISystem\Scripts\IconGroup\Editor\EquipToolIconGroupTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroupTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroup_ConstructionTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroup_SlotsAndIIsManagementTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconPanel\Editor\EqpToolEquippedItemsPanelTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconPanel\Editor\EqpToolPoolItemsPanelTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\IconPanel\Editor\EquipToolPanelTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Editor\EquippableItemIconTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Editor\IITransactionStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Editor\ItemIconPickUpImplementorTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Editor\ItemIconTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\Editor\ItemTemplateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\ItemIcon\Item\Editor\ItemTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\EquipToolIconGroupTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroupTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroup_ConstructionTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroup_SlotsAndIIsManagementTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\Editor\EqpToolEquippedItemsPanelTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\Editor\EqpToolPoolItemsPanelTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\Editor\EquipToolPanelTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\Editor\EquippableItemIconTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\Editor\IITransactionStateTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\Editor\ItemIconPickUpImplementorTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\Editor\ItemIconTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\EquipItemIconTransactionManagerTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\EquipToolIGManagerTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\IITAMStateEngineTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\ItemIconTransactionManagerTest.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\PickUpReceiverSwitchTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTemplateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessAndIrperTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\ConstrainedProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\InterpolatorProcessTest.cs" />
@@ -67,11 +72,6 @@
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\SwitchableStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\UIElementTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\Editor\EquipItemIconTransactionManagerTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\Editor\EquipToolIGManagerTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\Editor\IITAMStateEngineTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\Editor\ItemIconTransactionManagerTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\TransactionManager\IITAM\Editor\PickUpReceiverSwitchTest.cs" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
