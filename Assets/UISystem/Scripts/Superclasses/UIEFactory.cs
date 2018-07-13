@@ -14,18 +14,19 @@ namespace UISystem{
 		}
 		protected readonly IUIManager thisUIM;
 		readonly IUIElement thisReserveTransformUIE;
-		protected T CreateUIA<T>() where T: MonoBehaviour, IUIAdaptor{
+		protected T CreateInstatiableUIA<T>(IUIAInitializationData uiaInitializationData) where T: MonoBehaviour, IInstatiableUIAdaptor{
 			GameObject go = new GameObject();
 			IUIAdaptor reserveUIA = thisReserveTransformUIE.GetUIAdaptor();
 			go.transform.SetParent(reserveUIA.GetTransform());
 			go.transform.position = reserveUIA.GetLocalPosition();
 			go.transform.SetAsLastSibling();
 			T uia = go.AddComponent<T>();
+			uia.SetInitializationFields(uiaInitializationData);
 			return uia;
 		}
 		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller, Vector2 panelDim, Vector2 padding){
-			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateUIA<DigitPanelSetAdaptor>();
-			digitPanelSetAdaptor.SetInitializationFields(digitPlace, panelDim, padding);
+			IDigitPanelSetAdaptorInitializationData uiaInitData = new DigitPanelSetAdaptorInitializationData(digitPlace, panelDim, padding);
+			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateInstatiableUIA<DigitPanelSetAdaptor>(uiaInitData);
 			IUIAdaptor quantityRollerAdaptor = quantityRoller.GetUIAdaptor();
 			digitPanelSetAdaptor.SetParentUIA(quantityRollerAdaptor, true);
 			IUIAActivationData activationData = quantityRollerAdaptor.GetDomainActivationData();
@@ -34,8 +35,8 @@ namespace UISystem{
 			return digitPanelSet;
 		}
 		public IDigitPanel CreateDigitPanel(IDigitPanelSet parentDigitPanelSet, Vector2 panelDim, float localPosY){
-			DigitPanelAdaptor digitPanelAdaptor = CreateUIA<DigitPanelAdaptor>();
-			digitPanelAdaptor.SetInitializationFields(panelDim, localPosY);
+			IDigitPanelAdaptorInitializationData uiaInitData = new DigitPanelAdaptorInitializationData(panelDim, localPosY);
+			DigitPanelAdaptor digitPanelAdaptor = CreateInstatiableUIA<DigitPanelAdaptor>(uiaInitData);
 			IUIAdaptor parentUIA = parentDigitPanelSet.GetUIAdaptor();
 			digitPanelAdaptor.SetParentUIA(parentUIA, true);
 			IUIAActivationData activationData = parentUIA.GetDomainActivationData();

@@ -4,17 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UISystem{
-	public interface IDigitPanelAdaptor: IUIAdaptor{
-		void SetInitializationFields(Vector2 panelDim, float localPosY);
+	public interface IDigitPanelAdaptor: IInstatiableUIAdaptor{
 		void SetImageNumber(int number);
 	}
 	[RequireComponent(typeof(Text))]
 	public class DigitPanelAdaptor: AbsResizableRectUIAdaptor<IDigitPanel>, IDigitPanelAdaptor{
 		public Vector2 thisPanelDim;
 		public float thisLocalPosY;
-		public void SetInitializationFields(Vector2 panelDim, float localPosY){
-			thisPanelDim = panelDim;
-			thisLocalPosY = localPosY;
+		public void SetInitializationFields(IUIAInitializationData data){
+			if(data is IDigitPanelAdaptorInitializationData){
+				IDigitPanelAdaptorInitializationData dpaData = (IDigitPanelAdaptorInitializationData)data;
+				thisPanelDim = dpaData.panelDim;
+				thisLocalPosY = dpaData.localPosY;
+			}else
+				throw new System.ArgumentException("data must be of type IDigitPanelAdaptorInitializationData");
 		}
 		public override void GetReadyForActivation(IUIAActivationData passedData){
 			base.GetReadyForActivation(passedData);
@@ -31,5 +34,19 @@ namespace UISystem{
 			IDigitPanelConstArg arg = new DigitPanelConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null, thisPanelDim, thisLocalPosY);
 			return new DigitPanel(arg);
 		}
+	}
+	public interface IDigitPanelAdaptorInitializationData: IUIAInitializationData{
+		Vector2 panelDim{get;}
+		float localPosY{get;}
+	}
+	public class DigitPanelAdaptorInitializationData: IDigitPanelAdaptorInitializationData{
+		public DigitPanelAdaptorInitializationData(Vector2 panelDim, float localPosY){
+			thisPanelDim = panelDim;
+			thisLocalPosY = localPosY;
+		}
+		readonly Vector2 thisPanelDim;
+		public Vector2 panelDim{get{return thisPanelDim;}}
+		readonly float thisLocalPosY;
+		public float localPosY{get{return thisLocalPosY;}}
 	}
 }

@@ -23,22 +23,22 @@ namespace UISystem.PickUpUISystem{
 				throw new System.InvalidOperationException("item must be of type IEquippableUIItem");
 		}
 		public IEquippableItemIcon CreateEquippableItemIcon(IEquippableUIItem item){
-			IEquippableItemIconAdaptor eqpIIAdaptor = this.CreateUIA<EquippableItemIconAdaptor>();
-			eqpIIAdaptor.SetInitializationFields(item);
+			IEquippableItemIconAdaptorInitializationData uiaInitData = new EquippableItemIconAdaptorInitializationData(item);
+			IEquippableItemIconAdaptor eqpIIAdaptor = this.CreateInstatiableUIA<EquippableItemIconAdaptor>(uiaInitData);
 			IEquipToolActivationData activationData = new EquipToolUIAActivationData(thisUIM, thisPickUpSystemProcessFactory, this, thisEqpIITAM, thisEqpTool);
 			eqpIIAdaptor.GetReadyForActivation(activationData);
 			IEquippableItemIcon eqpItemIcon = (IEquippableItemIcon)eqpIIAdaptor.GetUIElement();
 			return eqpItemIcon;
 		}
 		public IQuantityRoller CreateItemIconQuantityRoller(IItemIconUIAdaptor itemIconUIAdaptor){
-			IQuantityRollerAdaptor quantityRollerAdaptor = this.CreateUIA<QuantityRollerAdaptor>();
-			quantityRollerAdaptor.GetTransform().SetParent(itemIconUIAdaptor.GetTransform());
 			Rect itemIconRect = itemIconUIAdaptor.GetRect();
 			int maxQuantity = 99;
 			Vector2 panelDimension = new Vector2(itemIconRect.width * .15f, itemIconRect.height * .2f);
 			Vector2 padding = new Vector2(itemIconRect.width * .05f, itemIconRect.height * .05f);
 			Vector2 normalizedPos = new Vector2(1f, 1f);
-			quantityRollerAdaptor.SetInitializationFields(maxQuantity, panelDimension, padding, normalizedPos);
+			IQuantityRollerAdaptorInitializationData uiaInitData = new QuantityRollerAdaptorInitializationData(maxQuantity, panelDimension, padding, normalizedPos);
+			IQuantityRollerAdaptor quantityRollerAdaptor = this.CreateInstatiableUIA<QuantityRollerAdaptor>(uiaInitData);
+			quantityRollerAdaptor.GetTransform().SetParent(itemIconUIAdaptor.GetTransform());
 			IUIAActivationData activationData = itemIconUIAdaptor.GetDomainActivationData();
 
 			quantityRollerAdaptor.GetReadyForActivation(activationData);

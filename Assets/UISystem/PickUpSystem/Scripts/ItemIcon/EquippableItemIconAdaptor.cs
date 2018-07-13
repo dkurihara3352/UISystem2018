@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
-	public interface IEquipToolElementUIA: IUIAdaptor{
+	public interface IEquipToolElementUIA: IInstatiableUIAdaptor{
 	}
 	public interface IEquippableItemIconAdaptor: IItemIconUIAdaptor, IEquipToolElementUIA{
-		void SetInitializationFields(IEquippableUIItem item);
 	}
 	public class EquippableItemIconAdaptor: AbsItemIconUIAdaptor<IEquippableItemIcon>, IEquippableItemIconAdaptor{
+		public void SetInitializationFields(IUIAInitializationData data){
+			if(data is IEquippableItemIconAdaptorInitializationData){
+				IEquippableItemIconAdaptorInitializationData eqpIIAInitData = (IEquippableItemIconAdaptorInitializationData)data;
+				thisEqpItem = eqpIIAInitData.equippableItem;
+			}
+		}
+		IEquippableUIItem thisEqpItem;
 		public override void GetReadyForActivation(IUIAActivationData passedArg){
 			if(passedArg is IEquipToolActivationData){
 				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
@@ -21,11 +27,7 @@ namespace UISystem.PickUpUISystem{
 		}
 		IEquippableIITAManager thisEqpIITAM;/* not used? */
 		IEquipTool thisEqpTool;/* not used? */
-		IEquippableUIItem thisEqpItem;
 		IEquipToolUIEFactory thisEqpToolUIEFactory;
-		public void SetInitializationFields(IEquippableUIItem item){
-			thisEqpItem = item;
-		}
 		IEquippableItemIcon eqpII{
 			get{return this.GetUIElement() as IEquippableItemIcon;}//safe
 		}
@@ -43,6 +45,16 @@ namespace UISystem.PickUpUISystem{
 			
 			return new EquippableItemIcon(arg);
 		}
+	}
+	public interface IEquippableItemIconAdaptorInitializationData: IUIAInitializationData{
+		IEquippableUIItem equippableItem{get;}
+	}
+	public class EquippableItemIconAdaptorInitializationData: IEquippableItemIconAdaptorInitializationData{
+		public EquippableItemIconAdaptorInitializationData(IEquippableUIItem equippableItem){
+			thisEquippableItem = equippableItem;
+		}
+		readonly IEquippableUIItem thisEquippableItem;
+		public IEquippableUIItem equippableItem{get{return thisEquippableItem;}}
 	}
 }
 
