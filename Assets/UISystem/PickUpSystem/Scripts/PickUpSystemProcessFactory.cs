@@ -1,15 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DKUtility;
 
 namespace UISystem.PickUpUISystem{
-	public interface IPickUpSystemProcessFactory: IProcessFactory{
+	public interface IPickUpSystemProcessFactory: IUISystemProcessFactory{
  		IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient);
 		IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage uiImage);
 		IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage uiImage, IItemIcon itemIcon);
 		IVisualPickednessProcess CreateVisualPickednessProcess(IWaitAndExpireProcessState state, IPickableUIImage pickableUIImage, float sourcePickedness, float targetPickedness);
 	}
-	public class PickUpSystemProcessFactory: ProcessFactory, IPickUpSystemProcessFactory{
+	public class PickUpSystemProcessFactory: UISystemProcessFactory, IPickUpSystemProcessFactory{
 		public PickUpSystemProcessFactory(IProcessManager processManager, IUIManager uim): base(processManager, uim){}
 		public IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient){
 			ImageSmoothFollowDragPositionProcess process = new ImageSmoothFollowDragPositionProcess(travelableUIE, pum, dragThreshold, smoothCoefficient, thisProcessManager);

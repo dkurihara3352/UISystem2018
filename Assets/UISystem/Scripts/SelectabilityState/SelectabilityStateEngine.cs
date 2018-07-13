@@ -14,7 +14,7 @@ namespace UISystem{
 
 	}
 	public class SelectabilityStateEngine: AbsSwitchableStateEngine<ISelectabilityState>, ISelectabilityStateEngine{
-		public SelectabilityStateEngine(IUIElement uie, IProcessFactory procFac){
+		public SelectabilityStateEngine(IUIElement uie, IUISystemProcessFactory procFac){
 			IUIImage image = uie.GetUIImage();
 			ITurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());
 			ITurnImageDarknessProcess turnToDarkenedProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDarkenedDarkness());

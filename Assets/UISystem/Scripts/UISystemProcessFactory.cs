@@ -1,27 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DKUtility;
 
 namespace UISystem{
-	public interface IProcessFactory{
+	public interface IUISystemProcessFactory: IProcessFactory{
 		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
 		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 	}
-	public class ProcessFactory: IProcessFactory{
-		public ProcessFactory(IProcessManager procManager, IUIManager uim){
-			if(procManager != null)
-				thisProcessManager = procManager;
-			else
-				throw new System.ArgumentNullException("procManager", "ProcessFactory does not operate without a procManager");
+	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
+		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
 			if(uim != null)
 				thisUIManager = uim;
 			else
 				throw new System.ArgumentNullException("uim", "ProcessFactory does not operate without a uim");
 
 		}
-		protected readonly IProcessManager thisProcessManager;
 		protected readonly IUIManager thisUIManager;
 		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
 			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, ProcessConstraint.rateOfChange, 1f, .05f, image, targetDarkness, false);

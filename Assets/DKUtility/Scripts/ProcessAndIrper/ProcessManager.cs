@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystem{
+namespace DKUtility{
 	public interface IProcessManager{
 		void AddRunningProcess(IProcess process);
 		void RemoveRunningProcess(IProcess process);

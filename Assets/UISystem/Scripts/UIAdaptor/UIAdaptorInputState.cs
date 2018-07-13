@@ -1,7 +1,8 @@
-﻿	using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DKUtility;
 
 namespace UISystem{
 	public interface IRawInputHandler{
@@ -109,7 +110,7 @@ namespace UISystem{
 			pointer exit =>
 				WFRelease
 		*/
-		public WaitingForTapState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IUIManager uim): base(engine, uim){
+		public WaitingForTapState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac, IUIManager uim): base(engine, uim){
 			thisWaitForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
 		}
 		readonly IWaitAndExpireProcess thisWaitForTapProcess;
@@ -168,7 +169,7 @@ namespace UISystem{
 			pointer exit =>
 				do nothing
 		*/
-		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IProcessFactory procFac, IUIManager uim) :base(engine, uim){
+		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac, IUIManager uim) :base(engine, uim){
 			this.thisWaitForReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
 		}
 		readonly IWaitAndExpireProcess thisWaitForReleaseProcess;
@@ -219,7 +220,7 @@ namespace UISystem{
 						WFFTouchState
 						DelayedReleaseUIE
 		*/
-		public WaitingForNextTouchState(IUIAdaptorStateEngine engine, IProcessFactory procFac) :base(engine){
+		public WaitingForNextTouchState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac) :base(engine){
 			thisWaitAndExpireProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());
 		}
 		readonly IProcess thisWaitAndExpireProcess;

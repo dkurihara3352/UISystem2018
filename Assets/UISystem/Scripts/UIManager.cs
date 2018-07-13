@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DKUtility;
 
 namespace UISystem{
 	public interface IUIManager{
@@ -31,7 +32,7 @@ namespace UISystem{
 		public void Awake(){
 			uiManager = new UIManager();
 			uiManager.SetReserveTransformUIE(reserveTransformUIE);
-			IProcessFactory processFactory = new ProcessFactory(processManager, uiManager);
+			IUISystemProcessFactory processFactory = new UISystemProcessFactory(processManager, uiManager);
 			IUIElementFactory uiElementFactory = new UIElementFactory(uiManager);
 			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, processFactory, uiElementFactory);
 			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);

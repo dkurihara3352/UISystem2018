@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystem{
+namespace DKUtility{
 	public interface IInterpolator{
 		void Interpolate(float normalizedT);
 		void Terminate();

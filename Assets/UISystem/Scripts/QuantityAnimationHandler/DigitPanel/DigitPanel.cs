@@ -25,7 +25,7 @@ namespace UISystem{
 		float localPosY{get;}
 	}
 	public class DigitPanelConstArg: UIElementConstArg, IDigitPanelConstArg{
-		public DigitPanelConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IDigitPanelAdaptor digitPanelAdaptor, IUIImage image, Vector2 panelDim, float localPosY): base(uim, processFactory, uiElementFactory, digitPanelAdaptor, image){
+		public DigitPanelConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IDigitPanelAdaptor digitPanelAdaptor, IUIImage image, Vector2 panelDim, float localPosY): base(uim, processFactory, uiElementFactory, digitPanelAdaptor, image){
 			thisPanelDim = panelDim;
 			thisLocalPosY = localPosY;
 		}

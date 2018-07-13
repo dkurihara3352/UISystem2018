@@ -31,7 +31,7 @@ namespace UISystem{
 		public IUIAdaptor GetUIAdaptor(){
 			return thisUIA;
 		}
-		protected readonly IProcessFactory thisProcessFactory;
+		protected readonly IUISystemProcessFactory thisProcessFactory;
 		protected readonly IUIElementFactory thisUIElementFactory;
 		public IUIElement GetParentUIE(){
 			return GetUIAdaptor().GetParentUIE();
@@ -82,14 +82,38 @@ namespace UISystem{
 				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
-			public virtual void OnTouch( int touchCount){}
-			public virtual void OnDelayedTouch(){}
-			public virtual void OnRelease(){}
-			public virtual void OnDelayedRelease(){}
-			public virtual void OnTap( int tapCount){}
-			public virtual void OnDrag( ICustomEventData eventData){}
-			public virtual void OnHold( float elapsedT){}
-			public virtual void OnSwipe( ICustomEventData eventData){}
+			public virtual void OnTouch( int touchCount){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnTouch(touchCount);
+			}
+			public virtual void OnDelayedTouch(){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnDelayedTouch();
+			}
+			public virtual void OnRelease(){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnRelease();
+			}
+			public virtual void OnDelayedRelease(){
+				if(GetParentUIE() != null) 
+					GetParentUIE().OnDelayedRelease();
+			}
+			public virtual void OnTap( int tapCount){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnTap(tapCount);
+			}
+			public virtual void OnDrag( ICustomEventData eventData){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnDrag(eventData);
+			}
+			public virtual void OnHold( float elapsedT){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnHold(elapsedT);
+			}
+			public virtual void OnSwipe( ICustomEventData eventData){
+				if(GetParentUIE() != null)
+					GetParentUIE().OnSwipe(eventData);
+			}
 		/*  */
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
 			return this.thisUIA.GetPositionInThisSpace(worldPos);
@@ -103,13 +127,13 @@ namespace UISystem{
 	}
 	public interface IUIElementConstArg{
 		IUIManager uim{get;}
-		IProcessFactory processFactory{get;}
+		IUISystemProcessFactory processFactory{get;}
 		IUIElementFactory uiElementFactory{get;}
 		IUIAdaptor uia{get;}
 		IUIImage image{get;}
 	}
 	public class UIElementConstArg: IUIElementConstArg{
-		public UIElementConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IUIAdaptor uia, IUIImage image){
+		public UIElementConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IUIAdaptor uia, IUIImage image){
 			thisUIM = uim;
 			thisProcessFactory = processFactory;
 			thisUIElementFactory = uiElementFactory;
@@ -118,8 +142,8 @@ namespace UISystem{
 		}
 		readonly IUIManager thisUIM;
 		public IUIManager uim{get{return thisUIM;}}
-		readonly IProcessFactory thisProcessFactory;
-		public IProcessFactory processFactory{get{return thisProcessFactory;}}
+		readonly IUISystemProcessFactory thisProcessFactory;
+		public IUISystemProcessFactory processFactory{get{return thisProcessFactory;}}
 		readonly IUIElementFactory thisUIElementFactory;
 		public IUIElementFactory uiElementFactory{get{return thisUIElementFactory;}}
 		readonly IUIAdaptor thisUIA;

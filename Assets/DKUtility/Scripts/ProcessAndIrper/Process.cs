@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystem{
+namespace DKUtility{
 	public interface IProcess{
 		void UpdateProcess(float deltaT);
 		void Run();

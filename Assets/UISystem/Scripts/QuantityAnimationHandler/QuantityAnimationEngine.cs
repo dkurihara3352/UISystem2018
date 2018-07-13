@@ -12,10 +12,10 @@ namespace UISystem{
 		void SetQuantityRoller(IQuantityRoller quantityRoller);
 	}
 	public class QuantityAnimationEngine: IQuantityAnimationEngine{
-		public QuantityAnimationEngine(IProcessFactory processFactory){
+		public QuantityAnimationEngine(IUISystemProcessFactory processFactory){
 			thisProcessFactory = processFactory;
 		}
-		readonly IProcessFactory thisProcessFactory;
+		readonly IUISystemProcessFactory thisProcessFactory;
 		IQuantityRoller thisQuantityRoller;
 		public void SetQuantityRoller(IQuantityRoller quantityRoller){
 			thisQuantityRoller = quantityRoller;

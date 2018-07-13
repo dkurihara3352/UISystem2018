@@ -5,6 +5,7 @@ using UnityEditor;
 using NUnit.Framework;
 using NSubstitute;
 using UISystem;
+using DKUtility;
 
 public class UIAdaptorInputStateTest{
 
@@ -530,7 +531,7 @@ public class UIAdaptorInputStateTest{
 			public override void OnPointerExit(ICustomEventData eventData){}
 		}
 		class UIAStateEngineConstArg{
-			public UIAStateEngineConstArg(IUIAdaptor uia, IUIElement uie, IProcessFactory procFac, IWaitAndExpireProcess wfTapProcess, IWaitAndExpireProcess wfNextTouchProcess, IWaitAndExpireProcess wfReleaseProcess){
+			public UIAStateEngineConstArg(IUIAdaptor uia, IUIElement uie, IUISystemProcessFactory procFac, IWaitAndExpireProcess wfTapProcess, IWaitAndExpireProcess wfNextTouchProcess, IWaitAndExpireProcess wfReleaseProcess){
 				this.uia = uia;
 				this.uie = uie;
 				this.procFac = procFac;
@@ -540,14 +541,14 @@ public class UIAdaptorInputStateTest{
 			}
 			public IUIAdaptor uia;
 			public IUIElement uie;
-			public IProcessFactory procFac;
+			public IUISystemProcessFactory procFac;
 			public IWaitAndExpireProcess wfTapProcess;
 			public IWaitAndExpireProcess wfNextTouchProcess;
 			public IWaitAndExpireProcess wfReleaseProcess;
 
 		}
 		class TestUIAStateEngine: UIAdaptorStateEngine{
-			public TestUIAStateEngine(IUIManager uim, IUIAdaptor uia, IProcessFactory procFac): base(uim, uia, procFac){}
+			public TestUIAStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac): base(uim, uia, procFac){}
 			public IUIAdaptorInputState GetCurState(){
 				return this.thisCurState;
 			}
@@ -594,7 +595,7 @@ public class UIAdaptorInputStateTest{
 			IUIAdaptor mockUIA = Substitute.For<IUIAdaptor>();
 				IUIElement mockUIE = Substitute.For<IUIElement>();
 				mockUIA.GetUIElement().Returns(mockUIE);
-			IProcessFactory mockProcFac = Substitute.For<IProcessFactory>();
+			IUISystemProcessFactory mockProcFac = Substitute.For<IUISystemProcessFactory>();
 				IWaitAndExpireProcess mockWFTapProcess = Substitute.For<IWaitAndExpireProcess>();
 				IWaitAndExpireProcess mockWFNextTouchProcess = Substitute.For<IWaitAndExpireProcess>();
 				IWaitAndExpireProcess mockWFReleaseProcess = Substitute.For<IWaitAndExpireProcess>();

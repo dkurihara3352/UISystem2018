@@ -101,7 +101,7 @@ namespace UISystem{
 		Vector2 rollerNormalizedPos{get;}
 	}
 	public class QuantityRollerConstArg: UIElementConstArg, IQuantityRollerConstArg{
-		public QuantityRollerConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IQuantityRollerAdaptor quaRolAdaptor, IUIImage image, int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 rollerNormalizedPos): base(uim, processFactory, uiElementFactory, quaRolAdaptor, image){
+		public QuantityRollerConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IQuantityRollerAdaptor quaRolAdaptor, IUIImage image, int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 rollerNormalizedPos): base(uim, processFactory, uiElementFactory, quaRolAdaptor, image){
 			thisMaxQuantity = maxQuantity;
 			thisUIEFactory = uieFactory;
 			thisPanelDim = panelDim;

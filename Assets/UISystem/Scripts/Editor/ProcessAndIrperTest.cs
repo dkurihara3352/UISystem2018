@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using NUnit.Framework;
 using NSubstitute;
-using UISystem;
+using DKUtility;
 
 public class ProcessAndIrperTest{
 	[Test][TestCaseSource(typeof(ExpirationTestCase), "nonExpireCases")]

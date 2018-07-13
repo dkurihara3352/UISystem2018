@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystem{
+namespace DKUtility{
 	public interface IWaitAndExpireProcessState{
 		void OnProcessExpire();
 		void OnProcessUpdate(float deltaT);

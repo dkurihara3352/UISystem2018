@@ -62,16 +62,16 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\IITAMStateEngineTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\ItemIconTransactionManagerTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\PickUpReceiverSwitchTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessAndIrperTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\ConstrainedProcessTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\InterpolatorProcessTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\TurnImageDarknessProcessTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\SelectabilityStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\SwitchableStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\UIAdaptorInputStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Editor\UIElementTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTemplateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessAndIrperTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\ConstrainedProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\InterpolatorProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\ProcessTest\TurnImageDarknessProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\SelectabilityStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\SwitchableStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\UIAdaptorInputStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Superclasses\Editor\UIElementTest.cs" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>

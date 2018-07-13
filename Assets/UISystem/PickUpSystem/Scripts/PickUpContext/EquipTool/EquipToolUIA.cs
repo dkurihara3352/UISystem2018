@@ -9,7 +9,7 @@ namespace UISystem.PickUpUISystem{
 		/* assigned in the insp */
 			public IEquipToolPanel thisEqpItemsPanel;
 			public IEquipToolPanel thisPoolItemsPanel;
-			public IProcessManager processManager;
+			public DKUtility.IProcessManager processManager;
 		/*  */
 		IEquipToolActivationData eqpUIAActivationData{
 			get{return this.thisDomainActivationData as IEquipToolActivationData;}

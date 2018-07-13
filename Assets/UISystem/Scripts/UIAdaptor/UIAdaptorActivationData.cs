@@ -5,23 +5,23 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIAActivationData{
 		IUIManager uim{get;}
-		IProcessFactory processFactory{get;}
+		IUISystemProcessFactory processFactory{get;}
 		IUIElementFactory uiElementFactory{get;}
 	}
 	public abstract class AbsUIAActivationData: IUIAActivationData{
-		public AbsUIAActivationData(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory){
+		public AbsUIAActivationData(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory){
 			thisUIM = uim;
 			thisProcessFactory = processFactory;
 			thisUIElementFactory = uiElementFactory;
 		}
 		readonly IUIManager thisUIM;
 		public IUIManager uim{get{return thisUIM;}}
-		readonly IProcessFactory thisProcessFactory;
-		public IProcessFactory processFactory{get{return thisProcessFactory;}}
+		readonly IUISystemProcessFactory thisProcessFactory;
+		public IUISystemProcessFactory processFactory{get{return thisProcessFactory;}}
 		readonly IUIElementFactory thisUIElementFactory;
 		public IUIElementFactory uiElementFactory{get{return thisUIElementFactory;}}
 	}
 	public class RootUIAActivationData: AbsUIAActivationData{
-		public RootUIAActivationData(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory): base(uim, processFactory, uiElementFactory){}
+		public RootUIAActivationData(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory): base(uim, processFactory, uiElementFactory){}
 	}
 }

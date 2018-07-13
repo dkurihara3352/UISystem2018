@@ -75,7 +75,7 @@ namespace UISystem{
 		Vector2 padding{get;}
 	}
 	public class DigitPanelSetConstArg: UIElementConstArg, IDigitPanelSetConstArg{
-		public DigitPanelSetConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory ,IUIAdaptor uia, IUIImage image, int digitPlace, Vector2 panelDim, Vector2 padding): base(uim, processFactory, uiElementFactory, uia, image){
+		public DigitPanelSetConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory ,IUIAdaptor uia, IUIImage image, int digitPlace, Vector2 panelDim, Vector2 padding): base(uim, processFactory, uiElementFactory, uia, image){
 			thisDigitPlace = digitPlace;
 		}
 		readonly int thisDigitPlace;
