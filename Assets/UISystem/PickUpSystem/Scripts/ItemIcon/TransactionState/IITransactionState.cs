@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
-	public interface IIITransactionState: ISwitchableState{
+	public interface IIITransactionState: DKUtility.ISwitchableState{
 		void SetItemIcon(IItemIcon itemIcon);
 	}
 	public interface IEqpIITransactionState: IIITransactionState{}

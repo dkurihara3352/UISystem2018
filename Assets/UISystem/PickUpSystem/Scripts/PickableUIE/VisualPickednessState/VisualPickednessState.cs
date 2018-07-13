@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
-	public interface IVisualPickednessState: ISwitchableState, IVisualPickednessHandler{
+	public interface IVisualPickednessState: DKUtility.ISwitchableState, IVisualPickednessHandler{
 		void SetPickableUIImage(IPickableUIImage pickableUIImage);
 	}
 	public abstract class AbsVisualPickednessState: IVisualPickednessState{

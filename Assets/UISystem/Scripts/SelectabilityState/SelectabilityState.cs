@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface ISelectabilityState: ISwitchableState{
+	public interface ISelectabilityState: DKUtility.ISwitchableState{
 	}
 	public abstract class TurnImageDarknessState: ISelectabilityState{
 		protected ITurnImageDarknessProcess process;

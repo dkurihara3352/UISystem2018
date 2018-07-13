@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DKUtility;
 namespace UISystem.PickUpUISystem{
 	public interface IIITAMStateHandler{
 		void SetToPickedState(IItemIcon pickedII);

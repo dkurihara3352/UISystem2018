@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UISystem{
+namespace DKUtility{
 	public interface ISwitchableStateEngine<T> where T: ISwitchableState{
 		void TrySwitchState(T state);
 	}

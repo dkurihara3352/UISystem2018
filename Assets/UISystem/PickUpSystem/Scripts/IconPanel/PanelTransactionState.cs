@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
 	/* super */
-		public interface IPanelTransactionState: ISwitchableState{}
+		public interface IPanelTransactionState: DKUtility.ISwitchableState{}
 		public abstract class AbsPanelTransactionState: IPanelTransactionState{
 			public AbsPanelTransactionState(IPanelTransactionStateConstArg arg){
 				thisPanel = arg.panel;

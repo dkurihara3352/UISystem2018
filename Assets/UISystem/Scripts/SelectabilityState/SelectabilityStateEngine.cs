@@ -13,7 +13,7 @@ namespace UISystem{
 	public interface ISelectabilityStateEngine: ISelectabilityStateHandler{
 
 	}
-	public class SelectabilityStateEngine: AbsSwitchableStateEngine<ISelectabilityState>, ISelectabilityStateEngine{
+	public class SelectabilityStateEngine: DKUtility.AbsSwitchableStateEngine<ISelectabilityState>, ISelectabilityStateEngine{
 		public SelectabilityStateEngine(IUIElement uie, IUISystemProcessFactory procFac){
 			IUIImage image = uie.GetUIImage();
 			ITurnImageDarknessProcess turnToDefaultProcess = procFac.CreateTurnImageDarknessProcess(image, image.GetDefaultDarkness());

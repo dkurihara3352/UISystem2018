@@ -550,31 +550,31 @@ public class UIAdaptorInputStateTest{
 		class TestUIAStateEngine: UIAdaptorStateEngine{
 			public TestUIAStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac): base(uim, uia, procFac){}
 			public IUIAdaptorInputState GetCurState(){
-				return this.thisCurState;
+				return thisCurState;
 			}
 			public bool IsWaitingForFirstTouch(){
-				return this.thisCurState is WaitingForFirstTouchState;
+				return thisCurState is WaitingForFirstTouchState;
 			}
 			public WaitingForFirstTouchState GetWFFirstTouchState(){
-				return this.thisWaitingForFirstTouchState;
+				return thisWaitingForFirstTouchState;
 			}
 			public bool IsWaitingForTap(){
-				return this.thisCurState is WaitingForTapState;
+				return thisCurState is WaitingForTapState;
 			}
 			public WaitingForTapState GetWFTapState(){
-				return this.thisWaitingForTapState;
+				return thisWaitingForTapState;
 			}
 			public bool IsWaitingForRelease(){
-				return this.thisCurState is WaitingForReleaseState;
+				return thisCurState is WaitingForReleaseState;
 			}
 			public WaitingForReleaseState GetWFReleaseState(){
-				return this.thisWaitingForReleaseState;
+				return thisWaitingForReleaseState;
 			}
 			public bool IsWaitingForNextTouch(){
-				return this.thisCurState is WaitingForNextTouchState;
+				return thisCurState is WaitingForNextTouchState;
 			}
 			public WaitingForNextTouchState GetWFNextTouchState(){
-				return this.thisWaitingForNextTouchState;
+				return thisWaitingForNextTouchState;
 			}
 			public bool StatesAreAllSet(){
 				return 

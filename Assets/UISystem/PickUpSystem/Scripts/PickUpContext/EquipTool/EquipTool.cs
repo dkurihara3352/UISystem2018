@@ -10,17 +10,17 @@ namespace UISystem.PickUpUISystem{
 	}
 	public class EquipTool: AbsUITool, IEquipTool{
 		public EquipTool(IUIManager uim, IEquippableIITAManager eqpIITAM): base(uim, eqpIITAM){
-			this.modeEngine = new EquipToolItemModeEngine();
-			this.allItemMode = new EquipToolAllItemMode();
-			this.bowMode = new EquipToolBowMode();
-			this.wearMode = new EquipToolWearMode();
-			this.cgMode = new EquipToolCarriedGearMode();
+			thisModeEngine = new EquipToolItemModeEngine();
+			thisAllItemMode = new EquipToolAllItemMode();
+			thisBowMode = new EquipToolBowMode();
+			thisWearMode = new EquipToolWearMode();
+			thisCGMode = new EquipToolCarriedGearMode();
 
-			this.filterEngine = new EquipToolItemFilterEngine();
-			this.noneFilter = new EquipToolNoneFilter();
-			this.bowFilter = new EquipToolBowFilter();
-			this.wearFilter = new EquipToolWearFilter();
-			this.cgFilter = new EquipToolCarriedGearFilter();
+			thisFilterEngine = new EquipToolItemFilterEngine();
+			thisNoneFilter = new EquipToolNoneFilter();
+			thisBowFilter = new EquipToolBowFilter();
+			thisWearFilter = new EquipToolWearFilter();
+			thisCGFilter = new EquipToolCarriedGearFilter();
 
 			eqpIITAM.SetEqpTool(this);
 		}
@@ -28,38 +28,38 @@ namespace UISystem.PickUpUISystem{
 		/* mode switch */
 			public void TrySwitchItemMode(IItemTemplate itemTemp){
 				IEquipToolItemMode modeToSwitch = GetModeToSwitch(itemTemp);
-				this.modeEngine.TrySwitchState(modeToSwitch);
+				thisModeEngine.TrySwitchState(modeToSwitch);
 			}
 			IEquipToolItemMode GetModeToSwitch(IItemTemplate itemTemp){
 				if(itemTemp is IBowTemplate)
-					return bowMode;
+					return thisBowMode;
 				else if( itemTemp is IWearTemplate)
-					return wearMode;
+					return thisWearMode;
 				else/* cg */
-					return cgMode;
+					return thisCGMode;
 			}
-			readonly IEquipToolItemModeEngine modeEngine;
-			readonly IEquipToolAllItemMode allItemMode;
-			readonly IEquipToolBowMode bowMode;
-			readonly IEquipToolWearMode wearMode;
-			readonly IEquipToolCarriedGearMode cgMode;
+			readonly IEquipToolItemModeEngine thisModeEngine;
+			readonly IEquipToolAllItemMode thisAllItemMode;
+			readonly IEquipToolBowMode thisBowMode;
+			readonly IEquipToolWearMode thisWearMode;
+			readonly IEquipToolCarriedGearMode thisCGMode;
 		/* filter switch */
 			public void TrySwitchItemFilter(IItemTemplate itemTemp){
 				IEquipToolItemFilter filterToSwitch = GetFilterToSwitch(itemTemp);
-				this.filterEngine.TrySwitchState(filterToSwitch);
+				thisFilterEngine.TrySwitchState(filterToSwitch);
 			}
-			readonly IEquipToolItemFilterEngine filterEngine;
-			readonly IEquipToolNoneFilter noneFilter;
-			readonly IEquipToolBowFilter bowFilter;
-			readonly IEquipToolWearFilter wearFilter;
-			readonly IEquipToolCarriedGearFilter cgFilter;
+			readonly IEquipToolItemFilterEngine thisFilterEngine;
+			readonly IEquipToolNoneFilter thisNoneFilter;
+			readonly IEquipToolBowFilter thisBowFilter;
+			readonly IEquipToolWearFilter thisWearFilter;
+			readonly IEquipToolCarriedGearFilter thisCGFilter;
 			IEquipToolItemFilter GetFilterToSwitch(IItemTemplate itemTemp){
 				if(itemTemp is IBowTemplate)
-					return this.bowFilter;
+					return this.thisBowFilter;
 				else if(itemTemp is IWearTemplate)
-					return this.wearFilter;
+					return this.thisWearFilter;
 				else/* cg */
-					return this.cgFilter;
+					return this.thisCGFilter;
 			}
 	}
 }
