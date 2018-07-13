@@ -25,6 +25,8 @@ namespace UISystem.PickUpUISystem{
 			thisEmptinessStateEngine.SetItemIcon(this);
 			thisTransferabilityHandlerImplementor = arg.transferabilityHandlerImplementor;
 			thisTransferabilityHandlerImplementor.SetItemIcon(this);
+			thisQuantityAnimationEngine = new QuantityAnimationEngine(thisProcessFactory);
+			thisQuantityAnimationEngine.SetQuantityRoller(arg.quantityRoller);
 		}
 		protected override void ActivateImple(){
 			base.ActivateImple();
@@ -184,15 +186,20 @@ namespace UISystem.PickUpUISystem{
 			public abstract bool HasSameItem(IItemIcon other);
 			public abstract bool HasSameItem(IUIItem item);
 			public abstract bool LeavesGhost();
-			public void UpdateQuantity(int sourceQuantity, int targetQuantity, bool doesIncrement){
+			public void UpdateQuantity(int targetQuantity, bool doesIncrement){
 				SetQuantity(targetQuantity);
 				if(thisItem.IsStackable()){
 					if(doesIncrement)
-						thisItemIconImage.AnimateQuantityImageIncrementally(sourceQuantity, targetQuantity);
+						thisQuantityAnimationEngine.AnimateQuantityImageIncrementally(targetQuantity);
 					else
-						thisItemIconImage.AnimateQuantityImageAtOnce(sourceQuantity, targetQuantity);
+						thisQuantityAnimationEngine.AnimateQuantityImageAtOnce(targetQuantity);
 				}
 			}
+			public void SetQuantityInstantly(int targetQuantity){
+				SetQuantity(targetQuantity);
+				thisQuantityAnimationEngine.SetQuantityImageInstantlyTo(targetQuantity);
+			}
+			readonly IQuantityAnimationEngine thisQuantityAnimationEngine;
 		/* input handling */
 			public override void OnTouch(int touchCount){
 				base.OnTouch(touchCount);
@@ -244,14 +251,16 @@ namespace UISystem.PickUpUISystem{
 		IItemIconPickUpImplementor iiPickUpImplementor{get;}
 		IItemIconEmptinessStateEngine emptinessStateEngine{get;}
 		ITransferabilityHandlerImplementor transferabilityHandlerImplementor{get;}
+		IQuantityRoller quantityRoller{get;}
 	}
 	public class ItemIconConstArg: PickableUIEConstArg, IItemIconConstArg{
-		public ItemIconConstArg(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, ITransferabilityHandlerImplementor transferabilityHandlerImplementor): base(uim, pickUpSystemProcessFactory, pickUpSystemUIElementFactory, iiUIA, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine){
+		public ItemIconConstArg(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, IItemIconUIAdaptor iiUIA, IItemIconImage itemIconImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine, IItemIconTransactionManager iiTAM, IUIItem item, IItemIconTransactionStateEngine iiTAStateEngine, IItemIconPickUpImplementor pickUpImplementor, IItemIconEmptinessStateEngine emptinessStateEngine, ITransferabilityHandlerImplementor transferabilityHandlerImplementor, IQuantityRoller quantityRoller): base(uim, pickUpSystemProcessFactory, pickUpSystemUIElementFactory, iiUIA, itemIconImage, tool, dragImageImplementor, visualPickednessStateEngine){
 			thisIITAM = iiTAM;
 			thisItem = item;
 			thisIITAStateEngine = iiTAStateEngine;
 			thisIIPickUpImplementor = iiPickUpImplementor;
 			thisEmptinessStateEngine = emptinessStateEngine;
+			thisQuantityRoller = quantityRoller;
 		}
 		readonly IItemIconTransactionManager thisIITAM;
 		public IItemIconTransactionManager iiTAM{get{return thisIITAM;}}
@@ -265,5 +274,7 @@ namespace UISystem.PickUpUISystem{
 		public IItemIconEmptinessStateEngine emptinessStateEngine{get{return thisEmptinessStateEngine;}}
 		readonly ITransferabilityHandlerImplementor thisTransferabilityHandlerImplementor;
 		public ITransferabilityHandlerImplementor transferabilityHandlerImplementor{get{return thisTransferabilityHandlerImplementor;}}
+		readonly IQuantityRoller thisQuantityRoller;
+		public IQuantityRoller quantityRoller{get{return thisQuantityRoller;}}
 	}
 }

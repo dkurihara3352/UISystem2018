@@ -9,9 +9,11 @@ namespace UISystem{
 	}
 	public abstract class AbsInterpolator: IInterpolator{
 		public void Interpolate(float zeroToOne){
-			this.InterpolateImple(zeroToOne);
-			if(zeroToOne >= 1f)
-				this.Terminate();
+			if(zeroToOne >= 1f){
+				this.InterpolateImple(1f);
+				Terminate();
+			}else
+				this.InterpolateImple(zeroToOne);
 		}
 		protected abstract void InterpolateImple(float normalizedT);
 		public abstract void Terminate();

@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_64;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_VIDEO;ENABLE_VR;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_64;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_VIDEO;ENABLE_VR;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\DragImageImplementor.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\EquipToolActivationData.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\HoverPads\HoverPads.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\EquipToolIconGroup.cs" />
@@ -57,6 +58,7 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\IconPanel.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\PanelTransactionState.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconPanel\PanelTransactionStateEngine.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ImageSmoothFollowDragPositionProcess.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessState.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\EmptinessStateHandling\EmptinessStateEngine.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\ItemIcon\EmptinessStateHandling\ImageEmptinessInterpolator.cs" />
@@ -84,21 +86,17 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpContext\PickUpContextUIA.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpContext\PickUpContextUIE.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpContext\UITool.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpReceiver.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpSystemDomainActivationData.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpSystemProcessFactory.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpSystemUIA.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpSystemUIElement.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickUpSystemUIElementFactory.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickableUIE\PickableUIE.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickableUIE\VisualPickednessState\VisualPickednessProcess.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickableUIE\VisualPickednessState\VisualPickednessState.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickableUIE\VisualPickednessState\VisualPickednessStateEngine.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\PickableUIEImage.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\DragImageImplementor.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\ImageSmoothFollowDragPositionProcess.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\PickUpReceiver.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\PickableUIE\PickableUIE.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessProcess.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessState.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\PickableUIE\VisualPickednessState\VisualPickednessStateEngine.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\TravelProcess.cs" />
-     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\Superclasses\TravelableUIE.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\EqpIITAM\EquipItemIconTransactionManager.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\EqpIITAM\EquipToolIGManager.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\EqpIITAM\PickUpReceiverSwitch.cs" />
@@ -106,6 +104,8 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\ItemIconTransactionManager.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\UIEFactory\EquipToolUIEFactory.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\PickUpManager.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelProcess.cs" />
+     <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Item.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanel\DigitPanel.cs" />
@@ -113,6 +113,7 @@
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanelSet\DigitPanelSet.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanelSet\DigitPanelSetAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityAnimationEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityAnimationInterpolator.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityAnimationProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRoller.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRollerAdaptor.cs" />

@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IQuantityRoller: IUIElement{
-		void Roll(float targetValue);
+		void SetRollerValue(float targetValue);
+		float GetRollerValue();
+
 	}
 	public class QuantityRoller: AbsUIElement, IQuantityRoller{
 		public QuantityRoller(IQuantityRollerConstArg arg): base(arg){
@@ -39,7 +41,8 @@ namespace UISystem{
 			else
 				throw new System.ArgumentOutOfRangeException("sourceNumber must be at least zero");
 		}
-		public void Roll(float targetValue){
+		public void SetRollerValue(float targetValue){
+			thisCurrentRollerValue = targetValue;
 			int targetValueInt = Mathf.FloorToInt(targetValue);
 			float normalizedTransitionValue = targetValue - targetValueInt;
 			int[] digitNumbers = ConvertIntToDigitNumbers(targetValueInt);
@@ -68,6 +71,8 @@ namespace UISystem{
 				}
 			}
 		}
+		float thisCurrentRollerValue;
+		public float GetRollerValue(){return thisCurrentRollerValue;}
 		int[] ConvertIntToDigitNumbers(int sourceNumber){
 			List<int> result = new List<int>();
 			while(sourceNumber > 0){
@@ -96,7 +101,7 @@ namespace UISystem{
 		Vector2 rollerNormalizedPos{get;}
 	}
 	public class QuantityRollerConstArg: UIElementConstArg, IQuantityRollerConstArg{
-		public QuantityRollerConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IQuantityRollerAdaptor quaRolAdaptor, IUIImage image, int maxQuantity, IUIElementFactory uieFactory, Vector2 panelDim, Vector2 padding, Vector2 rollerNormalizedPos): base(uim, processFactory, uiElementFactory, quaRolAdaptor, image){
+		public QuantityRollerConstArg(IUIManager uim, IProcessFactory processFactory, IUIElementFactory uiElementFactory, IQuantityRollerAdaptor quaRolAdaptor, IUIImage image, int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 rollerNormalizedPos): base(uim, processFactory, uiElementFactory, quaRolAdaptor, image){
 			thisMaxQuantity = maxQuantity;
 			thisUIEFactory = uieFactory;
 			thisPanelDim = panelDim;

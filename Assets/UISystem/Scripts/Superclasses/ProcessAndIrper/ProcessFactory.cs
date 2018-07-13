@@ -6,8 +6,8 @@ namespace UISystem{
 	public interface IProcessFactory{
 		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
-		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity);
-		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity);
+		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
+		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 	}
 	public class ProcessFactory: IProcessFactory{
 		public ProcessFactory(IProcessManager procManager, IUIManager uim){
@@ -24,19 +24,19 @@ namespace UISystem{
 		protected readonly IProcessManager thisProcessManager;
 		protected readonly IUIManager thisUIManager;
 		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
-			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, ProcessConstraint.rateOfChange, 1f, .05f, image, targetDarkness);
+			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, ProcessConstraint.rateOfChange, 1f, .05f, image, targetDarkness, false);
 			return process;
 		}
 		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){
 			IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(thisProcessManager, state, waitTime);
 			return process;
 		}
-		public IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity){
-			IncrementalQuantityAnimationProcess process = new IncrementalQuantityAnimationProcess(thisProcessManager, image, sourceQuantity, targetQuantity);
+		public IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity){
+			IncrementalQuantityAnimationProcess process = new IncrementalQuantityAnimationProcess(quantityRoller, targetQuantity, thisProcessManager, ProcessConstraint.expireTime, thisProcessManager.GetQuantityAnimationProcessExpireTime(), null, 0f, true);
 			return process;
 		}
-		public IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IUIImage image, int sourceQuantity, int targetQuantity){
-			OneshotQuantityAnimationProcess process = new OneshotQuantityAnimationProcess(thisProcessManager, image, sourceQuantity, targetQuantity);
+		public IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity){
+			OneshotQuantityAnimationProcess process = new OneshotQuantityAnimationProcess(quantityRoller, targetQuantity, thisProcessManager, ProcessConstraint.expireTime, thisProcessManager.GetQuantityAnimationProcessExpireTime(), null, 0f, true);
 			return process;
 		}
 	}

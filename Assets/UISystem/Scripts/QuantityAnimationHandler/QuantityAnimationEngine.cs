@@ -4,45 +4,49 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IQuantityAnimationHandler{
-		void AnimateQuantityImageIncrementally(int sourceQuantity, int targetQuantity);
-		void AnimateQuantityImageAtOnce(int sourceQuantity, int targetQuantity);
+		void AnimateQuantityImageIncrementally(int targetQuantity);
+		void AnimateQuantityImageAtOnce(int targetQuantity);
+		void SetQuantityImageInstantlyTo(int targetQuantity);
 	}
 	public interface IQuantityAnimationEngine: IQuantityAnimationHandler{
-		void SetUIImage(IUIImage image);
+		void SetQuantityRoller(IQuantityRoller quantityRoller);
 	}
 	public class QuantityAnimationEngine: IQuantityAnimationEngine{
 		public QuantityAnimationEngine(IProcessFactory processFactory){
 			thisProcessFactory = processFactory;
 		}
 		readonly IProcessFactory thisProcessFactory;
-		IUIImage thisImage;
-		public void SetUIImage(IUIImage image){
-			thisImage = image;
+		IQuantityRoller thisQuantityRoller;
+		public void SetQuantityRoller(IQuantityRoller quantityRoller){
+			thisQuantityRoller = quantityRoller;
 		}
-		public void AnimateQuantityImageIncrementally(int sourceQuantity, int targetQuantity){
+		public void AnimateQuantityImageIncrementally(int targetQuantity){
 			StopRunningQuantityAnimationProcess();
-			StartIncrementalQuantityAnimationProcess(sourceQuantity, targetQuantity);
+			StartIncrementalQuantityAnimationProcess(targetQuantity);
 		}
-		public void AnimateQuantityImageAtOnce(int sourceQuantity, int targetQuantity){
+		public void AnimateQuantityImageAtOnce(int targetQuantity){
 			StopRunningQuantityAnimationProcess();
-			StartOneshotQuantityAnimationProcess(sourceQuantity, targetQuantity);
+			StartOneshotQuantityAnimationProcess(targetQuantity);
 		}
 		/* process management */
 		IQuantityAnimationProcess thisRunningQuantityAnimationProcess;
-		void StartIncrementalQuantityAnimationProcess(int sourceQuantity, int targetQuantity){
+		void StartIncrementalQuantityAnimationProcess(int targetQuantity){
 			StopRunningQuantityAnimationProcess();
-			IIncrementalQuantityAnimationProcess process = thisProcessFactory.CreateIncrementalQuantityAnimationProcess(thisImage, sourceQuantity, targetQuantity);
+			IIncrementalQuantityAnimationProcess process = thisProcessFactory.CreateIncrementalQuantityAnimationProcess(thisQuantityRoller, targetQuantity);
 			process.Run();
 			thisRunningQuantityAnimationProcess = process;
 		}
-		void StartOneshotQuantityAnimationProcess(int sourceQuantity, int targetQuantity){
+		void StartOneshotQuantityAnimationProcess(int targetQuantity){
 			StopRunningQuantityAnimationProcess();
-			IOneshotQuantityAnimationProcess process = thisProcessFactory.CreateOneshotQuantityAnimationProcess (thisImage, sourceQuantity, targetQuantity);
+			IOneshotQuantityAnimationProcess process = thisProcessFactory.CreateOneshotQuantityAnimationProcess (thisQuantityRoller, targetQuantity);
 			process.Run();
 			thisRunningQuantityAnimationProcess = process;
 		}
 		public void StopRunningQuantityAnimationProcess(){
 			thisRunningQuantityAnimationProcess.Stop();
+		}
+		public void SetQuantityImageInstantlyTo(int targetQuantity){
+			thisQuantityRoller.SetRollerValue(targetQuantity/ 1f);
 		}
 	}
 }

@@ -34,14 +34,14 @@ namespace UISystem.PickUpUISystem{
 		public override void IncreaseBy(int quantity, bool doesIncrement){
 			int sourceQuantity = thisItemIcon.GetItemQuantity();
 			int targetQuantity = sourceQuantity + quantity;
-			thisItemIcon.UpdateQuantity(sourceQuantity, targetQuantity, doesIncrement);
+			thisItemIcon.UpdateQuantity(targetQuantity, doesIncrement);
 			if(thisItemIcon.IsGhostified())
 				thisItemIcon.Deghostify();
 		}
 		public override void DecreaseBy(int quantity, bool doesIncrement, bool removesEmpty){
 			int sourceQuantity = thisItemIcon.GetItemQuantity();
 			int targetQuantity = sourceQuantity - quantity;
-			thisItemIcon.UpdateQuantity(sourceQuantity, targetQuantity, doesIncrement);
+			thisItemIcon.UpdateQuantity(targetQuantity, doesIncrement);
 			this.CheckRemoval(removesEmpty);
 		}
 		protected abstract void CheckRemoval(bool removesEmpty);
@@ -83,8 +83,10 @@ namespace UISystem.PickUpUISystem{
 			if(thisItemIcon.GetItemQuantity() == 0 && thisItemIcon.LeavesGhost())
 				thisItemIcon.Ghostify();
 			IUIItem item = thisItemIcon.GetUIItem();
-			if(item.IsStackable())
-				thisItemIcon.UpdateQuantity(0, thisItemIcon.GetItemQuantity(), true);
+			if(item.IsStackable()){
+				thisItemIcon.SetQuantityInstantly(0);
+				thisItemIcon.UpdateQuantity(thisItemIcon.GetItemQuantity(), true);
+			}
 		}
 		public override void Disemptify(IUIItem item){
 			thisItemIcon.SetUIItem(item);

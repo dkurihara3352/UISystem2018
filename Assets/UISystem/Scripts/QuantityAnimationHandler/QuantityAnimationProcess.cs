@@ -5,50 +5,31 @@ using UnityEngine;
 namespace UISystem{
 	public interface IQuantityAnimationProcess: IProcess{
 	}
-	public abstract class AbsQuantityAnimationProcess: AbsProcess, IQuantityAnimationProcess{
-		public AbsQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan){
-			thisImage = image;
-			thisSourceQuantity = sourceQuantity;
+	public abstract class AbsQuantityAnimationProcess<T>: AbsInterpolatorProcess<T>, IQuantityAnimationProcess where T: class, IQuantityAnimationInterpolator{
+		public AbsQuantityAnimationProcess(int targetQuantity, IQuantityRoller quantityRoller, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, IWaitAndExpireProcessState processState, float differenceThreshold, bool useSpringT): base(processManager, expireTimeConstraint, expireTime, processState, differenceThreshold, useSpringT){
 			thisTargetQuantity = targetQuantity;
+			thisQuantityRoller = quantityRoller;
 		}
-		protected IUIImage thisImage;
-		protected int thisSourceQuantity;
-		protected int thisTargetQuantity;
+		protected readonly int thisTargetQuantity;
+		protected readonly IQuantityRoller thisQuantityRoller;
+		protected override float GetLatestInitialValueDifference(){
+			return thisTargetQuantity/1f - thisQuantityRoller.GetRollerValue();
+		}
 	}
-	public interface IIncrementalQuantityAnimationProcess: IQuantityAnimationProcess{
-
-	}
-	public class IncrementalQuantityAnimationProcess: AbsQuantityAnimationProcess, IIncrementalQuantityAnimationProcess{
-		public IncrementalQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan, image, sourceQuantity, targetQuantity){
-			totalTime = procMan.GetIncrementalQuantityAnimationProcessExpireTime();
+	public class IncrementalQuantityAnimationProcess: AbsQuantityAnimationProcess<IIncrementalQuantityAnimationInterpolator>, IIncrementalQuantityAnimationProcess{
+		public IncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, IWaitAndExpireProcessState processState, float differenceThreshold, bool useSpringT): base(targetQuantity, quantityRoller, processManager, expireTimeConstraint, expireTime, processState, differenceThreshold, useSpringT){
 		}
-		readonly float totalTime;
-		float elapsedTime = 0f;
-		readonly IQuantityRoller thisQuantityRoller;
-		public override void UpdateProcess(float deltaT){
-			elapsedTime += deltaT;
-			float normalizedT = elapsedTime/ totalTime;
-			float springT = GetSpringT(normalizedT);
-			float rollerTargetValue = Mathf.Lerp(thisSourceQuantity/1f, thisTargetQuantity/1f, springT);
-			thisQuantityRoller.Roll(rollerTargetValue);
-			if(elapsedTime >= totalTime)
-				this.Expire();
-		}
-		public override void Reset(){
-			elapsedTime = 0f;
-		}
-		public override void Expire(){
-			base.Expire();
-			thisQuantityRoller.Roll(thisTargetQuantity/1f);
+		protected override IIncrementalQuantityAnimationInterpolator InstantiateInterpolatorWithValues(){
+			return new IncrementalQuantityAnimationInterpolator(thisTargetQuantity, thisQuantityRoller);
 		}
 	}
 	public interface IOneshotQuantityAnimationProcess: IQuantityAnimationProcess{
 	}
-	public class OneshotQuantityAnimationProcess: AbsQuantityAnimationProcess, IOneshotQuantityAnimationProcess{
-		public OneshotQuantityAnimationProcess(IProcessManager procMan, IUIImage image, int sourceQuantity, int targetQuantity): base(procMan, image, sourceQuantity, targetQuantity){}
-		public override void UpdateProcess(float deltaT){}
-		public override void Reset(){
-
+	public class OneshotQuantityAnimationProcess: AbsQuantityAnimationProcess<IOneshotQuantityAnimationInterpolator>, IOneshotQuantityAnimationProcess{
+		public OneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity, IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, IWaitAndExpireProcessState processState, float diffThreshold, bool useSpringT): base(targetQuantity, quantityRoller, processManager, processConstraint, constraintValue, processState, diffThreshold, useSpringT){
+		}
+		protected override IOneshotQuantityAnimationInterpolator InstantiateInterpolatorWithValues(){
+			return null;
 		}
 	}
 }

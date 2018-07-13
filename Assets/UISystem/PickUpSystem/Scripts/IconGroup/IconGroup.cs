@@ -238,7 +238,8 @@ namespace UISystem.PickUpUISystem{
 					IItemIcon iiAtID = thisItemIcons[idAtAdd];
 					if(iiAtID.IsEmpty()){
 						iiAtID.Disemptify(item);
-						iiAtID.UpdateQuantity(0, item.GetQuantity(), doesIncrement);
+						iiAtID.SetQuantityInstantly(0);
+						iiAtID.UpdateQuantity(item.GetQuantity(), doesIncrement);
 					}else{
 						if(iiAtID.HasSameItem(item))
 							iiAtID.IncreaseBy(item.GetQuantity(), doesIncrement);

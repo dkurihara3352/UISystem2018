@@ -131,12 +131,12 @@ public class ConstrainedProcessTest {
 	/* Test Classes */
 	public class TestConstrainedProcess: AbsConstrainedProcess{
 		public TestConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, IWaitAndExpireProcessState processState, float diffThreshold, float normalizedValueDiff): base(processManager, processConstraint, constraintValue, processState, diffThreshold){
-			thisNormalizedValueDiff = normalizedValueDiff;
+			thisLatestInitialValueDifference = normalizedValueDiff;
 		}
 		protected override void UpdateProcessImple(float deltaT){}
-		readonly float thisNormalizedValueDiff;
-		protected override float GetNormalizedValueDiff(){
-			return thisNormalizedValueDiff;
+		readonly float thisLatestInitialValueDifference;
+		protected override float GetLatestInitialValueDifference(){
+			return thisLatestInitialValueDifference;
 		}
 		protected override void SetTerminalValue(){
 			return;

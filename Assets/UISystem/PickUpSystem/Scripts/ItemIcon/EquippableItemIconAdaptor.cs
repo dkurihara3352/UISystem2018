@@ -14,6 +14,7 @@ namespace UISystem.PickUpUISystem{
 				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
 				thisEqpIITAM = eqpToolUIAArg.eqpIITAM;
 				thisEqpTool = eqpToolUIAArg.eqpTool;
+				thisEqpToolUIEFactory = eqpToolUIAArg.eqpToolUIEFactory;
 				base.GetReadyForActivation(passedArg);
 			}else
 				throw new System.ArgumentException("passedArg must be of type IEquipToolUIAActivationArg");
@@ -21,6 +22,7 @@ namespace UISystem.PickUpUISystem{
 		IEquippableIITAManager thisEqpIITAM;/* not used? */
 		IEquipTool thisEqpTool;/* not used? */
 		IEquippableUIItem thisEqpItem;
+		IEquipToolUIEFactory thisEqpToolUIEFactory;
 		public void SetInitializationFields(IEquippableUIItem item){
 			thisEqpItem = item;
 		}
@@ -36,7 +38,8 @@ namespace UISystem.PickUpUISystem{
 			IItemIconPickUpImplementor itemIconPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM, data.pickUpSystemUIElementFactory);
 			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine(data.pickUpSystemProcessFactory);
 			IEqpIITransferabilityHandlerImplementor eqpIITransferabilityHandlerImplementor = new EqpIITransferabilityHandlerImplementor(thisEqpIITAM);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, data.pickUpSystemProcessFactory, data.eqpToolUIEFactory, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor);
+			IQuantityRoller quantityRoller = thisEqpToolUIEFactory.CreateItemIconQuantityRoller(this);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, data.pickUpSystemProcessFactory, data.eqpToolUIEFactory, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor, quantityRoller);
 			
 			return new EquippableItemIcon(arg);
 		}

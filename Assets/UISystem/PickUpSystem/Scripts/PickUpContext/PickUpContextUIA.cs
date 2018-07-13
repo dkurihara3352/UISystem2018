@@ -7,7 +7,7 @@ namespace UISystem.PickUpUISystem{
 		IUIAActivationData CreateDomainActivationData(IUIAActivationData passedData);
 		Vector2 GetPickUpReserveWorldPos();
 	}
-	public abstract class AbsPickUpContextUIAdaptor<T>: AbsUIAdaptor<T>, IPickUpContextUIAdaptor where T: IPickUpContextUIE{
+	public abstract class AbsPickUpContextUIAdaptor<T>: AbsUIAdaptor<T>, IPickUpContextUIAdaptor where T: class, IPickUpContextUIE{
 		/*  uia for tools and widgets that handles pickup
 		*/
 		protected abstract T GetPickUpContextUIE();

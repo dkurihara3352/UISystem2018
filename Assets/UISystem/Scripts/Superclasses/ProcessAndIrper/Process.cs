@@ -109,7 +109,7 @@ namespace UISystem{
 			}
 		}
 		protected bool ValueDifferenceIsBigEnough(){
-			float diff = GetNormalizedValueDiff();
+			float diff = GetLatestInitialValueDifference();
 			if(diff == 0)
 				return false;
 			else{
@@ -120,7 +120,7 @@ namespace UISystem{
 			}
 		}
 		readonly float thisDifferenceThreshold;
-		protected abstract float GetNormalizedValueDiff();
+		protected abstract float GetLatestInitialValueDifference();
 		protected virtual void RunImple(){
 			CalcAndSetConstraintValues();
 		}
@@ -149,8 +149,8 @@ namespace UISystem{
 			*/
 			if(thisProcessConstraint == ProcessConstraint.rateOfChange){
 				thisRateOfChange = thisConstraintValue;
-				float normalizedValueDiff = GetNormalizedValueDiff();
-				thisExpireT = normalizedValueDiff / thisRateOfChange;
+				float valueDiff = GetLatestInitialValueDifference();
+				thisExpireT = valueDiff / thisRateOfChange;
 				if(thisExpireT < 0f)
 					thisExpireT *= -1f;
 			}else if(thisProcessConstraint == ProcessConstraint.expireTime){
@@ -199,8 +199,10 @@ namespace UISystem{
 		}
 	}
 	public abstract class AbsInterpolatorProcess<T>: AbsConstrainedProcess, IProcess where T: class, IInterpolator{
-		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, IWaitAndExpireProcessState processState, float differenceThreshold): base(processManager, constraint, constraintValue, processState, differenceThreshold){
+		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, IWaitAndExpireProcessState processState, float differenceThreshold, bool useSpringT): base(processManager, constraint, constraintValue, processState, differenceThreshold){
+			thisUseSpringT = useSpringT;
 		}
+		readonly bool thisUseSpringT;
 		protected float thisNormalizedT{
 			get{
 				if(thisElapsedT == 0f)
@@ -220,7 +222,8 @@ namespace UISystem{
 			base.RunImple();
 		}
 		protected override void UpdateProcessImple(float deltaT){
-			thisInterpolator.Interpolate(thisNormalizedT);
+			float t = thisUseSpringT? GetSpringT(thisNormalizedT): thisNormalizedT;
+			thisInterpolator.Interpolate(t);
 		}
 		sealed protected override void SetTerminalValue(){
 			thisInterpolator.Interpolate(1f);

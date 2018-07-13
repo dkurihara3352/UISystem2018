@@ -11,6 +11,7 @@ namespace UISystem.PickUpUISystem{
 		bool HasSameItem(IItemIcon other);
 		bool HasSameItem(IUIItem item);
 		bool LeavesGhost();
-		void UpdateQuantity(int souceQuantity, int targetQuantity, bool doesIncrement);
+		void UpdateQuantity(int targetQuantity, bool doesIncrement);
+		void SetQuantityInstantly(int targetQuantity);
 	}
 }

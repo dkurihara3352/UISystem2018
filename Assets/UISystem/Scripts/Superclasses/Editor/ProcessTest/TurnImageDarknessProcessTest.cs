@@ -51,7 +51,7 @@ public class TurnImageDarknessProcessTest {
 		IProcessManager processManager = Substitute.For<IProcessManager>();
 		IUIImage img = Substitute.For<IUIImage>();
 		img.GetCurrentDarkness().Returns(curDarkness);
-		TurnImageDarknessProcess process = new TurnImageDarknessProcess(processManager, ProcessConstraint.rateOfChange, 1f, .05f, img, targetDarkness);
+		TurnImageDarknessProcess process = new TurnImageDarknessProcess(processManager, ProcessConstraint.rateOfChange, 1f, .05f, img, targetDarkness, false);
 		image = img;
 		return process;
 	}

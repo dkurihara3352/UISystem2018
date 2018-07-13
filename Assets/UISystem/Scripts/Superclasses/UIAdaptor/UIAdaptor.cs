@@ -12,7 +12,8 @@ namespace UISystem{
 		void SetWorldPosition(Vector2 worldPos);
 		Vector2 GetPositionInThisSpace(Vector2 worldPos);
 	}
-	public interface IUIAdaptor: IMBAdaptor{
+
+	public interface IUIAdaptor: IMBAdaptor {
 		void GetReadyForActivation(IUIAActivationData passedData);
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();

@@ -15,5 +15,23 @@ namespace UISystem{
 		}
 	}
 	public interface IQuantityRollerAdaptor: IResizableRectUIAdaptor{
+		void SetInitializationFields(int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 normalizedPos);
+	}
+	public class QuantityRollerAdaptor: AbsResizableRectUIAdaptor<IQuantityRoller>, IQuantityRollerAdaptor{
+		public void SetInitializationFields(int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 normalizedPos){
+			thisMaxQuantity = maxQuantity;
+			thisPanelDim = panelDim;
+			thisPadding = padding;
+			thisRollerNormalizedPos = normalizedPos;
+		}
+		public int thisMaxQuantity;
+		public Vector2 thisPanelDim;
+		public Vector2 thisPadding;
+		public Vector2 thisRollerNormalizedPos;
+		protected override IQuantityRoller CreateUIElement(){
+			IQuantityRollerConstArg arg = new QuantityRollerConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null, thisMaxQuantity, thisPanelDim, thisPadding, thisRollerNormalizedPos);
+			QuantityRoller quantityRoller = new QuantityRoller(arg);
+			return quantityRoller;
+		}
 	}
 }
