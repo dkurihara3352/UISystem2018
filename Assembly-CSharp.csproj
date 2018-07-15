@@ -127,6 +127,7 @@
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityAnimationProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRoller.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRollerAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\Scroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\ImageDarknessInterpolator.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityState.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityStateEngine.cs" />
