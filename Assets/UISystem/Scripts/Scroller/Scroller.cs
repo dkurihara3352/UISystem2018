@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DKUtility.CurveUtility;
 namespace UISystem{
 	public interface IScroller: IUIElement{}
 	public enum ScrollerAxis{
@@ -14,6 +14,8 @@ namespace UISystem{
 		public AbsScroller(IScrollerConstArg arg): base(arg){
 			thisRelativeCursorPosition = arg.relativeCursorPosition;
 			thisCursorDimension = CalcCursorDimension(arg);
+			thisScrollerAxis = arg.scrollerAxis;
+			thisRubberBandLimit = arg.rubberBandLimit;
 		}
 		protected override void Activate(){
 			List<IUIElement> childUIEs = GetChildUIEs();
@@ -24,8 +26,8 @@ namespace UISystem{
 			thisScrollerElement = childUIEs[0];
 			base.Activate();
 		}
-		ScrollerAxis thisScrollerAxis;
-		protected IScrollerElement thisScrollerElement;
+		readonly  ScrollerAxis thisScrollerAxis;
+		protected IUIElement thisScrollerElement;
 		DragAxis thisDragAxis;
 		public override void OnRelease(){
 			thisDragAxis = DragAxis.None;
@@ -70,16 +72,64 @@ namespace UISystem{
 				return new Vector2(0f, deltaP.y);
 		}
 		protected abstract bool thisShouldApplyRubberBand{get;}// simply return true if wanna apply
+		readonly Vector2 thisRubberBandLimit;
 		protected virtual void DragImple(Vector2 position, Vector2 deltaP){
-			if(thisShouldApplyRubberBand && thisIsOnOrOutOfBoundary){
-				if(this.IsDraggedTowardBoundary(deltaP)){
-					Vector2 newLocalPosition = CalcRubberBandedLocalPosition(deltaP);
-					SetLocalPosition(newLocalPosition);
+			Vector2 newLocalPosition = GetLocalPosition() + deltaP;
+			if(thisShouldApplyRubberBand){
+				if(thisRequiresToCheckForHorizontalAxis){
+					if(ScrollerElementIsOutOfCursorBounds(newLocalPosition[0], 0))
+						if(this.IsDraggedTowardBoundary(deltaP, 0)){
+							newLocalPosition[0] = CalcRubberBandedPosAlongAxis(newLocalPosition[0], 0);
+						}
 				}
-			}else{
-				Vector2 newLocalPosition = GetLocalPosition() + deltaP;
-				SetLocalPosition(newLocalPosition);
+				if(thisRequiresToCheckForVerticalAxis){
+
+				}
 			}
+			SetLocalPosition(newLocalPosition);
+		}
+		bool thisRequiresToCheckForHorizontalAxis{
+			get{return thisScrollerAxis == ScrollerAxis.Horizontal || thisScrollerAxis == ScrollerAxis.Both;}
+		}
+		bool thisRequiresToCheckForVerticalAxis{
+			get{return thisScrollerAxis == ScrollerAxis.Vertical || thisScrollerAxis == ScrollerAxis.Both;}
+		}
+		float CalcRubberBandedPosAlongAxis(float localPosAlongAxis, int dimension){
+			float displacement = GetScrollerElementDisplacement(localPosAlongAxis, dimension);
+			if(displacement < 0f){
+
+			}else{
+
+			}
+		}
+		bool ScrollerElementIsOutOfCursorBounds(float newLocalPosAlongAxis, int dimension){
+			float elementNormalizedPosAlongAxis = GetScrollerElementNormalizedPosAlongAxis(newLocalPosAlongAxis, dimension);
+			return elementNormalizedPosAlongAxis < 0f || elementNormalizedPosAlongAxis > 1f;
+		}
+		bool[] thisScrollerElementOnOrOutOfCursorBounds{
+			get{
+				bool[] result = new bool[2];
+				for(int i = 0; i < 2; i ++){
+					Vector2 elementNormPos = GetScrollerElementNormalizedPos();
+					result[i] = elementNormPos[i] <= 0f || elementNormPos[i] >= 1f;
+				}
+				return result;
+			}
+		}
+		float GetScrollerElementDisplacement(float newLocalPosAlongAxis, int dimension){
+			Rect thisRect = GetUIAdaptor().GetRect();
+			float rectLength = dimension == 0? thisRect.width: thisRect.height;
+			float cursorLength = thisCursorDimension[dimension];
+			float cursorMin = (rectLength - cursorLength) * thisRelativeCursorPosition[dimension];
+			return cursorMin - newLocalPosAlongAxis;
+		}
+		float GetScrollerElementNormalizedPosAlongAxis(float newLocalPosAlongAxis, int dimension){
+			/*  (0f, 0f) if cursor rests on top left corner of the element
+				(1f, 1f) if cursor rests on bottom right corner of the element
+				value below 0f and over 1f indicates the element's displacement beyond cursor bounds
+			*/
+			float displacement = GetScrollerElementDisplacement(newLocalPosAlongAxis, dimension);
+			return displacement / thisCursorDimension[dimension];
 		}
 		readonly Vector2 thisCursorDimension;
 		protected abstract Vector2 CalcCursorDimension(IScrollerConstArg arg);

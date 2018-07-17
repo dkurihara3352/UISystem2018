@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler, IScrollerElement{
+	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler{
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement uie, bool worldPositionStays);
 		List<IUIElement> GetChildUIEs();
@@ -13,6 +13,8 @@ namespace UISystem{
 		IUIImage GetUIImage();
 		void ActivateRecursively();
 		void Deactivate();
+		void OnScrollerFocus();
+		void OnScrollerDefocus();
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
@@ -112,7 +114,7 @@ namespace UISystem{
 				if(GetParentUIE() != null)
 					GetParentUIE().OnSwipe(eventData);
 			}
-		/* ScrollerElement */
+		/*  */
 		public virtual void OnScrollerFocus(){
 			foreach(IUIElement child in GetChildUIEs())
 				child.OnScrollerFocus();
@@ -121,7 +123,6 @@ namespace UISystem{
 			foreach(IUIElement child in GetChildUIEs())
 				child.OnScrollerDefocus();
 		}
-		/*  */
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
 			return thisUIA.GetPositionInThisSpace(worldPos);
 		}
