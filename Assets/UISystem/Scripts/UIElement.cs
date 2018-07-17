@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler{
+	public interface IUIElement: IUIInputHandler, ISelectabilityStateHandler, IScrollerElement{
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement uie, bool worldPositionStays);
 		List<IUIElement> GetChildUIEs();
-		Vector2 GetPositionInThisSpace(Vector2 worldPos);
+		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
-		void Activate();
+		void ActivateRecursively();
 		void Deactivate();
 	}
 	public abstract class AbsUIElement: IUIElement{
@@ -43,14 +43,14 @@ namespace UISystem{
 			return thisImage;
 		}
 		protected IUIImage thisImage;
-		public virtual void Activate(){
-			this.ActivateImple();
+		public void ActivateRecursively(){
+			this.Activate();
 			foreach(IUIElement childUIE in this.GetChildUIEs()){
 				if(childUIE != null)
-					childUIE.Activate(); 
+					childUIE.ActivateRecursively(); 
 			}
 		}
-		protected virtual void ActivateImple(){
+		protected virtual void Activate(){
 			InitializeSelectabilityState();
 		}
 		public virtual void Deactivate(){
@@ -62,9 +62,7 @@ namespace UISystem{
 		}
 		protected virtual void DeactivateImple(){}
 		/* SelectabilityState */
-			void InitializeSelectabilityState(){
-				BecomeSelectable();
-			}
+			protected abstract void InitializeSelectabilityState();
 			ISelectabilityStateEngine thisSelectabilityEngine;
 			public void BecomeSelectable(){
 				thisSelectabilityEngine.BecomeSelectable();
@@ -114,15 +112,27 @@ namespace UISystem{
 				if(GetParentUIE() != null)
 					GetParentUIE().OnSwipe(eventData);
 			}
+		/* ScrollerElement */
+		public virtual void OnScrollerFocus(){
+			foreach(IUIElement child in GetChildUIEs())
+				child.OnScrollerFocus();
+		}
+		public virtual void OnScrollerDefocus(){
+			foreach(IUIElement child in GetChildUIEs())
+				child.OnScrollerDefocus();
+		}
 		/*  */
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
-			return this.thisUIA.GetPositionInThisSpace(worldPos);
+			return thisUIA.GetPositionInThisSpace(worldPos);
 		}
 		public void SetLocalPosition(Vector2 localPos){
-			this.thisUIA.SetLocalPosition(localPos);
+			thisUIA.SetLocalPosition(localPos);
+		}
+		public Vector2 GetLocalPosition(){
+			return thisUIA.GetLocalPosition();
 		}
 		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
-			this.thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
+			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
 		}
 	}
 	public interface IUIElementConstArg{

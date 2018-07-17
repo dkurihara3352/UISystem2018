@@ -22,7 +22,7 @@ namespace UISystem{
 		List<IUIElement> GetChildUIEs();
 		IUIAActivationData GetDomainActivationData();
 	}
-	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler where T: IUIElement{
+	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, ICancelHandler where T: IUIElement{
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
@@ -133,6 +133,9 @@ namespace UISystem{
 			public void OnDrag(PointerEventData eventData){
 				ICustomEventData customEventData = new CustomEventData(eventData);
 				thisInputStateEngine.OnDrag(customEventData);
+			}
+			public void OnCancel(BaseEventData eventData){
+				thisInputStateEngine.OnCancel();
 			}
 		/*  */
 	}

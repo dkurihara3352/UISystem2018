@@ -14,6 +14,10 @@ namespace UISystem{
 			thisDeltaP = sourceData.delta;
 			thisPosition = sourceData.position;
 		}
+		public CustomEventData(Vector2 position, Vector2 deltaP){
+			thisPosition = position;
+			thisDeltaP = deltaP;
+		}
 		public Vector2 deltaP{get{return thisDeltaP;}}
 		Vector2 thisDeltaP;
 		public Vector2 position{get{return thisPosition;}}

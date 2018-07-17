@@ -11,6 +11,7 @@ namespace UISystem{
 		void OnDrag(ICustomEventData eventData);
 		void OnPointerEnter(ICustomEventData eventData);
 		void OnPointerExit(ICustomEventData eventData);
+		void OnCancel();
 	}
 	/* States */
 	public interface IUIAdaptorInputState: IRawInputHandler, ISwitchableState{
@@ -27,6 +28,7 @@ namespace UISystem{
 		public abstract void OnDrag(ICustomEventData eventData);
 		public abstract void OnPointerEnter(ICustomEventData eventData);
 		public abstract void OnPointerExit(ICustomEventData eventData);
+		public abstract void OnCancel();
 	}
 	public abstract class PointerUpInputState: AbsUIAdaptorInputState{
 		public PointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
@@ -41,6 +43,9 @@ namespace UISystem{
 		}
 		public override void OnPointerExit(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerExit should not be called while pointer is held up");
+		}
+		public override void OnCancel(){
+			throw new System.InvalidOperationException("OnCancel should not be called while pointer is held up");
 		}
 	}
 	public abstract class PointerDownInputState: AbsUIAdaptorInputState{
@@ -63,7 +68,10 @@ namespace UISystem{
 		public override void OnDrag(ICustomEventData eventData){
 			UpdateDragWorldPosition(eventData.position);
 		}
-		
+ 		public override void OnCancel(){
+			engine.WaitForFirstTouch();
+			engine.ReleaseUIE();
+		}
 	}
 	public class WaitingForFirstTouchState: PointerUpInputState{
 		/*  Up state
