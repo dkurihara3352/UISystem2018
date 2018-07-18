@@ -91,9 +91,9 @@ namespace UISystem{
 			}
 		}
 		bool ShouldCycleThisFrame(int dimension){
-			float elementLocalPosAlongAxis = thisScrollerElement.GetLocalPosition()[dimension];
-			float elementNormalizedPosInScrollerSpace = GetElementScrollerValue(elementLocalPosAlongAxis, dimension);
-			return  elementNormalizedPosInScrollerSpace < 0f || elementNormalizedPosInScrollerSpace > 1f;
+			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
+			float elementScrollerDisplacement = GetElementScrollerDisplacement(elementLocalPosOnAxis, dimension);
+			return elementScrollerDisplacement != 0;
 		}
 		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
 			IUIElementGroupScrollerConstArg typedArg = (IUIElementGroupScrollerConstArg)arg;

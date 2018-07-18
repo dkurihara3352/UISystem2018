@@ -118,7 +118,7 @@ namespace UISystem{
 			return result;
 		}
 		bool ElementIsDisplacedInDragDeltaDirection(float deltaPOnAxis, float elementLocalPosOnAxis, int dimension){
-			float displacement = GetElementCursorDisplacement(dimension);
+			float displacement = GetElementCursorDisplacement(elementLocalPosOnAxis, dimension);
 			if(displacement == 0f)
 				return false;
 			else{
@@ -147,6 +147,9 @@ namespace UISystem{
 			if(greaterDisp > 0f)
 				return greaterDisp;
 			return 0f;
+		}
+		protected float GetElementScrollerDisplacement(float elementLocalPosOnAxis, int dimension){
+
 		}
 		bool ElementIsUndersizedToCursor(int dimension){
 			/*  return true if smaller or equal to cursor
@@ -211,28 +214,18 @@ namespace UISystem{
 		protected float GetElementCursorValue(float elementLocalPosOnAxis, int dimension){
 			/*  (0f, 0f) if cursor rests on top left corner of the element
 				(1f, 1f) if cursor rests on bottom right corner of the element
-				(.5f, .5f) cursor rests on center of element, or the element is fully contained inside the cursor
 				value below 0f and over 1f indicates the element's displacement beyond cursor bounds
 			*/
-			IUIAdaptor scrollerElementAdaptor = thisScrollerElement.GetUIAdaptor();
-			Rect scrollerElementRect = scrollerElementAdaptor.GetRect();
-			float elementLength = GetRectLengthOnAxis(scrollerElementRect, dimension);
-			float cursorLength = thisCursorDimension[dimension];
-			float cursorMin = thisCursorLocalPosition[dimension];
-			return (cursorMin - elementLocalPosOnAxis)/ (elementLength - cursorLength);
-		}
-		protected float GetElementScrollerValue(float elementLocalPosOnAxis, int dimension){
-			/*  0f => scroller rect and element's min are aligned
-				1f => scroller rect and element' max are aligned
-				below 0f or over 1f indicates element is displaced beyond scroller rect's bound
-			*/
-			IUIAdaptor scrollerElementAdaptor = thisScrollerElement.GetUIAdaptor();
-			Rect scrollerElementRect = scrollerElementAdaptor.GetRect();
-			Rect thisRect = GetUIAdaptor().GetRect();
-			float elementLength = GetRectLengthOnAxis(scrollerElementRect, dimension);
-			float rectLength = GetRectLengthOnAxis(thisRect, dimension);
-			float rectMin = 0f;
-			return (rectMin - elementLocalPosOnAxis)/ (elementLength - rectLength);
+			if(ElementIsUndersizedToCursor(dimension)){
+				return 0f;
+			}else{
+				IUIAdaptor scrollerElementAdaptor = thisScrollerElement.GetUIAdaptor();
+				Rect scrollerElementRect = scrollerElementAdaptor.GetRect();
+				float elementLength = GetRectLengthOnAxis(scrollerElementRect, dimension);
+				float cursorLength = thisCursorDimension[dimension];
+				float cursorMin = thisCursorLocalPosition[dimension];
+				return (cursorMin - elementLocalPosOnAxis)/ (elementLength - cursorLength);
+			}
 		}
 		Vector2 thisCursorDimension;
 		protected abstract Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect);
