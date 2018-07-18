@@ -13,10 +13,9 @@ namespace UISystem{
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();
 		}
-		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg){
+		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
 			IGenericScrollerConstArg genericArg = (IGenericScrollerConstArg)arg;
 			Vector2 relativeCursorSize = genericArg.relativeCursorSize;
-			Rect thisRect = GetUIAdaptor().GetRect();
 			float cursorWidth = thisRect.width * relativeCursorSize.x;
 			float cursorHeight = thisRect.height * relativeCursorSize.y;
 			return new Vector2(cursorWidth, cursorHeight);

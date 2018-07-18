@@ -10,6 +10,7 @@ namespace UISystem{
 	public interface IUIElementGroup: IUIElement{
 		IInterpolator GetSlotSizeInterpolator(int rowNumber, int columnNumber, Vector2 targetRectDim);
 		int GetSize();
+		int GetElementsArraySize(int dimension);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		List<T> thisElements;
@@ -21,7 +22,7 @@ namespace UISystem{
 		Vector2 elementDimension;
 		Vector2 padding;
 		int maxElementCount = 0;
-		T[,] elementsArray;
+		T[,] thisElementsArray;
 		T[ , ] CreateElements2DArray(){
 			MakeSureConstraintIsProperlySet();
 			int numOfRowsToCreate = CalcNumberOfRowsToCreate();
@@ -85,9 +86,12 @@ namespace UISystem{
 				else
 					return numOfRows - 1 - valueB;
 		}
+		public int GetElementsArraySize(int dimension){
+			return thisElementsArray.GetLength(dimension);
+		}
 		void ResizeToFitElements(){
-			int columnCount = elementsArray.GetLength(0);
-			int rowCount = elementsArray.GetLength(1);
+			int columnCount = thisElementsArray.GetLength(0);
+			int rowCount = thisElementsArray.GetLength(1);
 			float targetWidth = columnCount * (elementDimension.x + padding.x) + padding.x;
 			float targetHeight = rowCount * (elementDimension.y + padding.y) + padding.y;
 			IUIAdaptor uia = GetUIAdaptor();
@@ -95,9 +99,9 @@ namespace UISystem{
 			uia.SetRectDimension(targetRectDim);
 		}
 		void GetElementArrayIndex(T element ,out int columnIndex, out int rowIndex){
-			for(int i = 0; i < elementsArray.GetLength(0); i ++){
-				for(int j = 0; j < elementsArray.GetLength(1); j ++){
-					T elementAtIndex = elementsArray[i, j];
+			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
+				for(int j = 0; j < thisElementsArray.GetLength(1); j ++){
+					T elementAtIndex = thisElementsArray[i, j];
 					if(elementAtIndex != null)
 						if(elementAtIndex == element){
 							columnIndex = i;
