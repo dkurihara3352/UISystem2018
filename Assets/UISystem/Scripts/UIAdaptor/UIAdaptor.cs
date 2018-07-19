@@ -6,6 +6,7 @@ namespace UISystem{
 	public interface IMBAdaptor{
 		Transform GetTransform();
 		Rect GetRect();
+		void SetRectDimension(float width, float height);
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
 		Vector2 GetWorldPosition();
@@ -53,6 +54,11 @@ namespace UISystem{
 			}
 			public Rect GetRect(){
 				return ((RectTransform)this.GetComponent<RectTransform>()).rect;
+			}
+			public void SetRectDimension(float width, float height){
+				RectTransform rectTrans = (RectTransform)this.GetComponent<RectTransform>();
+				rectTrans.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+				rectTrans.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 			}
 			public Vector2 GetWorldPosition(){
 				return new Vector2(this.transform.position.x, this.transform.position.y);

@@ -5,23 +5,33 @@ using DKUtility;
 
 namespace UISystem{
 	public interface IResizableUIElement: IUIElement{
-		IInterpolator GetRectSizeInterpolator(Vector2 targetRectDim);
+		// IInterpolator GetRectSizeInterpolator(Vector2 targetRectDim);
 	}
 	public interface IUIElementGroup: IUIElement{
-		IInterpolator GetSlotSizeInterpolator(int rowNumber, int columnNumber, Vector2 targetRectDim);
+		// IInterpolator GetSlotSizeInterpolator(int rowNumber, int columnNumber, Vector2 targetRectDim);
 		int GetSize();
 		int GetElementsArraySize(int dimension);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
-		List<T> thisElements;
-		int rowsConstraint = 0;
-		int columnsConstraint = 0;
-		bool TopToBottom;
-		bool LeftToRight;
-		bool rowToColumn;
-		Vector2 elementDimension;
-		Vector2 padding;
-		int maxElementCount = 0;
+		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
+			thisRowCountConstraint = arg.rowCountConstraint;
+			thisColumnCountConstraint = arg.columnCountConstraint;
+			thisTopToBottom = arg.topToBottom;
+			thisLeftToRight = arg.leftToRight;
+			thisRowToColumn = arg.rowToColumn;
+			thisElementDimension = arg.elementDimension;
+			thisPadding = arg.padding;
+		}
+		List<T> thisElements;/* explicitly and externally set */
+		public int GetSize(){return thisElements.Count;}
+		readonly int thisRowCountConstraint = 0;
+		readonly int thisColumnCountConstraint = 0;
+		readonly bool thisTopToBottom;
+		readonly bool thisLeftToRight;
+		readonly bool thisRowToColumn;
+		readonly Vector2 thisElementDimension;
+		readonly Vector2 thisPadding;
+		int thismaxElementCount = 0;/* used only when both axis are constrained */
 		T[,] thisElementsArray;
 		T[ , ] CreateElements2DArray(){
 			MakeSureConstraintIsProperlySet();
@@ -37,37 +47,37 @@ namespace UISystem{
 			return array;
 		}
 		void MakeSureConstraintIsProperlySet(){
-			if(rowsConstraint == 0 && columnsConstraint == 0)
+			if(thisRowCountConstraint == 0 && thisColumnCountConstraint == 0)
 				throw new System.InvalidOperationException("either rowCount or columnCount must be defined");
 		}
 		int CalcNumberOfRowsToCreate(){
-			if(rowsConstraint != 0)
-				return rowsConstraint;
+			if(thisRowCountConstraint != 0)
+				return thisRowCountConstraint;
 			else{
-				int quotient = thisElements.Count / columnsConstraint;
-				int modulo = thisElements.Count % columnsConstraint;
+				int quotient = thisElements.Count / thisColumnCountConstraint;
+				int modulo = thisElements.Count % thisColumnCountConstraint;
 				return modulo > 0? quotient + 1 : quotient;
 			}
 		}
 		int CalcNumberOfColumnsToCreate(){
-			if(columnsConstraint != 0)
-				return columnsConstraint;
+			if(thisColumnCountConstraint != 0)
+				return thisColumnCountConstraint;
 			else{
-				int quotient = thisElements.Count / rowsConstraint;
-				int modulo = thisElements.Count % rowsConstraint;
+				int quotient = thisElements.Count / thisRowCountConstraint;
+				int modulo = thisElements.Count % thisRowCountConstraint;
 				return modulo > 0? quotient + 1 : quotient;
 			}
 		}
 		int CalcColumnIndex(int n, int numOfColumns, int numOfRows){
 			int valueA = n % numOfColumns;
 			int valueB = n / numOfRows;
-			if(LeftToRight)
-				if(rowToColumn)
+			if(thisLeftToRight)
+				if(thisRowToColumn)
 					return valueA;
 				else
 					return valueB;
 			else
-				if(rowToColumn)
+				if(thisRowToColumn)
 					return numOfColumns - valueA - 1;
 				else
 					return numOfColumns - valueB - 1;
@@ -75,13 +85,13 @@ namespace UISystem{
 		int CalcRowIndex(int n, int numOfColumns, int numOfRows){
 			int valueA = n / numOfColumns;
 			int valueB = n % numOfRows;
-			if(LeftToRight)
-				if(rowToColumn)
+			if(thisLeftToRight)
+				if(thisRowToColumn)
 					return valueA;
 				else
 					return valueB;
 			else
-				if(rowToColumn)
+				if(thisRowToColumn)
 					return numOfRows - 1 - valueA;
 				else
 					return numOfRows - 1 - valueB;
@@ -92,11 +102,10 @@ namespace UISystem{
 		void ResizeToFitElements(){
 			int columnCount = thisElementsArray.GetLength(0);
 			int rowCount = thisElementsArray.GetLength(1);
-			float targetWidth = columnCount * (elementDimension.x + padding.x) + padding.x;
-			float targetHeight = rowCount * (elementDimension.y + padding.y) + padding.y;
+			float targetWidth = columnCount * (thisElementDimension.x + thisPadding.x) + thisPadding.x;
+			float targetHeight = rowCount * (thisElementDimension.y + thisPadding.y) + thisPadding.y;
 			IUIAdaptor uia = GetUIAdaptor();
-			Vector2 targetRectDim = new Vector2(targetWidth, targetHeight);
-			uia.SetRectDimension(targetRectDim);
+			uia.SetRectDimension(targetWidth, targetHeight);
 		}
 		void GetElementArrayIndex(T element ,out int columnIndex, out int rowIndex){
 			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
@@ -117,11 +126,20 @@ namespace UISystem{
 				int columnIndex;
 				int rowIndex;
 				GetElementArrayIndex(element, out columnIndex, out rowIndex);
-				float localPosX = (columnIndex * (elementDimension.x + padding.x)) + padding.x;
-				float localPosY = (rowIndex * (elementDimension.y + padding.y)) + padding.y;
+				float localPosX = (columnIndex * (thisElementDimension.x + thisPadding.x)) + thisPadding.x;
+				float localPosY = (rowIndex * (thisElementDimension.y + thisPadding.y)) + thisPadding.y;
 				Vector2 newLocalPos = new Vector2(localPosX, localPosY);
 				element.SetLocalPosition(newLocalPos);
 			}
 		}
+	}
+	public interface IUIElementGroupConstArg: IUIElementConstArg{
+		int rowCountConstraint{get;}
+		int columnCountConstraint{get;}
+		bool topToBottom{get;}
+		bool leftToRight{get;}
+		bool rowToColumn{get;}
+		Vector2 elementDimension{get;}
+		Vector2 padding{get;}
 	}
 }

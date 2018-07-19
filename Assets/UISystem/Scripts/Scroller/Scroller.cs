@@ -19,8 +19,10 @@ namespace UISystem{
 		}
 		protected override void Activate(){
 			List<IUIElement> childUIEs = GetChildUIEs();
+			if(childUIEs == null)
+				throw new System.NullReferenceException("childUIEs must not be null");
 			if(childUIEs.Count != 1)
-				throw new System.InvalidOperationException("Scroller must have only one UIE child (=> scrollerElement)");
+				throw new System.InvalidOperationException("Scroller must have only one UIE child as Scroller Element");
 			if(childUIEs[0] == null)
 				throw new System.InvalidOperationException("Scroller's only child must not be null");
 			thisScrollerElement = childUIEs[0];
@@ -94,7 +96,7 @@ namespace UISystem{
 			RubberBandCalculator[] result = new RubberBandCalculator[2];
 			for(int i = 0; i < 2; i++){
 				float rectLength = GetRectLengthOnAxis(thisRect, i); 
-				result[i] = new RubberBandCalculator(1f, arg.thisRubberBandLimitMultiplier[i] * rectLength);
+				result[i] = new RubberBandCalculator(1f, arg.rubberBandLimitMultiplier[i] * rectLength);
 			}
 			return result;
 		}
@@ -129,29 +131,37 @@ namespace UISystem{
 			}
 		}
 		float GetElementCursorDisplacement(float elementLocalPosOnAxis, int dimension){
-			float cursorLength = thisCursorDimension[dimension];
-			float cursorMin = thisCursorLocalPosition[dimension];
-			float cursorMax;
+			return GetElementDisplacement(elementLocalPosOnAxis, dimension, thisCursorDimension[dimension], thisCursorLocalPosition[dimension], thisCursorLocalPosition[dimension]);
+			/*  when element is undersized, its is bound to cursor's origin
+			*/
+		}
+		protected float GetElementScrollerDisplacement(float elementLocalPosOnAxis, int dimension){
+			return GetElementDisplacement(elementLocalPosOnAxis, dimension, GetThisRectLength(dimension), 0f, thisCursorLocalPosition[dimension]);
+			/*  undersized element is bound to cursor's origin
+			*/
+		}
+		protected float GetElementDisplacement(float elementLocalPosOnAxis, int dimension, float referenceLength, float referenceMin, float referenceMinForUndersizeElement){
+			float referenceMax;
 			float elementLength = GetScrollerElementLength(dimension);
-			if(ElementIsUndersizedToCursor(dimension))
-				cursorMax = cursorMin + elementLength;
-			else
-				cursorMax = cursorMin + cursorLength;
+			float actualReferenceMin = referenceMin;
+			if(ElementIsUndersizedToCursor(dimension)){
+				actualReferenceMin = referenceMinForUndersizeElement;
+				referenceMax = actualReferenceMin + elementLength;
+			}else{
+				referenceMax = actualReferenceMin + referenceLength;
+			}
 			float elementMin = elementLocalPosOnAxis;
 			float elementMax = elementMin + elementLength;
 			
-			float lesserDisp = cursorMin - elementMin;
+			float lesserDisp = actualReferenceMin - elementMin;
 			if(lesserDisp < 0f)
 				return lesserDisp;
-			float greaterDisp = cursorMax - elementMax;
+			float greaterDisp = referenceMax - elementMax;
 			if(greaterDisp > 0f)
 				return greaterDisp;
 			return 0f;
 		}
-		protected float GetElementScrollerDisplacement(float elementLocalPosOnAxis, int dimension){
-
-		}
-		bool ElementIsUndersizedToCursor(int dimension){
+		protected bool ElementIsUndersizedToCursor(int dimension){
 			/*  return true if smaller or equal to cursor
 			 */
 			return thisElementIsUndersizedToCursor[dimension];
@@ -159,9 +169,11 @@ namespace UISystem{
 		bool[] thisElementIsUndersizedToCursor;
 		void EvaluateElementSizeRelativeToCursor(){
 			Rect thisRect = GetUIAdaptor().GetRect();
+			bool[] result = new bool[2];
 			for(int i = 0; i < 2; i++){
-				thisElementIsUndersizedToCursor[i] = GetScrollerElementLength(i) <= GetRectLengthOnAxis(thisRect, i);
+				result[i] = GetScrollerElementLength(i) <= thisCursorDimension[i];
 			}
+			thisElementIsUndersizedToCursor = result;
 		}
 		bool IsDraggedTowardBoundary(float deltaPAlongAxis, float elementCursorValue, int dimension){
 			/*  Invert y axis
@@ -206,7 +218,6 @@ namespace UISystem{
 				float rubberValue = thisRubberBandCalculator[dimension].CalcRubberBandValue(displacementFromBasePoint, invert: true);
 				return basePoint + rubberValue - elementLength;
 			}
-
 		}
 		bool ScrollerElementIsOutOfCursorBounds(float newLocalPosAlongAxis, int dimension){
 			return GetElementCursorDisplacement(newLocalPosAlongAxis, dimension) != 0f;
@@ -231,7 +242,7 @@ namespace UISystem{
 		protected abstract Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect);
 
 		protected Vector2 thisCursorLocalPosition;
-		protected Vector2 CalcCursorLocalPos(Vector2 relativeCursorPosition, Rect thisRect){
+		protected virtual Vector2 CalcCursorLocalPos(Vector2 relativeCursorPosition, Rect thisRect){
 			Vector2 result = new Vector2();
 			for(int i = 0; i < 2; i ++){
 				float rectLength = GetRectLengthOnAxis(thisRect, i);
@@ -257,6 +268,8 @@ namespace UISystem{
 	}
 	public interface IScrollerConstArg: IUIElementConstArg{
 		Vector2 relativeCursorPosition{get;}
+		ScrollerAxis scrollerAxis{get;}
+		float[] rubberBandLimitMultiplier{get;}
 		/* 	RelativeCursorPosition
 			(0f, 0f)	corresponds upper left corner,
 			(.5f, .5f)	center
@@ -264,8 +277,9 @@ namespace UISystem{
 		*/
 	}
 	public abstract class AbsScrollerConstArg: UIElementConstArg, IScrollerConstArg{
-		public AbsScrollerConstArg(Vector2 relativeCursorPos, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IScrollerAdaptor uia, IUIImage uiImage): base(uim, processFactory, uieFactory, uia, uiImage){
+		public AbsScrollerConstArg(Vector2 relativeCursorPos, ScrollerAxis scrollerAxis, float[] rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IScrollerAdaptor uia, IUIImage uiImage): base(uim, processFactory, uieFactory, uia, uiImage){
 			thisRelativeCursorPos = MakeRelativeCursorPosInRange(relativeCursorPos);
+			thisScrollerAxis = scrollerAxis;
 		}
 		Vector2 MakeRelativeCursorPosInRange(Vector2 source){
 			Vector2 newCusorPosition = new Vector2();
@@ -277,9 +291,15 @@ namespace UISystem{
 		}
 		readonly Vector2 thisRelativeCursorPos;
 		public Vector2 relativeCursorPosition{
-			get{
-				return thisRelativeCursorPos;
-			}
+			get{return thisRelativeCursorPos;}
+		}
+		readonly ScrollerAxis thisScrollerAxis;
+		public ScrollerAxis scrollerAxis{
+			get{return thisScrollerAxis;}
+		}
+		readonly float[] thisRubberBandLimitMultiplier;
+		public float[] rubberBandLimitMultiplier{
+			get{return thisRubberBandLimitMultiplier;}
 		}
 	}
 	public interface IScrollerAdaptor: IUIAdaptor{}

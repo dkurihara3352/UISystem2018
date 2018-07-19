@@ -25,7 +25,7 @@ namespace UISystem{
 		Vector2 relativeCursorSize{get;}
 	}
 	public class GenericScrollerConstArg: AbsScrollerConstArg, IGenericScrollerConstArg{
-		public GenericScrollerConstArg(Vector2 relativeCursorSize, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericScrollerAdaptor uia, IUIImage image):base(relativeCursorPosition, uim, processFactory, uieFactory, uia, image){
+		public GenericScrollerConstArg(Vector2 relativeCursorSize, ScrollerAxis scrollerAxis, float[] rubberBandLimitMultiplier, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericScrollerAdaptor uia, IUIImage image):base(relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
 			thisRelativeCursorSize = MakeRelativeCursorSizeInRange(relativeCursorSize);
 		}
 		Vector2 MakeRelativeCursorSizeInRange(Vector2 source){

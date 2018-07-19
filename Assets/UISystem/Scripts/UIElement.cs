@@ -12,7 +12,8 @@ namespace UISystem{
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		void ActivateRecursively();
-		void Deactivate();
+		void DeactivateRecursively();
+		bool IsActivationComplete();
 		void OnScrollerFocus();
 		void OnScrollerDefocus();
 	}
@@ -45,26 +46,32 @@ namespace UISystem{
 			return thisImage;
 		}
 		protected IUIImage thisImage;
-		public void ActivateRecursively(){
-			this.Activate();
-			foreach(IUIElement childUIE in this.GetChildUIEs()){
-				if(childUIE != null)
-					childUIE.ActivateRecursively(); 
+		/* Activation */
+			public void ActivateRecursively(){
+				this.Activate();
+				foreach(IUIElement childUIE in this.GetChildUIEs()){
+					if(childUIE != null)
+						childUIE.ActivateRecursively(); 
+				}
 			}
-		}
-		protected virtual void Activate(){
-			InitializeSelectabilityState();
-		}
-		public virtual void Deactivate(){
-			this.DeactivateImple();
-			foreach(IUIElement childUIE in this.GetChildUIEs()){
-				if(childUIE != null)
-					childUIE.Deactivate();
+			protected virtual void Activate(){
+				InitializeSelectabilityState();
 			}
-		}
-		protected virtual void DeactivateImple(){}
+			public virtual void DeactivateRecursively(){
+				this.Deactivate();
+				foreach(IUIElement childUIE in this.GetChildUIEs()){
+					if(childUIE != null)
+						childUIE.DeactivateRecursively();
+				}
+			}
+			protected virtual void Deactivate(){}
+			public bool IsActivationComplete(){
+				return false;
+			}
 		/* SelectabilityState */
-			protected abstract void InitializeSelectabilityState();
+			protected virtual void InitializeSelectabilityState(){
+				BecomeSelectable();
+			}
 			ISelectabilityStateEngine thisSelectabilityEngine;
 			public void BecomeSelectable(){
 				thisSelectabilityEngine.BecomeSelectable();

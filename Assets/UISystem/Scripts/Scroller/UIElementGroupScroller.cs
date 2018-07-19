@@ -95,6 +95,7 @@ namespace UISystem{
 			float elementScrollerDisplacement = GetElementScrollerDisplacement(elementLocalPosOnAxis, dimension);
 			return elementScrollerDisplacement != 0;
 		}
+		void Cycle(){}
 		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
 			IUIElementGroupScrollerConstArg typedArg = (IUIElementGroupScrollerConstArg)arg;
 			int horizontalCursorSize = typedArg.horizontalCursorSize;
@@ -111,7 +112,7 @@ namespace UISystem{
 				newRectWidth = cursorWidth;
 			if(cursorHeight > thisRect.height)
 				newRectHeight = cursorHeight;
-			uia.SetRectDimension(new Vector2(newRectWidth, newRectHeight));
+			uia.SetRectDimension(newRectWidth, newRectHeight);
 
 			return new Vector2(cursorWidth, cursorHeight);
 		}
@@ -124,7 +125,7 @@ namespace UISystem{
 		bool[] isCyclicEnabled{get;}
 	}
 	public class UIElementGroupScrollerConstArg: AbsScrollerConstArg, IUIElementGroupScrollerConstArg{
-		public UIElementGroupScrollerConstArg(int horizontalCursorSize, int verticalCursorSize, Vector2 elementDimension, Vector2 padding, bool[] isCyclicEnabled, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(relativeCursorPosition, uim, processFactory, uieFactory, uia, image){
+		public UIElementGroupScrollerConstArg(int horizontalCursorSize, int verticalCursorSize, Vector2 elementDimension, Vector2 padding, bool[] isCyclicEnabled, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, float[] rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
 			thisHorizontalCursorSize = MakeCursorSizeInRange(horizontalCursorSize);
 			thisVerticalCursorSize = MakeCursorSizeInRange(verticalCursorSize);
 			thisElementDimension = elementDimension;

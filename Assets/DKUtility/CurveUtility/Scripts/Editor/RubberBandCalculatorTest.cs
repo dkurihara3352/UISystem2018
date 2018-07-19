@@ -20,7 +20,7 @@ public class RubberBandCalculatorTest {
 		int iteration = 0;
 		DebugHelper.PrintInRed("suppleness: " + suppleness.ToString() + ", limitLength: " + limitLength.ToString());
 		while(rubberBandedValue + diffThreshold < limitLength){
-			rubberBandedValue = calculator.CalcRubberBandValue(origDisp);
+			rubberBandedValue = calculator.CalcRubberBandValue(origDisp, false);
 			float delta = rubberBandedValue - prev;
 			Debug.Log("iteration: " + iteration.ToString() + ", origDisp: " + origDisp.ToString() + ", rubberValue: " + rubberBandedValue.ToString() + ", delta: " + delta.ToString());
 			prev = rubberBandedValue;
