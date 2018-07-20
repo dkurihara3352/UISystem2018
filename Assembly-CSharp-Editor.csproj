@@ -48,6 +48,11 @@
   <ItemGroup>
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\Editor\CriticallyDampedSpringCalculatorTest.cs" />
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\Editor\RubberBandCalculatorTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\ConstrainedProcessTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\InterpolatorProcessTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\TurnImageDarknessProcessTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\WaitAndExpireProcessTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\SwitchableState\Editor\SwitchableStateTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\EquipToolIconGroupTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroupTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroup_ConstructionTest.cs" />
@@ -64,17 +69,12 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\IITAMStateEngineTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\ItemIconTransactionManagerTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\PickUpReceiverSwitchTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessAndIrperTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\ConstrainedProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\InterpolatorProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\ProcessTest\TurnImageDarknessProcessTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\SelectabilityStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\SwitchableStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\UIAdaptorInputStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Editor\UIElementTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTemplateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\Editor\ScrollerTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\Editor\UIElementTest.cs" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
@@ -126,9 +126,6 @@
  <Reference Include="NSubstitute">
  <HintPath>/Users/dkurihara/UnityProjects/UISystem2018/Assets/Plugins/NSubstitute.dll</HintPath>
  </Reference>
- <ProjectReference Include="Assembly-CSharp.csproj">
- <HintPath>/Users/dkurihara/UnityProjects/UISystem2018/Assembly-CSharp.csproj</HintPath>
- </ProjectReference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
@@ -144,6 +141,10 @@
  <Reference Include="UnityEditor.iOS.Extensions.Common">
  <HintPath>/Applications/Unity/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{3E433350-0BB0-0945-4705-E29ABD924B78}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

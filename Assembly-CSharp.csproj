@@ -53,7 +53,7 @@
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Process.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessFactory.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessManager.cs" />
-     <Compile Include="Assets\DKUtility\Scripts\SwitchableStateEngine.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\SwitchableState\SwitchableStateEngine.cs" />
      <Compile Include="Assets\DKUtility\Scripts\WaitAndExpireProcessState.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\DragImageImplementor.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\EquipToolActivationData.cs" />
@@ -115,7 +115,6 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\PickUpManager.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelProcess.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelableUIE.cs" />
-     <Compile Include="Assets\UISystem\Scripts\EquippableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Item.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanel\DigitPanel.cs" />
@@ -149,7 +148,8 @@
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationState.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEFactory.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\EquippableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIImage\UIImage.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIInputHandler.cs" />

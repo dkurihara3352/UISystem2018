@@ -8,7 +8,7 @@ using DKUtility;
 
 public class ProcessAndIrperTest{
 	[Test][TestCaseSource(typeof(ExpirationTestCase), "nonExpireCases")]
-	public void WaitAndExpipreProcess_Construction_ExpireTIsSetLessThanOrEqualToZero_UpdateProcessIsSuppliedWithEnoughDeltaT_DoesNotCallProcessStateOnProcessExpire(float expireT){
+	public void WaitAndExpireProcess_Construction_ExpireTIsSetLessThanOrEqualToZero_UpdateProcessIsSuppliedWithEnoughDeltaT_DoesNotCallProcessStateOnProcessExpire(float expireT){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
 		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, expireT);
@@ -25,7 +25,7 @@ public class ProcessAndIrperTest{
 		state.DidNotReceive().OnProcessExpire();
 	}
 	[Test][TestCaseSource(typeof(ExpirationTestCase), "expireCases")]
-	public void WaitAndExpipreProcess_Construction_ExpireTIsSetGreaterThanZero_UpdateProcessIsSuppliedWithEnoughDeltaT_CallProcStateOnExpire(float expireT){
+	public void WaitAndExpireProcess_Construction_ExpireTIsSetGreaterThanZero_UpdateProcessIsSuppliedWithEnoughDeltaT_CallProcStateOnExpire(float expireT){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
 		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, expireT);
@@ -54,7 +54,7 @@ public class ProcessAndIrperTest{
 			};
 		}
 	[Test]
-	public void WaitAndExpipreProcess_UpdateProcess_WhenCalled_CallsProcStateOnProcessUpdate(){
+	public void WaitAndExpireProcess_UpdateProcess_WhenCalled_CallsProcStateOnProcessUpdate(){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
 		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, 0f);
