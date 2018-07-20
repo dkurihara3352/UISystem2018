@@ -8,13 +8,13 @@ namespace UISystem{
 	}
 	public interface INonActivatorUIEActivationProcess: IUIEActivationProcess{}
 	public class NonActivatorUIEActivationProcess: GenericWaitAndExpireProcess, INonActivatorUIEActivationProcess{
-		public NonActivatorUIEActivationProcess(IProcessManager processManager, float expireT): base(processManager, expireT){}
+		public NonActivatorUIEActivationProcess(IProcessManager processManager, float expireT, IUIEActivationProcessState state): base(processManager, expireT, state){}
 	}
 	public interface IAlphaActivatorUIEActivationProcess: IUIEActivationProcess{
 		void SetAlphaActivatorUIE(IAlphaActivatorUIElement uie);
 	}
 	public class AlphaActivatorUIEActivationProcess: AbsInterpolatorProcess<IGroupAlphaInterpolator>, IAlphaActivatorUIEActivationProcess{
-		public AlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate): base(processManager, ProcessConstraint.expireTime, expireT, .05f, false){
+		public AlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate, IUIEActivationProcessState state): base(processManager, ProcessConstraint.expireTime, expireT, .05f, false, state){
 			thisDoesActivate = doesActivate;
 		}
 		readonly bool thisDoesActivate;

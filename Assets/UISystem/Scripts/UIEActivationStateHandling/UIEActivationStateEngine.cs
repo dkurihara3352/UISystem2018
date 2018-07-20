@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DKUtility;
-
 namespace UISystem{
 	public interface IUIEActivationHandler{
 		void Activate();
@@ -24,7 +23,7 @@ namespace UISystem{
 			thisActivatingState = arg.activatingState;
 			thisActivationCompletedState = arg.activationCompletedState;
 			thisDeactivatingState = arg.deactivatingState;
-			thisDeactivationCompletedState = arg.deactivationCompleteState;
+			thisDeactivationCompletedState = arg.deactivationCompletedState;
 			thisStates = new IUIEActivationState[4]{
 				thisActivatingState, 
 				thisActivationCompletedState, 
@@ -77,6 +76,6 @@ namespace UISystem{
 		IUIEActivatingState activatingState{get;}
 		IUIEActivationCompletedState activationCompletedState{get;}
 		IUIEDeactivatingState deactivatingState{get;}
-		IUIEDeactivationCompletedState deactivationCompleteState{get;}
+		IUIEDeactivationCompletedState deactivationCompletedState{get;}
 	}
 }

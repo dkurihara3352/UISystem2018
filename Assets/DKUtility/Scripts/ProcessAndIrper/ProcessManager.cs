@@ -12,5 +12,6 @@ namespace DKUtility{
 		float GetImageEmptificationExpireTime();
 		float GetVisualPickednessProcessExpireTime();
 		float GetSpringT(float normalizedT);
+		float GetAlphaActivatorUIEActivationProcessExpireT();
 	}
 }

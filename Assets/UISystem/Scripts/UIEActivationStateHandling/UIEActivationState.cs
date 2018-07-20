@@ -32,12 +32,9 @@ namespace UISystem{
 			thisEngine.ExpireProcessOnCurrentProcessState();
 		}
 	}
-	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IWaitAndExpireProcessState{
-		public AbsUIEActivationProcessState(IUIEActivationProcess process){
-			thisProcess = process;
-			thisProcess.SetWaitAndExpireProcessState(this);
-		}
-		readonly protected IUIEActivationProcess thisProcess;
+	public interface IUIEActivationProcessState: IUIEActivatingState, IWaitAndExpireProcessState{}
+	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IUIEActivationProcessState{
+		protected IUIEActivationProcess thisProcess;
 		public override void OnEnter(){
 			thisProcess.Run();
 		}
@@ -56,7 +53,6 @@ namespace UISystem{
 	}
 	public interface IUIEActivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
 	public abstract class AbsUIEActivatingState: AbsUIEActivationProcessState, IUIEActivatingState{
-		public AbsUIEActivatingState(IUIEActivationProcess process): base(process){}
 		public override void OnProcessExpire(){
 			thisEngine.SetToActivationCompletedState();
 		}
@@ -72,7 +68,6 @@ namespace UISystem{
 	}
 	public interface IUIEDeactivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
 	public abstract class AbsUIEDeactivatingState: AbsUIEActivationProcessState, IUIEDeactivatingState{
-		public AbsUIEDeactivatingState(IUIEActivationProcess process): base(process){}
 		public override void OnProcessExpire(){
 			thisEngine.SetToDeactivationCompletedState();
 		}

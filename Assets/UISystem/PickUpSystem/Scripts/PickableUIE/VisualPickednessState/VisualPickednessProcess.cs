@@ -7,7 +7,7 @@ namespace UISystem.PickUpUISystem{
 	public interface IVisualPickednessProcess: IWaitAndExpireProcess{
 	}
 	public class VisualPickednessProcess: AbsInterpolatorProcess<IPickableUIImageVisualPickednessInterpolator>, IVisualPickednessProcess{
-		public VisualPickednessProcess(IProcessManager processManager, float expireT, IPickableUIImage pickableUIImage, float targetPickedness): base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false){
+		public VisualPickednessProcess(IProcessManager processManager, float expireT, IPickableUIImage pickableUIImage, float targetPickedness, IChangingVisualPickednessState state): base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false, state){
 			thisPickableUIImage = pickableUIImage;
 			thisTargetPickedness = targetPickedness;
 		}

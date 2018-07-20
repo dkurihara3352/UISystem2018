@@ -40,15 +40,14 @@ namespace DKUtility{
 		}
 	}
 	public interface IWaitAndExpireProcess: IProcess{
-		void SetWaitAndExpireProcessState(IWaitAndExpireProcessState state);
 	}
 	public abstract class AbsWaitAndExpireProcess: AbsProcess, IWaitAndExpireProcess{
-		public AbsWaitAndExpireProcess(IProcessManager procMan, float expireT): base(procMan){
+		public AbsWaitAndExpireProcess(IProcessManager procMan, float expireT, IWaitAndExpireProcessState state): base(procMan){
 			thisExpireT = expireT;
+			thisState = state;
 			Reset();
 		}
-		public void SetWaitAndExpireProcessState(IWaitAndExpireProcessState state){ thisState = state;}
-		IWaitAndExpireProcessState thisState;
+		readonly IWaitAndExpireProcessState thisState;
 		float thisElapsedT;
 		readonly float thisExpireT;
 		protected float thisNormlizedT{
@@ -80,7 +79,7 @@ namespace DKUtility{
 		}
 	}
 	public class GenericWaitAndExpireProcess: AbsWaitAndExpireProcess{
-		public GenericWaitAndExpireProcess(IProcessManager processManager, float expireT): base(processManager, expireT){
+		public GenericWaitAndExpireProcess(IProcessManager processManager, float expireT, IWaitAndExpireProcessState state): base(processManager, expireT, state){
 		}
 		protected override void UpdateProcessImple(float deltaT){return;}
 	}
@@ -90,17 +89,17 @@ namespace DKUtility{
 		expireTime
 	}
 	public abstract class AbsConstrainedProcess: AbsProcess, IWaitAndExpireProcess{
-		public AbsConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float differenceThreshold): base(processManager){
+		public AbsConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float differenceThreshold, IWaitAndExpireProcessState state): base(processManager){
 			thisProcessConstraint = processConstraint;
 			thisConstraintValue = constraintValue;
 			if(differenceThreshold < 0f)
 				throw new System.ArgumentException("diffThreshold must not be below zero");
 			thisDifferenceThreshold = differenceThreshold;
+			thisProcessState = state;
 		}
 		readonly ProcessConstraint thisProcessConstraint;
 		readonly float thisConstraintValue;
-		public void SetWaitAndExpireProcessState(IWaitAndExpireProcessState state){thisProcessState = state;}
-		protected IWaitAndExpireProcessState thisProcessState;
+		protected readonly IWaitAndExpireProcessState thisProcessState;
 		sealed public override void Run(){
 			Reset();
 			if(ValueDifferenceIsBigEnough()){
@@ -201,7 +200,7 @@ namespace DKUtility{
 		}
 	}
 	public abstract class AbsInterpolatorProcess<T>: AbsConstrainedProcess, IProcess where T: class, IInterpolator{
-		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, float differenceThreshold, bool useSpringT): base(processManager, constraint, constraintValue, differenceThreshold){
+		public AbsInterpolatorProcess(IProcessManager processManager, ProcessConstraint constraint, float constraintValue, float differenceThreshold, bool useSpringT, IWaitAndExpireProcessState state): base(processManager, constraint, constraintValue, differenceThreshold, state){
 			thisUseSpringT = useSpringT;
 		}
 		readonly bool thisUseSpringT;

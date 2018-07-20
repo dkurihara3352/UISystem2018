@@ -7,7 +7,7 @@ namespace UISystem{
 	public interface IQuantityAnimationProcess: IProcess{
 	}
 	public abstract class AbsQuantityAnimationProcess<T>: AbsInterpolatorProcess<T>, IQuantityAnimationProcess where T: class, IQuantityAnimationInterpolator{
-		public AbsQuantityAnimationProcess(int targetQuantity, IQuantityRoller quantityRoller, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, float differenceThreshold, bool useSpringT): base(processManager, expireTimeConstraint, expireTime, differenceThreshold, useSpringT){
+		public AbsQuantityAnimationProcess(int targetQuantity, IQuantityRoller quantityRoller, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, float differenceThreshold, bool useSpringT): base(processManager, expireTimeConstraint, expireTime, differenceThreshold, useSpringT, null){
 			thisTargetQuantity = targetQuantity;
 			thisQuantityRoller = quantityRoller;
 		}

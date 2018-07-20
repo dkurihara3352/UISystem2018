@@ -5,7 +5,9 @@ using DKUtility;
 
 namespace UISystem{
 	public class AlphaActivatorUIEActivatingState: AbsUIEActivatingState{
-		public AlphaActivatorUIEActivatingState(IAlphaActivatorUIEActivationProcess process):base(process){}
+		public AlphaActivatorUIEActivatingState(IUISystemProcessFactory processFactory){
+			thisProcess = processFactory.CreateAlphaActivatorUIEActivationProcess(this, true);
+		}
 		IAlphaActivatorUIEActivationProcess typedProcess{get{return (IAlphaActivatorUIEActivationProcess)thisProcess;}}
 		public override void SetInitializationFields(IUIEActivationStateEngine engine, IUIElement uiElement){
 			IAlphaActivatorUIElement alphaActivatorUIE = (IAlphaActivatorUIElement)uiElement;
@@ -13,7 +15,9 @@ namespace UISystem{
 		}
 	}
 	public class AlphaActivatorUIEDeactivatingState: AbsUIEDeactivatingState{
-		public AlphaActivatorUIEDeactivatingState(IAlphaActivatorUIEActivationProcess process): base(process){}
+		public AlphaActivatorUIEDeactivatingState(IUISystemProcessFactory processFactory){
+			thisProcess = processFactory.CreateAlphaActivatorUIEActivationProcess(this, false);
+		}
 		IAlphaActivatorUIEActivationProcess typedProcess{get{return (IAlphaActivatorUIEActivationProcess)thisProcess;}}
 		public override void SetInitializationFields(IUIEActivationStateEngine engine, IUIElement uiElement){
 			IAlphaActivatorUIElement alphaActivatorUIE = (IAlphaActivatorUIElement)uiElement;

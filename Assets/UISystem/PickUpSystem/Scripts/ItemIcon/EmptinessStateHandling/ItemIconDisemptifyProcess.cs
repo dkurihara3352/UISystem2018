@@ -7,7 +7,7 @@ namespace UISystem.PickUpUISystem{
 	public interface IItemIconDisemptifyProcess: IWaitAndExpireProcess{
 	}
 	public class ItemIconDisemptifyProcess: AbsInterpolatorProcess<IItemIconImageEmptinessInterpolator>, IItemIconDisemptifyProcess{
-		public ItemIconDisemptifyProcess(IProcessManager processManager, float expireT, IItemIconImage itemIconImage):base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false){
+		public ItemIconDisemptifyProcess(IProcessManager processManager, float expireT, IItemIconImage itemIconImage, IDisemptifyingState state):base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false, state){
 			thisItemIconImage = itemIconImage;
 		}
 		readonly IItemIconImage thisItemIconImage;

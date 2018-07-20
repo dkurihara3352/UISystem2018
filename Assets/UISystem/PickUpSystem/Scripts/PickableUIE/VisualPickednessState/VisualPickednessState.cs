@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DKUtility;
 
 namespace UISystem.PickUpUISystem{
 	public interface IVisualPickednessState: DKUtility.ISwitchableState, IVisualPickednessHandler{
@@ -36,7 +37,8 @@ namespace UISystem.PickUpUISystem{
 			throw new System.InvalidOperationException("this is alreadly unpicked");
 		}
 	}
-	public interface IBecomingVisuallyPickedUpState: IVisualPickednessState, DKUtility.IWaitAndExpireProcessState{}
+	public interface IChangingVisualPickednessState: IVisualPickednessState, IWaitAndExpireProcessState{}
+	public interface IBecomingVisuallyPickedUpState: IChangingVisualPickednessState{}
 	public class BecomingVisuallyPickedUpState: AbsVisualPickednessState, IBecomingVisuallyPickedUpState{
 		public BecomingVisuallyPickedUpState(IVisualPickednessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
 			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
@@ -84,7 +86,7 @@ namespace UISystem.PickUpUISystem{
 			thisStateEngine.SetToBecomingVisuallyUnpickedState();
 		}
 	}
-	public interface IBecomingVisuallyUnpickedState: IVisualPickednessState, DKUtility.IWaitAndExpireProcessState{}
+	public interface IBecomingVisuallyUnpickedState: IChangingVisualPickednessState{}
 	public class BecomingVisuallyUnpickedState: AbsVisualPickednessState, IBecomingVisuallyUnpickedState{
 		public BecomingVisuallyUnpickedState(IVisualPickednessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
 			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();

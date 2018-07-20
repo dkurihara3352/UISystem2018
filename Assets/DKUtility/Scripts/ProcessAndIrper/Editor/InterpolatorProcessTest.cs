@@ -11,7 +11,7 @@ public class InterpolatorProcessTest{
     [Test]
     public void Run_ValueDifferenceIsBigEnough_CallsIrperInterpolateWithZero(){
         IProcessManager processManager = Substitute.For<IProcessManager>();
-        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, 1f, .1f, .5f, false);
+        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, 1f, .1f, .5f, false, null);
 
         testProcess.Run();
 
@@ -21,7 +21,7 @@ public class InterpolatorProcessTest{
     [Test][TestCaseSource(typeof(UpdateProcess_TestCases), "cases")]
     public void UpdateProcess_ValueDiffIsBigEnough_CallsIrperInterpolate(float expireT){
         IProcessManager processManager = Substitute.For<IProcessManager>();
-        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, expireT, .1f, .5f, false);
+        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, expireT, .1f, .5f, false, null);
 
         testProcess.Run();
         IInterpolator irper = testProcess.GetInterpolator();
@@ -52,7 +52,7 @@ public class InterpolatorProcessTest{
         };
     }
     public class TestInterpolatorProcess: AbsInterpolatorProcess<IInterpolator>{
-        public TestInterpolatorProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float diffThreshold, float normalizedValueDiff, bool useSpringT): base(processManager, processConstraint, constraintValue, diffThreshold, useSpringT){
+        public TestInterpolatorProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float diffThreshold, float normalizedValueDiff, bool useSpringT, IWaitAndExpireProcessState state): base(processManager, processConstraint, constraintValue, diffThreshold, useSpringT, state){
             thisLatestInitialValueDifference = normalizedValueDiff;
         }
         protected override IInterpolator InstantiateInterpolatorWithValues(){
