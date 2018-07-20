@@ -5,32 +5,17 @@ using DKUtility;
 
 namespace UISystem.PickUpUISystem{
 	public interface IItemIconEmptifyProcess: IWaitAndExpireProcess{
-		void ToggleRemoval(bool removesEmpty);
 	}
-	public class ItemIconEmptifyProcess: AbsWaitAndExpireProcess, IItemIconEmptifyProcess{
-		public ItemIconEmptifyProcess(IProcessManager processManager, IEmptifyingState disemptifyingState, float expireT, IItemIconImage itemIconImage, IItemIcon itemIcon): base(processManager, disemptifyingState, expireT){
-			float currentEmptiness = itemIconImage.GetEmptiness();
-			thisImageEmptinessInterpolator = new ItemIconImageEmptinessInterpolator(itemIconImage, currentEmptiness, 0f);
+	public class ItemIconEmptifyProcess: AbsInterpolatorProcess<IItemIconImageEmptinessInterpolator>, IItemIconEmptifyProcess{
+		public ItemIconEmptifyProcess(IProcessManager processManager, float expireT, IItemIconImage itemIconImage): base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false){
+			thisItemIconImage = itemIconImage;
 		}
-		readonly IItemIcon thisItemIcon;
-		bool thisRemovesEmpty;
-		public void ToggleRemoval(bool removesEmpty){
-			thisRemovesEmpty = removesEmpty;
+		readonly IItemIconImage thisItemIconImage;
+		protected override float GetLatestInitialValueDifference(){
+			return 0f - thisItemIconImage.GetEmptiness();
 		}
-		IItemIconImageEmptinessInterpolator thisImageEmptinessInterpolator;
-		protected override void UpdateProcessImple(float deltaT){
-			thisImageEmptinessInterpolator.Interpolate(thisNormlizedT);
-		}
-		public override void Expire(){
-			if(thisRemovesEmpty){
-				IIconGroup ig = thisItemIcon.GetIconGroup();
-				ig.RemoveIIAndMutate(thisItemIcon);
-			}
-			base.Expire();
-			thisImageEmptinessInterpolator.Terminate();
-		}
-		public override void Reset(){
-			thisRemovesEmpty = false;
+		protected override IItemIconImageEmptinessInterpolator InstantiateInterpolatorWithValues(){
+			return new ItemIconImageEmptinessInterpolator(thisItemIconImage, thisItemIconImage.GetEmptiness(), 0f);
 		}
 	}
 }

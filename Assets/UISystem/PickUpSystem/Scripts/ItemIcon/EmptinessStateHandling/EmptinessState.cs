@@ -193,7 +193,6 @@ namespace UISystem.PickUpUISystem{
 			thisRemovesEmpty = removesEmpty;
 		}
 		public override void OnEnter(){
-			thisItemIconEmptifyProcess.ToggleRemoval(thisRemovesEmpty);
 			thisItemIconEmptifyProcess.Run();
 		}
 		public override void OnExit(){
@@ -204,6 +203,10 @@ namespace UISystem.PickUpUISystem{
 			return;
 		}
 		public void OnProcessExpire(){
+			if(thisRemovesEmpty){
+				IIconGroup ig = thisItemIcon.GetIconGroup();
+				ig.RemoveIIAndMutate(thisItemIcon);
+			}
 			thisStateEngine.SetToWaitingForDisemptifyState();
 		}
 		public void ExpireProcess(){

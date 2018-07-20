@@ -5,7 +5,4 @@ using DKUtility;
 
 namespace UISystem{
 	public interface INonActivatorUIElement: IUIElement{}
-	public interface IAlphaActivatorUIElement: IUIElement{
-		IInterpolator GetGroupAlphaInterpolatorForActivation();
-	}
 }

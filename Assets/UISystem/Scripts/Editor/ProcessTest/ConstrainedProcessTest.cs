@@ -80,19 +80,19 @@ public class ConstrainedProcessTest {
 	[Test][ExpectedException(typeof(System.ArgumentException))][TestCaseSource(typeof(Construction_TestCases), "diffThreshUnderCases")]
 	public void Construction_DiffThresholdIsLessThanZero_ThrowsException(float diffThreshold){
 		IProcessManager processManager = Substitute.For<IProcessManager>();
-		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, null, diffThreshold, 0f);
+		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, diffThreshold, 0f);
 	}
 	[Test]
 	public void Construction_DiffThresholdZero_DoesNotThrowException(){
 		float diffThreshold = 0f;
 		IProcessManager processManager = Substitute.For<IProcessManager>();
-		Assert.DoesNotThrow(() =>{ new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, null, diffThreshold, 0f);
+		Assert.DoesNotThrow(() =>{ new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, diffThreshold, 0f);
 		});
 	}
 	[Test]
 	public void Construction_ProcessManagerNull_ThrowsException(){
 		Assert.Throws(Is.TypeOf(typeof(System.ArgumentException)).And.Message.StringContaining("process never works without processManager"), () => {
-			new TestConstrainedProcess(null, ProcessConstraint.none, 0f, null, 0f, 0f);
+			new TestConstrainedProcess(null, ProcessConstraint.none, 0f, 0f, 0f);
 		});
 	}
 	public class Construction_TestCases{
@@ -130,7 +130,7 @@ public class ConstrainedProcessTest {
 	}
 	/* Test Classes */
 	public class TestConstrainedProcess: AbsConstrainedProcess{
-		public TestConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, IWaitAndExpireProcessState processState, float diffThreshold, float normalizedValueDiff): base(processManager, processConstraint, constraintValue, processState, diffThreshold){
+		public TestConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float diffThreshold, float normalizedValueDiff): base(processManager, processConstraint, constraintValue, diffThreshold){
 			thisLatestInitialValueDifference = normalizedValueDiff;
 		}
 		protected override void UpdateProcessImple(float deltaT){}
@@ -153,12 +153,12 @@ public class ConstrainedProcessTest {
 	}
 	public TestConstrainedProcess CreateTestConstrainedProcess(float normalizedValueDiff, float diffThreshold){
 		IProcessManager processManager = Substitute.For<IProcessManager>();
-		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, null, diffThreshold, normalizedValueDiff);
+		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, ProcessConstraint.none, 0f, diffThreshold, normalizedValueDiff);
 		return testProcess;
 	}
 	public TestConstrainedProcess CreateTestConstrainedProcess(bool valueDiffIsBigEnough, ProcessConstraint processConstraint, float constraintValue){
 		IProcessManager processManager = Substitute.For<IProcessManager>();
-		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, processConstraint, constraintValue, null, .5f, valueDiffIsBigEnough? 1f: 0f);
+		TestConstrainedProcess testProcess = new TestConstrainedProcess(processManager, processConstraint, constraintValue, .5f, valueDiffIsBigEnough? 1f: 0f);
 		return testProcess;
 	}
 	public TestConstrainedProcess CreateTestConstrainedProcess(float expireT, out IWaitAndExpireProcessState processState){
@@ -171,7 +171,8 @@ public class ConstrainedProcessTest {
 	public TestConstrainedProcess CreateTestConstrainedProcess(float expireT, out IWaitAndExpireProcessState processState, out IProcessManager processManager){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState procSta = Substitute.For<IWaitAndExpireProcessState>();
-		TestConstrainedProcess testProcess = new TestConstrainedProcess(procMan, ProcessConstraint.expireTime, expireT, procSta, .5f, 1f);
+		TestConstrainedProcess testProcess = new TestConstrainedProcess(procMan, ProcessConstraint.expireTime, expireT, .5f, 1f);
+		testProcess.SetWaitAndExpireProcessState(procSta);
 		processState = procSta;
 		processManager = procMan;
 		return testProcess;

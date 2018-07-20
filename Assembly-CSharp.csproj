@@ -141,8 +141,12 @@
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIDomainManager.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\NonActivatorUIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\AlphaActivatorUIE\AlphaActivatorUIEActivationState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\AlphaActivatorUIE\AlphaActivatorUIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\NonActivatorUIE\NonActivatorUIEActivationState.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\NonActivatorUIE\NonActivatorUIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationEngine.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationState.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement.cs" />

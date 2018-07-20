@@ -6,18 +6,20 @@ using DKUtility;
 namespace UISystem.PickUpUISystem{
 	public interface IItemIconDisemptifyProcess: IWaitAndExpireProcess{
 	}
-	public class ItemIconDisemptifyProcess: AbsWaitAndExpireProcess, IItemIconDisemptifyProcess{
-		public ItemIconDisemptifyProcess(IProcessManager processManager, IDisemptifyingState disemptifyingState, float expireT, IItemIconImage itemIconImage): base(processManager, disemptifyingState, expireT){
-			float currentEmptiness = itemIconImage.GetEmptiness();
-			thisImageEmptinessInterpolator = new ItemIconImageEmptinessInterpolator(itemIconImage, currentEmptiness, 1f);
+	public class ItemIconDisemptifyProcess: AbsInterpolatorProcess<IItemIconImageEmptinessInterpolator>, IItemIconDisemptifyProcess{
+		public ItemIconDisemptifyProcess(IProcessManager processManager, float expireT, IItemIconImage itemIconImage):base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false){
+			thisItemIconImage = itemIconImage;
 		}
-		IItemIconImageEmptinessInterpolator thisImageEmptinessInterpolator;
-		protected override void UpdateProcessImple(float deltaT){
-			thisImageEmptinessInterpolator.Interpolate(thisNormlizedT);
+		readonly IItemIconImage thisItemIconImage;
+		protected override float GetLatestInitialValueDifference(){
+			float curEmptiness = thisItemIconImage.GetEmptiness();
+			float targetEmptiness = 1f;
+			return targetEmptiness - curEmptiness;
 		}
-		public override void Expire(){
-			base.Expire();
-			thisImageEmptinessInterpolator.Terminate();
+		protected override IItemIconImageEmptinessInterpolator InstantiateInterpolatorWithValues(){
+			float curEmptiness = thisItemIconImage.GetEmptiness();
+			IItemIconImageEmptinessInterpolator irper = new ItemIconImageEmptinessInterpolator(thisItemIconImage, curEmptiness, 1f);
+			return irper;
 		}
 	}
 }

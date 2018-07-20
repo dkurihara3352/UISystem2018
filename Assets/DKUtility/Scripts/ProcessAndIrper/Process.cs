@@ -89,7 +89,7 @@ namespace DKUtility{
 		rateOfChange,
 		expireTime
 	}
-	public abstract class AbsConstrainedProcess: AbsProcess{
+	public abstract class AbsConstrainedProcess: AbsProcess, IWaitAndExpireProcess{
 		public AbsConstrainedProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float differenceThreshold): base(processManager){
 			thisProcessConstraint = processConstraint;
 			thisConstraintValue = constraintValue;
@@ -100,7 +100,7 @@ namespace DKUtility{
 		readonly ProcessConstraint thisProcessConstraint;
 		readonly float thisConstraintValue;
 		public void SetWaitAndExpireProcessState(IWaitAndExpireProcessState state){thisProcessState = state;}
-		IWaitAndExpireProcessState thisProcessState;
+		protected IWaitAndExpireProcessState thisProcessState;
 		sealed public override void Run(){
 			Reset();
 			if(ValueDifferenceIsBigEnough()){

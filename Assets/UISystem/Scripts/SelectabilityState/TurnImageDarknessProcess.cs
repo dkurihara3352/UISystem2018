@@ -7,7 +7,7 @@ namespace UISystem{
 	public interface ITurnImageDarknessProcess: IProcess{
 	}
 	public class TurnImageDarknessProcess: AbsInterpolatorProcess<IImageDarknessInterpolator>, ITurnImageDarknessProcess{
-		public TurnImageDarknessProcess(IProcessManager processManager, ProcessConstraint rateOfChangeConstraint, float rateOfChange, float diffThreshold, IUIImage image, float targetDarkness, bool useSpringT): base(processManager, rateOfChangeConstraint, rateOfChange, null, diffThreshold, useSpringT){
+		public TurnImageDarknessProcess(IProcessManager processManager, ProcessConstraint rateOfChangeConstraint, float rateOfChange, float diffThreshold, IUIImage image, float targetDarkness, bool useSpringT): base(processManager, rateOfChangeConstraint, rateOfChange, diffThreshold, useSpringT){
 			thisImage = image;
 			float tarD = ClampValueZeroToOne(targetDarkness);
 			thisTargetDarkness = targetDarkness;

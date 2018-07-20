@@ -18,17 +18,20 @@ namespace UISystem.PickUpUISystem{
 		}
 		public IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage itemIconImage){
 			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
-			IItemIconDisemptifyProcess process = new ItemIconDisemptifyProcess(thisProcessManager, disemptifyingState, expireT, itemIconImage);
+			IItemIconDisemptifyProcess process = new ItemIconDisemptifyProcess(thisProcessManager, expireT, itemIconImage);
+			process.SetWaitAndExpireProcessState(disemptifyingState);
 			return process;
 		}
 		public IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage itemIconImage, IItemIcon itemIcon){
 			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
-			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(thisProcessManager, emptifyingState, expireT, itemIconImage, itemIcon);
+			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(thisProcessManager, expireT, itemIconImage);
+			process.SetWaitAndExpireProcessState(emptifyingState);
 			return process;
 		}
 		public IVisualPickednessProcess CreateVisualPickednessProcess(IWaitAndExpireProcessState state, IPickableUIImage image, float sourcePickedness, float targetPickedness){
 			float expireT = thisProcessManager.GetVisualPickednessProcessExpireTime();
-			IVisualPickednessProcess process = new VisualPickednessProcess(thisProcessManager, state, expireT, image, sourcePickedness, targetPickedness);
+			IVisualPickednessProcess process = new VisualPickednessProcess(thisProcessManager, expireT, image, targetPickedness);
+			process.SetWaitAndExpireProcessState(state);
 			return process;
 		}
 	}

@@ -6,13 +6,18 @@ using DKUtility;
 namespace UISystem.PickUpUISystem{
 	public interface IVisualPickednessProcess: IWaitAndExpireProcess{
 	}
-	public class VisualPickednessProcess: AbsWaitAndExpireProcess, IVisualPickednessProcess{
-		public VisualPickednessProcess(IProcessManager processManager, IWaitAndExpireProcessState state, float expireT, IPickableUIImage pickableUIImage, float sourcePickedness, float targetPickedness): base(processManager, state, expireT){
-			thisInterpolator = new PickableUIImageVisualPickednessInterpolator(pickableUIImage, sourcePickedness, targetPickedness);
+	public class VisualPickednessProcess: AbsInterpolatorProcess<IPickableUIImageVisualPickednessInterpolator>, IVisualPickednessProcess{
+		public VisualPickednessProcess(IProcessManager processManager, float expireT, IPickableUIImage pickableUIImage, float targetPickedness): base(processManager, ProcessConstraint.expireTime, expireT, 0.05f, false){
+			thisPickableUIImage = pickableUIImage;
+			thisTargetPickedness = targetPickedness;
 		}
-		IPickableUIImageVisualPickednessInterpolator thisInterpolator;
-		protected override void UpdateProcessImple(float deltaT){
-			thisInterpolator.Interpolate(thisNormlizedT);
+		readonly IPickableUIImage thisPickableUIImage;
+		readonly float thisTargetPickedness;
+		protected override float GetLatestInitialValueDifference(){
+			return thisTargetPickedness - thisPickableUIImage.GetVisualPickedness();
+		}
+		protected override IPickableUIImageVisualPickednessInterpolator InstantiateInterpolatorWithValues(){
+			return new PickableUIImageVisualPickednessInterpolator(thisPickableUIImage, thisPickableUIImage.GetVisualPickedness(), thisTargetPickedness);
 		}
 	}
 	public interface IPickableUIImageVisualPickednessInterpolator: IInterpolator{}

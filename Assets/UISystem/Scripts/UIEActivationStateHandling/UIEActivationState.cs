@@ -7,37 +7,37 @@ namespace UISystem{
 	public interface IUIEActivationState: ISwitchableState, IUIEActivationHandler{
 		void SetInitializationFields(IUIEActivationStateEngine engine, IUIElement uiElement);
 	}
-	public abstract class AbsUIEActivationState<T>: IUIEActivationState where T: class, IUIElement{
+	public abstract class AbsUIEActivationState: IUIEActivationState{
 		public AbsUIEActivationState(){}
-		public void SetInitializationFields(IUIEActivationStateEngine engine, IUIElement uiElement){
+		public virtual void SetInitializationFields(IUIEActivationStateEngine engine, IUIElement uiElement){
 			thisEngine = engine;
-			thisUIElement = (T)uiElement;
+			thisUIElement = uiElement;
 		}
 		protected IUIEActivationStateEngine thisEngine;
-		protected T thisUIElement;
-		public abstract void OnEnter();
-		public abstract void OnExit();
+		protected IUIElement thisUIElement;
+		public virtual void OnEnter(){}
+		public virtual void OnExit(){}
 		public virtual void Activate(){
 			thisEngine.SetToActivatingState();
 		}
 		public virtual void ActivateInstantly(){
-			thisEngine.SetToActivationCompleteState();
+			thisEngine.SetToActivatingState();
+			thisEngine.ExpireProcessOnCurrentProcessState();
 		}
 		public virtual void Deactivate(){
 			thisEngine.SetToDeactivatingState();
 		}
 		public virtual void DeactivateInstantly(){
-			thisEngine.SetToDeactivationCompleteState();
+			thisEngine.SetToDeactivatingState();
+			thisEngine.ExpireProcessOnCurrentProcessState();
 		}
-
 	}
-	public interface IUIEActivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
-	public class NonActivatorUIEActivatingState: AbsUIEActivationState<INonActivatorUIElement>, IUIEActivatingState{
-		public NonActivatorUIEActivatingState(INonActivatorUIEActivatingProcess process){
+	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IWaitAndExpireProcessState{
+		public AbsUIEActivationProcessState(IUIEActivationProcess process){
 			thisProcess = process;
 			thisProcess.SetWaitAndExpireProcessState(this);
 		}
-		readonly INonActivatorUIEActivatingProcess thisProcess;
+		readonly protected IUIEActivationProcess thisProcess;
 		public override void OnEnter(){
 			thisProcess.Run();
 		}
@@ -49,19 +49,42 @@ namespace UISystem{
 		public void OnProcessUpdate(float deltaT){
 			return;
 		}
-		public void OnProcessExpire(){
-			thisEngine.SetToActivationCompleteState();
-		}
+		public abstract void OnProcessExpire();
 		public void ExpireProcess(){
 			thisProcess.Expire();
 		}
-		public override void Activate(){
-			return;
+	}
+	public interface IUIEActivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
+	public abstract class AbsUIEActivatingState: AbsUIEActivationProcessState, IUIEActivatingState{
+		public AbsUIEActivatingState(IUIEActivationProcess process): base(process){}
+		public override void OnProcessExpire(){
+			thisEngine.SetToActivationCompletedState();
+		}
+		public override void Activate(){return;}
+		public override void ActivateInstantly(){
+			this.ExpireProcess();
 		}
 	}
-	public interface INonActivatorUIEActivatingProcess: IWaitAndExpireProcess{}
-	public class NonActivatorUIEActivatingProcess: GenericWaitAndExpireProcess, INonActivatorUIEActivatingProcess{
-		public NonActivatorUIEActivatingProcess(IProcessManager processManager, float expireT): base(processManager, expireT){
+	public interface IUIEActivationCompletedState: IUIEActivationState{}
+	public class UIEActivationCompletedState: AbsUIEActivationState, IUIEActivationCompletedState{
+		public override void Activate(){return;}
+		public override void ActivateInstantly(){return;}
+	}
+	public interface IUIEDeactivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
+	public abstract class AbsUIEDeactivatingState: AbsUIEActivationProcessState, IUIEDeactivatingState{
+		public AbsUIEDeactivatingState(IUIEActivationProcess process): base(process){}
+		public override void OnProcessExpire(){
+			thisEngine.SetToDeactivationCompletedState();
+		}
+		public override void Deactivate(){return;}
+		public override void DeactivateInstantly(){
+			this.ExpireProcess();
 		}
 	}
+	public interface IUIEDeactivationCompletedState: IUIEActivationState{}
+	public class UIEDeactivationCompletedState: AbsUIEActivationState, IUIEDeactivationCompletedState{
+		public override void Deactivate(){return;}
+		public override void DeactivateInstantly(){return;}
+	}
+
 }

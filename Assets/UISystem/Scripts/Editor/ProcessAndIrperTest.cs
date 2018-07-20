@@ -11,7 +11,8 @@ public class ProcessAndIrperTest{
 	public void WaitAndExpipreProcess_Construction_ExpireTIsSetLessThanOrEqualToZero_UpdateProcessIsSuppliedWithEnoughDeltaT_DoesNotCallProcessStateOnProcessExpire(float expireT){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
-		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, state, expireT);
+		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, expireT);
+		process.SetWaitAndExpireProcessState(state);
 		
 		float timer = 0f;
 		float durationOfTest = expireT > 0f? expireT: 1f;
@@ -27,7 +28,8 @@ public class ProcessAndIrperTest{
 	public void WaitAndExpipreProcess_Construction_ExpireTIsSetGreaterThanZero_UpdateProcessIsSuppliedWithEnoughDeltaT_CallProcStateOnExpire(float expireT){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
-		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, state, expireT);
+		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, expireT);
+		process.SetWaitAndExpireProcessState(state);
 		
 		float timer = 0f;
 		float durationOfTest = expireT;
@@ -55,7 +57,8 @@ public class ProcessAndIrperTest{
 	public void WaitAndExpipreProcess_UpdateProcess_WhenCalled_CallsProcStateOnProcessUpdate(){
 		IProcessManager procMan = Substitute.For<IProcessManager>();
 		IWaitAndExpireProcessState state = Substitute.For<IWaitAndExpireProcessState>();
-		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, state, 0f);
+		IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(procMan, 0f);
+		process.SetWaitAndExpireProcessState(state);
 		float deltaT = .1f;
 
 		process.UpdateProcess(deltaT);
