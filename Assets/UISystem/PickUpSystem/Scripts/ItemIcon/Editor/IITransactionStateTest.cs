@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class IITransactionStateTest{
 	[Test]
 	public void EqpIIHoveredState_OnEnter_ThisEqpIIsInEqpIG_ThisEqpIIIsEmpty_DoesNotCallEqpIITAM(){

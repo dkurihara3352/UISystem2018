@@ -11,22 +11,26 @@ namespace UISystem{
 		public NonActivatorUIEActivationProcess(IProcessManager processManager, float expireT, IUIEActivationProcessState state): base(processManager, expireT, state){}
 	}
 	public interface IAlphaActivatorUIEActivationProcess: IUIEActivationProcess{
-		void SetAlphaActivatorUIE(IAlphaActivatorUIElement uie);
 	}
 	public class AlphaActivatorUIEActivationProcess: AbsInterpolatorProcess<IGroupAlphaInterpolator>, IAlphaActivatorUIEActivationProcess{
-		public AlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate, IUIEActivationProcessState state): base(processManager, ProcessConstraint.expireTime, expireT, .05f, false, state){
+		public AlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate, IUIEActivationProcessState state, IAlphaActivatorUIElement alphaActivatorUIElement): base(processManager, ProcessConstraint.expireTime, expireT, .05f, false, state){
 			thisDoesActivate = doesActivate;
+			thisAlphaActivatorUIElement = alphaActivatorUIElement;
 		}
 		readonly bool thisDoesActivate;
-		public void SetAlphaActivatorUIE(IAlphaActivatorUIElement uie){
-			thisAlphaActivatorUIElement = uie;
-		}
-		IAlphaActivatorUIElement thisAlphaActivatorUIElement;
+		readonly IAlphaActivatorUIElement thisAlphaActivatorUIElement;
 		protected override float GetLatestInitialValueDifference(){
-			IUIEActivationState uieActivationState = (IUIEActivationState)thisProcessState;
-			float currentGroupAlpha = thisAlphaActivatorUIElement.GetGroupAlphaForActivation();
+			float currentGroupAlpha = thisAlphaActivatorUIElement.GetNormalizedGroupAlphaForActivation();
+			currentGroupAlpha = MakeGroupAlphaValueInRange(currentGroupAlpha);
 			float targetGroupAlpha = thisDoesActivate? 1f: 0f;
 			return targetGroupAlpha - currentGroupAlpha;
+		}
+		float MakeGroupAlphaValueInRange(float source){
+			if(source < 0f)
+				return 0f;
+			else if(source > 1f)
+				return 1f;
+			else return source;
 		}
 		protected override IGroupAlphaInterpolator InstantiateInterpolatorWithValues(){
 			float targetGroupAlpha = thisDoesActivate? 1f: 0f;
@@ -39,14 +43,14 @@ namespace UISystem{
 		public GroupAlphaInterpolator(IAlphaActivatorUIElement alphaActivatorUIElement, float targetGroupAlpha){
 			thisAlphaActivatorUIElement = alphaActivatorUIElement;
 			thisTargetGroupAlpha = targetGroupAlpha;
-			thisInitialGroupAlpha = alphaActivatorUIElement.GetGroupAlphaForActivation();
+			thisInitialGroupAlpha = alphaActivatorUIElement.GetNormalizedGroupAlphaForActivation();
 		}
 		readonly IAlphaActivatorUIElement thisAlphaActivatorUIElement;
 		readonly float thisTargetGroupAlpha;
 		readonly float thisInitialGroupAlpha;
 		public void Interpolate(float t){
 			float newAlpha = Mathf.Lerp(thisInitialGroupAlpha, thisTargetGroupAlpha, t);
-			thisAlphaActivatorUIElement.SetGroupAlphaForActivation(newAlpha);
+			thisAlphaActivatorUIElement.SetNormalizedGroupAlphaForActivation(newAlpha);
 		}
 		public void Terminate(){}
 	}

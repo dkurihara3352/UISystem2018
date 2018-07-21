@@ -8,7 +8,7 @@ namespace UISystem{
 		float GetRollerValue();
 
 	}
-	public class QuantityRoller: AbsUIElement, IQuantityRoller{
+	public class QuantityRoller: AbsNonActivatorUIElement, IQuantityRoller{
 		public QuantityRoller(IQuantityRollerConstArg arg): base(arg){
 			thisAllDigitPanelSets = CreateDigitPanelSets(arg.maxQuantity, arg.panelDim, arg.padding);
 			CalcAndSetRectDimension(arg.panelDim, arg.rollerNormalizedPos, arg.padding);

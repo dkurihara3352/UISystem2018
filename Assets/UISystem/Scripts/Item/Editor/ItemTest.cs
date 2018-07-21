@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class ItemTest{
 	[Test]
 	public void IsSameAs_ThisItemTempIsStackable_ThisItemTempRefEqualsToOtherItemTemp_ReturnsTrue(){

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using DKUtility;
 
-[TestFixture]
+[TestFixture][Category("DKUtility")]
 public class InterpolatorProcessTest{
     [Test]
     public void Run_ValueDifferenceIsBigEnough_CallsIrperInterpolateWithZero(){

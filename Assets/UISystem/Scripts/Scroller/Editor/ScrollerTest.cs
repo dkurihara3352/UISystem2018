@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using DKUtility;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class ScrollerTest{
 	[Test]
 	public void Activate_ChildrenNull_ThrowsError(){
@@ -16,7 +16,7 @@ public class ScrollerTest{
 		List<IUIElement> returnedList = null;
 		arg.uia.GetChildUIEs().Returns(returnedList);
 
-		Assert.Throws(Is.TypeOf(typeof(System.NullReferenceException)).And.Message.EqualTo("childUIEs must not be null"), ()=> {scroller.ActivateTest();});
+		Assert.Throws(Is.TypeOf(typeof(System.NullReferenceException)).And.Message.EqualTo("childUIEs must not be null"), ()=> {scroller.ActivateImpleTest();});
 	}
 	[Test]
 	public void Activate_ChildrenCountNotOne_ThrowsError([Values(0, 2, 5)]int childCount){
@@ -27,7 +27,7 @@ public class ScrollerTest{
 			returnedList.Add(Substitute.For<IUIElement>());
 		arg.uia.GetChildUIEs().Returns(returnedList);
 
-		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller must have only one UIE child as Scroller Element"), () => {scroller.ActivateTest();});
+		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller must have only one UIE child as Scroller Element"), () => {scroller.ActivateImpleTest();});
 	}
 	[Test]
 	public void Activate_FirstChildIsNull_ThrowsError(){
@@ -37,14 +37,14 @@ public class ScrollerTest{
 		List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{returnedChild});
 		arg.uia.GetChildUIEs().Returns(returnedList);
 
-		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller's only child must not be null"), () => {scroller.ActivateTest();});
+		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller's only child must not be null"), () => {scroller.ActivateImpleTest();});
 	}
 	[Test]
 	public void Activate_OnlyChildNotNull_DoesNotThrowException(){
 		ITestScrollerConstArg arg;
 		TestScroller scroller = CreateTestScrollerForActivation(out arg);
 
-		Assert.DoesNotThrow(()=>{scroller.ActivateTest();});
+		Assert.DoesNotThrow(()=>{scroller.ActivateImpleTest();});
 	}
 	// [Test, TestCaseSource(typeof(ElementIsUndersizedToCursor_TestCase), "cases")]
 	// public void ElementIsUndersizedToCursor_Various(Vector2 cursorRectSize, Vector2 elementRectSize){
@@ -53,7 +53,7 @@ public class ScrollerTest{
 	public class ElementIsUndersizedToCursor_TestCase{
 		public static object[] cases = {};
 	}
-	public class TestScroller: AbsScroller{
+	public class TestScroller: AbsScroller, INonActivatorUIElement{
 		public TestScroller(ITestScrollerConstArg arg): base(arg){
 		}
 		protected override bool thisShouldApplyRubberBand{get{return true;}}
@@ -64,11 +64,14 @@ public class ScrollerTest{
 		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
 			return ((ITestScrollerConstArg)arg).cursorDimension;
 		}
-		public void ActivateTest(){
-			this.Activate();
+		public void ActivateImpleTest(){
+			this.ActivateImple();
 		}
 		public bool ElementIsUndersizedToCursorTest(int dimension){
 			return ElementIsUndersizedToCursor(dimension);
+		}
+		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
+			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
 	}
 	public interface ITestScrollerConstArg: IScrollerConstArg{

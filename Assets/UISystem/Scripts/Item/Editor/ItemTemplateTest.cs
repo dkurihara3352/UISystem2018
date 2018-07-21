@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class ItemTemplateTest{
     [Test, ExpectedException(typeof(System.InvalidOperationException)), TestCaseSource(typeof(Construction_TestCases), "cases")]
     public void Construction_AnyOfQuantityIsLessThanOne_ThrowsException(int pickUpStepQ, int maxEquippableQ, int maxQPerSlot){

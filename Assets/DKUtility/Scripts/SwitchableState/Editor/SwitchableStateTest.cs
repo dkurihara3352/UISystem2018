@@ -7,6 +7,7 @@ using NSubstitute;
 using UISystem;
 using DKUtility;
 
+[TestFixture, Category("DKUtility")]
 public class SwitchableStateTest{
 	[Test]
 	public void Constructor_WhenCalled_CurStateIsNull(){

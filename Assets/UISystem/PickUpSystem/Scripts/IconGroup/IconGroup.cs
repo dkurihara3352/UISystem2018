@@ -43,8 +43,8 @@ namespace UISystem.PickUpUISystem{
 				if(maxSize < minSize)
 					throw new System.InvalidOperationException("minSize must not be greater than maxSize");
 		}
-		protected override void Activate(){
-			base.Activate();
+		public override void ActivateImple(){
+			base.ActivateImple();
 			DeactivateHoverPads();
 		}
 		protected IItemIconTransactionManager thisIITAM;

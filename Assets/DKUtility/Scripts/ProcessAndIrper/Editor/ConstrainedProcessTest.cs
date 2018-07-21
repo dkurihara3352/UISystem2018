@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using DKUtility;
 
-[TestFixture]
+[TestFixture][Category("DKUtility")]
 public class ConstrainedProcessTest {
 	[Test][TestCaseSource(typeof(Run_TestCases), "variousCases")]
 	public void Run_ValueDiffBigEnough_ConstraintVarious_SetsConstraintValuesAccordingly(ProcessConstraint processConstraint, float constraintValue, float expectedExpireT, float expectedRateOfChange){

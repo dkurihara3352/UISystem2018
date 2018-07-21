@@ -12,7 +12,11 @@ namespace UISystem{
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		void ActivateRecursively();
+		void ActivateInstantlyRecursively();
 		void DeactivateRecursively();
+		void DeactivateInstantlyRecursively();
+		void ActivateImple();
+		void DeactivateImple();
 		bool IsActivationComplete();
 		void OnScrollerFocus();
 		void OnScrollerDefocus();
@@ -25,6 +29,8 @@ namespace UISystem{
 			thisUIA = arg.uia;
 			thisImage = arg.image;
 			thisSelectabilityEngine = new SelectabilityStateEngine(this, thisProcessFactory);
+			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
+			thisUIEActivationStateEngine.DeactivateInstantly();
 		}
 		protected readonly IUIManager thisUIM;
 		public IUIManager GetUIM(){
@@ -47,26 +53,43 @@ namespace UISystem{
 		}
 		protected IUIImage thisImage;
 		/* Activation */
+			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
+			readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
 			public void ActivateRecursively(){
-				this.Activate();
+				thisUIEActivationStateEngine.Activate();
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
 						childUIE.ActivateRecursively(); 
 				}
 			}
-			protected virtual void Activate(){
+			public void ActivateInstantlyRecursively(){
+				thisUIEActivationStateEngine.ActivateInstantly();
+				foreach(IUIElement childUIE in this.GetChildUIEs()){
+					if(childUIE != null)
+						childUIE.ActivateInstantlyRecursively(); 
+				}
+			}
+			public virtual void ActivateImple(){
 				InitializeSelectabilityState();
 			}
 			public virtual void DeactivateRecursively(){
-				this.Deactivate();
+				thisUIEActivationStateEngine.Deactivate();
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
 						childUIE.DeactivateRecursively();
 				}
 			}
-			protected virtual void Deactivate(){}
+			public void DeactivateInstantlyRecursively(){
+				thisUIEActivationStateEngine.DeactivateInstantly();
+				foreach(IUIElement child in GetChildUIEs())
+					if(child != null)
+						child.DeactivateInstantlyRecursively();
+			}
 			public bool IsActivationComplete(){
 				return false;
+			}
+			public virtual void DeactivateImple(){
+
 			}
 		/* SelectabilityState */
 			protected virtual void InitializeSelectabilityState(){

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class EquipToolPanelTest{
 
 }

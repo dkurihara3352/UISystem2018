@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class PickUpReceiverSwitchTest {
     [Test]
     public void Construction_HoveredPUReceiverIsNull(){

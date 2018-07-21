@@ -8,7 +8,7 @@ namespace UISystem{
 		/*  if number = -1, substitute the panel image with Blank image
 		*/
 	}
-	public class DigitPanel: AbsUIElement, IDigitPanel{
+	public class DigitPanel: AbsNonActivatorUIElement, IDigitPanel{
 		public DigitPanel(IDigitPanelConstArg arg): base(arg){
 			CalcAndSetRectDimension(arg.panelDim, arg.localPosY);
 		}

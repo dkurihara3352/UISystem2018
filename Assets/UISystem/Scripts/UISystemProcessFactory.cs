@@ -9,7 +9,8 @@ namespace UISystem{
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
 		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
-		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate);
+		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement);
+		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */);
 	}
 	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
 		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
@@ -36,8 +37,12 @@ namespace UISystem{
 			OneshotQuantityAnimationProcess process = new OneshotQuantityAnimationProcess(quantityRoller, targetQuantity, thisProcessManager, ProcessConstraint.expireTime, thisProcessManager.GetQuantityAnimationProcessExpireTime(), 0f, true);
 			return process;
 		}
-		public IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate){
-			IAlphaActivatorUIEActivationProcess process = new AlphaActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetAlphaActivatorUIEActivationProcessExpireT(), doesActivate, state);
+		public IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement){
+			IAlphaActivatorUIEActivationProcess process = new AlphaActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetAlphaActivatorUIEActivationProcessExpireT(), doesActivate, state, alphaActivatorUIElement);
+			return process;
+		}
+		public INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */){
+			INonActivatorUIEActivationProcess process = new NonActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetNonActivatorUIEActivationProcessExpireT(), state);
 			return process;
 		}
 	}

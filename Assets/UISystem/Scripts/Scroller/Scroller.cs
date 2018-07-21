@@ -17,7 +17,7 @@ namespace UISystem{
 			if(thisShouldApplyRubberBand)
 				thisRubberBandCalculator = CreateRubberBandCalculator(arg, thisRect);
 		}
-		protected override void Activate(){
+		public override void ActivateImple(){
 			List<IUIElement> childUIEs = GetChildUIEs();
 			if(childUIEs == null)
 				throw new System.NullReferenceException("childUIEs must not be null");
@@ -27,7 +27,7 @@ namespace UISystem{
 				throw new System.InvalidOperationException("Scroller's only child must not be null");
 			thisScrollerElement = childUIEs[0];
 			EvaluateElementSizeRelativeToCursor();
-			base.Activate();
+			base.ActivateImple();
 		}
 		readonly  ScrollerAxis thisScrollerAxis;
 		protected IUIElement thisScrollerElement;

@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class EquipToolIconGroupTest{
     [Test]
     public void EquipToolPoolIG_HasItemSpace_ValidTypeIsPassed_ReturnsTrue(){

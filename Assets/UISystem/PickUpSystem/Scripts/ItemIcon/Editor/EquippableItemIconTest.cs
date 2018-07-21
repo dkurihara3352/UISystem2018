@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class EquippableItemIconTest {
     [Test]
     public void CheckForPickUp_ThisIsPicked_DoesNotCallEnginePickUp(){

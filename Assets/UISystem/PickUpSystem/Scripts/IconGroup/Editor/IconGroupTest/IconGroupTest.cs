@@ -6,7 +6,8 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
-[TestFixture]
+
+[TestFixture, Category("PickUpSystem")]
 public class IconGroupTest{
 	/* Test Classes */
 	public class TestIG: AbsIconGroup{

@@ -6,27 +6,11 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class UIEActivationStateEngineTest {
 	[Test]
-	public void SetInitializationFields_CallsAllStatesSetInitializationFields(){
-		IUIEActivationStateEngineConstArg arg;
-		IUIEActivationStateEngine engine = CreateUIEActivationStateEngine(out arg);
-		IUIEActivationState[] states = new IUIEActivationState[4]{
-			arg.activatingState,
-			arg.activationCompletedState,
-			arg.deactivatingState,
-			arg.deactivationCompletedState
-		};
-		IUIElement uie = Substitute.For<IUIElement>();
-		engine.SetInitializationFields(uie);
-		foreach(IUIEActivationState state in states)
-			state.Received(1).SetInitializationFields(engine, uie);
-	}
-	[Test]
 	public void CurState_Initially_IsNull(){
-		IUIEActivationStateEngineConstArg arg;
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine(out arg);
+		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();
 		
 		IUIEActivationState actualState = engine.GetCurState();
 
@@ -47,33 +31,32 @@ public class UIEActivationStateEngineTest {
 		};
 	}
 	/* Test Classes */
-	public IUIEActivationStateEngine CreateUIEActivationStateEngine(out IUIEActivationStateEngineConstArg arg){
-		IUIEActivationStateEngineConstArg thisArg = Substitute.For<IUIEActivationStateEngineConstArg>();
-		thisArg.activatingState.Returns(Substitute.For<IUIEActivatingState>());
-		thisArg.activationCompletedState.Returns(Substitute.For<IUIEActivationCompletedState>());
-		thisArg.deactivatingState.Returns(Substitute.For<IUIEDeactivatingState>());
-		thisArg.deactivationCompletedState.Returns(Substitute.For<IUIEDeactivationCompletedState>());
-		arg = thisArg;
-		return new UIEActivationStateEngine(thisArg);
-	}
-	public class TestUIEActivationStateEngine: UIEActivationStateEngine{
-		public TestUIEActivationStateEngine(IUIEActivationStateEngineConstArg arg): base(arg){}
+	public class TestUIEActivationStateEngine: AbsUIEActivationStateEngine{
+		public TestUIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement, IUIEActivatingState activatingState, IUIEDeactivatingState deactivatingState): base(processFactory, uiElement){
+			thisActivatingState = activatingState;
+			thisDeactivatingState = deactivatingState;
+		}
+		readonly IUIEActivatingState thisActivatingState;
+		readonly IUIEDeactivatingState thisDeactivatingState;
+		protected override IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
+			return thisActivatingState;
+		}
+		protected override IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
+			return thisDeactivatingState;
+		}
 		public IUIEActivationState GetCurState(){
 			return thisCurState;
-		}
+		}		
 	}
-	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngine(out IUIEActivationStateEngineConstArg arg){
-		IUIEActivationStateEngineConstArg thisArg = Substitute.For<IUIEActivationStateEngineConstArg>();
-		thisArg.activatingState.Returns(Substitute.For<IUIEActivatingState>());
-		thisArg.activationCompletedState.Returns(Substitute.For<IUIEActivationCompletedState>());
-		thisArg.deactivatingState.Returns(Substitute.For<IUIEDeactivatingState>());
-		thisArg.deactivationCompletedState.Returns(Substitute.For<IUIEDeactivationCompletedState>());
-		arg = thisArg;
-		return new TestUIEActivationStateEngine(thisArg);
+	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngine(){
+		IUISystemProcessFactory processFactory = Substitute.For<IUISystemProcessFactory>();
+		IUIElement uiElement = Substitute.For<IUIElement>();
+		IUIEActivatingState activatingState = Substitute.For<IUIEActivatingState>();
+		IUIEDeactivatingState deactivatingState = Substitute.For<IUIEDeactivatingState>();
+		return new TestUIEActivationStateEngine(processFactory, uiElement, activatingState, deactivatingState);
 	}
 	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngineWithState(System.Type stateType){
-		IUIEActivationStateEngineConstArg thisArg;
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine(out thisArg);
+		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();
 		if(stateType == typeof(IUIEActivatingState))
 			engine.SetToActivatingState();
 		else if(stateType == typeof(IUIEActivationCompletedState))

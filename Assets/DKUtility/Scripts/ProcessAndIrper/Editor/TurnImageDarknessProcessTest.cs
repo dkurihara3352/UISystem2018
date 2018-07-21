@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using DKUtility;
 
-[TestFixture]
+[TestFixture][Category("DKUtility")]
 public class TurnImageDarknessProcessTest {
 	[Test]
 	public void Run_CallsImageSetDarknessWithSourceValue(){

@@ -5,11 +5,11 @@ using UnityEngine;
 namespace UISystem.PickUpUISystem{
 	public interface IIconPanel: IPickUpReceiver, IUIElement{
 	}
-	public abstract class AbsIconPanel: AbsUIElement, IIconPanel{
+	public abstract class AbsIconPanel: AbsNonActivatorUIElement, IIconPanel{
 		public AbsIconPanel(IUIElementConstArg arg) :base(arg){
 		}
-		protected override void Activate(){
-			base.Activate();
+		public override void ActivateImple(){
+			base.ActivateImple();
 			WaitForPickUp();
 		}
 		public abstract void CheckForHover();

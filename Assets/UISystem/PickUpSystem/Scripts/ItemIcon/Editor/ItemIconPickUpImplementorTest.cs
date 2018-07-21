@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class ItemIconPickUpImplementorTest{
     [Test, TestCaseSource(typeof(SetUpAsPickedII_TestCases), "greaterCases")]
     public void SetUpAsPickedII_ThisQuantityGreaterThanPickedQuantity_CallsIITAMCreateItemIcon(int transferableQuantity, int itemQuantity, int pickUpStepQuantity){

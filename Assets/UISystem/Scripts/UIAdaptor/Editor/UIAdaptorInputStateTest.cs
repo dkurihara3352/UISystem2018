@@ -7,6 +7,7 @@ using NSubstitute;
 using UISystem;
 using DKUtility;
 
+[TestFixture, Category("UISystem")]
 public class UIAdaptorInputStateTest{
 
 	[Test][ExpectedException(typeof(System.InvalidOperationException))]

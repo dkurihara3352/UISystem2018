@@ -7,7 +7,7 @@ using NUnit.Framework;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class IconGroup_ConstructionTest: IconGroupTest{
     [Test][ExpectedException(typeof(System.InvalidOperationException))]
 	public void Construction_MaxSizeInvalid_ThrowsException([Values(0, -1, -100)]int maxSize){

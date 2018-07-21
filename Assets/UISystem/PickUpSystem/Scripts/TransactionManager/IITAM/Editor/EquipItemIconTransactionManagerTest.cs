@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class EquipItemIconTransactionManagerTest {
     [Test]
     public void GetAllRelevantIGs_ArgIsNull_ReturnsPoolIGAndAllRelevantEqpIGs(){

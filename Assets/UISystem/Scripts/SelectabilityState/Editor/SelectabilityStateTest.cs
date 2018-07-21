@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
+[TestFixture, Category("UISystem")]
 public class SelectabilityStateTest {
     [Test]
     public void Constructor_WhenCalled_ThisStatesAreAllSet(){

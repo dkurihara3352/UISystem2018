@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture]
+[TestFixture, Category("PickUpSystem")]
 public class EquipToolIGManagerTest {
     [Test]
     public void GetRelevantEquipIG_ArgItemTempIsBow_ReturnsRelevantEquippedBowIG(){

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UISystem.PickUpUISystem{
 	public interface IPickUpSystemUIElement: IUIElement{
 	}
-	public abstract class AbsPickUpSystemUIElement: AbsUIElement, IPickUpSystemUIElement{
+	public abstract class AbsPickUpSystemUIElement: AbsNonActivatorUIElement, IPickUpSystemUIElement{
 		public AbsPickUpSystemUIElement(IPickUpSystemUIEConstArg arg): base(arg){
 		}
 		protected IPickUpSystemProcessFactory thisPickUpSystemProcessFactory{get{return (IPickUpSystemProcessFactory)thisProcessFactory;}}

@@ -9,7 +9,7 @@ namespace UISystem{
 		void UpdateNumberOnPanel(int num);
 		void Blank();
 	}
-	public class DigitPanelSet: AbsUIElement, IDigitPanelSet{
+	public class DigitPanelSet: AbsNonActivatorUIElement, IDigitPanelSet{
 		public DigitPanelSet(IDigitPanelSetConstArg arg): base(arg){
 			/*  Create and set digit panels here
 			*/

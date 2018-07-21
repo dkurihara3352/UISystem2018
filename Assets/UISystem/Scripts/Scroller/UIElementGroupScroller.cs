@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IUIElementGroupScroller: IScroller{}
-	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
+	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller, INonActivatorUIElement{
 		/*  cyclability is static
 			it is calculated and the result is cached everytime any factor of constitutent dimension changes
 		*/
@@ -13,11 +13,14 @@ namespace UISystem{
 			thisPadding = arg.padding;
 			thisElementDimension = arg.elementDimension;
 		}
+		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
+			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
+		}
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();
 		}
-		protected override void Activate(){
-			base.Activate();
+		public override void ActivateImple(){
+			base.ActivateImple();
 			EvaluateCyclability();
 		}
 		Vector2 thisPadding;

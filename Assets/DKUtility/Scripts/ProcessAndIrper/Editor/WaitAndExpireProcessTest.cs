@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using DKUtility;
 
+[TestFixture, Category("DKUtility")]
 public class ProcessAndIrperTest{
 	[Test][TestCaseSource(typeof(ExpirationTestCase), "nonExpireCases")]
 	public void WaitAndExpireProcess_Construction_ExpireTIsSetLessThanOrEqualToZero_UpdateProcessIsSuppliedWithEnoughDeltaT_DoesNotCallProcessStateOnProcessExpire(float expireT){

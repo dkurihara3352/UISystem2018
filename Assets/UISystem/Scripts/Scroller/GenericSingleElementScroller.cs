@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IGenericSingleElementScroller: IScroller{}
-	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller{
+	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller, INonActivatorUIElement{
 		public GenericSingleElementScroller(IGenericScrollerConstArg arg): base(arg){
 		}
 		protected override bool thisShouldApplyRubberBand{
@@ -19,6 +19,9 @@ namespace UISystem{
 			float cursorWidth = thisRect.width * relativeCursorSize.x;
 			float cursorHeight = thisRect.height * relativeCursorSize.y;
 			return new Vector2(cursorWidth, cursorHeight);
+		}
+		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
+			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
 	}
 	public interface IGenericScrollerConstArg: IScrollerConstArg{

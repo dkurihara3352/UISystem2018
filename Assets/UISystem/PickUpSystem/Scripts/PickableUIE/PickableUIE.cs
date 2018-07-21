@@ -16,7 +16,7 @@ namespace UISystem.PickUpUISystem{
 
 		IPickableUIImage GetPickableUIImage();
 	}
-	public abstract class AbsPickableUIE: AbsUIElement, IPickableUIE{
+	public abstract class AbsPickableUIE: AbsNonActivatorUIElement, IPickableUIE{
 		public AbsPickableUIE(IPickableUIEConstArg arg): base(arg){
 			thisDragImageImplementor = arg.dragImageImplementor;
 			thisDragImageImplementor.SetPickableUIE(this);
