@@ -45,18 +45,24 @@ namespace UISystem{
 		bool thisIsNotDragged{get{return thisDragAxis == -1;}}
 		bool thisIsDraggedHorizontally{get{return thisDragAxis == 0;}}
 		bool thisIsDraggedVertically{get{return thisDragAxis == 1;}}
-		public override void OnRelease(){
-			thisDragAxis = -1;
-			base.OnRelease();
+		bool thisProcessedDrag;
+		protected override void OnReleaseImple(){
+			if(!thisIsNotDragged)
+				thisDragAxis = -1;
+			if(thisProcessedDrag)
+				thisProcessedDrag = false;
+			else
+				base.OnReleaseImple();
 		}
-		public override void OnDrag(ICustomEventData eventData){
+		protected override void OnDragImple(ICustomEventData eventData){
 			if(thisIsNotDragged){
 				int dragAxis = CalcDragAxis(eventData.deltaP);
 				thisDragAxis = dragAxis;
 			}
 			if(thisShouldProcessDrag){
+				thisProcessedDrag = true;
 				Vector2 deltaV2AlongAxis = GetDeltaV2AlongDragAxis(eventData.deltaP);
-				DragImple(eventData.position, deltaV2AlongAxis);
+				DragImpleInner(eventData.position, deltaV2AlongAxis);
 			}else{
 				PassDragUpwardInHierarchy(eventData);
 			}
@@ -100,7 +106,7 @@ namespace UISystem{
 			}
 			return result;
 		}
-		protected virtual void DragImple(Vector2 position, Vector2 deltaP){
+		protected virtual void DragImpleInner(Vector2 position, Vector2 deltaP){
 			Vector2 newLocalPosition = GetLocalPosition() + deltaP;
 			if(thisShouldApplyRubberBand){
 				if(thisRequiresToCheckForHorizontalAxis){

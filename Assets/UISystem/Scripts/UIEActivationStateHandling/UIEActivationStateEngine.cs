@@ -11,6 +11,7 @@ namespace UISystem{
 	}
 	public interface IUIEActivationStateEngine: ISwitchableStateEngine<IUIEActivationState>, IUIEActivationHandler{
 		void ExpireProcessOnCurrentProcessState();
+		bool IsActivated();
 		bool IsActivationComplete();
 		void SetToActivatingState();
 		void SetToActivationCompletedState();
@@ -43,6 +44,9 @@ namespace UISystem{
 		}
 		public void DeactivateInstantly(){
 			thisCurState.DeactivateInstantly();
+		}
+		public bool IsActivated(){
+			return thisCurState is IUIEActivatingState || IsActivationComplete();
 		}
 		public bool IsActivationComplete(){
 			return thisCurState is IUIEActivationCompletedState;

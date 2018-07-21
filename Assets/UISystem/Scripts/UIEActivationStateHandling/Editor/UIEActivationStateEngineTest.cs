@@ -9,12 +9,12 @@ using UISystem;
 [TestFixture, Category("UISystem")]
 public class UIEActivationStateEngineTest {
 	[Test]
-	public void CurState_Initially_IsNull(){
+	public void CurState_Initially_IsDeactivationCompletedState(){
 		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();
 		
 		IUIEActivationState actualState = engine.GetCurState();
 
-		Assert.That(actualState, Is.Null);
+		Assert.That(actualState is IUIEDeactivationCompletedState, Is.True);
 	}
 	[Test][TestCaseSource(typeof(IsActivationComplete_TestCase), "cases")]
 	public void IsActivationComplete_WhenCurStateIsActivationIsComplete_ReturnsTrue(System.Type stateType, bool expected){
@@ -30,19 +30,30 @@ public class UIEActivationStateEngineTest {
 			new object[]{typeof(IUIEDeactivationCompletedState), false},
 		};
 	}
+	[Test][TestCaseSource(typeof(IsActivated_TestCase), "cases")]
+	public void IsActivated_WhenCurStateIsActivatingOrActivationCompleted_ReturnsTrue(System.Type stateType, bool expected){
+		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngineWithState(stateType);
+
+		Assert.That(engine.IsActivated(), Is.EqualTo(expected));
+	}
+	public class IsActivated_TestCase{
+		public static object[] cases = {
+			new object[]{typeof(IUIEActivatingState), true},
+			new object[]{typeof(IUIEActivationCompletedState), true},
+			new object[]{typeof(IUIEDeactivatingState), false},
+			new object[]{typeof(IUIEDeactivationCompletedState), false},
+		};
+	}
 	/* Test Classes */
 	public class TestUIEActivationStateEngine: AbsUIEActivationStateEngine{
-		public TestUIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement, IUIEActivatingState activatingState, IUIEDeactivatingState deactivatingState): base(processFactory, uiElement){
-			thisActivatingState = activatingState;
-			thisDeactivatingState = deactivatingState;
+		public TestUIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement): base(processFactory, uiElement){
+
 		}
-		readonly IUIEActivatingState thisActivatingState;
-		readonly IUIEDeactivatingState thisDeactivatingState;
 		protected override IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			return thisActivatingState;
+			return Substitute.For<IUIEActivatingState>();
 		}
 		protected override IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			return thisDeactivatingState;
+			return Substitute.For<IUIEDeactivatingState>();
 		}
 		public IUIEActivationState GetCurState(){
 			return thisCurState;
@@ -51,9 +62,7 @@ public class UIEActivationStateEngineTest {
 	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngine(){
 		IUISystemProcessFactory processFactory = Substitute.For<IUISystemProcessFactory>();
 		IUIElement uiElement = Substitute.For<IUIElement>();
-		IUIEActivatingState activatingState = Substitute.For<IUIEActivatingState>();
-		IUIEDeactivatingState deactivatingState = Substitute.For<IUIEDeactivatingState>();
-		return new TestUIEActivationStateEngine(processFactory, uiElement, activatingState, deactivatingState);
+		return new TestUIEActivationStateEngine(processFactory, uiElement);
 	}
 	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngineWithState(System.Type stateType){
 		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();

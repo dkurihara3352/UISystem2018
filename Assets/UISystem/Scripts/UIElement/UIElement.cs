@@ -11,13 +11,14 @@ namespace UISystem{
 		void SetLocalPosition(Vector2 localPos);
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
+		/* Activation */
 		void ActivateRecursively();
 		void ActivateInstantlyRecursively();
 		void DeactivateRecursively();
 		void DeactivateInstantlyRecursively();
 		void ActivateImple();
 		void DeactivateImple();
-		bool IsActivationComplete();
+		/*  */
 		void OnScrollerFocus();
 		void OnScrollerDefocus();
 	}
@@ -42,11 +43,17 @@ namespace UISystem{
 		}
 		protected readonly IUISystemProcessFactory thisProcessFactory;
 		protected readonly IUIElementFactory thisUIElementFactory;
+		protected IUIElement thisParentUIE{
+			get{return thisUIA.GetParentUIE();}
+		}
 		public IUIElement GetParentUIE(){
-			return GetUIAdaptor().GetParentUIE();
+			return thisParentUIE;
+		}
+		protected List<IUIElement> thisChildUIEs{
+			get{return thisUIA.GetChildUIEs();}
 		}
 		public List<IUIElement> GetChildUIEs(){
-			return GetUIAdaptor().GetChildUIEs();
+			return thisChildUIEs;
 		}
 		public IUIImage GetUIImage(){
 			return thisImage;
@@ -85,8 +92,11 @@ namespace UISystem{
 					if(child != null)
 						child.DeactivateInstantlyRecursively();
 			}
-			public bool IsActivationComplete(){
-				return false;
+			bool IsActivationComplete(){
+				return thisUIEActivationStateEngine.IsActivationComplete();
+			}
+			bool IsActivated(){
+				return thisUIEActivationStateEngine.IsActivated();
 			}
 			public virtual void DeactivateImple(){
 
@@ -112,37 +122,118 @@ namespace UISystem{
 				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
-			public virtual void OnTouch( int touchCount){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnTouch(touchCount);
+			protected virtual bool IsEnabledInput(){
+				return this.IsActivated();
 			}
-			public virtual void OnDelayedTouch(){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnDelayedTouch();
+
+			public void OnTouch(int touchCount){
+				if(this.IsEnabledInput())
+					OnTouchImple(touchCount);
+				else
+					PassOnTouchUpward(touchCount);
 			}
-			public virtual void OnRelease(){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnRelease();
+			protected virtual void OnTouchImple(int touchCount){
+				PassOnTouchUpward(touchCount);
 			}
-			public virtual void OnDelayedRelease(){
-				if(GetParentUIE() != null) 
-					GetParentUIE().OnDelayedRelease();
+			void PassOnTouchUpward(int touchCount){
+				if(thisParentUIE != null)
+					thisParentUIE.OnTouch(touchCount);
 			}
-			public virtual void OnTap( int tapCount){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnTap(tapCount);
+			
+			public void OnDelayedTouch(){
+				if(this.IsEnabledInput())
+					OnDelayedTouchImple();
+				else
+					PassOnDelayedTouchUpward();
 			}
-			public virtual void OnDrag( ICustomEventData eventData){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnDrag(eventData);
+			protected virtual void OnDelayedTouchImple(){
+				PassOnDelayedTouchUpward();
 			}
-			public virtual void OnHold( float elapsedT){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnHold(elapsedT);
+			void PassOnDelayedTouchUpward(){
+				if(thisParentUIE != null)
+					thisParentUIE.OnDelayedTouch();
 			}
-			public virtual void OnSwipe( ICustomEventData eventData){
+
+			public void OnRelease(){
+				if(this.IsEnabledInput())
+					OnReleaseImple();
+				else
+					PassOnReleaseUpward();
+			}
+			protected virtual void OnReleaseImple(){
+				PassOnReleaseUpward();
+			}
+			void PassOnReleaseUpward(){
+				if(thisParentUIE != null)
+					thisParentUIE.OnRelease();
+			}
+
+			public void OnDelayedRelease(){
+				if(this.IsEnabledInput())
+					OnDelayedReleaseImple();
+				else
+					PassOnDelayedReleaseUpward();
+			}
+			protected virtual void OnDelayedReleaseImple(){
+				PassOnDelayedReleaseUpward();
+			}
+			void PassOnDelayedReleaseUpward(){
+				if(thisParentUIE != null)
+					thisParentUIE.OnDelayedRelease();
+			}
+
+			public void OnTap(int tapCount){
+				if(this.IsEnabledInput())
+					OnTapImple(tapCount);
+				else
+					PassOnTapUpward(tapCount);
+			}
+			protected virtual void OnTapImple(int tapCount){
+				PassOnTapUpward(tapCount);
+			}
+			void PassOnTapUpward(int tapCount){
+				if(thisParentUIE != null)
+					thisParentUIE.OnTap(tapCount);
+			}
+
+			public void OnDrag( ICustomEventData eventData){
+				if(this.IsEnabledInput())
+					OnDragImple(eventData);
+				else
+					PassOnDragUpward(eventData);
+			}
+			protected virtual void OnDragImple(ICustomEventData eventData){
+				PassOnDragUpward(eventData);
+			}
+			void PassOnDragUpward(ICustomEventData eventData){
+				if(thisParentUIE != null)
+					thisParentUIE.OnDrag(eventData);
+			}
+
+			public void OnHold( float elapsedT){
+				if(this.IsEnabledInput())
+					OnHoldImple(elapsedT);
+				else
+					PassOnHoldUpward(elapsedT);
+			}
+			protected virtual void OnHoldImple(float elapsedT){
+				PassOnHoldUpward(elapsedT);
+			}
+			void PassOnHoldUpward(float elapsedT){
+				if(thisParentUIE != null)
+					thisParentUIE.OnHold(elapsedT);
+			}
+
+			public void OnSwipe( ICustomEventData eventData){
 				if(GetParentUIE() != null)
 					GetParentUIE().OnSwipe(eventData);
+			}
+			protected virtual void OnSwipeImple(ICustomEventData eventData){
+				PassOnSwipeUpward(eventData);
+			}
+			void PassOnSwipeUpward(ICustomEventData eventData){
+				if(thisParentUIE != null)
+					thisParentUIE.OnSwipe(eventData);
 			}
 		/*  */
 		public virtual void OnScrollerFocus(){

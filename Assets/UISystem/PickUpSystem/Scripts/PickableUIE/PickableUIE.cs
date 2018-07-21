@@ -30,7 +30,7 @@ namespace UISystem.PickUpUISystem{
 			return thisPickableUIImage;
 		}
 		public abstract void EvaluatePickability();
-		public override void OnTouch(int touchCount){
+		protected override void OnTouchImple(int touchCount){
 			CheckAndCallTouchPickUp(touchCount);
 		}
 		void CheckAndCallTouchPickUp(int touchCount){
@@ -43,16 +43,16 @@ namespace UISystem.PickUpUISystem{
 			}
 			return;
 		}
-		public override void OnDelayedTouch(){
+		protected override void OnDelayedTouchImple(){
 			this.CheckForDelayedPickUp();
 		}
-		public override void OnDrag(ICustomEventData eventData){
+		protected override void OnDragImple(ICustomEventData eventData){
 			this.CheckForDragPickUp(eventData);
 		}
-		public override void OnRelease(){
+		protected override void OnReleaseImple(){
 			this.CheckForQuickDrop();
 		}
-		public override void OnDelayedRelease(){
+		protected override void OnDelayedReleaseImple(){
 			this.CheckForDelayedDrop();
 		}
 		public abstract void CheckForImmediatePickUp();

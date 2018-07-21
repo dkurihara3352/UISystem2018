@@ -201,8 +201,8 @@ namespace UISystem.PickUpUISystem{
 			}
 			readonly IQuantityAnimationEngine thisQuantityAnimationEngine;
 		/* input handling */
-			public override void OnTouch(int touchCount){
-				base.OnTouch(touchCount);
+			protected override void OnTouchImple(int touchCount){
+				base.OnTouchImple(touchCount);
 				thisPickUpImplementor.CheckAndIncrementPickUpQuantity();
 			}
 		/* TransferableElement imple */

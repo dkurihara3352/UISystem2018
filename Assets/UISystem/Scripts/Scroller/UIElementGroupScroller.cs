@@ -85,8 +85,8 @@ namespace UISystem{
 				return !this.IsCyclable(thisDragAxis);
 			}
 		}
-		protected override void DragImple(Vector2 position, Vector2 deltaP){
-			base.DragImple(position, deltaP);
+		protected override void DragImpleInner(Vector2 position, Vector2 deltaP){
+			base.DragImpleInner(position, deltaP);
 			/* already translated to new local pos */
 			if(this.IsCyclable(thisDragAxis)){
 				if(this.ShouldCycleThisFrame(thisDragAxis))

@@ -43,13 +43,16 @@ public class ScrollerTest{
 	public void Activate_OnlyChildNotNull_DoesNotThrowException(){
 		ITestScrollerConstArg arg;
 		TestScroller scroller = CreateTestScrollerForActivation(out arg);
+		IUIElement child = Substitute.For<IUIElement>();
+		List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{child});
+		arg.uia.GetChildUIEs().Returns(returnedList);
 
 		Assert.DoesNotThrow(()=>{scroller.ActivateImpleTest();});
 	}
-	// [Test, TestCaseSource(typeof(ElementIsUndersizedToCursor_TestCase), "cases")]
-	// public void ElementIsUndersizedToCursor_Various(Vector2 cursorRectSize, Vector2 elementRectSize){
+	[Test, TestCaseSource(typeof(ElementIsUndersizedToCursor_TestCase), "cases")]
+	public void ElementIsUndersizedToCursor_Various(Vector2 cursorRectSize, Vector2 elementRectSize){
 
-	// }
+	}
 	public class ElementIsUndersizedToCursor_TestCase{
 		public static object[] cases = {};
 	}
