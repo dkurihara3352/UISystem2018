@@ -6,16 +6,17 @@ namespace UISystem{
 	public interface IGenericSingleElementScroller: IScroller{}
 	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller, INonActivatorUIElement{
 		public GenericSingleElementScroller(IGenericScrollerConstArg arg): base(arg){
+			thisRelativeCursorSize = arg.relativeCursorSize;
 		}
+		readonly Vector2 thisRelativeCursorSize;
 		protected override bool thisShouldApplyRubberBand{
 			get{return true;}
 		}
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();
 		}
-		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
-			IGenericScrollerConstArg genericArg = (IGenericScrollerConstArg)arg;
-			Vector2 relativeCursorSize = genericArg.relativeCursorSize;
+		protected override Vector2 CalcCursorDimension(Rect thisRect){
+			Vector2 relativeCursorSize = thisRelativeCursorSize;
 			float cursorWidth = thisRect.width * relativeCursorSize.x;
 			float cursorHeight = thisRect.height * relativeCursorSize.y;
 			return new Vector2(cursorWidth, cursorHeight);
@@ -46,5 +47,7 @@ namespace UISystem{
 			get{return thisRelativeCursorSize;}
 		}
 	}
-	public interface IGenericScrollerAdaptor: IScrollerAdaptor{}
+	public interface IGenericScrollerAdaptor: IScrollerAdaptor{
+		Vector2 relativeCursorSize{get;}
+	}
 }

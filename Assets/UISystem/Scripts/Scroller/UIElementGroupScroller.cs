@@ -10,9 +10,13 @@ namespace UISystem{
 		*/
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisIsCyclicEnabled = arg.isCyclicEnabled;
-			thisPadding = arg.padding;
+			thisCursorSize = arg.cursorSize;
 			thisElementDimension = arg.elementDimension;
+			thisPadding = arg.padding;
 		}
+		readonly int[] thisCursorSize;
+		readonly Vector2 thisPadding;
+		readonly Vector2 thisElementDimension;
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
@@ -23,8 +27,6 @@ namespace UISystem{
 			base.ActivateImple();
 			EvaluateCyclability();
 		}
-		Vector2 thisPadding;
-		Vector2 thisElementDimension;
 		void EvaluateCyclability(){
 			bool thisIsHorizontallyCyclable = false;
 			bool thisIsVerticallyCyclable = false;
@@ -99,15 +101,9 @@ namespace UISystem{
 			return elementScrollerDisplacement != 0;
 		}
 		void Cycle(){}
-		protected override Vector2 CalcCursorDimension(IScrollerConstArg arg, Rect thisRect){
-			IUIElementGroupScrollerConstArg typedArg = (IUIElementGroupScrollerConstArg)arg;
-			int horizontalCursorSize = typedArg.horizontalCursorSize;
-			int verticalCursorSize = typedArg.verticalCursorSize;
-			Vector2 elementDimension = typedArg.elementDimension;
-			Vector2 padding = typedArg.padding;
-
-			float cursorWidth = horizontalCursorSize * (elementDimension.x + padding.x) + padding.x;
-			float cursorHeight = verticalCursorSize * (elementDimension.y + padding.y) + padding.y;
+		protected override Vector2 CalcCursorDimension(Rect thisRect){
+			float cursorWidth = thisCursorSize[0] * (thisElementDimension.x + thisPadding.x) + thisPadding.x;
+			float cursorHeight = thisCursorSize[1] * (thisElementDimension.y + thisPadding.y) + thisPadding.y;
 			IUIElementGroupScrollerAdaptor uia = (IUIElementGroupScrollerAdaptor)GetUIAdaptor();
 			float newRectWidth = thisRect.width;
 			float newRectHeight = thisRect.height;
@@ -121,16 +117,16 @@ namespace UISystem{
 		}
 	}
 	public interface IUIElementGroupScrollerConstArg: IScrollerConstArg{
-		int horizontalCursorSize{get;}
-		int verticalCursorSize{get;}
+		int[] cursorSize{get;}
 		Vector2 elementDimension{get;}
 		Vector2 padding{get;}
 		bool[] isCyclicEnabled{get;}
 	}
 	public class UIElementGroupScrollerConstArg: AbsScrollerConstArg, IUIElementGroupScrollerConstArg{
-		public UIElementGroupScrollerConstArg(int horizontalCursorSize, int verticalCursorSize, Vector2 elementDimension, Vector2 padding, bool[] isCyclicEnabled, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, float[] rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
-			thisHorizontalCursorSize = MakeCursorSizeInRange(horizontalCursorSize);
-			thisVerticalCursorSize = MakeCursorSizeInRange(verticalCursorSize);
+		public UIElementGroupScrollerConstArg(int[] cursorSize, Vector2 elementDimension, Vector2 padding, bool[] isCyclicEnabled, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, uim, processFactory, uieFactory, uia, image){
+			for(int i = 0; i < 2; i ++)
+				cursorSize[i] = MakeCursorSizeInRange(cursorSize[i]);
+			thisCursorSize = cursorSize;
 			thisElementDimension = elementDimension;
 			thisPadding = padding;
 			thisIsCyclicEnabled = isCyclicEnabled;
@@ -141,14 +137,8 @@ namespace UISystem{
 			else
 				return source;
 		}
-		readonly int thisHorizontalCursorSize;
-		public int horizontalCursorSize{
-			get{return thisHorizontalCursorSize;}
-		}
-		readonly int thisVerticalCursorSize;
-		public int verticalCursorSize{
-			get{return thisVerticalCursorSize;}
-		}
+		readonly int[] thisCursorSize;
+		public int[] cursorSize{get{return thisCursorSize;}}
 		readonly Vector2 thisElementDimension;
 		public Vector2 elementDimension{
 			get{return thisElementDimension;}
