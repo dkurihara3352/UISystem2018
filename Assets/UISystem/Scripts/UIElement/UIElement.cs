@@ -282,5 +282,8 @@ namespace UISystem{
 		public IUIAdaptor uia{get{return thisUIA;}}
 		readonly IUIImage thisImage;
 		public IUIImage image{get{return thisImage;}}
+		protected Vector2 ClampVector2ZeroToOne(Vector2 source){
+			return new Vector2(Mathf.Clamp01(source.x), Mathf.Clamp01(source.y));			
+		}
 	}
 }

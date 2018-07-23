@@ -150,6 +150,7 @@
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\EquippableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\ResizableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIImage\UIImage.cs" />

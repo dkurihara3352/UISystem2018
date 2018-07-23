@@ -15,7 +15,10 @@ namespace UISystem{
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();
 		}
-		protected override Vector2 CalcCursorDimension(Rect thisRect){
+		protected override Vector2 GetInitialPositionNormalizedToCursor(){
+			return Vector2.zero;
+		}
+		protected override Vector2 CalcCursorLength(){
 			Vector2 relativeCursorSize = thisRelativeCursorSize;
 			float cursorWidth = thisRect.width * relativeCursorSize.x;
 			float cursorHeight = thisRect.height * relativeCursorSize.y;
@@ -28,8 +31,8 @@ namespace UISystem{
 	public interface IGenericScrollerConstArg: IScrollerConstArg{
 		Vector2 relativeCursorSize{get;}
 	}
-	public class GenericScrollerConstArg: AbsScrollerConstArg, IGenericScrollerConstArg{
-		public GenericScrollerConstArg(Vector2 relativeCursorSize, ScrollerAxis scrollerAxis, float[] rubberBandLimitMultiplier, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericScrollerAdaptor uia, IUIImage image):base(relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
+	public class GenericScrollerConstArg: ScrollerConstArg, IGenericScrollerConstArg{
+		public GenericScrollerConstArg(Vector2 relativeCursorSize, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericScrollerAdaptor uia, IUIImage image):base(scrollerAxis, relativeCursorPosition, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
 			thisRelativeCursorSize = MakeRelativeCursorSizeInRange(relativeCursorSize);
 		}
 		Vector2 MakeRelativeCursorSizeInRange(Vector2 source){

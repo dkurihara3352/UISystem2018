@@ -4,13 +4,11 @@ using UnityEngine;
 using DKUtility;
 
 namespace UISystem{
-	public interface IResizableUIElement: IUIElement{
-		// IInterpolator GetRectSizeInterpolator(Vector2 targetRectDim);
-	}
 	public interface IUIElementGroup: IUIElement{
-		// IInterpolator GetSlotSizeInterpolator(int rowNumber, int columnNumber, Vector2 targetRectDim);
 		int GetSize();
 		int GetElementsArraySize(int dimension);
+		IUIElement GetUIElement(int index);
+		Vector2 GetElementLocalPos(IUIElement uiElement);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
@@ -23,6 +21,17 @@ namespace UISystem{
 			thisPadding = arg.padding;
 		}
 		List<T> thisElements;/* explicitly and externally set */
+		public IUIElement GetUIElement(int index){
+			return thisElements[index];
+		}
+		public Vector2 GetElementLocalPos(IUIElement uiElement){
+			int columnIndex;
+			int rowIndex;
+			this.GetElementArrayIndex(uiElement, out columnIndex, out rowIndex);
+			float elementLocalPositionX = columnIndex * (thisElementDimension[0] + thisPadding[0]) + thisPadding[0];
+			float elementLocalPositionY = rowIndex * (thisElementDimension[1] + thisPadding[1]) + thisPadding[1];
+			return new Vector2(elementLocalPositionX, elementLocalPositionY);
+		}
 		public int GetSize(){return thisElements.Count;}
 		readonly int thisRowCountConstraint = 0;
 		readonly int thisColumnCountConstraint = 0;
@@ -107,7 +116,7 @@ namespace UISystem{
 			IUIAdaptor uia = GetUIAdaptor();
 			uia.SetRectDimension(targetWidth, targetHeight);
 		}
-		void GetElementArrayIndex(T element ,out int columnIndex, out int rowIndex){
+		void GetElementArrayIndex(IUIElement element ,out int columnIndex, out int rowIndex){
 			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
 				for(int j = 0; j < thisElementsArray.GetLength(1); j ++){
 					T elementAtIndex = thisElementsArray[i, j];

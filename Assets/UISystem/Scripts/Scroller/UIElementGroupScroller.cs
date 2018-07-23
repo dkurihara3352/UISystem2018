@@ -13,6 +13,17 @@ namespace UISystem{
 			thisCursorSize = arg.cursorSize;
 			thisElementDimension = arg.elementDimension;
 			thisPadding = arg.padding;
+			thisInitiallyCursoredElementIndex = arg.initiallyCursoredElementIndex;
+		}
+		readonly int thisInitiallyCursoredElementIndex;
+		protected override Vector2 GetInitialPositionNormalizedToCursor(){
+			IUIElementGroup uieGroup = thisUIElementGroup;
+			IUIElement initiallyCursoredElement = uieGroup.GetUIElement(thisInitiallyCursoredElementIndex);
+			Vector2 result = Vector2.zero;
+			Vector2 elementLocalPos = uieGroup.GetElementLocalPos(initiallyCursoredElement);
+			float resultX = GetPosNormalizedToCursorFromPosInElementSpace(elementLocalPos.x, 0);
+			float resultY = GetPosNormalizedToCursorFromPosInElementSpace(elementLocalPos.y, 1);
+			return new Vector2(resultX, resultY);
 		}
 		readonly int[] thisCursorSize;
 		readonly Vector2 thisPadding;
@@ -27,6 +38,7 @@ namespace UISystem{
 			base.ActivateImple();
 			EvaluateCyclability();
 		}
+		/* Cyclability */
 		void EvaluateCyclability(){
 			bool thisIsHorizontallyCyclable = false;
 			bool thisIsVerticallyCyclable = false;
@@ -59,19 +71,17 @@ namespace UISystem{
 		int GetElementsCountOnAxis(int dimension){
 			return thisUIElementGroup.GetElementsArraySize(dimension);
 		}
-
 		int GetMinimumRequiredElementsCountToCycle(int dimension){
-			Rect thisRect = GetUIAdaptor().GetRect();
-			float rectLength = GetRectLengthOnAxis(thisRect, dimension);
-			float perfectlyFitLength = (rectLength - thisPadding[dimension])/ (thisElementDimension[dimension] + thisPadding[dimension]);
+			float perfectlyFitLength = (thisRectLength[dimension] - thisPadding[dimension])/ (thisElementDimension[dimension] + thisPadding[dimension]);
 			int perfectlyContainableElementsCount = Mathf.FloorToInt(perfectlyFitLength);
-			float remainingLength = rectLength - perfectlyFitLength;
+			float remainingLength = thisRectLength[dimension] - perfectlyFitLength;
 			if(remainingLength <= 0f)
 				perfectlyContainableElementsCount += 1;
 			else
 				perfectlyContainableElementsCount += 2;
 			return perfectlyContainableElementsCount;
 		}
+		/*  */
 		IUIElementGroup thisUIElementGroup{
 			get{
 				return (IUIElementGroup)thisScrollerElement;
@@ -96,23 +106,15 @@ namespace UISystem{
 			}
 		}
 		bool ShouldCycleThisFrame(int dimension){
+			/* precond: element is never undersized */
 			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
-			float elementScrollerDisplacement = GetElementScrollerDisplacement(elementLocalPosOnAxis, dimension);
-			return elementScrollerDisplacement != 0;
+			float elementPositionNormalizedToCursor = GetElementPositionNormalizedToCursor(elementLocalPosOnAxis, dimension);
+			return elementPositionNormalizedToCursor != 0;
 		}
 		void Cycle(){}
-		protected override Vector2 CalcCursorDimension(Rect thisRect){
+		protected override Vector2 CalcCursorLength(){
 			float cursorWidth = thisCursorSize[0] * (thisElementDimension.x + thisPadding.x) + thisPadding.x;
 			float cursorHeight = thisCursorSize[1] * (thisElementDimension.y + thisPadding.y) + thisPadding.y;
-			IUIElementGroupScrollerAdaptor uia = (IUIElementGroupScrollerAdaptor)GetUIAdaptor();
-			float newRectWidth = thisRect.width;
-			float newRectHeight = thisRect.height;
-			if(cursorWidth > thisRect.width)
-				newRectWidth = cursorWidth;
-			if(cursorHeight > thisRect.height)
-				newRectHeight = cursorHeight;
-			uia.SetRectDimension(newRectWidth, newRectHeight);
-
 			return new Vector2(cursorWidth, cursorHeight);
 		}
 	}
@@ -121,8 +123,9 @@ namespace UISystem{
 		Vector2 elementDimension{get;}
 		Vector2 padding{get;}
 		bool[] isCyclicEnabled{get;}
+		int initiallyCursoredElementIndex{get;}
 	}
-	public class UIElementGroupScrollerConstArg: AbsScrollerConstArg, IUIElementGroupScrollerConstArg{
+	public class UIElementGroupScrollerConstArg: ScrollerConstArg, IUIElementGroupScrollerConstArg{
 		public UIElementGroupScrollerConstArg(int[] cursorSize, Vector2 elementDimension, Vector2 padding, bool[] isCyclicEnabled, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, uim, processFactory, uieFactory, uia, image){
 			for(int i = 0; i < 2; i ++)
 				cursorSize[i] = MakeCursorSizeInRange(cursorSize[i]);
@@ -140,15 +143,13 @@ namespace UISystem{
 		readonly int[] thisCursorSize;
 		public int[] cursorSize{get{return thisCursorSize;}}
 		readonly Vector2 thisElementDimension;
-		public Vector2 elementDimension{
-			get{return thisElementDimension;}
-		}
+		public Vector2 elementDimension{get{return thisElementDimension;}}
 		readonly Vector2 thisPadding;
 		public Vector2 padding{get{return thisPadding;}}
 		readonly bool[] thisIsCyclicEnabled;
-		public bool[] isCyclicEnabled{
-			get{return thisIsCyclicEnabled;}
-		}
+		public bool[] isCyclicEnabled{get{return thisIsCyclicEnabled;}}
+		readonly int thisInitiallyCursoredElementIndex;
+		public int initiallyCursoredElementIndex{get{return thisInitiallyCursoredElementIndex;}}
 	}
 	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{}
 }
