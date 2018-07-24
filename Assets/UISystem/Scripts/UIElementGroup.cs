@@ -8,7 +8,6 @@ namespace UISystem{
 		int GetSize();
 		int GetElementsArraySize(int dimension);
 		IUIElement GetUIElement(int index);
-		Vector2 GetElementLocalPos(IUIElement uiElement);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
@@ -23,14 +22,6 @@ namespace UISystem{
 		List<T> thisElements;/* explicitly and externally set */
 		public IUIElement GetUIElement(int index){
 			return thisElements[index];
-		}
-		public Vector2 GetElementLocalPos(IUIElement uiElement){
-			int columnIndex;
-			int rowIndex;
-			this.GetElementArrayIndex(uiElement, out columnIndex, out rowIndex);
-			float elementLocalPositionX = columnIndex * (thisElementDimension[0] + thisPadding[0]) + thisPadding[0];
-			float elementLocalPositionY = rowIndex * (thisElementDimension[1] + thisPadding[1]) + thisPadding[1];
-			return new Vector2(elementLocalPositionX, elementLocalPositionY);
 		}
 		public int GetSize(){return thisElements.Count;}
 		readonly int thisRowCountConstraint = 0;

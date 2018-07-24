@@ -5,10 +5,10 @@ using UnityEngine;
 namespace UISystem{
 	public interface IGenericSingleElementScroller: IScroller{}
 	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller, INonActivatorUIElement{
-		public GenericSingleElementScroller(IGenericScrollerConstArg arg): base(arg){
-			thisRelativeCursorSize = arg.relativeCursorSize;
+		public GenericSingleElementScroller(IGenericSingleElementScrollerConstArg arg): base(arg){
+			thisRelativeCursorLength = arg.relativeCursorLength;
 		}
-		readonly Vector2 thisRelativeCursorSize;
+		protected readonly Vector2 thisRelativeCursorLength;
 		protected override bool thisShouldApplyRubberBand{
 			get{return true;}
 		}
@@ -19,38 +19,41 @@ namespace UISystem{
 			return Vector2.zero;
 		}
 		protected override Vector2 CalcCursorLength(){
-			Vector2 relativeCursorSize = thisRelativeCursorSize;
-			float cursorWidth = thisRect.width * relativeCursorSize.x;
-			float cursorHeight = thisRect.height * relativeCursorSize.y;
+			Vector2 relativeCursorLength = thisRelativeCursorLength;
+			float cursorWidth = thisRect.width * relativeCursorLength.x;
+			float cursorHeight = thisRect.height * relativeCursorLength.y;
 			return new Vector2(cursorWidth, cursorHeight);
 		}
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
 	}
-	public interface IGenericScrollerConstArg: IScrollerConstArg{
-		Vector2 relativeCursorSize{get;}
+
+
+	
+	public interface IGenericSingleElementScrollerConstArg: IScrollerConstArg{
+		Vector2 relativeCursorLength{get;}
 	}
-	public class GenericScrollerConstArg: ScrollerConstArg, IGenericScrollerConstArg{
-		public GenericScrollerConstArg(Vector2 relativeCursorSize, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericScrollerAdaptor uia, IUIImage image):base(scrollerAxis, relativeCursorPosition, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
-			thisRelativeCursorSize = MakeRelativeCursorSizeInRange(relativeCursorSize);
+	public class GenericSingleElementScrollerConstArg: ScrollerConstArg, IGenericSingleElementScrollerConstArg{
+		public GenericSingleElementScrollerConstArg(Vector2 relativeCursorLength, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, Vector2 relativeCursorPosition, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericSingleElementScrollerAdaptor uia, IUIImage image):base(scrollerAxis, relativeCursorPosition, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
+			thisRelativeCursorLength = MakeRelativeCursorSizeInRange(relativeCursorLength);
 		}
 		Vector2 MakeRelativeCursorSizeInRange(Vector2 source){
-			Vector2 newSizeV2 = new Vector2();
+			Vector2 newSizeV2 = new Vector2(source.x, source.y);
 			for(int i = 0; i < 2; i ++){
-				float newSize = Mathf.Clamp01(source[i]);
-				if(newSize == 0)
-					newSize = 1f;
-				newSizeV2[i] = newSize;
+				if(newSizeV2[i] <= 0f)
+					throw new System.InvalidOperationException("relativeCursorLength must be greater than 0");
+				else if(newSizeV2[i] > 1f)
+					newSizeV2[i] = 1f;
 			}
 			return newSizeV2;
 		}
-		protected Vector2 thisRelativeCursorSize;
-		public Vector2 relativeCursorSize{
-			get{return thisRelativeCursorSize;}
+		protected Vector2 thisRelativeCursorLength;
+		public Vector2 relativeCursorLength{
+			get{return thisRelativeCursorLength;}
 		}
 	}
-	public interface IGenericScrollerAdaptor: IScrollerAdaptor{
+	public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 		Vector2 relativeCursorSize{get;}
 	}
 }

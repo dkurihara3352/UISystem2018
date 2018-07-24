@@ -71,7 +71,9 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\IITAM\Editor\PickUpReceiverSwitchTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTemplateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Editor\ItemTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\Editor\GenericSingleElementScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\Editor\ScrollerTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\Editor\UIElementGroupScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
