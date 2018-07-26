@@ -21,6 +21,9 @@ namespace UISystem{
 		/*  */
 		void OnScrollerFocus();
 		void OnScrollerDefocus();
+		/*  */
+		void EnableInputRecursively();
+		void DisableInputRecursively();
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
@@ -122,12 +125,10 @@ namespace UISystem{
 				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
-			protected virtual bool IsEnabledInput(){
-				return this.IsActivated();
-			}
+			bool thisIsEnabledInput;
 
 			public void OnTouch(int touchCount){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnTouchImple(touchCount);
 				else
 					PassOnTouchUpward(touchCount);
@@ -141,7 +142,7 @@ namespace UISystem{
 			}
 			
 			public void OnDelayedTouch(){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnDelayedTouchImple();
 				else
 					PassOnDelayedTouchUpward();
@@ -155,7 +156,7 @@ namespace UISystem{
 			}
 
 			public void OnRelease(){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnReleaseImple();
 				else
 					PassOnReleaseUpward();
@@ -169,7 +170,7 @@ namespace UISystem{
 			}
 
 			public void OnDelayedRelease(){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnDelayedReleaseImple();
 				else
 					PassOnDelayedReleaseUpward();
@@ -183,7 +184,7 @@ namespace UISystem{
 			}
 
 			public void OnTap(int tapCount){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnTapImple(tapCount);
 				else
 					PassOnTapUpward(tapCount);
@@ -197,7 +198,7 @@ namespace UISystem{
 			}
 
 			public void OnDrag( ICustomEventData eventData){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnDragImple(eventData);
 				else
 					PassOnDragUpward(eventData);
@@ -211,7 +212,7 @@ namespace UISystem{
 			}
 
 			public void OnHold( float elapsedT){
-				if(this.IsEnabledInput())
+				if(this.IsActivated() && thisIsEnabledInput)
 					OnHoldImple(elapsedT);
 				else
 					PassOnHoldUpward(elapsedT);
@@ -225,8 +226,10 @@ namespace UISystem{
 			}
 
 			public void OnSwipe( ICustomEventData eventData){
-				if(GetParentUIE() != null)
-					GetParentUIE().OnSwipe(eventData);
+				if(this.IsActivated() && thisIsEnabledInput)
+					OnSwipeImple(eventData);
+				else
+					PassOnSwipeUpward(eventData);
 			}
 			protected virtual void OnSwipeImple(ICustomEventData eventData){
 				PassOnSwipeUpward(eventData);
@@ -255,6 +258,23 @@ namespace UISystem{
 		}
 		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
 			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
+		}
+		/*  */
+		protected void EnableInput(){
+			thisIsEnabledInput = true;
+		}
+		public void EnableInputRecursively(){
+			this.EnableInput();
+			foreach(IUIElement child in thisChildUIEs)
+				child.EnableInputRecursively();
+		}
+		protected void DisableInput(){
+			thisIsEnabledInput = false;
+		}
+		public void DisableInputRecursively(){
+			this.DisableInput();
+			foreach(IUIElement child in thisChildUIEs)
+				child.DisableInputRecursively();
 		}
 	}
 	public interface IUIElementConstArg{

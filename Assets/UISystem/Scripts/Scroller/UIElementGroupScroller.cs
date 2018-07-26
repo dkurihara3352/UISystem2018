@@ -20,8 +20,8 @@ namespace UISystem{
 			IUIElement initiallyCursoredElement = uieGroup.GetUIElement(thisInitiallyCursoredElementIndex);
 			Vector2 result = Vector2.zero;
 			Vector2 elementLocalPos = initiallyCursoredElement.GetLocalPosition();
-			float resultX = GetPosNormalizedToCursorFromPosInElementSpace(elementLocalPos.x - thisPadding[0], 0);
-			float resultY = GetPosNormalizedToCursorFromPosInElementSpace(elementLocalPos.y - thisPadding[1], 1);
+			float resultX = GetNormalizedCursoredPositionFromPosInElementSpace(elementLocalPos.x - thisPadding[0], 0);
+			float resultY = GetNormalizedCursoredPositionFromPosInElementSpace(elementLocalPos.y - thisPadding[1], 1);
 			return new Vector2(resultX, resultY);
 		}
 		protected readonly int[] thisCursorSize;
@@ -66,7 +66,7 @@ namespace UISystem{
 		int initiallyCursoredElementIndex{get;}
 	}
 	public class UIElementGroupScrollerConstArg: ScrollerConstArg, IUIElementGroupScrollerConstArg{
-		public UIElementGroupScrollerConstArg(int initiallyCursoredElementIndex, int[] cursorSize, Vector2 uiElementLength, Vector2 padding, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, uim, processFactory, uieFactory, uia, image){
+		public UIElementGroupScrollerConstArg(int initiallyCursoredElementIndex, int[] cursorSize, Vector2 uiElementLength, Vector2 padding, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
 			for(int i = 0; i < 2; i ++)
 				cursorSize[i] = MakeCursorSizeInRange(cursorSize[i]);
 			thisCursorSize = cursorSize;

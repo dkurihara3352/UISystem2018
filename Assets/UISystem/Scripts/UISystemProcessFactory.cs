@@ -11,6 +11,8 @@ namespace UISystem{
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement);
 		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */);
+		IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension);
+		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
 	}
 	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
 		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
@@ -43,6 +45,17 @@ namespace UISystem{
 		}
 		public INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */){
 			INonActivatorUIEActivationProcess process = new NonActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetNonActivatorUIEActivationProcessExpireT(), state);
+			return process;
+		}
+		public IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension){
+			float diffThreshold = thisProcessManager.GetScrollerElementSnapProcessDiffThreshold();
+			IScrollerElementSnapProcess process = new ScrollerElementSnapProcess(targetElementLocalPosOnAxis, initialVelOnAxis, scroller, scrollerElement, dimension, diffThreshold, thisProcessManager);
+
+			return process;
+		}
+		public IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension){
+			IInertialScrollProcess process = new InertialScrollProcess(deltaPosOnAxis, scroller, scrollerElement, dimension, thisProcessManager);
+
 			return process;
 		}
 	}

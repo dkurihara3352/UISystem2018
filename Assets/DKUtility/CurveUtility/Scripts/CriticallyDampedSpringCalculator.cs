@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace DKUtility.CurveUtility{
-	public interface ICriticallyDampedSpringCalculator{
+	public interface ICachedCriticallyDampedSpringCalculator{
 		float GetSpringValue(float normalizedT);
 		float GetApproximateSpringValue(float normalizedT);
 	}
-	public abstract class AbsSpringValueCalculator: ICriticallyDampedSpringCalculator{
+	public interface IRealTimeCriticallyDampedSpringCalculator{
+		float GetSpringValue(float elapsedT);
+	}
+	public abstract class AbsSpringValueCalculator: ICachedCriticallyDampedSpringCalculator{
 		protected float[] thisCurvePoints;
 		protected int thisResolution;
 		const int minimumResolution = 10;
@@ -71,8 +74,9 @@ namespace DKUtility.CurveUtility{
 			return curvePoints.ToArray();
 		}
 	}
-	public class CriticallyDampedSpringCalculator: AbsSpringValueCalculator{
-		public CriticallyDampedSpringCalculator(float initialValue, float terminalValue, float initialVelocity, float coefficient, int resolution){
+	public interface IFullCriticallyDampedSpringCalculator: ICachedCriticallyDampedSpringCalculator{}
+	public class FullCriticallyDampedSpringCalculator: AbsSpringValueCalculator, IFullCriticallyDampedSpringCalculator{
+		public FullCriticallyDampedSpringCalculator(float initialValue, float terminalValue, float initialVelocity, float coefficient, int resolution){
 			if(terminalValue == initialValue)
 				throw new System.InvalidOperationException("initialValue and terminalValue must be different");
 			else{
@@ -105,6 +109,36 @@ namespace DKUtility.CurveUtility{
 			curvePoints[0] = initialValue;
 			curvePoints[curvePoints.Length - 1] = terminalValue;
 			return curvePoints;
+		}
+	}
+	public class RealTimeCriticallyDampedSpringCalculator: IRealTimeCriticallyDampedSpringCalculator{
+		public RealTimeCriticallyDampedSpringCalculator(float initialValue, float terminalValue, float initialVelocity, float springCoefficient){
+			thisInitialValue = initialValue;
+			thisTerminalValue = terminalValue;
+			thisInitialVelocity = initialVelocity;
+			thisSpringCoefficient = springCoefficient;
+		}
+		readonly float thisInitialValue;
+		readonly float thisTerminalValue;
+		readonly float thisInitialVelocity;
+		readonly float thisSpringCoefficient;
+
+		public float GetSpringValue(float elapsedT){
+			float deltaValue = thisInitialValue - thisTerminalValue;
+			
+			float x = deltaValue * thisSpringCoefficient;
+			x += thisInitialVelocity;
+			x *= elapsedT;
+			x += deltaValue;
+
+			float e = 2.718f;
+			float power = - elapsedT * thisSpringCoefficient;
+			e = Mathf.Pow(e, power);
+
+			x *= e;
+
+			x += thisTerminalValue;
+			return x;
 		}
 	}
 }

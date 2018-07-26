@@ -102,7 +102,7 @@ public class UIElementGroupScrollerTest {
         IUIElementFactory uieFactory = Substitute.For<IUIElementFactory>();
         IUIElementGroupScrollerAdaptor uia = Substitute.For<IUIElementGroupScrollerAdaptor>();
         IUIImage uiImage = Substitute.For<IUIImage>();
-        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(0, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, uiImage);
+        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(0, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, true, uim, processFactory, uieFactory, uia, uiImage);
         return arg;
     }
     public class TestUIElementGroupScroller: UIElementGroupScroller{
@@ -144,7 +144,7 @@ public class UIElementGroupScrollerTest {
             List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{uiElementGroup});
             uia.GetChildUIEs().Returns(returnedList);
         IUIImage uiImage = Substitute.For<IUIImage>();
-        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(0, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, uiImage);
+        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(0, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, true, uim, processFactory, uieFactory, uia, uiImage);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
         return scroller;
     }
@@ -173,7 +173,7 @@ public class UIElementGroupScrollerTest {
             uia.GetRect().Returns(scrollerRect);
         IUIImage uiImage = Substitute.For<IUIImage>();
         Vector2 relativeCursorPosition = new Vector2(0f, 0f);
-        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, uiImage);
+        IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, uiElementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, true, uim, processFactory, uieFactory, uia, uiImage);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
         return scroller;
     }

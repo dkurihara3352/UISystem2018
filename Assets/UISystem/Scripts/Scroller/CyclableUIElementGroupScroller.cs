@@ -74,7 +74,7 @@ namespace UISystem{
 		bool ShouldCycleThisFrame(int dimension){
 			/* precond: element is never undersized */
 			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
-			float elementPositionNormalizedToCursor = GetElementPositionNormalizedToCursor(elementLocalPosOnAxis, dimension);
+			float elementPositionNormalizedToCursor = GetNormalizedCursoredPosition(elementLocalPosOnAxis, dimension);
 			return elementPositionNormalizedToCursor != 0;
 		}
 		void Cycle(){}
@@ -83,7 +83,7 @@ namespace UISystem{
 		bool[] isCycleEnabled{get;}
 	}
 	public class CyclableUIElementGroupScrollerConstArg: UIElementGroupScrollerConstArg, ICyclableUIElementGroupScrollerConstArg{
-		public CyclableUIElementGroupScrollerConstArg(bool[] isCycleEnabled, int initiallyCursoredElementIndex, int[] cursorSize, Vector2 elementLength, Vector2 padding, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(initiallyCursoredElementIndex, cursorSize, elementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, uim, processFactory, uieFactory, uia, image){
+		public CyclableUIElementGroupScrollerConstArg(bool[] isCycleEnabled, int initiallyCursoredElementIndex, int[] cursorSize, Vector2 elementLength, Vector2 padding, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(initiallyCursoredElementIndex, cursorSize, elementLength, padding, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
 			thisIsCycleEnabled = isCycleEnabled;
 		}
 		readonly bool[] thisIsCycleEnabled;

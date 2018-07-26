@@ -41,7 +41,7 @@ public class CriticallyDampedSpringCalculatorTest{
     }
     // [Test][TestCaseSource(typeof(CriticallyDampedSpringValueCalculator_Demo_TestCases), "cases")]
     public void CriticallyDampedSpringValueCalculator_Demo(float initVal, float termVal, float initVel, float coef, int resolution){
-        CriticallyDampedSpringCalculator calculator = new CriticallyDampedSpringCalculator(initVal, termVal, initVel, coef, resolution);
+        FullCriticallyDampedSpringCalculator calculator = new FullCriticallyDampedSpringCalculator(initVal, termVal, initVel, coef, resolution);
         DebugHelper.PrintInRed("initVal: " + initVal.ToString() + ", termVal: " + termVal.ToString() + ", initVel: " + initVel.ToString() + ", coef: " + coef.ToString() + ", resolution: " + resolution.ToString());
         int steps = 15;
         float t = 0f;

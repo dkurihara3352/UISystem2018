@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using DKUtility.CurveUtility;
 namespace UISystem{
-	public interface IScroller: IUIElement{}
+	public interface IScroller: IUIElement{
+		void SetRunningElementMotorProcess(IScrollerElementMotorProcess process);
+		void ClearScrollerElementMotorProcess(IScrollerElementMotorProcess processToClear);
+		bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension);
+	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
 	}
@@ -105,29 +109,33 @@ namespace UISystem{
 		protected abstract Vector2 GetInitialPositionNormalizedToCursor();
 		/* Drag */
 		protected int thisDragAxis = -1;
-		protected bool thisIsNotDragged{get{return thisDragAxis == -1;}}
-		protected bool thisIsDraggedHorizontally{get{return thisDragAxis == 0;}}
-		protected bool thisIsDraggedVertically{get{return thisDragAxis == 1;}}
+		protected bool thisDragAxisIsNotDetermined{get{return thisDragAxis == -1;}}
+		protected bool thisDragAxisIsHorizontal{get{return thisDragAxis == 0;}}
+		protected bool thisDragAxisIsVertical{get{return thisDragAxis == 1;}}
 		protected bool thisProcessedDrag;
 		protected override void OnReleaseImple(){
-			if(!thisIsNotDragged)
-				ResetDragAxis();
-			if(thisProcessedDrag)
+			/*  implement spring
+				snap to either end if offset, with initial velocity
+				overriden by UIElementGroupScroller to implement search snap
+			*/
+			if(thisProcessedDrag){
 				thisProcessedDrag = false;
-			else
+				CheckForStaticBoundarySnap(thisDragAxis);
+			}else
 				base.OnReleaseImple();
+			if(!thisDragAxisIsNotDetermined)
+				ResetDragAxis();
 		}
 		void ResetDragAxis(){
 			thisDragAxis = -1;
 		}
 		protected override void OnDragImple(ICustomEventData eventData){
-			if(thisIsNotDragged){
+			if(thisDragAxisIsNotDetermined){
 				int dragAxis = CalcDragAxis(eventData.deltaP);
 				thisDragAxis = dragAxis;
 				EvaluateShouldProcessDrag();
 			}
 			if(thisShouldProcessDrag){
-				thisProcessedDrag = true;
 				Vector2 deltaV2AlongAxis = GetDeltaV2AlongDragAxis(eventData.deltaP);
 				DragImpleInner(eventData.position, deltaV2AlongAxis);
 			}else{
@@ -146,15 +154,17 @@ namespace UISystem{
 				thisShouldProcessDrag = true;
 			else{
 				if(thisScrollerAxis == ScrollerAxis.Horizontal)
-					thisShouldProcessDrag = thisIsDraggedHorizontally;
+					thisShouldProcessDrag = thisDragAxisIsHorizontal;
 				else if(thisScrollerAxis == ScrollerAxis.Vertical)
-					thisShouldProcessDrag = thisIsDraggedVertically;
+					thisShouldProcessDrag = thisDragAxisIsVertical;
 				else
 					throw new System.InvalidOperationException("dragAxis should not be None, should be already evaluated");
 			}
+			if(thisShouldProcessDrag)
+				thisProcessedDrag = true;
 		}
 		Vector2 GetDeltaV2AlongDragAxis(Vector2 deltaP){
-			if(thisIsDraggedHorizontally)
+			if(thisDragAxisIsHorizontal)
 				return new Vector2(deltaP.x, 0f);
 			else
 				return new Vector2(0f, deltaP.y);
@@ -173,12 +183,12 @@ namespace UISystem{
 		}
 		float CheckAndApplyRubberBand(float deltaPOnAxis, float elementLocalPosOnAxis, int dimension){
 			float result = elementLocalPosOnAxis;
-			if(ElementIsDraggedToIncreaseCursorOffset(deltaPOnAxis, elementLocalPosOnAxis, dimension)){
+			if(ElementIsScrolledToIncreaseCursorOffset(deltaPOnAxis, elementLocalPosOnAxis, dimension)){
 				result = CalcRubberBandedPosOnAxis(elementLocalPosOnAxis, dimension);
 			}
 			return result;
 		}
-		protected bool ElementIsDraggedToIncreaseCursorOffset(float deltaPosOnAxis, float elementLocalPosOnAxis, int dimension){
+		protected bool ElementIsScrolledToIncreaseCursorOffset(float deltaPosOnAxis, float elementLocalPosOnAxis, int dimension){
 			float cursorOffsetInPixel = GetElementCursorOffsetInPixel(elementLocalPosOnAxis, dimension);
 			if(cursorOffsetInPixel == 0f)
 				return false;
@@ -212,7 +222,7 @@ namespace UISystem{
 		protected bool ElementIsUndersizedTo(Vector2 referenceLength, int dimension){
 			return thisScrollerElementLength[dimension] <= referenceLength[dimension];
 		}
-		protected float GetElementNormalizedPosition(float elementLocalPosOnAxis, Vector2 referenceLength, Vector2 referenceMin, int dimension){
+		protected float GetNormalizedPosition(float elementLocalPosOnAxis, Vector2 referenceLength, Vector2 referenceMin, int dimension){
 			/*  (0f, 0f) if cursor rests on top left corner of the element
 				(1f, 1f) if cursor rests on bottom right corner of the element
 				value below 0f and over 1f indicates the element's displacement beyond cursor bounds
@@ -226,11 +236,11 @@ namespace UISystem{
 
 			}
 		}
-		protected float GetElementPositionNormalizedToCursor(float elementLocalPosOnAxis, int dimension){
-			return GetElementNormalizedPosition(elementLocalPosOnAxis, thisCursorLength, thisCursorLocalPosition, dimension);
+		protected float GetNormalizedCursoredPosition(float elementLocalPosOnAxis, int dimension){
+			return GetNormalizedPosition(elementLocalPosOnAxis, thisCursorLength, thisCursorLocalPosition, dimension);
 		}
-		protected float GetElementPositionNormalizedToScroller(float elementLocalPosOnAxis, int dimension){
-			return GetElementNormalizedPosition(elementLocalPosOnAxis, thisRectLength, Vector2.zero, dimension);
+		protected float GetNormalizedScrollerPosition(float elementLocalPosOnAxis, int dimension){
+			return GetNormalizedPosition(elementLocalPosOnAxis, thisRectLength, Vector2.zero, dimension);
 		}
 		protected float GetElementCursorOffsetInPixel(float elementLocalPosOnAxis, int dimension){
 			/* used to calculate rubberbanding */
@@ -238,7 +248,7 @@ namespace UISystem{
 				return thisCursorLocalPosition[dimension] - elementLocalPosOnAxis;
 			}
 			else{
-				float elePosNormToCursor = GetElementNormalizedPosition(elementLocalPosOnAxis, thisCursorLength, thisCursorLocalPosition, dimension);
+				float elePosNormToCursor = GetNormalizedCursoredPosition(elementLocalPosOnAxis, dimension);
 				float normalizedOffset = elePosNormToCursor;
 				if(elePosNormToCursor <= 1f && elePosNormToCursor >= 0f)
 					normalizedOffset = 0f;
@@ -247,12 +257,116 @@ namespace UISystem{
 				return normalizedOffset * thisCursorLength[dimension];
 			}
 		}
-		protected float GetPosNormalizedToCursorFromPosInElementSpace(float positionInElementSpaceOnAxis, int dimension){
+		protected float GetNormalizedCursoredPositionFromPosInElementSpace(float positionInElementSpaceOnAxis, int dimension){
 			float prospectiveElementLocalPosOnAxis = thisCursorLocalPosition[dimension] - positionInElementSpaceOnAxis;
-			return GetElementPositionNormalizedToCursor(prospectiveElementLocalPosOnAxis, dimension);
+			return GetNormalizedCursoredPosition(prospectiveElementLocalPosOnAxis, dimension);
 		}
 		protected void PlaceScrollerElement(Vector2 targetCursorValue){
+			Vector2 newLocalPos = CalcLocalPositionFromNormalizedCursoredPosition(targetCursorValue);
+			this.SetLocalPosition(newLocalPos);
+		}
+		protected Vector2 CalcLocalPositionFromNormalizedCursoredPosition(Vector2 normalizedCursoredPosition){
+			Vector2 result = new Vector2();
+			for(int i = 0; i < 2; i ++){
+				result[i] = CalcLocalPositionFromNormalizedCursoredPositionOnAxis(normalizedCursoredPosition[i], i);
+			}
+			return result;
+		}
+		protected float CalcLocalPositionFromNormalizedCursoredPositionOnAxis(float normalizedCursoredPositionOnAxis, int dimension){
+			if(ElementIsUndersizedTo(thisCursorLength, dimension))
+				return thisCursorLocalPosition[dimension];
+			else{
+				float elementLocalPosOnAxis = thisCursorLocalPosition[dimension] - (normalizedCursoredPositionOnAxis * (thisScrollerElementLength[dimension] - thisCursorLength[dimension]));
+				return elementLocalPosOnAxis;
+			}
+		}
+		/* Swipe */
+		protected override void OnSwipeImple(ICustomEventData eventData){
+			if(thisProcessedDrag){
+				thisProcessedDrag = false;
 
+				int dimension = thisDragAxis;
+				float deltaPosOnAxis = eventData.deltaP[dimension];
+				if(!CheckForDynamicBoundarySnap(deltaPosOnAxis, dimension)){
+					if(thisIsEnabledInertia)
+						StartInertialScroll(deltaPosOnAxis, dimension);
+				}
+			}else
+				base.OnSwipeImple(eventData);
+			if(!thisDragAxisIsNotDetermined)
+				ResetDragAxis();
+		}
+		readonly bool thisIsEnabledInertia;
+
+		/*  IScrollerElementMotorProcess
+				Disable input of all the elements below ScrollerElement! otherwise can't touch to stop the scroll
+				ScrollerElementSnapProcess
+					spring coefficient (suppleness) is constant acrosss all setup?
+						the more the initial velocity, the longer it takes to settle
+						the more the displacement, the longer it takes to settle
+		*/
+		protected void SnapTo(float targetNormalizedCursoredPosOnAxis, float initVelOnAxis, int dimension){
+			float targetElementLocalPosOnAxis = CalcLocalPositionFromNormalizedCursoredPositionOnAxis(targetNormalizedCursoredPosOnAxis, dimension);
+			IScrollerElementSnapProcess newProcess = thisProcessFactory.CreateScrollerElementSnapProcess(this, thisScrollerElement, targetElementLocalPosOnAxis, initVelOnAxis, dimension);
+			newProcess.Run();
+		}
+		IScrollerElementMotorProcess thisRunningScrollerMotorProcess;
+		public void SetRunningElementMotorProcess(IScrollerElementMotorProcess process){
+			StopRunningElementMotorProcess();
+			thisRunningScrollerMotorProcess = process;
+		}
+		public void ClearScrollerElementMotorProcess(IScrollerElementMotorProcess processToClear){
+			if(thisRunningScrollerMotorProcess == processToClear)
+				SetRunningElementMotorProcess(null);
+		}
+		void StopRunningElementMotorProcess(){
+			if(thisRunningScrollerMotorProcess != null)
+				thisRunningScrollerMotorProcess.Stop();
+		}
+		protected void StartInertialScroll(float deltaPosOnAxis, int dimension){
+			/*  start a process
+					the process is overriden by UIEGroupScroller which requires to check searching snap target element when scroll delta gets below threshold
+					the process
+						translate the scroller element in a direction with decreasing velocity
+						each frame check to see if there's cursor offset or not
+							if there is stop the process and snap to it with initial velocity
+			*/
+			IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(deltaPosOnAxis, this, thisScrollerElement, dimension);
+			process.Run();
+		}
+		public bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension){
+			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
+			if(deltaPosOnAxis != 0f)
+				if(ElementIsScrolledToIncreaseCursorOffset(deltaPosOnAxis, elementLocalPosOnAxis, dimension)){
+					float snapTargetNormPos;
+					if(deltaPosOnAxis > 0f)
+						snapTargetNormPos = 0f;
+					else	
+						snapTargetNormPos = 1f;
+					SnapTo(snapTargetNormPos, deltaPosOnAxis, dimension);
+					return true;
+				}
+			return false;
+		}
+		protected bool CheckForStaticBoundarySnap(int dimension){
+			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
+			float cursorOffset = GetElementCursorOffsetInPixel(elementLocalPosOnAxis, dimension);
+				if(cursorOffset != 0f){
+					float snapTargetNormPos;
+					if(cursorOffset < 0f)
+						snapTargetNormPos = 0f;
+					else
+						snapTargetNormPos = 1f;
+					SnapTo(snapTargetNormPos, 0f, dimension);
+					return true;
+				}
+			return false;
+		}
+		/* Touch */
+		protected override void OnTouchImple(int touchCount){
+			/*  Stop scroll if running
+			*/
+			StopRunningElementMotorProcess();
 		}
 	}
 
@@ -262,14 +376,16 @@ namespace UISystem{
 		ScrollerAxis scrollerAxis{get;}
 		Vector2 relativeCursorPosition{get;}
 		Vector2 rubberBandLimitMultiplier{get;}
+		bool isEnabledInertia{get;}
 	}
 
 
 	public abstract class ScrollerConstArg: UIElementConstArg, IScrollerConstArg{
-		public ScrollerConstArg(ScrollerAxis scrollerAxis, Vector2 relativeCursorPosition, Vector2 rubberBandLimitMultiplier, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IScrollerAdaptor uia, IUIImage uiImage): base(uim, processFactory, uieFactory, uia, uiImage){
+		public ScrollerConstArg(ScrollerAxis scrollerAxis, Vector2 relativeCursorPosition, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IScrollerAdaptor uia, IUIImage uiImage): base(uim, processFactory, uieFactory, uia, uiImage){
 			thisScrollerAxis = scrollerAxis;
 			thisRelativeCursorPos = ClampVector2ZeroToOne(relativeCursorPosition);
 			thisRubberBandLimitMultiplier = MakeRubberBandLimitMultiplierInRange(rubberBandLimitMultiplier);
+			thisIsEnabledInertia = isEnabledInertia;
 		}
 		readonly ScrollerAxis thisScrollerAxis;
 		public ScrollerAxis scrollerAxis{
@@ -289,6 +405,7 @@ namespace UISystem{
 					result[i] = 1f;
 			return result;
 		}
-		readonly bool thisResizesToFitElement;
+		readonly bool thisIsEnabledInertia;
+		public bool isEnabledInertia{get{return thisIsEnabledInertia;}}
 	}
 }

@@ -36,7 +36,7 @@ public class GenericSingleElementScrollerTest{
 		IGenericSingleElementScrollerAdaptor uia = Substitute.For<IGenericSingleElementScrollerAdaptor>();
 		IUIImage image = Substitute.For<IUIImage>();
 
-		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("relativeCursorLength must be greater than 0"), () => {new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, uim, processFactory, uieFactory, uia, image);});
+		Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("relativeCursorLength must be greater than 0"), () => {new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, true, uim, processFactory, uieFactory, uia, image);});
 	}
 	[Test, TestCaseSource(typeof(Constructor_TestCase), "greaterThan0Cases")]
 	public void Constructor_GreaterThan0_ClampsValueDownToOne(Vector2 relativeCursorLength, Vector2 expected){
@@ -84,7 +84,7 @@ public class GenericSingleElementScrollerTest{
 			uia.GetChildUIEs().Returns(returnedList);
 		IUIImage image = Substitute.For<IUIImage>();
 
-		IGenericSingleElementScrollerConstArg arg = new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, uim, processFactory, uieFactory, uia, image);
+		IGenericSingleElementScrollerConstArg arg = new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, true, uim, processFactory, uieFactory, uia, image);
 
 		return new TestGenericSingleElementScroller(arg);
 	}

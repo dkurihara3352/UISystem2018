@@ -14,5 +14,9 @@ namespace DKUtility{
 		float GetSpringT(float normalizedT);
 		float GetAlphaActivatorUIEActivationProcessExpireT();
 		float GetNonActivatorUIEActivationProcessExpireT();
+		float GetScrollerElementSnapProcessDiffThreshold();
+		float GetScrollerElementSnapSpringCoefficient();
+		int GetScrollerElementSnapSpringResolution();
+		float GetInertialScrollDeceleration();
 	}
 }
