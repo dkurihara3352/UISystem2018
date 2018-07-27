@@ -9,7 +9,7 @@ using DKUtility;
 
 [TestFixture]
 public class CriticallyDampedSpringCalculatorTest{
-    // [Test][TestCaseSource(typeof(NormalizedSpringValueCalculator_Demo_TestCases), "cases")]
+    [Test][TestCaseSource(typeof(NormalizedSpringValueCalculator_Demo_TestCases), "cases"), Ignore]
     public void NormalizedSpringValueCalculator_Demo(int resolution){
         NormalizedSpringValueCalculator calculator = new NormalizedSpringValueCalculator(resolution);
         DebugHelper.PrintInRed("Resolution: " + resolution.ToString());
@@ -39,7 +39,7 @@ public class CriticallyDampedSpringCalculatorTest{
             new object[]{100}
         };
     }
-    // [Test][TestCaseSource(typeof(CriticallyDampedSpringValueCalculator_Demo_TestCases), "cases")]
+    [Test][TestCaseSource(typeof(CriticallyDampedSpringValueCalculator_Demo_TestCases), "cases"), Ignore]
     public void CriticallyDampedSpringValueCalculator_Demo(float initVal, float termVal, float initVel, float coef, int resolution){
         FullCriticallyDampedSpringCalculator calculator = new FullCriticallyDampedSpringCalculator(initVal, termVal, initVel, coef, resolution);
         DebugHelper.PrintInRed("initVal: " + initVal.ToString() + ", termVal: " + termVal.ToString() + ", initVel: " + initVel.ToString() + ", coef: " + coef.ToString() + ", resolution: " + resolution.ToString());

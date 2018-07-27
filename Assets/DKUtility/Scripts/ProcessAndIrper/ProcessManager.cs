@@ -16,7 +16,7 @@ namespace DKUtility{
 		float GetNonActivatorUIEActivationProcessExpireT();
 		float GetScrollerElementSnapProcessDiffThreshold();
 		float GetScrollerElementSnapSpringCoefficient();
-		int GetScrollerElementSnapSpringResolution();
+		float GetScrollerElementSnapProcessStopDelta();
 		float GetInertialScrollDeceleration();
 	}
 }

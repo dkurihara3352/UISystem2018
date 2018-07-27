@@ -49,7 +49,8 @@ namespace UISystem{
 		}
 		public IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension){
 			float diffThreshold = thisProcessManager.GetScrollerElementSnapProcessDiffThreshold();
-			IScrollerElementSnapProcess process = new ScrollerElementSnapProcess(targetElementLocalPosOnAxis, initialVelOnAxis, scroller, scrollerElement, dimension, diffThreshold, thisProcessManager);
+			float stopDelta = thisProcessManager.GetScrollerElementSnapProcessStopDelta();
+			IScrollerElementSnapProcess process = new ScrollerElementSnapProcess(targetElementLocalPosOnAxis, initialVelOnAxis, scroller, scrollerElement, dimension, diffThreshold, stopDelta, thisProcessManager);
 
 			return process;
 		}

@@ -7,24 +7,26 @@ using DKUtility.CurveUtility;
 namespace UISystem{
 	public interface IScrollerElementSnapProcess: IScrollerElementMotorProcess{}
 	public class ScrollerElementSnapProcess: AbsScrollerElementMotorProcess, IScrollerElementSnapProcess{
-		public ScrollerElementSnapProcess(float targetElementLocalPositionOnAxis, float initialVelOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, float diffThreshold, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
+		public ScrollerElementSnapProcess(float targetElementLocalPositionOnAxis, float initialVelOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, float diffThreshold, float stopVelocity, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
 
 			float initialElementLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisTargetElementLocalPositionOnAxis = targetElementLocalPositionOnAxis;
 
+			thisDiffThreshold = MakeSureThresholdIsGreaterThanZero(diffThreshold);
+			thisStopVelocity = MakeSureThresholdIsGreaterThanZero(stopVelocity);
 			ExpireIfValueDifferenceIsSmallEnough(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, diffThreshold);
 
 			float springCoefficient = processManager.GetScrollerElementSnapSpringCoefficient();
-			int resolution = processManager.GetScrollerElementSnapSpringResolution();
 			thisSpringCalculator = new RealTimeCriticallyDampedSpringCalculator(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, initialVelOnAxis, springCoefficient);
-			thisDiffThreshold = MakeSureThresholdIsGreaterThanZero(diffThreshold);
+			
+			prevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 		}
 		void ExpireIfValueDifferenceIsSmallEnough(float initValue, float termValue, float diffThreshold){
 			if(Mathf.Abs(initValue - termValue) >= diffThreshold)
 				Expire();
 		}
 		protected float MakeSureThresholdIsGreaterThanZero(float source){
-			if(source < 0f)
+			if(source <= 0f)
 				throw new System.InvalidOperationException("source threshold must be greater than 0");
 			else return source;
 		}
@@ -32,21 +34,23 @@ namespace UISystem{
 		readonly IRealTimeCriticallyDampedSpringCalculator thisSpringCalculator;
 		readonly float thisDiffThreshold;
 		
+		readonly float thisStopVelocity;
+		float prevLocalPosOnAxis;
 		float thisElapsedTime = 0f;
-		float thisPrevValue = 0f;
-		float GetDeltaValue(float newValue){
-			return Mathf.Abs(newValue - thisPrevValue);
+		protected float GetDeltaValue(float newValue, float deltaT){
+			return Mathf.Abs(newValue - prevLocalPosOnAxis) / deltaT;
 		}
 
 		public override void UpdateProcess(float deltaT){
 			thisElapsedTime += deltaT;
 			float newElementLocalPosOnAxis = thisSpringCalculator.GetSpringValue(thisElapsedTime);
 
-			if(GetDeltaValue(newElementLocalPosOnAxis) <= thisDiffThreshold)
+			SetScrollerElementLocalPosOnAxis(newElementLocalPosOnAxis);
+
+			if(GetDeltaValue(newElementLocalPosOnAxis, deltaT) <= thisStopVelocity)
 				Expire();
 
-			SetScrollerElementLocalPosOnAxis(newElementLocalPosOnAxis);
-			thisPrevValue = newElementLocalPosOnAxis;
+			prevLocalPosOnAxis = newElementLocalPosOnAxis;
 		}
 		public override void Expire(){
 			SetScrollerElementLocalPosOnAxis(thisTargetElementLocalPositionOnAxis);

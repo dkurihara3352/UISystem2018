@@ -9,7 +9,7 @@ using DKUtility;
 
 [TestFixture]
 public class RubberBandCalculatorTest {
-	// [Test, TestCaseSource(typeof(CalcRubberBandValue_Demo_TestCase), "cases")]
+	[Test, TestCaseSource(typeof(CalcRubberBandValue_Demo_TestCase), "cases"), Ignore]
 	public void CalcRubberBandValue_Demo(float suppleness, float limitLength){
 		IRubberBandCalculator calculator = new RubberBandCalculator(suppleness, limitLength);
 		float origDisp = 0f;

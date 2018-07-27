@@ -10,6 +10,7 @@ namespace UISystem{
 		public AbsScrollerElementMotorProcess(IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(processManager){
 			thisScroller = scroller;
 			thisDimension = dimension;
+			thisScrollerElement = scrollerElement;
 		}
 		protected readonly IScroller thisScroller;
 		protected readonly IUIElement thisScrollerElement;
