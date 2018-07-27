@@ -48,7 +48,6 @@ namespace UISystem{
 			SetScrollerElementLocalPosOnAxis(newElementLocalPosOnAxis);
 			thisPrevValue = newElementLocalPosOnAxis;
 		}
-		public override void Reset(){return;}
 		public override void Expire(){
 			SetScrollerElementLocalPosOnAxis(thisTargetElementLocalPositionOnAxis);
 			base.Expire();

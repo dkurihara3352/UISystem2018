@@ -30,8 +30,8 @@ namespace UISystem{
 		public abstract void OnPointerExit(ICustomEventData eventData);
 		public abstract void OnCancel();
 	}
-	public abstract class PointerUpInputState: AbsUIAdaptorInputState{
-		public PointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
+	public abstract class AbsPointerUpInputState: AbsUIAdaptorInputState{
+		public AbsPointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
 		public override void OnPointerUp(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerUp should not be called while pointer is already help up");
 		}
@@ -48,8 +48,31 @@ namespace UISystem{
 			throw new System.InvalidOperationException("OnCancel should not be called while pointer is held up");
 		}
 	}
-	public abstract class PointerDownInputState: AbsUIAdaptorInputState{
-		public PointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim): base(engine){
+	public abstract class AbsPointerUpInputProcessState<T>: AbsPointerUpInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
+		public AbsPointerUpInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorStateEngine engine): base(engine){
+			thisProcessFactory = processFactory;
+		}
+		protected readonly IUISystemProcessFactory thisProcessFactory;
+		protected T thisProcess;
+		public override void OnEnter(){
+			thisProcess = CreateProcess();
+			thisProcess.Run();
+		}
+		public override void OnExit(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
+		}
+		protected abstract T CreateProcess();
+		public virtual void OnProcessUpdate(float deltaT){}
+		public virtual void OnProcessExpire(){}
+		public virtual void ExpireProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Expire();
+		}
+	}
+	public abstract class AbsPointerDownInputState: AbsUIAdaptorInputState{
+		public AbsPointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim): base(engine){
 			thisUIM = uim;
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
@@ -73,7 +96,31 @@ namespace UISystem{
 			engine.ReleaseUIE();
 		}
 	}
-	public class WaitingForFirstTouchState: PointerUpInputState{
+	public abstract class AbsPointerDownInputProcessState<T>: AbsPointerDownInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
+		public AbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorStateEngine engine ,IUIManager uim): base(engine, uim){
+			thisProcessFactory = processFactory;
+		}
+		readonly protected IUISystemProcessFactory thisProcessFactory;
+		protected T thisProcess;
+		public override void OnEnter(){
+			thisProcess = CreateProcess();
+			thisProcess.Run();
+		}
+		public override void OnExit(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
+		}
+		protected abstract T CreateProcess();
+		public virtual void OnProcessUpdate(float deltaT){}
+		public virtual void OnProcessExpire(){}
+		public virtual void ExpireProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Expire();
+		}
+	}
+
+	public class WaitingForFirstTouchState: AbsPointerUpInputState{
 		/*  Up state
 			enter =>
 				touchCounter reset
@@ -93,7 +140,7 @@ namespace UISystem{
 			engine.WaitForTap();
 		}
 	}
-	public class WaitingForTapState: PointerDownInputState, IWaitAndExpireProcessState{
+	public class WaitingForTapState: AbsPointerDownInputProcessState<IWaitAndExpireProcess>{
 		/* 	Down state
 			enter =>
 				Runs WFTapProcess
@@ -118,16 +165,7 @@ namespace UISystem{
 			pointer exit =>
 				WFRelease
 		*/
-		public WaitingForTapState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac, IUIManager uim): base(engine, uim){
-			thisWaitForTapProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
-		}
-		readonly IWaitAndExpireProcess thisWaitForTapProcess;
-		public override void OnEnter(){
-			thisWaitForTapProcess.Run();
-		}
-		public override void OnExit(){
-			if(thisWaitForTapProcess.IsRunning())
-				thisWaitForTapProcess.Stop();
+		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine, IUIManager uim): base(procFac, engine, uim){
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
@@ -141,23 +179,22 @@ namespace UISystem{
 		public override void OnPointerExit(ICustomEventData eventData){
 			engine.WaitForRelease();
 		}
-		public void OnProcessExpire(){
+		public override void OnProcessExpire(){
 			engine.WaitForRelease();
 			engine.DelayTouchUIE();
 		}
-		public void OnProcessUpdate(float deltaT){
+		public override void OnProcessUpdate(float deltaT){
 			engine.HoldUIE(deltaT);
 		}
 		public override void OnDrag(ICustomEventData eventData){
 			engine.DragUIE(eventData);
 			base.OnDrag(eventData);
 		}
-		public void ExpireProcess(){
-			if(thisWaitForTapProcess.IsRunning())
-				thisWaitForTapProcess.Expire();
+		protected override IWaitAndExpireProcess CreateProcess(){
+			return thisProcessFactory.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
 		}
 	}
-	public class WaitingForReleaseState: PointerDownInputState, IWaitAndExpireProcessState{
+	public class WaitingForReleaseState: AbsPointerDownInputProcessState<IWaitAndExpireProcess>{
 		/* 	DownState
 			enter =>
 				touch count reset
@@ -177,17 +214,11 @@ namespace UISystem{
 			pointer exit =>
 				do nothing
 		*/
-		public WaitingForReleaseState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac, IUIManager uim) :base(engine, uim){
-			this.thisWaitForReleaseProcess = procFac.CreateWaitAndExpireProcess(this, 0f);
+		public WaitingForReleaseState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine, IUIManager uim) :base(procFac, engine, uim){
 		}
-		readonly IWaitAndExpireProcess thisWaitForReleaseProcess;
 		public override void OnEnter(){
+			base.OnEnter();
 			engine.ResetTouchCounter();
-			thisWaitForReleaseProcess.Run();
-		}
-		public override void OnExit(){
-			if(thisWaitForReleaseProcess.IsRunning())
-				thisWaitForReleaseProcess.Stop();
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
@@ -201,22 +232,18 @@ namespace UISystem{
 		public override void OnPointerExit(ICustomEventData eventData){
 			return;
 		}
-		public void OnProcessExpire(){
-			return;
-		}
-		public void OnProcessUpdate(float deltaT){
+		public override void OnProcessUpdate(float deltaT){
 			engine.HoldUIE(deltaT);
 		}
 		public override void OnDrag(ICustomEventData eventData){
 			engine.DragUIE(eventData);
 			base.OnDrag(eventData);
 		}
-		public void ExpireProcess(){
-			if(thisWaitForReleaseProcess.IsRunning())
-				thisWaitForReleaseProcess.Expire();
+		protected override IWaitAndExpireProcess CreateProcess(){
+			return thisProcessFactory.CreateWaitAndExpireProcess(this, 0f);
 		}
 	}
-	public class WaitingForNextTouchState: PointerUpInputState, IWaitAndExpireProcessState{
+	public class WaitingForNextTouchState: AbsPointerUpInputProcessState<IWaitAndExpireProcess>, IWaitAndExpireProcessState{
 		/*  UpState
 			enter =>
 				Runs WFNextTouchProcess
@@ -228,32 +255,19 @@ namespace UISystem{
 						WFFTouchState
 						DelayedReleaseUIE
 		*/
-		public WaitingForNextTouchState(IUIAdaptorStateEngine engine, IUISystemProcessFactory procFac) :base(engine){
-			thisWaitAndExpireProcess = procFac.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());
+		public WaitingForNextTouchState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine) :base(procFac, engine){
 		}
-		readonly IProcess thisWaitAndExpireProcess;
-		public override void OnEnter(){
-			thisWaitAndExpireProcess.Run();
-		}
-		public override void OnExit(){
-			if(thisWaitAndExpireProcess.IsRunning())
-				thisWaitAndExpireProcess.Stop();
+		protected override IWaitAndExpireProcess CreateProcess(){
+			return thisProcessFactory.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
 			engine.IncrementTouchCounter();
 			engine.TouchUIE();
 			engine.WaitForTap();
 		}
-		public void OnProcessExpire(){
+		public override void OnProcessExpire(){
 			engine.WaitForFirstTouch();
 			engine.DelayedReleaseUIE();
-		}
-		public void OnProcessUpdate(float deltaT){
-			return;
-		}
-		public void ExpireProcess(){
-			if(thisWaitAndExpireProcess.IsRunning())
-				thisWaitAndExpireProcess.Expire();
 		}
 	}
 }

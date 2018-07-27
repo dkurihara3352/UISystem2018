@@ -8,7 +8,6 @@ namespace DKUtility{
 		void Run();
 		void Stop();
 		void Expire();
-		void Reset();
 		bool IsRunning();
 		float GetSpringT(float normalizedT);
 	}
@@ -29,9 +28,7 @@ namespace DKUtility{
 		}
 		public virtual void Expire(){
 			this.Stop();
-			this.Reset();
 		}
-		public abstract void Reset();
 		public bool IsRunning(){
 			return thisProcessManager.RunningProcessesContains(this);
 		}
@@ -45,7 +42,6 @@ namespace DKUtility{
 		public AbsWaitAndExpireProcess(IProcessManager procMan, float expireT, IWaitAndExpireProcessState state): base(procMan){
 			thisExpireT = expireT;
 			thisState = state;
-			Reset();
 		}
 		readonly IWaitAndExpireProcessState thisState;
 		float thisElapsedT;
@@ -72,10 +68,6 @@ namespace DKUtility{
 		}
 		public override void Stop(){
 			base.Stop();
-			Reset();
-		}
-		public override void Reset(){
-			thisElapsedT = 0f;
 		}
 	}
 	public class GenericWaitAndExpireProcess: AbsWaitAndExpireProcess{
@@ -101,7 +93,6 @@ namespace DKUtility{
 		readonly float thisConstraintValue;
 		protected readonly IWaitAndExpireProcessState thisProcessState;
 		sealed public override void Run(){
-			Reset();
 			if(ValueDifferenceIsBigEnough()){
 				RunImple();
 				base.Run();
@@ -186,11 +177,6 @@ namespace DKUtility{
 			base.Expire();
 		}
 		protected abstract void SetTerminalValue();
-		public override void Reset(){
-			thisExpireT = 0f;
-			thisRateOfChange = 0f;
-			thisElapsedT = 0f;
-		}
 		protected float ClampValueZeroToOne(float value){
 			if(value < 0f)
 				return 0f;
@@ -228,10 +214,6 @@ namespace DKUtility{
 		}
 		sealed protected override void SetTerminalValue(){
 			thisInterpolator.Interpolate(1f);
-		}
-		public override void Reset(){
-			base.Reset();
-			thisInterpolator = null;
 		}
 	}
 }

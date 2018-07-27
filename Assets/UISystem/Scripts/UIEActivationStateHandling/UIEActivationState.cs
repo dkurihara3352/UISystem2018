@@ -33,30 +33,36 @@ namespace UISystem{
 	public interface IUIEActivationProcessState: IUIEActivatingState, IWaitAndExpireProcessState{}
 	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IUIEActivationProcessState{
 		public AbsUIEActivationProcessState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory): base(engine, uiElement){
-			thisProcess = CreateUIEActivationProcess(processFactory);
+			thisProcessFactory = processFactory;
 		}
-		protected abstract IUIEActivationProcess CreateUIEActivationProcess(IUISystemProcessFactory processFactory);
-		readonly protected IUIEActivationProcess thisProcess;
+		protected IUIEActivationProcess thisProcess;
+		readonly protected IUISystemProcessFactory thisProcessFactory;
+		protected abstract IUIEActivationProcess CreateUIEActivationProcess();
 		public override void OnEnter(){
+			thisProcess = CreateUIEActivationProcess();
 			thisProcess.Run();
 		}
 		public override void OnExit(){
-			if(thisProcess.IsRunning()){
-				thisProcess.Stop();
-			}
+			StopAndClearProcess();
 		}
 		public void OnProcessUpdate(float deltaT){
 			return;
 		}
 		public abstract void OnProcessExpire();
 		public void ExpireProcess(){
-			thisProcess.Expire();
+			StopAndClearProcess();
+		}
+		void StopAndClearProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Expire();
+			thisProcess = null;
 		}
 	}
 	public interface IUIEActivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
 	public abstract class AbsUIEActivatingState: AbsUIEActivationProcessState, IUIEActivatingState{
 		public AbsUIEActivatingState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory):base(engine, uiElement, processFactory){}
 		public override void OnEnter(){
+			base.OnEnter();
 			thisUIElement.ActivateImple();
 		}
 		public override void OnProcessExpire(){
@@ -77,6 +83,7 @@ namespace UISystem{
 	public abstract class AbsUIEDeactivatingState: AbsUIEActivationProcessState, IUIEDeactivatingState{
 		public AbsUIEDeactivatingState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory): base(engine, uiElement, processFactory){}
 		public override void OnEnter(){
+			base.OnEnter();
 			thisUIElement.DeactivateImple();
 		}
 		public override void OnProcessExpire(){

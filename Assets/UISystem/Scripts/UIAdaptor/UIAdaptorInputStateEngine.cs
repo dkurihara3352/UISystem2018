@@ -30,9 +30,9 @@ namespace UISystem{
 		public UIAdaptorStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
 			thisUIE = uia.GetUIElement();
 			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(this);
-			thisWaitingForTapState = new WaitingForTapState(this, procFac, uim);
-			thisWaitingForReleaseState = new WaitingForReleaseState(this, procFac, uim);
-			thisWaitingForNextTouchState = new WaitingForNextTouchState(this, procFac);
+			thisWaitingForTapState = new WaitingForTapState(procFac, this, uim);
+			thisWaitingForReleaseState = new WaitingForReleaseState(procFac, this, uim);
+			thisWaitingForNextTouchState = new WaitingForNextTouchState(procFac, this);
 			SetWithInitState();
 			ResetTouchCounter();
 		}

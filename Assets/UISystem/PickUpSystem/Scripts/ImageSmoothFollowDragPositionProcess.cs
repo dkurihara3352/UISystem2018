@@ -35,8 +35,5 @@ namespace UISystem.PickUpUISystem{
 		Vector2 CalcDeltaPosition(float deltaT, Vector2 displacement){
 			return displacement * thisSmoothCoefficient * deltaT; 
 		}
-		public override void Reset(){
-			return;
-		}
 	}
 }

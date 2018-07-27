@@ -460,7 +460,7 @@ public class UIAdaptorInputStateTest{
 		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
 		eventData.deltaP.Returns(dragDeltaP);
 		engine.OnPointerDown(Substitute.For<ICustomEventData>());
-		Assert.That(engine.GetCurState(), Is.InstanceOf(typeof(PointerDownInputState)));
+		Assert.That(engine.GetCurState(), Is.InstanceOf(typeof(AbsPointerDownInputState)));
 
 		engine.OnDrag(eventData);
 		
@@ -516,13 +516,13 @@ public class UIAdaptorInputStateTest{
 			Assert.That(engine.GetWFReleaseState(), Is.TypeOf(typeof(WaitingForReleaseState)));
 			Assert.That(engine.GetWFNextTouchState(), Is.TypeOf(typeof(WaitingForNextTouchState)));
 		}
-		class TestPointerUpInputState: PointerUpInputState{
+		class TestPointerUpInputState: AbsPointerUpInputState{
 			public TestPointerUpInputState(IUIAdaptorStateEngine engine) :base(engine){}
 			public override void OnEnter(){}
 			public override void OnExit(){}
 			public override void OnPointerDown(ICustomEventData eventData){}
 		}
-		class TestPointerDownInputState: PointerDownInputState{
+		class TestPointerDownInputState: AbsPointerDownInputState{
 			public TestPointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim) :base(engine, uim){}
 			public override void OnEnter(){}
 			public override void OnExit(){}

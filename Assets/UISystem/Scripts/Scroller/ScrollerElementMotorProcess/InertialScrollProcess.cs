@@ -26,7 +26,6 @@ namespace UISystem{
 			get{return thisInitialVelocity > 0f;}
 		}
 
-		public override void Reset(){}
 		float thisPrevVelocity = 0f;
 		float thisElapsedTime = 0f;
 		public override void UpdateProcess(float deltaT){

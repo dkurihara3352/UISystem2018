@@ -13,7 +13,7 @@ namespace UISystem.PickUpUISystem{
 		}
 		protected IItemIcon thisItemIcon;
 		protected IItemIconImage thisItemIconImage;
-		protected IItemIconEmptinessStateEngine thisStateEngine;
+		readonly protected IItemIconEmptinessStateEngine thisStateEngine;
 		public void SetItemIcon(IItemIcon itemIcon){
 			thisItemIcon = itemIcon;
 			thisItemIconImage = (IItemIconImage)thisItemIcon.GetUIImage();
@@ -109,7 +109,7 @@ namespace UISystem.PickUpUISystem{
 	}
 	public class DisemptifyingState: AbsItemIconNonEmptyState, IDisemptifyingState{
 		public DisemptifyingState(IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
-			thisItemIconDisemptifyProcess = pickUpSystemProcessFactory.CreateItemIconDisemptifyProcess(this, thisItemIconImage);
+			thisProcessFactory = pickUpSystemProcessFactory;
 		}
 		protected override void CheckRemoval(bool removesEmpty){
 			if(thisItemIcon.GetItemQuantity() == 0){
@@ -120,13 +120,14 @@ namespace UISystem.PickUpUISystem{
 				}
 			}
 		}
-		IItemIconDisemptifyProcess thisItemIconDisemptifyProcess;
+		IItemIconDisemptifyProcess thisProcess;
+		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
-			thisItemIconDisemptifyProcess.Run();
+			thisProcess = thisProcessFactory.CreateItemIconDisemptifyProcess(this, thisItemIconImage);
+			thisProcess.Run();
 		}
 		public override void OnExit(){
-			if(thisItemIconDisemptifyProcess.IsRunning())
-				thisItemIconDisemptifyProcess.Stop();
+			StopAndClearProcess();
 		}
 		public void OnProcessExpire(){
 			thisStateEngine.SetToWaitingForEmptifyState();
@@ -135,7 +136,12 @@ namespace UISystem.PickUpUISystem{
 			return;
 		}
 		public void ExpireProcess(){
-			thisItemIconDisemptifyProcess.Expire();
+			StopAndClearProcess();
+		}
+		void StopAndClearProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
 		}
 	}
 	public interface IWaitingForEmptifyState: IItemIconNonEmptyState{}
@@ -185,19 +191,20 @@ namespace UISystem.PickUpUISystem{
 	}
 	public class EmptifyingState: AbsItemIconEmptyState, IEmptifyingState{
 		public EmptifyingState(IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
-			thisItemIconEmptifyProcess = pickUpSystemProcessFactory.CreateItemIconEmptifyProcess(this, thisItemIconImage, thisItemIcon);
+			thisProcessFactory = pickUpSystemProcessFactory;
 		}
-		readonly IItemIconEmptifyProcess thisItemIconEmptifyProcess;
+		IItemIconEmptifyProcess thisProcess;
+		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		bool thisRemovesEmpty;
 		public void ToggleRemoval(bool removesEmpty){
 			thisRemovesEmpty = removesEmpty;
 		}
 		public override void OnEnter(){
-			thisItemIconEmptifyProcess.Run();
+			thisProcess = thisProcessFactory.CreateItemIconEmptifyProcess(this, thisItemIconImage, thisItemIcon);
+			thisProcess.Run();
 		}
 		public override void OnExit(){
-			if(thisItemIconEmptifyProcess.IsRunning())
-				thisItemIconEmptifyProcess.Stop();
+			StopAndClearProcess();
 		}
 		public void OnProcessUpdate(float deltaT){
 			return;
@@ -210,11 +217,15 @@ namespace UISystem.PickUpUISystem{
 			thisStateEngine.SetToWaitingForDisemptifyState();
 		}
 		public void ExpireProcess(){
-			if(thisItemIconEmptifyProcess.IsRunning())
-				thisItemIconEmptifyProcess.Expire();
+			StopAndClearProcess();
 		}
 		public override void EmptifyInstantly(){
 			this.ExpireProcess();
+		}
+		void StopAndClearProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
 		}
 	}
 	public interface IWaitingForDisemptifyState: IItemIconEmptyState{}

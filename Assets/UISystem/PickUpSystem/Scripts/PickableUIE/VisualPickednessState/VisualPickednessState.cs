@@ -41,21 +41,20 @@ namespace UISystem.PickUpUISystem{
 	public interface IBecomingVisuallyPickedUpState: IChangingVisualPickednessState{}
 	public class BecomingVisuallyPickedUpState: AbsVisualPickednessState, IBecomingVisuallyPickedUpState{
 		public BecomingVisuallyPickedUpState(IVisualPickednessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
-			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
-			float targetPickedness = 1f;
-			thisProcess = pickUpSystemProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, targetPickedness);
+			thisProcessFactory = pickUpSystemProcessFactory;
 		}
-		readonly IVisualPickednessProcess thisProcess;
+		IVisualPickednessProcess thisProcess;
+		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
+			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
+			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, 1f);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
-			if(thisProcess.IsRunning())
-				thisProcess.Stop();
+			StopAndClearProcess();
 		}
 		public void ExpireProcess(){
-			if(thisProcess.IsRunning())
-				thisProcess.Expire();
+			StopAndClearProcess();
 		}
 		public void OnProcessUpdate(float deltaT){return;}
 		public void OnProcessExpire(){
@@ -66,6 +65,11 @@ namespace UISystem.PickUpUISystem{
 		}
 		public override void BecomeVisuallyUnpicked(){
 			thisStateEngine.SetToBecomingVisuallyUnpickedState();
+		}
+		void StopAndClearProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
 		}
 	}
 	public interface IVisuallyPickedUpState: IVisualPickednessState{}
@@ -89,21 +93,20 @@ namespace UISystem.PickUpUISystem{
 	public interface IBecomingVisuallyUnpickedState: IChangingVisualPickednessState{}
 	public class BecomingVisuallyUnpickedState: AbsVisualPickednessState, IBecomingVisuallyUnpickedState{
 		public BecomingVisuallyUnpickedState(IVisualPickednessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
-			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
-			float targetPickedness = 0f;
-			thisProcess = pickUpSystemProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, targetPickedness);
+			thisProcessFactory = pickUpSystemProcessFactory;
 		}
-		readonly IVisualPickednessProcess thisProcess;
+		IVisualPickednessProcess thisProcess;
+		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
+			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
+			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, 0f);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
-			if(thisProcess.IsRunning())
-				thisProcess.Stop();
+			StopAndClearProcess();
 		}
 		public void ExpireProcess(){
-			if(thisProcess.IsRunning())
-				thisProcess.Expire();
+			StopAndClearProcess();
 		}
 		public void OnProcessUpdate(float deltaT){return;}
 		public void OnProcessExpire(){
@@ -114,6 +117,11 @@ namespace UISystem.PickUpUISystem{
 		}
 		public override void BecomeVisuallyUnpicked(){
 			throw new System.InvalidOperationException("this is already becoming visually unpicked");
+		}
+		void StopAndClearProcess(){
+			if(thisProcess.IsRunning())
+				thisProcess.Stop();
+			thisProcess = null;
 		}
 	}
 }
