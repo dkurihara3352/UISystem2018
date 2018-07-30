@@ -37,7 +37,6 @@ namespace UISystem{
 			float newVelocity = thisPrevVelocity + deltaV;
 			float deltaPosOnAxis = newVelocity * deltaT;
 			float newLocalPosOnAxis = thisPrevLocalPosOnAxis + deltaPosOnAxis;
-			// UpdateScrollerElementLocalPosOnAxis(deltaPosOnAxis);
 			SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis);
 			thisPrevVelocity = newVelocity;
 			thisPrevLocalPosOnAxis = newLocalPosOnAxis;

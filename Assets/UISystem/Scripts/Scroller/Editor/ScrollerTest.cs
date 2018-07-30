@@ -852,7 +852,7 @@ public class ScrollerTest{
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
-		protected override Vector2 GetInitialPositionNormalizedToCursor(){return Vector2.zero;}
+		protected override Vector2 GetInitialNormalizedCursoredPosition(){return Vector2.zero;}
 		/* Test exposures */
 		public Vector2 thisRelativeCursorPosition_Test{get{return thisRelativeCursorPosition;}}
 		public Vector2 thisRubberBandLimitMultiplier_Test{get{return thisRubberBandLimitMultiplier;}}

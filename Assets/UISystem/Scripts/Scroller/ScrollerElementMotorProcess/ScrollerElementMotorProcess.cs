@@ -30,10 +30,5 @@ namespace UISystem{
 			newElementLocalPos[thisDimension] = newLocalPosOnAxis;
 			thisScrollerElement.SetLocalPosition(newElementLocalPos);
 		}
-		protected void UpdateScrollerElementLocalPosOnAxis(float deltaPosOnAxis){
-			Vector2 newElementLocalPos = thisScrollerElement.GetLocalPosition();
-			newElementLocalPos[thisDimension] += deltaPosOnAxis;
-			thisScrollerElement.SetLocalPosition(newElementLocalPos);
-		}
 	}
 }

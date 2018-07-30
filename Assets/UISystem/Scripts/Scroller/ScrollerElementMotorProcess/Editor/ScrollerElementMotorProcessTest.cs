@@ -64,25 +64,6 @@ public class ScrollerElementMotorProcessTest {
 			new object[]{-10f, 1, new Vector2(5f, 5f), new Vector2(5f, -10f)},
 		};
 	}
-	[Test, TestCaseSource(typeof(UpdateScrollerElementLocalPosOnAxis_TestCase), "cases")]
-	public void UpdateScrollerElementLocalPosOnAxis_CallsScrollerElementSetLocalPosition(float deltaPosOnAxis, int dimension, Vector2 elementLocalPosition, Vector2 expected){
-		IUIElement scrollerElement;
-		TestScrollerElementMotorProcess process = CreateProcess_OutScrollerElement_Dimension_ElementLocalPosition(out scrollerElement, dimension, elementLocalPosition);
-
-		process.UpdateScrollerElementLocalPosOnAxis_Test(deltaPosOnAxis);
-
-		scrollerElement.Received(1).SetLocalPosition(expected);
-	}
-	public class UpdateScrollerElementLocalPosOnAxis_TestCase{
-		public static object[] cases = {
-			new object[]{0f, 0, new Vector2(5f, 5f), new Vector2(5f, 5f)},
-			new object[]{0f, 1, new Vector2(5f, 5f), new Vector2(5f, 5f)},
-			new object[]{10f, 0, new Vector2(5f, 5f), new Vector2(15f, 5f)},
-			new object[]{10f, 1, new Vector2(5f, 5f), new Vector2(5f, 15f)},
-			new object[]{-10f, 0, new Vector2(5f, 5f), new Vector2(-5f, 5f)},
-			new object[]{-10f, 1, new Vector2(5f, 5f), new Vector2(5f, -5f)},
-		};
-	}
 
 
 
@@ -95,9 +76,6 @@ public class ScrollerElementMotorProcessTest {
 		public override void UpdateProcess(float deltaT){}
 		public void SetScrollerElementLocalPosOnAxis_Test(float newLocalPosOnAxis){
 			this.SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis);
-		}
-		public void UpdateScrollerElementLocalPosOnAxis_Test(float deltaPosOnAxis){
-			this.UpdateScrollerElementLocalPosOnAxis(deltaPosOnAxis);
 		}
 	}
 	public interface ITestScrollerElementMotorProcessConstArg{

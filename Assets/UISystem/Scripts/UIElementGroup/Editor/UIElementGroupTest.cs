@@ -9,29 +9,6 @@ using DKUtility;
 
 [TestFixture, Category("UISystem")]
 public class UIElementGroupTest {
-	[Test]
-	public void ConstructorArg_ConstraintNotSetRight_ThrowsException(){
-		Assert.Throws(
-			Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("either rowCount or columnCount must be defined"), 
-			() => {
-				new UIElementGroupConstArg(0, 0, true, true, true, Vector2.zero, Vector2.zero, Substitute.For<IUIManager>(), Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIElementFactory>(), Substitute.For<IUIElementGroupAdaptor>(), Substitute.For<IUIImage>());
-			}
-		);
-	}
-	[Test, TestCaseSource(typeof(ConstructionArg_TestCase), "cases")]
-	public void ConstructionArg_ConstraintVarious_OverrideRowToColumn(int columnCountConstraint, int rowCountConstraint, bool expected){
-		IUIElementGroupConstArg arg = new UIElementGroupConstArg(columnCountConstraint, rowCountConstraint, true, true, true, Vector2.zero, Vector2.zero, Substitute.For<IUIManager>(), Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIElementFactory>(), Substitute.For<IUIElementGroupAdaptor>(), Substitute.For<IUIImage>());
-
-		bool actual = arg.rowToColumn;
-
-		Assert.That(actual, Is.EqualTo(expected));
-	}
-	public class ConstructionArg_TestCase{
-		public static object[] cases = {
-			new object[]{0, 1, false},
-			new object[]{1, 0, true},
-		};
-	}
 	[Test, TestCaseSource(typeof(CalcNumberOfColumnsToCreate_TestCase), "cases")]
 	public void CalcNumberOfColumnsToCreate_Various(int columnCountConstraint, int rowCountConstraint, int elementsCount, int expected){
 		TestUIElementGroup uieGroup = CreateTestUIElementGroupWithConstraints(columnCountConstraint, rowCountConstraint);
@@ -416,9 +393,130 @@ public class UIElementGroupTest {
 			new object[]{0, 2, new Vector2(280f, 80f), new Vector2(10f, 10f), 5, 4, new Vector2(590f, 10f)},
 		};
 	}
+	[Test, TestCaseSource(typeof(GetUIElementsWithinIndexRange_TestCase), "cases")]
+	public void GetUIElementsWithinIndexRange_Various(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex, int[] expectedElementsIndex){
+		IUIElementGroupConstArg arg = CreateMockConstArg();
+		arg.columnCountConstraint.Returns(3);
+		arg.rowCountConstraint.Returns(0);
+		arg.elementLength.Returns(new Vector2(100f, 50f));
+		arg.padding.Returns(new Vector2(10f, 10f));
+		TestUIElementGroup uieGroup = new TestUIElementGroup(arg);
+
+		List<IUIElement> elements = CreateUIElements(10);
+		uieGroup.SetUpElements_Test(elements);
+
+		IUIElement[] actual = uieGroup.GetUIElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
+		IUIElement[] expectedElements = GetUIElementsFromIndex(elements, expectedElementsIndex);
+
+		Assert.That(actual, Is.EqualTo(expectedElements));
+	}
+	IUIElement[] GetUIElementsFromIndex(List<IUIElement> list, int[] index){
+		List<IUIElement> result = new List<IUIElement>();
+		foreach(int i in index)
+			result.Add(list[i]);
+		return result.ToArray();
+	}
+	public class GetUIElementsWithinIndexRange_TestCase{
+		public static object[] cases = {
+			new object[]{0, 0, 0, 0, new int[]{0}},
+			new object[]{0, 0, 1, 1, new int[]{0, 1, 3, 4}},
+			new object[]{0, 0, 2, 0, new int[]{0, 1, 2}},
+			new object[]{0, 0, 2, 1, new int[]{0, 1, 2, 3, 4, 5}},
+			new object[]{0, 0, 0, 2, new int[]{0, 3, 6}},
+			new object[]{0, 0, 2, 2, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8}},
+			new object[]{0, 0, 2, 3, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
+			new object[]{1, 0, 1, 0, new int[]{1}},
+			new object[]{1, 0, 2, 0, new int[]{1, 2}},
+			new object[]{1, 1, 1, 1, new int[]{4}},
+			new object[]{1, 1, 2, 2, new int[]{4, 5, 7, 8}},
+			
+			new object[]{1, 1, 0, 0, new int[]{}},
+		};
+	}
+	[Test, TestCaseSource(typeof(GetUIElementAtPositionInGroupSpace_TestCase), "cases")]
+	public void GetUIElementAtPositionInGroupSpace_Various(Vector2 elementLength, Vector2 padding, Vector2 posInGroupSpace, int expectedUIEIndex){
+		IUIElementGroupConstArg arg = CreateMockConstArg();
+		arg.columnCountConstraint.Returns(3);
+		arg.rowCountConstraint.Returns(0);
+		arg.elementLength.Returns(elementLength);
+		arg.padding.Returns(padding);
+		float scrollerRectLengthX = 3 * (elementLength[0] + padding[0]) + padding[0];
+		float scrollerRectLengthY = 4 * (elementLength[1] + padding[1]) + padding[1];
+		Vector2 scrollerRectLength = new Vector2(scrollerRectLengthX, scrollerRectLengthY);
+		Rect thisRect = new Rect(Vector2.zero, scrollerRectLength);
+		arg.uia.GetRect().Returns(thisRect);
+		TestUIElementGroup uieGroup = new TestUIElementGroup(arg);
+		List<IUIElement> elements = CreateUIElements(10);
+		uieGroup.SetUpElements_Test(elements);
+
+		IUIElement actual = uieGroup.GetUIElementAtPositionInGroupSpace(posInGroupSpace);
+
+		if(expectedUIEIndex == -1)
+			Assert.That(actual, Is.Null);
+		else
+			Assert.That(actual, Is.EqualTo(elements[expectedUIEIndex]));
+	}
+	public class GetUIElementAtPositionInGroupSpace_TestCase{
+		public static object[] cases = {
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(0f, 0f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(-1f, -1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(340f, 250f), -1},
+			
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(10f -.1f, 10f -.1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(10f, 10f), 0},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(60f, 35f), 0},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(110f, 60f), 0},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(110.1f, 60.1f), -1},
+
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f -.1f, 10f -.1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 10f), 1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(170f, 35f), 1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(220f, 60f), 1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(220.1f, 60.1f), -1},
+			
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f -.1f, 10f -.1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f, 10f), 2},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(280f, 35f), 2},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(330f, 60f), 2},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(330.1f, 60.1f), -1},
+			
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f -.1f, 70f -.1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 70f), 4},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(170f, 95f), 4},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(220f, 120f), 4},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(220.1f, 120.1f), -1},
+			
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f -.1f, 130f -.1f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f, 130f), 8},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(280f, 155f), 8},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(330f, 180f), 8},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(330.1f, 180.1f), -1},
+			
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 190f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(170f, 215f), -1},
+			new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(220f, 240f), -1},
+			
+		};
+	}
 
 
 
+	IUIElementGroupConstArg CreateMockConstArg(){
+		IUIElementGroupConstArg arg = Substitute.For<IUIElementGroupConstArg>();
+		arg.columnCountConstraint.Returns(3);
+		arg.rowCountConstraint.Returns(0);
+		arg.topToBottom.Returns(true);
+		arg.leftToRight.Returns(true);
+		arg.rowToColumn.Returns(true);
+		arg.elementLength.Returns(new Vector2(100f, 50f));
+		arg.padding.Returns(new Vector2(10f, 10f));
+		arg.uim.Returns(Substitute.For<IUIManager>());
+		arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
+		arg.uiElementFactory.Returns(Substitute.For<IUIElementFactory>());
+		arg.uia.Returns(Substitute.For<IUIElementGroupAdaptor>());
+		arg.image.Returns(Substitute.For<IUIImage>());
+		return arg;
+	}
 
 	public class TestUIElementGroup: AbsUIElementGroup<IUIElement>, INonActivatorUIElement{
 		public TestUIElementGroup(IUIElementGroupConstArg arg): base(arg){

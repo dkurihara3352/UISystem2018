@@ -15,7 +15,7 @@ namespace UISystem{
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();
 		}
-		protected override Vector2 GetInitialPositionNormalizedToCursor(){
+		protected override Vector2 GetInitialNormalizedCursoredPosition(){
 			return Vector2.zero;
 		}
 		protected override Vector2 CalcCursorLength(){

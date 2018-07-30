@@ -8,16 +8,32 @@ namespace UISystem{
 		int GetSize();
 		int GetElementsArraySize(int dimension);
 		IUIElement GetUIElement(int index);
+		void GetElementArrayIndex(IUIElement uie, out int columnIndex, out int rowIndex);
+		IUIElement[] GetUIElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex);
+		IUIElement GetUIElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
 			thisRowCountConstraint = arg.rowCountConstraint;
 			thisColumnCountConstraint = arg.columnCountConstraint;
+			MakeSureConstraintIsProperlySet();
 			thisTopToBottom = arg.topToBottom;
 			thisLeftToRight = arg.leftToRight;
-			thisRowToColumn = arg.rowToColumn;
+			thisRowToColumn = OverrideRowToColumnAccordingToConstraint(arg.rowToColumn);
 			thisElementLength = arg.elementLength;
 			thisPadding = arg.padding;
+		}
+		void MakeSureConstraintIsProperlySet(){
+			if(thisRowCountConstraint == 0 && thisColumnCountConstraint == 0)
+				throw new System.InvalidOperationException("either rowCount or columnCount must be defined");
+		}
+		bool OverrideRowToColumnAccordingToConstraint(bool rowToColumn){
+			bool result = rowToColumn;
+			if(thisColumnCountConstraint == 0)
+				result = false;
+			else if(thisRowCountConstraint == 0)
+				result = true;
+			return result;
 		}
 		protected List<T> thisElements;/* explicitly and externally set */
 		public IUIElement GetUIElement(int index){
@@ -117,7 +133,7 @@ namespace UISystem{
 			IUIAdaptor uia = GetUIAdaptor();
 			uia.SetRectLength(targetWidth, targetHeight);
 		}
-		protected void GetElementArrayIndex(IUIElement element ,out int columnIndex, out int rowIndex){
+		public void GetElementArrayIndex(IUIElement element ,out int columnIndex, out int rowIndex){
 			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
 				for(int j = 0; j < thisElementsArray.GetLength(1); j ++){
 					T elementAtIndex = thisElementsArray[i, j];
@@ -143,6 +159,54 @@ namespace UISystem{
 				element.SetLocalPosition(newLocalPos);
 			}
 		}
+		public IUIElement[] GetUIElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
+			List<IUIElement> result = new List<IUIElement>();
+			foreach(IUIElement element in thisElements){
+				int columnIndex;
+				int rowIndex;
+				GetElementArrayIndex(element, out columnIndex, out rowIndex);
+				if(columnIndex >= minColumnIndex && columnIndex <= maxColumnIndex){
+					if(rowIndex >= minRowIndex && rowIndex <= maxRowIndex){
+						result.Add(element);
+					}
+				}
+			}
+			return result.ToArray();
+		}
+		public IUIElement GetUIElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace){
+			//return null if the point is at padding space
+			if(PositionIsOutOfThisRectBouds(positionInElementGroupSpace))
+				return null;
+			else{
+				int[] arrayIndex = new int[2];
+				for(int i = 0; i < 2; i ++){
+					float elementLengthPlusPadding = thisElementLength[i] + thisPadding[i];
+					float modulo = positionInElementGroupSpace[i] % elementLengthPlusPadding;
+					if(modulo == 0f){
+						if(positionInElementGroupSpace[i] > thisPadding[i]){
+							int quotient = Mathf.FloorToInt(positionInElementGroupSpace[i]/ elementLengthPlusPadding) -1;
+							arrayIndex[i] = quotient;
+						}else
+							return null;
+					}else{
+						if(modulo >= thisPadding[i]){
+							int quotient = Mathf.FloorToInt(positionInElementGroupSpace[i] / elementLengthPlusPadding);
+							arrayIndex[i] = quotient;
+						}else
+							return null;
+					}
+				}
+				IUIElement elementAtIndex = thisElementsArray[arrayIndex[0], arrayIndex[1]];
+				return elementAtIndex;
+			}
+		}
+		bool PositionIsOutOfThisRectBouds(Vector2 position){
+			for(int i = 0; i < 2; i ++){
+				if(position[i] < thisPadding[i] || position[i] > thisUIA.GetRect().size[i] - thisPadding[i])
+					return true;
+			}
+			return false;
+		}
 	}
 
 
@@ -160,24 +224,11 @@ namespace UISystem{
 		public UIElementGroupConstArg(int columnCountConstraint, int rowCountConstraint, bool topToBottom, bool leftToRight, bool rowToColumn, Vector2 elementLength, Vector2 padding, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupAdaptor uia, IUIImage image): base(uim, processFactory, uieFactory, uia, image){
 			thisColumnCountConstraint = columnCountConstraint;
 			thisRowCountConstraint = rowCountConstraint;
-			MakeSureConstraintIsProperlySet();
 			thisTopToBottom = topToBottom;
 			thisLeftToRight = leftToRight;
-			thisRowToColumn = OverrideRowToColumnAccordingToConstraint(rowToColumn);
+			thisRowToColumn = rowToColumn;
 			thisElementLength = elementLength;
 			thisPadding = padding;
-		}
-		void MakeSureConstraintIsProperlySet(){
-			if(thisRowCountConstraint == 0 && thisColumnCountConstraint == 0)
-				throw new System.InvalidOperationException("either rowCount or columnCount must be defined");
-		}
-		bool OverrideRowToColumnAccordingToConstraint(bool rowToColumn){
-			bool result = rowToColumn;
-			if(thisColumnCountConstraint == 0)
-				result = false;
-			else if(thisRowCountConstraint == 0)
-				result = true;
-			return result;
 		}
 		readonly int thisColumnCountConstraint;
 		public int columnCountConstraint{get{return thisColumnCountConstraint;}}
