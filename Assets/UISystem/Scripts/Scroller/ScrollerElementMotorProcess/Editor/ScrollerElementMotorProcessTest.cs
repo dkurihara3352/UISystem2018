@@ -16,25 +16,7 @@ public class ScrollerElementMotorProcessTest {
 
 		process.Run();
 
-		scroller.Received(1).SetRunningElementMotorProcess(process);
-	}
-	[Test]
-	public void Run_CallsScrollerElementDisableInputRecursively(){
-		IUIElement scrollerElement;
-		TestScrollerElementMotorProcess process = CreateProcessWthMockScrollerElement(out scrollerElement);
-
-		process.Run();
-
-		scrollerElement.Received(1).DisableInputRecursively();
-	}
-	[Test]
-	public void Stop_CallsScrollerElementEnableInputRecursively(){
-		IUIElement scrollerElement;
-		TestScrollerElementMotorProcess process = CreateProcessWthMockScrollerElement(out scrollerElement);
-
-		process.Stop();
-
-		scrollerElement.Received(1).EnableInputRecursively();
+		scroller.Received(1).SwitchRunningElementMotorProcess(process, 0);
 	}
 	[Test]
 	public void Stop_CallsScrollerClearRunningElementMotorProcessThis(){
@@ -43,7 +25,7 @@ public class ScrollerElementMotorProcessTest {
 
 		process.Stop();
 
-		scroller.Received(1).ClearScrollerElementMotorProcess(process);
+		scroller.Received(1).ClearScrollerElementMotorProcess(process, 0);
 	}
 	[Test, TestCaseSource(typeof(SetScrollerElementLocalPosOnAxis_TestCase), "cases")]
 	public void SetScrollerElementLocalPosOnAxis_CallsScrollerElementSetLocaPos(float elementLocalPosOnAxis, int dimension, Vector2 elementLocalPosition, Vector2 expected){

@@ -119,7 +119,7 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
-			eventData.deltaP.Returns(new Vector2(vector2X, 0f));
+			eventData.deltaPos.Returns(new Vector2(vector2X, 0f));
 		IUIElement uie = arg.uie;
 		engine.OnPointerDown(eventData);
 		Assert.That(engine.IsWaitingForTap(), Is.True);
@@ -134,7 +134,7 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
-			eventData.deltaP.Returns(new Vector2(vector2X, 0f));
+			eventData.deltaPos.Returns(new Vector2(vector2X, 0f));
 		IUIElement uie = arg.uie;
 		engine.OnPointerDown(eventData);
 		Assert.That(engine.IsWaitingForTap(), Is.True);
@@ -173,7 +173,7 @@ public class UIAdaptorInputStateTest{
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		IUIElement uie = arg.uie;
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
-			eventData.deltaP.Returns(new Vector2(vector2X, 0f));
+			eventData.deltaPos.Returns(new Vector2(vector2X, 0f));
 		engine.OnPointerDown(eventData);
 		Assert.That(engine.IsWaitingForTap(), Is.True);
 
@@ -325,7 +325,7 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
-			eventData.deltaP.Returns(new Vector2(vector2X, 0f));
+			eventData.deltaPos.Returns(new Vector2(vector2X, 0f));
 		IUIElement uie = arg.uie;
 		IWaitAndExpireProcess wfTapProcess = arg.wfTapProcess;
 		engine.OnPointerDown(eventData);
@@ -341,7 +341,7 @@ public class UIAdaptorInputStateTest{
 		UIAStateEngineConstArg arg;
 		TestUIAStateEngine engine = CreateTestUIAStateEngine(out arg);
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
-			eventData.deltaP.Returns(new Vector2(vector2X, 0f));
+			eventData.deltaPos.Returns(new Vector2(vector2X, 0f));
 		IUIElement uie = arg.uie;
 		IWaitAndExpireProcess wfTapProcess = arg.wfTapProcess;
 		engine.OnPointerDown(eventData);
@@ -458,7 +458,7 @@ public class UIAdaptorInputStateTest{
 		IUIElement uie = arg.uie;
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
 		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
-		eventData.deltaP.Returns(dragDeltaP);
+		eventData.deltaPos.Returns(dragDeltaP);
 		engine.OnPointerDown(Substitute.For<ICustomEventData>());
 		Assert.That(engine.GetCurState(), Is.InstanceOf(typeof(AbsPointerDownInputState)));
 
@@ -497,7 +497,7 @@ public class UIAdaptorInputStateTest{
 		IUIElement uie = arg.uie;
 		ICustomEventData eventData = Substitute.For<ICustomEventData>();
 		Vector2 dragDeltaP = new Vector2(vector2X, 0f);
-		eventData.deltaP.Returns(dragDeltaP);
+		eventData.deltaPos.Returns(dragDeltaP);
 		engine.OnPointerDown(Substitute.For<ICustomEventData>());
 		Assert.That(engine.IsWaitingForTap(), Is.True);
 		

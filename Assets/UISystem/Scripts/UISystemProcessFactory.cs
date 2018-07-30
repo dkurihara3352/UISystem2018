@@ -12,7 +12,7 @@ namespace UISystem{
 		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement);
 		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */);
 		IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension);
-		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
+		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, float decelerationOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
 	}
 	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
 		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
@@ -54,8 +54,9 @@ namespace UISystem{
 
 			return process;
 		}
-		public IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension){
-			IInertialScrollProcess process = new InertialScrollProcess(deltaPosOnAxis, scroller, scrollerElement, dimension, thisProcessManager);
+		public IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, float decelerationAxisFactor, IScroller scroller, IUIElement scrollerElement, int dimension){
+			float deceleration = thisProcessManager.GetInertialScrollDeceleration();
+			IInertialScrollProcess process = new InertialScrollProcess(deltaPosOnAxis, deceleration, decelerationAxisFactor, scroller, scrollerElement, dimension, thisProcessManager);
 
 			return process;
 		}

@@ -97,7 +97,7 @@ namespace UISystem{
 				thisCurState.OnPointerUp(eventData);
 			}
 			public void OnDrag(ICustomEventData eventData){
-				if(DragDeltaPIsOverThreshold(eventData.deltaP))
+				if(DragDeltaPIsOverThreshold(eventData.deltaPos))
 					thisCurState.OnDrag(eventData);
 			}
 			public void OnPointerEnter(ICustomEventData eventData){

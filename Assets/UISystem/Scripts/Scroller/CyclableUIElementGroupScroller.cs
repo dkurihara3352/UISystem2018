@@ -15,9 +15,9 @@ namespace UISystem{
 			base.ActivateImple();
 			EvaluateCyclability();
 		}
-		protected override bool thisShouldApplyRubberBand{
+		protected override bool[] thisShouldApplyRubberBand{
 			get{
-				return !this.IsCyclable(thisDragAxis);
+				return new bool[]{ !this.IsCyclable(0), !this.IsCyclable(1)};
 			}
 		}
 		/* Cyclability */
@@ -63,12 +63,13 @@ namespace UISystem{
 				perfectlyContainableElementsCount += 2;
 			return perfectlyContainableElementsCount;
 		}
-		protected override void DragImpleInner(Vector2 position, Vector2 deltaP){
-			base.DragImpleInner(position, deltaP);
+		protected override void DisplaceScrollerElement(Vector2 deltaP){
+			base.DisplaceScrollerElement(deltaP);
 			/* already translated to new local pos */
-			if(this.IsCyclable(thisDragAxis)){
-				if(this.ShouldCycleThisFrame(thisDragAxis))
-					Cycle();
+			for(int i = 0; i < 2; i ++)
+				if(this.IsCyclable(i)){
+					if(this.ShouldCycleThisFrame(i))
+						Cycle();
 			}
 		}
 		bool ShouldCycleThisFrame(int dimension){

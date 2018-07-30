@@ -6,14 +6,15 @@ using DKUtility;
 namespace UISystem{
 	public interface IInertialScrollProcess: IScrollerElementMotorProcess{}
 	public class InertialScrollProcess: AbsScrollerElementMotorProcess, IInertialScrollProcess{
-		public InertialScrollProcess(float initialDeltaPosOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
+		public InertialScrollProcess(float initialDeltaPosOnAxis, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
 			thisInitialVelocity = initialDeltaPosOnAxis;
 			thisPrevVelocity = thisInitialVelocity;
 			thisPrevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
-			float deceleration = processManager.GetInertialScrollDeceleration();
-			thisDeceleration = MakeSureDecelerationIsGreaterThanZero(deceleration);
-
-			thisExpireTime = Mathf.Abs(thisInitialVelocity / thisDeceleration);
+			thisDeceleration = MakeSureDecelerationIsGreaterThanZero(deceleration) * MakeSureDecelAxisCompMultiplierIsNotLessThanZero(decelerationAxisComponentMultiplier);
+			if(thisDeceleration == 0f || thisInitialVelocity == 0f)
+				thisExpireTime = 0f;
+			else
+				thisExpireTime = Mathf.Abs(thisInitialVelocity / thisDeceleration);
 		}
 		readonly float thisInitialVelocity;
 		readonly protected float thisDeceleration;
@@ -21,6 +22,12 @@ namespace UISystem{
 			if(source <= 0f)
 				throw new System.InvalidOperationException("deceleration must be greater than zero");
 			return source;
+		}
+		float MakeSureDecelAxisCompMultiplierIsNotLessThanZero(float source){
+			if(source < 0f)
+				throw new System.InvalidOperationException("deceleration axis component multiplier must not be less than zero");
+			else
+				return source;
 		}
 		readonly protected float thisExpireTime;
 

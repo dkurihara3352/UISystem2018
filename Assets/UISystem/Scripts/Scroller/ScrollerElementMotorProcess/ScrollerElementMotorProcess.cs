@@ -17,13 +17,11 @@ namespace UISystem{
 		protected readonly int thisDimension;
 		public override void Run(){
 			base.Run();
-			thisScroller.SetRunningElementMotorProcess(this);
-			thisScrollerElement.DisableInputRecursively();
+			thisScroller.SwitchRunningElementMotorProcess(this, thisDimension);
 		}
 		public override void Stop(){
 			base.Stop();
-			thisScrollerElement.EnableInputRecursively();
-			thisScroller.ClearScrollerElementMotorProcess(this);
+			thisScroller.ClearScrollerElementMotorProcess(this, thisDimension);
 		}
 		protected void SetScrollerElementLocalPosOnAxis(float newLocalPosOnAxis){
 			Vector2 newElementLocalPos = thisScrollerElement.GetLocalPosition();

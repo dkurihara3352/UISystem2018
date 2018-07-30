@@ -9,8 +9,8 @@ namespace UISystem{
 			thisRelativeCursorLength = arg.relativeCursorLength;
 		}
 		protected readonly Vector2 thisRelativeCursorLength;
-		protected override bool thisShouldApplyRubberBand{
-			get{return true;}
+		protected override bool[] thisShouldApplyRubberBand{
+			get{return new bool[]{true, true};}
 		}
 		protected override void InitializeSelectabilityState(){
 			BecomeSelectable();

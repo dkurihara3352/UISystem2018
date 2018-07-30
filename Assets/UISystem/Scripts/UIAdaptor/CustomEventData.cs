@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace UISystem{
 	public interface ICustomEventData{
-		Vector2 deltaP{get;}
+		Vector2 deltaPos{get;}
 		Vector2 position{get;}
 	}
 	public struct CustomEventData: ICustomEventData{
@@ -18,7 +18,7 @@ namespace UISystem{
 			thisPosition = position;
 			thisDeltaP = deltaP;
 		}
-		public Vector2 deltaP{get{return thisDeltaP;}}
+		public Vector2 deltaPos{get{return thisDeltaP;}}
 		Vector2 thisDeltaP;
 		public Vector2 position{get{return thisPosition;}}
 		Vector2 thisPosition;

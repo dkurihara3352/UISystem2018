@@ -170,7 +170,7 @@ namespace UISystem{
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.ReleaseUIE();
-			if(DeltaPIsOverSwipeThreshold(eventData.deltaP))
+			if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
 				engine.SwipeUIE(eventData);
 			else
 				engine.TapUIE();
@@ -223,7 +223,7 @@ namespace UISystem{
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
 			engine.ReleaseUIE();
-			if(DeltaPIsOverSwipeThreshold(eventData.deltaP))
+			if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
 				engine.SwipeUIE(eventData);
 		}
 		public override void OnPointerEnter(ICustomEventData eventData){

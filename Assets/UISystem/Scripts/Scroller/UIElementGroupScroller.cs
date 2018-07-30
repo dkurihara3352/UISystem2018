@@ -60,7 +60,7 @@ namespace UISystem{
 				return thisUIElementGroup.GetSize();
 			}
 		}
-		protected override bool thisShouldApplyRubberBand{get{return true;}}
+		protected override bool[] thisShouldApplyRubberBand{get{return new bool[2]{true, true};}}
 		protected override Vector2 CalcCursorLength(){
 			float cursorWidth = thisCursorSize[0] * (thisGroupElementLength.x + thisPadding.x) + thisPadding.x;
 			float cursorHeight = thisCursorSize[1] * (thisGroupElementLength.y + thisPadding.y) + thisPadding.y;
@@ -75,21 +75,21 @@ namespace UISystem{
 			base.InitializeScrollerElementForActivation();
 			EvaluateCursoredGroupElements();
 		}
-		protected override bool CheckForStaticBoundarySnap(int dimension){
-			if(!base.CheckForStaticBoundarySnap(dimension))
-				CounterOffsetElementGroup(0f);
+		protected override bool CheckForStaticBoundarySnapOnAxis(int dimension){
+			if(!base.CheckForStaticBoundarySnapOnAxis(dimension))
+				CounterOffsetElementGroup(0f, dimension);
 			return true;
 		}
-		protected void CounterOffsetElementGroup(float initialDeltaPosOnAxis){
-			if(GetElementGroupOffset(thisDragAxis) != 0f){
+		protected void CounterOffsetElementGroup(float initialDeltaPosOnAxis, int dimension){
+			if(GetElementGroupOffset(dimension) != 0f){
 				IUIElement leastCursoredElement = thisCursoredElements[0];
-				SnapToGroupElement(leastCursoredElement, initialDeltaPosOnAxis);
+				SnapToGroupElement(leastCursoredElement, initialDeltaPosOnAxis, dimension);
 			}
 		}
 		IUIElement[] thisCursoredElements;
-		protected void SnapToGroupElement(IUIElement groupElement, float initialDeltaPosOnAxis){
-			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(groupElement, thisDragAxis);
-			SnapTo(groupElementNormalizedCursoredPosition, initialDeltaPosOnAxis, thisDragAxis);
+		protected void SnapToGroupElement(IUIElement groupElement, float initialDeltaPosOnAxis, int dimension){
+			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(groupElement, dimension);
+			SnapTo(groupElementNormalizedCursoredPosition, initialDeltaPosOnAxis, dimension);
 		}
 		protected float GetGroupElementNormalizedCursoredPositionOnAxis(IUIElement groupElement, int dimension){
 			Vector2 groupElementLocalPosMinusPadding = groupElement.GetLocalPosition() - thisPadding;
@@ -114,8 +114,8 @@ namespace UISystem{
 				result[i] = GetElementGroupOffset(i);
 			return result;
 		}
-		protected override void DragImpleInner(Vector2 position, Vector2 deltaP){
-			base.DragImpleInner(position, deltaP);
+		protected override void DisplaceScrollerElement(Vector2 deltaP){
+			base.DisplaceScrollerElement(deltaP);
 			EvaluateCursoredGroupElements();
 		}
 		protected void EvaluateCursoredGroupElements(){
@@ -190,7 +190,7 @@ namespace UISystem{
 			if(!base.CheckForDynamicBoundarySnap(deltaPosOnAxis, dimension)){
 				if(Mathf.Abs(deltaPosOnAxis) <= thisStartSearchSpeed){
 					IUIElement groupElementAtCusorRefPoint = GetUIElementUnderCursorReferencePoint();
-					SnapToGroupElement(groupElementAtCusorRefPoint, deltaPosOnAxis);
+					SnapToGroupElement(groupElementAtCusorRefPoint, deltaPosOnAxis, dimension);
 					return true;				
 				}else
 					return false;
