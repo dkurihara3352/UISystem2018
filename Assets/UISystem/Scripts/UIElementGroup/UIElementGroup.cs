@@ -6,11 +6,12 @@ using DKUtility;
 namespace UISystem{
 	public interface IUIElementGroup: IUIElement{
 		int GetSize();
-		int GetElementsArraySize(int dimension);
-		IUIElement GetUIElement(int index);
-		void GetElementArrayIndex(IUIElement uie, out int columnIndex, out int rowIndex);
-		IUIElement[] GetUIElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex);
-		IUIElement GetUIElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace);
+		int GetGroupElementsArraySize(int dimension);
+		IUIElement GetGroupElement(int index);
+		IUIElement GetGroupElement(int columnIndex, int rowIndex);
+		int[] GetGroupElementArrayIndex(IUIElement groupElement);
+		IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex);
+		IUIElement GetGroupElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
@@ -36,7 +37,7 @@ namespace UISystem{
 			return result;
 		}
 		protected List<T> thisElements;/* explicitly and externally set */
-		public IUIElement GetUIElement(int index){
+		public IUIElement GetGroupElement(int index){
 			return thisElements[index];
 		}
 		public int GetSize(){return thisElements.Count;}
@@ -64,6 +65,9 @@ namespace UISystem{
 					throw new System.InvalidOperationException("elements count exceeds maximum allowed count. try either decrease the elements count or release one of the array constraints");
 		}
 		protected T[,] thisElementsArray;
+		public IUIElement GetGroupElement(int columnIndex, int rowIndex){
+			return thisElementsArray[columnIndex, rowIndex];
+		}
 		protected T[ , ] CreateElements2DArray(){
 			int numOfRowsToCreate = CalcNumberOfRowsToCreate();
 			int numOfColumnsToCreate = CalcNumberOfColumnsToCreate();
@@ -122,7 +126,7 @@ namespace UISystem{
 				else
 					return numOfRows - 1 - valueB;
 		}
-		public int GetElementsArraySize(int dimension){
+		public int GetGroupElementsArraySize(int dimension){
 			return thisElementsArray.GetLength(dimension);
 		}
 		protected void ResizeToFitElements(){
@@ -133,47 +137,43 @@ namespace UISystem{
 			IUIAdaptor uia = GetUIAdaptor();
 			uia.SetRectLength(targetWidth, targetHeight);
 		}
-		public void GetElementArrayIndex(IUIElement element ,out int columnIndex, out int rowIndex){
+		public int[] GetGroupElementArrayIndex(IUIElement element){
+			int[] result = new int[2]{-1, -1};
 			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
 				for(int j = 0; j < thisElementsArray.GetLength(1); j ++){
 					T elementAtIndex = thisElementsArray[i, j];
 					if(elementAtIndex != null)
 						if(elementAtIndex == element){
-							columnIndex = i;
-							rowIndex = j;
-							return;
+							result[0] = i;
+							result[1] = j;
+							return result;
 						}
 				}
 			}
-			columnIndex = -1;
-			rowIndex = -1;
+			return result;
 		}
 		protected void PlaceElements(){
 			foreach(T element in thisElements){
-				int columnIndex;
-				int rowIndex;
-				GetElementArrayIndex(element, out columnIndex, out rowIndex);
-				float localPosX = (columnIndex * (thisElementLength.x + thisPadding.x)) + thisPadding.x;
-				float localPosY = (rowIndex * (thisElementLength.y + thisPadding.y)) + thisPadding.y;
+				int[] index = GetGroupElementArrayIndex(element);
+				float localPosX = (index[0] * (thisElementLength.x + thisPadding.x)) + thisPadding.x;
+				float localPosY = (index[1] * (thisElementLength.y + thisPadding.y)) + thisPadding.y;
 				Vector2 newLocalPos = new Vector2(localPosX, localPosY);
 				element.SetLocalPosition(newLocalPos);
 			}
 		}
-		public IUIElement[] GetUIElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
+		public IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
 			List<IUIElement> result = new List<IUIElement>();
 			foreach(IUIElement element in thisElements){
-				int columnIndex;
-				int rowIndex;
-				GetElementArrayIndex(element, out columnIndex, out rowIndex);
-				if(columnIndex >= minColumnIndex && columnIndex <= maxColumnIndex){
-					if(rowIndex >= minRowIndex && rowIndex <= maxRowIndex){
+				int[] index = GetGroupElementArrayIndex(element);
+				if(index[0] >= minColumnIndex && index[0] <= maxColumnIndex){
+					if(index[1] >= minRowIndex && index[1] <= maxRowIndex){
 						result.Add(element);
 					}
 				}
 			}
 			return result.ToArray();
 		}
-		public IUIElement GetUIElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace){
+		public IUIElement GetGroupElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace){
 			//return null if the point is at padding space
 			if(PositionIsOutOfThisRectBouds(positionInElementGroupSpace))
 				return null;

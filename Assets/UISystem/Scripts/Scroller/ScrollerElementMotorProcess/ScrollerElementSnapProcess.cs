@@ -7,7 +7,7 @@ using DKUtility.CurveUtility;
 namespace UISystem{
 	public interface IScrollerElementSnapProcess: IScrollerElementMotorProcess{}
 	public class ScrollerElementSnapProcess: AbsScrollerElementMotorProcess, IScrollerElementSnapProcess{
-		public ScrollerElementSnapProcess(float targetElementLocalPositionOnAxis, float initialVelOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, float diffThreshold, float stopVelocity, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
+		public ScrollerElementSnapProcess(float targetElementLocalPositionOnAxis, float initialVelOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, float diffThreshold, float stopVelocity, IProcessManager processManager): base(scroller, dimension, processManager){
 
 			float initialElementLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisTargetElementLocalPositionOnAxis = targetElementLocalPositionOnAxis;
@@ -45,7 +45,7 @@ namespace UISystem{
 			thisElapsedTime += deltaT;
 			float newElementLocalPosOnAxis = thisSpringCalculator.GetSpringValue(thisElapsedTime);
 
-			SetScrollerElementLocalPosOnAxis(newElementLocalPosOnAxis);
+			thisScroller.SetScrollerElementLocalPosOnAxis(newElementLocalPosOnAxis, thisDimension);
 
 			if(GetDeltaValue(newElementLocalPosOnAxis, deltaT) <= thisStopVelocity)
 				Expire();
@@ -53,7 +53,7 @@ namespace UISystem{
 			prevLocalPosOnAxis = newElementLocalPosOnAxis;
 		}
 		public override void Expire(){
-			SetScrollerElementLocalPosOnAxis(thisTargetElementLocalPositionOnAxis);
+			thisScroller.SetScrollerElementLocalPosOnAxis(thisTargetElementLocalPositionOnAxis, thisDimension);
 			base.Expire();
 		}
 	}	

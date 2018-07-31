@@ -303,9 +303,9 @@ public class UIElementGroupTest {
 		uieGroup.SetElements(elements);
 		uieGroup.thisElementsArray_Test = uieGroup.CreateElement2DArray_Test();
 
-		int actualColumnIndex;
-		int actualRowIndex;
-		uieGroup.GetElementArrayIndex_Test(elements[elementIndex], out actualColumnIndex, out actualRowIndex);
+		int[] index = uieGroup.GetGroupElementArrayIndex(elements[elementIndex]);
+		int actualColumnIndex = index[0];
+		int actualRowIndex = index[1];
 
 		Assert.That(actualColumnIndex, Is.EqualTo(expColumnIndex));
 		Assert.That(actualRowIndex, Is.EqualTo(expRowIndex));
@@ -363,7 +363,7 @@ public class UIElementGroupTest {
 		
 		uieGroup.PlaceElements_Test();
 		
-		IUIElement element = uieGroup.GetUIElement(elementIndex);
+		IUIElement element = uieGroup.GetGroupElement(elementIndex);
 		element.Received(1).SetLocalPosition(expected);
 	}
 	public class PlaceElements_TestCase{
@@ -405,7 +405,7 @@ public class UIElementGroupTest {
 		List<IUIElement> elements = CreateUIElements(10);
 		uieGroup.SetUpElements_Test(elements);
 
-		IUIElement[] actual = uieGroup.GetUIElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
+		IUIElement[] actual = uieGroup.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
 		IUIElement[] expectedElements = GetUIElementsFromIndex(elements, expectedElementsIndex);
 
 		Assert.That(actual, Is.EqualTo(expectedElements));
@@ -449,7 +449,7 @@ public class UIElementGroupTest {
 		List<IUIElement> elements = CreateUIElements(10);
 		uieGroup.SetUpElements_Test(elements);
 
-		IUIElement actual = uieGroup.GetUIElementAtPositionInGroupSpace(posInGroupSpace);
+		IUIElement actual = uieGroup.GetGroupElementAtPositionInGroupSpace(posInGroupSpace);
 
 		if(expectedUIEIndex == -1)
 			Assert.That(actual, Is.Null);
@@ -553,17 +553,10 @@ public class UIElementGroupTest {
 			return this.CalcRowIndex(n, numOfColumns, numOfRows);
 		}
 		public int GetElementsArraySize_Test(int dimension){
-			return this.GetElementsArraySize(dimension);
+			return this.GetGroupElementsArraySize(dimension);
 		}
 		public void ResizeToFitElements_Test(){
 			this.ResizeToFitElements();
-		}
-		public void GetElementArrayIndex_Test(IUIElement element, out int columnIndex, out int rowIndex){
-			int thisColumnIndex;
-			int thisRowIndex;
-			this.GetElementArrayIndex(element, out thisColumnIndex, out thisRowIndex);
-			columnIndex = thisColumnIndex;
-			rowIndex = thisRowIndex;
 		}
 		public void PlaceElements_Test(){
 			this.PlaceElements();

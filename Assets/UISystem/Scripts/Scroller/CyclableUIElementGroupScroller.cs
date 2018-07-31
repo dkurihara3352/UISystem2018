@@ -51,7 +51,7 @@ namespace UISystem{
 			return elementsCountOnAxis >= minimumRequiredElementsCountToCycleOnAxis;
 		}
 		int GetElementsCountOnAxis(int dimension){
-			return thisUIElementGroup.GetElementsArraySize(dimension);
+			return thisUIElementGroup.GetGroupElementsArraySize(dimension);
 		}
 		int GetMinimumRequiredElementsCountToCycle(int dimension){
 			float perfectlyFitLength = (thisRectLength[dimension] - thisPadding[dimension])/ (thisGroupElementLength[dimension] + thisPadding[dimension]);
@@ -84,7 +84,7 @@ namespace UISystem{
 		bool[] isCycleEnabled{get;}
 	}
 	public class CyclableUIElementGroupScrollerConstArg: UIElementGroupScrollerConstArg, ICyclableUIElementGroupScrollerConstArg{
-		public CyclableUIElementGroupScrollerConstArg(bool[] isCycleEnabled, int initiallyCursoredElementIndex, int[] cursorSize, Vector2 elementLength, Vector2 padding, float startSearchSpeed, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(initiallyCursoredElementIndex, cursorSize, elementLength, padding, startSearchSpeed, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
+		public CyclableUIElementGroupScrollerConstArg(bool[] isCycleEnabled, int initiallyCursoredElementIndex, int[] cursorSize, Vector2 elementLength, Vector2 padding, float startSearchSpeed, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, bool swipeToSnapNext, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(initiallyCursoredElementIndex, cursorSize, elementLength, padding, startSearchSpeed, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, swipeToSnapNext, uim, processFactory, uieFactory, uia, image){
 			thisIsCycleEnabled = isCycleEnabled;
 		}
 		readonly bool[] thisIsCycleEnabled;

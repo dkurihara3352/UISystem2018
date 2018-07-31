@@ -7,6 +7,7 @@ namespace UISystem{
 		void SwitchRunningElementMotorProcess(IScrollerElementMotorProcess process, int dimension);
 		void ClearScrollerElementMotorProcess(IScrollerElementMotorProcess processToClear, int dimension);
 		bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension);
+		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -55,7 +56,7 @@ namespace UISystem{
 			if(rect.width == 0f || rect.height == 0f)
 				throw new System.InvalidOperationException("rect has at least one dimension not set right");
 		}
-		readonly  ScrollerAxis thisScrollerAxis;
+		protected readonly ScrollerAxis thisScrollerAxis;
 		/* Rubber */
 		readonly protected Vector2 thisRubberBandLimitMultiplier;
 		protected abstract bool[] thisShouldApplyRubberBand{get;}// simply return true if wanna apply
@@ -130,14 +131,18 @@ namespace UISystem{
 			PlaceScrollerElement(initialCursorValue);
 		}
 		protected abstract Vector2 GetInitialNormalizedCursoredPosition();
-		
+		public virtual void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension){
+			Vector2 newScrollerElementLocalPos = thisScrollerElement.GetLocalPosition();
+			newScrollerElementLocalPos[dimension] = localPosOnAxis;
+			thisScrollerElement.SetLocalPosition(newScrollerElementLocalPos);
+		}
 		
 		
 		/* Drag */
 		protected bool thisHasDoneDragEvaluation;
 		protected bool thisShouldProcessDrag;//returns true if this is the one to handle the drag, false if passed upward
 	
-		void ResetDrag(){
+		protected void ResetDrag(){
 			thisHasDoneDragEvaluation = false;
 			thisShouldProcessDrag = false;
 		}
@@ -176,7 +181,7 @@ namespace UISystem{
 		bool DeltaPosIsHorizontal(Vector2 deltaPos){
 			return deltaPos.x >= deltaPos.y;
 		}
-		Vector2 CalcDragDeltaPos(Vector2 deltaP){
+		protected Vector2 CalcDragDeltaPos(Vector2 deltaP){
 			if(thisScrollerAxis == ScrollerAxis.Both)
 				return deltaP;
 			else if(thisScrollerAxis == ScrollerAxis.Horizontal)
@@ -305,13 +310,14 @@ namespace UISystem{
 		protected override void OnSwipeImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
 				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
-				StartInertialScroll(swipeDeltaPos);
+				if(thisIsEnabledInertia)
+					StartInertialScroll(swipeDeltaPos);
 			}else
 				base.OnSwipeImple(eventData);
 			
 			ResetDrag();
 		}
-		readonly bool thisIsEnabledInertia;
+		readonly protected bool thisIsEnabledInertia;
 
 		protected void SnapTo(float targetNormalizedCursoredPosOnAxis, float initVelOnAxis, int dimension){
 			float targetElementLocalPosOnAxis = CalcLocalPositionFromNormalizedCursoredPositionOnAxis(targetNormalizedCursoredPosOnAxis, dimension);

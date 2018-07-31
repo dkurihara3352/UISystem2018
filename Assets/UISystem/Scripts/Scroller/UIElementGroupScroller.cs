@@ -11,6 +11,7 @@ namespace UISystem{
 			thisPadding = arg.padding;
 			thisInitiallyCursoredGroupElementIndex = arg.initiallyCursoredGroupElementIndex;
 			thisStartSearchSpeed = MakeSureStartSearchSpeedIsGreaterThanZero(arg.startSearchSpeed);
+			thisSwipeToSnapNext = arg.swipeToSnapNext;
 		}
 		int[] MakeCursorSizeAtLeastOne(int[] source){
 			int[] result = new int[2];
@@ -30,8 +31,7 @@ namespace UISystem{
 		readonly int thisInitiallyCursoredGroupElementIndex;
 		protected override Vector2 GetInitialNormalizedCursoredPosition(){
 			IUIElementGroup uieGroup = thisUIElementGroup;
-			IUIElement initiallyCursoredGroupElement = uieGroup.GetUIElement(thisInitiallyCursoredGroupElementIndex);
-			Vector2 result = Vector2.zero;
+			IUIElement initiallyCursoredGroupElement = uieGroup.GetGroupElement(thisInitiallyCursoredGroupElementIndex);
 			Vector2 groupElementLocalPos = initiallyCursoredGroupElement.GetLocalPosition();
 			float resultX = GetNormalizedCursoredPositionFromPosInElementSpace(groupElementLocalPos.x - thisPadding[0], 0);
 			float resultY = GetNormalizedCursoredPositionFromPosInElementSpace(groupElementLocalPos.y - thisPadding[1], 1);
@@ -67,7 +67,20 @@ namespace UISystem{
 			else
 				throw new System.InvalidOperationException("cursorLength cannot exceed this rect length. provide lesser cursor size");
 		}
-		/*  */
+		public override void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension){
+			base.SetScrollerElementLocalPosOnAxis(localPosOnAxis, dimension);
+			if(thisScrollerAxis == ScrollerAxis.Horizontal){
+				if(dimension == 0)
+					EvaluateCursoredGroupElements();
+			}else{// veritcal or both
+				if(dimension == 1)
+					EvaluateCursoredGroupElements();
+			}				
+		}
+
+
+
+		/* Cursored Elements Evaluation */
 		protected override void InitializeScrollerElementForActivation(){
 			base.InitializeScrollerElementForActivation();
 			EvaluateCursoredGroupElements();
@@ -119,13 +132,12 @@ namespace UISystem{
 			IUIElement groupElementUnderCursorRefPoint = GetUIElementUnderCursorReferencePoint();
 			if(groupElementUnderCursorRefPoint != null){
 				if(thisCursoredElements == null || groupElementUnderCursorRefPoint != thisCursoredElements[0]){
-					int minColumnIndex;
-					int minRowIndex;
-					int maxColumnIndex;
-					int maxRowIndex;
-					CalcCursoredColumnRowIndex(groupElementUnderCursorRefPoint, out minColumnIndex, out minRowIndex, out maxColumnIndex, out maxRowIndex);
-
-					IUIElement[] newCursoredElements = thisUIElementGroup.GetUIElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
+					int[,] indexRange = CalcCursoredGroupElementArrayIndexRange(groupElementUnderCursorRefPoint);
+					int minColumnIndex = indexRange[0, 0];
+					int minRowIndex = indexRange[0, 1];
+					int maxColumnIndex = indexRange[1, 0];
+					int maxRowIndex = indexRange[1, 1];
+					IUIElement[] newCursoredElements = thisUIElementGroup.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
 					IUIElement[] currentCursoredElements = thisCursoredElements;
 					IUIElement[] groupElementsToDefocus;
 					IUIElement[] groupElementsToFocus;
@@ -142,21 +154,19 @@ namespace UISystem{
 		IUIElement GetUIElementUnderCursorReferencePoint(){
 			Vector2 cursorReferencePoint = thisCursorLocalPosition + thisPadding + (thisGroupElementLength * .5f);
 			Vector2 cursorRefPInElementGroupSpace = cursorReferencePoint - thisUIElementGroup.GetLocalPosition();
-			IUIElement leastCursoredElement = thisUIElementGroup.GetUIElementAtPositionInGroupSpace(cursorRefPInElementGroupSpace);
+			IUIElement leastCursoredElement = thisUIElementGroup.GetGroupElementAtPositionInGroupSpace(cursorRefPInElementGroupSpace);
 
 			return leastCursoredElement;
 		}
-		void CalcCursoredColumnRowIndex(IUIElement leastCursoredElement, out int minColumnIndex, out int minRowIndex, out int maxColumnIndex, out int maxRowIndex){
-			int thisMinColumnIndex;
-			int thisMinRowIndex;
-			thisUIElementGroup.GetElementArrayIndex(leastCursoredElement, out thisMinColumnIndex, out thisMinRowIndex);
-			int thisMaxColumnIndex = thisMinColumnIndex + thisCursorSize[0] - 1;
-			int thisMaxRowIndex = thisMinRowIndex + thisCursorSize[1] - 1;
+		int[,] CalcCursoredGroupElementArrayIndexRange(IUIElement leastCursoredElement){
+			int[] minIndex = thisUIElementGroup.GetGroupElementArrayIndex(leastCursoredElement);
+			int thisMaxColumnIndex = minIndex[0] + thisCursorSize[0] - 1;
+			int thisMaxRowIndex = minIndex[1] + thisCursorSize[1] - 1;
+			int[] maxIndex = new int[]{thisMaxColumnIndex, thisMaxRowIndex};
 			
-			minColumnIndex = thisMinColumnIndex;
-			minRowIndex = thisMinRowIndex;
-			maxColumnIndex = thisMaxColumnIndex;
-			maxRowIndex = thisMaxRowIndex;
+			return new int[,]{
+				{minIndex[0], minIndex[1]}, {maxIndex[0], maxIndex[1]}
+			};
 		}
 		protected void SortOutCursoredGroupElements(IUIElement[] currentCursoredElements, IUIElement[] newCursoredElements, out IUIElement[] groupElementsToDefocus, out IUIElement[] groupElementsToFocus){
 			List<IUIElement> groupElementsToDefocusResult = new List<IUIElement>();
@@ -194,6 +204,63 @@ namespace UISystem{
 			}else
 				return true;
 		}
+		
+		
+		/* Swipe override  */
+		protected override void OnSwipeImple(ICustomEventData eventData){
+			if(thisShouldProcessDrag){
+				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
+				if(thisSwipeToSnapNext){
+					SnapNext(swipeDeltaPos);
+				}else{
+					if(thisIsEnabledInertia)
+						StartInertialScroll(swipeDeltaPos);
+				}				
+			}else
+				base.OnSwipeImple(eventData);
+			
+			ResetDrag();
+		}
+		readonly bool thisSwipeToSnapNext;
+		protected void SnapNext(Vector2 swipeDeltaPos){
+			/*  Find the next groupElement in the direction of swipe delta
+				if not found, start inertial scroll instead
+			*/
+			IUIElement groupElementUnderCursorRefPoint = thisCursoredElements[0];
+			int[] groupElementIndex = thisUIElementGroup.GetGroupElementArrayIndex(groupElementUnderCursorRefPoint);
+			int[] targetGroupElementIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, groupElementIndex);
+			if(SwipeTargetGroupElementArrayIndexAreValid(targetGroupElementIndex)){
+				IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementIndex[0], targetGroupElementIndex[1]);
+				SnapToGroupElement(targetGroupElement, swipeDeltaPos[0], 0);
+				SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
+			}else{
+				if(thisIsEnabledInertia)
+					StartInertialScroll(swipeDeltaPos);
+			}
+		}
+		protected int[] GetSwipeNextTargetGroupElementArrayIndex(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
+			int[] result = new int[2];
+			for(int i = 0; i < 2; i ++){
+				if(swipeDeltaPos[i] != 0f){
+					if(swipeDeltaPos[i] < 0f)
+						result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
+					else
+						result[i] = currentGroupElementAtCurRefPointIndex[i] + 1;
+				}else
+					result[i] = currentGroupElementAtCurRefPointIndex[i];
+			}
+			return result;
+		}
+		protected virtual bool SwipeTargetGroupElementArrayIndexAreValid(int[] index){
+			for(int i = 0; i < 2; i ++){
+				if(index[i] < 0)
+					return false;
+				else
+					if(index[i] >= thisUIElementGroup.GetGroupElementsArraySize(i))
+						return false;
+			}
+			return true;
+		}
 	}
 
 
@@ -204,14 +271,16 @@ namespace UISystem{
 		Vector2 padding{get;}
 		int initiallyCursoredGroupElementIndex{get;}
 		float startSearchSpeed{get;}
+		bool swipeToSnapNext{get;}
 	}
 	public class UIElementGroupScrollerConstArg: ScrollerConstArg, IUIElementGroupScrollerConstArg{
-		public UIElementGroupScrollerConstArg(int initiallyCursoredElementIndex, int[] cursorSize, Vector2 uiElementLength, Vector2 padding, float startSearchSpeed, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
+		public UIElementGroupScrollerConstArg(int initiallyCursoredElementIndex, int[] cursorSize, Vector2 uiElementLength, Vector2 padding, float startSearchSpeed, Vector2 relativeCursorPosition, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, bool isEnabledInertia, bool swipeToSnapNext, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupScrollerAdaptor uia, IUIImage image): base(scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
 			thisCursorSize = cursorSize;
 			thisElementDimension = uiElementLength;
 			thisPadding = padding;
 			thisInitiallyCursoredElementIndex = initiallyCursoredElementIndex;
 			thisStartSearchSpeed = startSearchSpeed;
+			thisSwipeToSnapNext = swipeToSnapNext;
 		}
 		readonly int[] thisCursorSize;
 		public int[] cursorSize{get{return thisCursorSize;}}
@@ -223,6 +292,8 @@ namespace UISystem{
 		public int initiallyCursoredGroupElementIndex{get{return thisInitiallyCursoredElementIndex;}}
 		readonly float thisStartSearchSpeed;
 		public float startSearchSpeed{get{return thisStartSearchSpeed;}}
+		readonly bool thisSwipeToSnapNext;
+		public bool swipeToSnapNext{get{return thisSwipeToSnapNext;}}
 	}
 	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{}
 }

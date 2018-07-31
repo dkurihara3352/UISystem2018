@@ -28,9 +28,11 @@ public class ScrollerElementSnapProcessTest {
             new object[]{-100f},
         };
     }
-    [Test, TestCaseSource(typeof(Construction_ValueDifferenceIsEqualOrLesserThanDiffThreshold_TestCase), "cases")]
-    public void Construction_ValueDifferenceIsEqualOrLesserThanDiffThreshold_CallsScrollerElementSetLocalPosOnAxisTerminalValue(Vector2 initialLocalPos, float targetLocalPosOnAxis, int dimension, float diffThreshold, bool callExpected, Vector2 expectedLocalPos){
+    [Test, TestCaseSource(typeof(Construction_ValueDifferenceNotGreaterThanThreshold_TestCase), "cases")]
+    public void Construction_ValueDifferenceNotGreaterThanThreshold_CallsScrollerSetScrollerElementLocalPosOnAxis(Vector2 initialLocalPos, float targetLocalPosOnAxis, int dimension, float diffThreshold, bool callExpected, Vector2 expectedLocalPos){
         ITestScrollerElementSnapProcessConstArg arg = CreateMockConstArg();
+        IScroller scroller = Substitute.For<IScroller>();
+        arg.scroller.Returns(scroller);
         IUIElement scrollerElement = Substitute.For<IUIElement>();
         arg.scrollerElement.Returns(scrollerElement);
         scrollerElement.GetLocalPosition().Returns(initialLocalPos);
@@ -40,11 +42,11 @@ public class ScrollerElementSnapProcessTest {
         TestScrollerElementSnapProcess process = new TestScrollerElementSnapProcess(arg);
 
         if(callExpected)
-            scrollerElement.Received(1).SetLocalPosition(expectedLocalPos);
+            scroller.Received(1).SetScrollerElementLocalPosOnAxis(expectedLocalPos[dimension], dimension);
         else
-            scrollerElement.DidNotReceive().SetLocalPosition(expectedLocalPos);
+            scroller.DidNotReceive().SetScrollerElementLocalPosOnAxis(expectedLocalPos[dimension], dimension);
     }
-    public class Construction_ValueDifferenceIsEqualOrLesserThanDiffThreshold_TestCase{
+    public class Construction_ValueDifferenceNotGreaterThanThreshold_TestCase{
         public static object[] cases = {
             new object[]{new Vector2(10f, 10f), 20f, 0, 10f, true, new Vector2(20f, 10f)},
             new object[]{new Vector2(10f, 10f), 20f, 1, 10f, true, new Vector2(10f, 20f)},

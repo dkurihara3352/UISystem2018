@@ -6,7 +6,7 @@ using DKUtility;
 namespace UISystem{
 	public interface IInertialScrollProcess: IScrollerElementMotorProcess{}
 	public class InertialScrollProcess: AbsScrollerElementMotorProcess, IInertialScrollProcess{
-		public InertialScrollProcess(float initialDeltaPosOnAxis, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, scrollerElement, dimension, processManager){
+		public InertialScrollProcess(float initialDeltaPosOnAxis, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, dimension, processManager){
 			thisInitialVelocity = initialDeltaPosOnAxis;
 			thisPrevVelocity = thisInitialVelocity;
 			thisPrevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
@@ -44,7 +44,7 @@ namespace UISystem{
 			float newVelocity = thisPrevVelocity + deltaV;
 			float deltaPosOnAxis = newVelocity * deltaT;
 			float newLocalPosOnAxis = thisPrevLocalPosOnAxis + deltaPosOnAxis;
-			SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis);
+			thisScroller.SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis, thisDimension);
 			thisPrevVelocity = newVelocity;
 			thisPrevLocalPosOnAxis = newLocalPosOnAxis;
 			thisScroller.CheckForDynamicBoundarySnap(deltaPosOnAxis, thisDimension);
