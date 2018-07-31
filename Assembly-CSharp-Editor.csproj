@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\Editor\CriticallyDampedSpringCalculatorTest.cs" />
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\Editor\RubberBandCalculatorTest.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\Editor\CalculatorTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\ConstrainedProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\InterpolatorProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\TurnImageDarknessProcessTest.cs" />

@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\CriticallyDampedSpringCalculator.cs" />
      <Compile Include="Assets\DKUtility\CurveUtility\Scripts\RubberBandCalculator.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\Calculator.cs" />
      <Compile Include="Assets\DKUtility\Scripts\DebugHelper.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Interpolator.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Process.cs" />

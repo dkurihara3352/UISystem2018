@@ -16,6 +16,7 @@ namespace UISystem{
 			thisScrollerAxis = arg.scrollerAxis;
 			thisRelativeCursorPosition = MakeSureRelativeCursorPosIsClampedZeroToOne(arg.relativeCursorPosition);
 			thisRubberBandLimitMultiplier = MakeRubberBandLimitMultiplierInRange(arg.rubberBandLimitMultiplier);
+			thisIsEnabledInertia = arg.isEnabledInertia;
 
 			CacheThisRect();
 			MakeSureRectIsSet(thisRect);
@@ -160,18 +161,9 @@ namespace UISystem{
 		}
 		void EvaluateDrag(ICustomEventData eventData){
 			thisHasDoneDragEvaluation = true;
-			thisShouldProcessDrag = DeterminIfThisShouldProcessDrag(eventData.deltaPos);
+			thisShouldProcessDrag = DetermineIfThisShouldProcessDrag(eventData.deltaPos);
 		}
-		int CalcDragAxis(Vector2 deltaP){
-			if(thisScrollerAxis != ScrollerAxis.Both)
-				if(deltaP.x >= deltaP.y)
-					return 0;
-				else
-					return 1;
-			else
-				return 2;
-		}
-		bool DeterminIfThisShouldProcessDrag(Vector2 deltaPos){
+		bool DetermineIfThisShouldProcessDrag(Vector2 deltaPos){
 			if(thisScrollerAxis == ScrollerAxis.Both)
 				return true;
 			else{
@@ -327,7 +319,7 @@ namespace UISystem{
 			newProcess.Run();
 		}
 		/* motor process */
-		IScrollerElementMotorProcess[] thisRunningScrollerMotorProcess;
+		protected IScrollerElementMotorProcess[] thisRunningScrollerMotorProcess;
 		public void SwitchRunningElementMotorProcess(IScrollerElementMotorProcess process, int dimension){
 			StopRunningElementMotorProcess(dimension);
 			thisRunningScrollerMotorProcess[dimension] = process;
@@ -363,7 +355,7 @@ namespace UISystem{
 			}else{
 				float sine;
 				float cosine;
-				CalcSineAndCosine(deltaPos, out sine, out cosine);
+				DKUtility.Calculator.CalcSineAndCosine(deltaPos, out sine, out cosine);
 				if(sine < 0f)
 					sine *= -1f;
 				if(cosine < 0f)
@@ -374,17 +366,6 @@ namespace UISystem{
 				IInertialScrollProcess verticalProcess = thisProcessFactory.CreateInertialScrollProcess(deltaPos[1], sine, this, thisScrollerElement, 1);
 				verticalProcess.Run();
 			}
-		}
-		protected void CalcSineAndCosine(Vector2 deltaPos, out float sine, out float cosine){
-			Vector3 vecA = Vector3.right;
-			Vector3 vecB = new Vector3(deltaPos.x, deltaPos.y, 0f);
-			Vector3 crossP = Vector3.Cross(vecA, vecB);
-			float deltaMag = deltaPos.magnitude;
-			float sin = crossP.magnitude / deltaMag;
-			float cos = Vector2.Dot(Vector2.right, deltaPos) / deltaMag;
-
-			sine = sin;
-			cosine = cos;
 		}
 		public virtual bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension){
 			float scrollerElementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];

@@ -5,9 +5,6 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIElementGroupScroller: IScroller{}
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller, INonActivatorUIElement{
-		/*  cyclability is static
-			it is calculated and the result is cached everytime any factor of constitutent dimension changes
-		*/
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisCursorSize = MakeCursorSizeAtLeastOne(arg.cursorSize);
 			thisGroupElementLength = arg.groupElementLength;

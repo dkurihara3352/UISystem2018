@@ -850,7 +850,64 @@ public class ScrollerTest{
 		};
 	}
 	/* Process */
+	[Test]
+	public void ProcessSwitching_Demo(){
+		ITestScrollerConstArg arg = CreateMockConstArg();
+		IUIElement scrollerElement = arg.uia.GetChildUIEs()[0];
+		TestScroller scroller = new TestScroller(arg);
+		scroller.ActivateImple();
+
+		IScrollerElementMotorProcess horProcessA = CreateMockProcess(scroller, 0);
+		IScrollerElementMotorProcess horProcessB = CreateMockProcess(scroller, 0);
+
+		horProcessA.Run();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.SameAs(horProcessA));
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.Null);
+		scrollerElement.Received(1).DisableInputRecursively();
+
+		horProcessB.Run();
+		horProcessA.Received(1).Stop();
+		scrollerElement.Received(1).EnableInputRecursively();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.SameAs(horProcessB));
+		scrollerElement.Received(2).DisableInputRecursively();
+
+		IScrollerElementMotorProcess verProcessA = CreateMockProcess(scroller, 1);
+		IScrollerElementMotorProcess verProcessB = CreateMockProcess(scroller, 1);
+		
+		verProcessA.Run();
+		scrollerElement.Received(3).DisableInputRecursively();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.SameAs(verProcessA));
+
+		verProcessB.Run();
+		verProcessA.Received(1).Stop();
+		scrollerElement.Received(4).DisableInputRecursively();
+		scrollerElement.Received(1).EnableInputRecursively();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.SameAs(verProcessB));
+
+		scroller.OnTouchImple_Test(1);
+		horProcessB.Received(1).Stop();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.Null);
+		verProcessB.Received(1).Stop();
+		Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.Null);
+		scrollerElement.Received(2).EnableInputRecursively();
+	}
+	IScrollerElementMotorProcess CreateMockProcess(IScroller scroller, int dimension){
+		IScrollerElementMotorProcess process = Substitute.For<IScrollerElementMotorProcess>();
+		process.When(
+			x =>{x.Run();}
+		).Do(
+			x => {scroller.SwitchRunningElementMotorProcess(process, dimension);}
+		);
+		process.When(
+			x =>{x.Stop();}
+		).Do(
+			x =>{scroller.ClearScrollerElementMotorProcess(process, dimension);}
+		);
+		return process;
+	}
 	/* Touch */
+
+
 
 
 
@@ -918,6 +975,12 @@ public class ScrollerTest{
 		}
 		public bool CheckForStaticBoundarySnapOnAxis_Test(int dimension){
 			return this.CheckForStaticBoundarySnapOnAxis(dimension);
+		}
+		public IScrollerElementMotorProcess[] thisRunningScrollerMotorProcess_Test{
+			get{return thisRunningScrollerMotorProcess;}
+		}
+		public void OnTouchImple_Test(int touchCount){
+			this.OnTouchImple(touchCount);
 		}
 	}
 	public interface ITestScrollerConstArg: IScrollerConstArg{
