@@ -1016,7 +1016,7 @@ public class ScrollerTest{
 	}
 
 	public ICustomEventData CreateCustomEventDataFromDelta(Vector2 deltaPos){
-		ICustomEventData data = new CustomEventData(Vector2.zero, deltaPos);
+		ICustomEventData data = new CustomEventData(Vector2.zero, deltaPos, .1f);
 		return data;
 	}
 

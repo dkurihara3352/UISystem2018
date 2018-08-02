@@ -295,5 +295,4 @@ namespace UISystem{
 		readonly bool thisSwipeToSnapNext;
 		public bool swipeToSnapNext{get{return thisSwipeToSnapNext;}}
 	}
-	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{}
 }

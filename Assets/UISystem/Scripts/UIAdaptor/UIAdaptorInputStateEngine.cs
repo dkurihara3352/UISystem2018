@@ -24,7 +24,7 @@ namespace UISystem{
 		void DragUIE(ICustomEventData eventData);
 		void HoldUIE(float deltaT);
 		void SwipeUIE(ICustomEventData eventData);
-		float GetSwipeThreshold();
+		float GetSwipeVelocityThreshold();
 	}
 	public class UIAdaptorStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorStateEngine{
 		public UIAdaptorStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
@@ -71,11 +71,10 @@ namespace UISystem{
 		public void DelayedReleaseUIE(){
 			thisUIE.OnDelayedRelease();
 		}
-		bool DragDeltaPIsOverThreshold(Vector2 dragDeltaP){
-			float deltaPSqrMag = dragDeltaP.sqrMagnitude;
-			return deltaPSqrMag >= dragDeltaPThreshold * dragDeltaPThreshold;
+		bool DragVelocityIsOverThreshold(Vector2 dragVelocity){
+			return dragVelocity.sqrMagnitude >= dragVelocityThreshold * dragVelocityThreshold;
 		}
-		protected float dragDeltaPThreshold = 5f;/* tweak */
+		protected float dragVelocityThreshold = 5f;
 		public void DragUIE(ICustomEventData eventData){
 			thisUIE.OnDrag(eventData);
 		}
@@ -85,10 +84,10 @@ namespace UISystem{
 		public void SwipeUIE(ICustomEventData eventData){
 			thisUIE.OnSwipe(eventData);
 		}
-		public float GetSwipeThreshold(){
-			return thisSwipeThreshold;
+		public float GetSwipeVelocityThreshold(){
+			return thisSwipeVelocityThreshold;
 		}
-		float thisSwipeThreshold = 5f;
+		float thisSwipeVelocityThreshold = 5f;
 		/* IRawInputHandler */
 			public void OnPointerDown(ICustomEventData eventData){
 				thisCurState.OnPointerDown(eventData);
@@ -97,7 +96,7 @@ namespace UISystem{
 				thisCurState.OnPointerUp(eventData);
 			}
 			public void OnDrag(ICustomEventData eventData){
-				if(DragDeltaPIsOverThreshold(eventData.deltaPos))
+				if(DragVelocityIsOverThreshold(eventData.velocity))
 					thisCurState.OnDrag(eventData);
 			}
 			public void OnPointerEnter(ICustomEventData eventData){

@@ -10,15 +10,14 @@ namespace UISystem{
 	public class UIElementFactory: IUIElementFactory{
 		public UIElementFactory(IUIManager uim){
 			thisUIM = uim;
-			thisReserveTransformUIE = uim.GetReserveTransformUIE();
+			reserveTrans = uim.GetUIElementReserveTrans();
 		}
 		protected readonly IUIManager thisUIM;
-		readonly IUIElement thisReserveTransformUIE;
+		protected readonly Transform reserveTrans;
 		protected T CreateInstatiableUIA<T>(IUIAInitializationData uiaInitializationData) where T: MonoBehaviour, IInstatiableUIAdaptor{
 			GameObject go = new GameObject();
-			IUIAdaptor reserveUIA = thisReserveTransformUIE.GetUIAdaptor();
-			go.transform.SetParent(reserveUIA.GetTransform());
-			go.transform.position = reserveUIA.GetLocalPosition();
+			go.transform.SetParent(reserveTrans);
+			go.transform.localPosition = Vector3.zero;
 			go.transform.SetAsLastSibling();
 			T uia = go.AddComponent<T>();
 			uia.SetInitializationFields(uiaInitializationData);

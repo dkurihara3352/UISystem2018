@@ -6,7 +6,7 @@ namespace UISystem{
 	public interface IResizableRectUIAdaptor: IUIAdaptor{
 		void SetRectDimension(float height, float width, float localPosX, float localPosY);
 	}
-	public abstract class AbsResizableRectUIAdaptor<T>: AbsUIAdaptor<T>, IResizableRectUIAdaptor where T: IUIElement{
+	public abstract class AbsResizableRectUIAdaptor<T>: UIAdaptor, IResizableRectUIAdaptor where T: IUIElement{
 		public void SetRectDimension(float height, float width, float localPosX, float localPosY){
 			Rect rect = GetRect();
 			rect.height = height;
@@ -30,8 +30,8 @@ namespace UISystem{
 		public Vector2 thisPanelDim;
 		public Vector2 thisPadding;
 		public Vector2 thisRollerNormalizedPos;
-		protected override IQuantityRoller CreateUIElement(){
-			IQuantityRollerConstArg arg = new QuantityRollerConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null, thisMaxQuantity, thisPanelDim, thisPadding, thisRollerNormalizedPos);
+		protected override IUIElement CreateUIElement(IUIImage image){
+			IQuantityRollerConstArg arg = new QuantityRollerConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisMaxQuantity, thisPanelDim, thisPadding, thisRollerNormalizedPos);
 			QuantityRoller quantityRoller = new QuantityRoller(arg);
 			return quantityRoller;
 		}

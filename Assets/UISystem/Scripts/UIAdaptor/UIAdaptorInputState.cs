@@ -38,12 +38,14 @@ namespace UISystem{
 		public override void OnDrag(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnDrag should be impossible when pointer is held up, something's wrong");
 		}
-		public override void OnPointerEnter(ICustomEventData eventData){
-			throw new System.InvalidOperationException("OnPointerEnter should not be called while pointer is held up");
-		}
-		public override void OnPointerExit(ICustomEventData eventData){
-			throw new System.InvalidOperationException("OnPointerExit should not be called while pointer is held up");
-		}
+		// public override void OnPointerEnter(ICustomEventData eventData){
+		// 	throw new System.InvalidOperationException("OnPointerEnter should not be called while pointer is held up");
+		// }
+		// public override void OnPointerExit(ICustomEventData eventData){
+		// 	throw new System.InvalidOperationException("OnPointerExit should not be called while pointer is held up");
+		// }
+		public override void OnPointerEnter(ICustomEventData eventData){}
+		public override void OnPointerExit(ICustomEventData eventData){}
 		public override void OnCancel(){
 			throw new System.InvalidOperationException("OnCancel should not be called while pointer is held up");
 		}
@@ -78,11 +80,12 @@ namespace UISystem{
 		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
 		}
-		protected bool DeltaPIsOverSwipeThreshold(Vector2 deltaP){
-			float swipeThreshold = engine.GetSwipeThreshold();
-			if(deltaP.sqrMagnitude >= swipeThreshold * swipeThreshold)
+		protected bool VelocityIsOverSwipeVelocityThreshold(Vector2 velocity){
+			float velocityThreshold = engine.GetSwipeVelocityThreshold();
+			if(velocity.sqrMagnitude >= velocityThreshold * velocityThreshold)
 				return true;
-			return false;
+			else
+				return false;
 		}
 		readonly IUIManager thisUIM;
 		void UpdateDragWorldPosition(Vector2 dragWorldPosition){
@@ -169,8 +172,9 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
-			engine.ReleaseUIE();
-			if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
+			// engine.ReleaseUIE();
+			// if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
+			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
 				engine.SwipeUIE(eventData);
 			else
 				engine.TapUIE();
@@ -222,9 +226,11 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
-			engine.ReleaseUIE();
-			if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
+			// engine.ReleaseUIE();
+			if(VelocityIsOverSwipeVelocityThreshold(eventData.deltaPos))
 				engine.SwipeUIE(eventData);
+			else
+				engine.ReleaseUIE();
 		}
 		public override void OnPointerEnter(ICustomEventData eventData){
 			return;

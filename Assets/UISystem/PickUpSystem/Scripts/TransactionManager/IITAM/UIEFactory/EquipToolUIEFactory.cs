@@ -7,7 +7,7 @@ namespace UISystem.PickUpUISystem{
 		IEquippableItemIcon CreateEquippableItemIcon(IEquippableUIItem eqpItem);
 		IQuantityRoller CreateItemIconQuantityRoller(IItemIconUIAdaptor itemIconAdaptor);
 	}
-	public class EquipToolUIEFactory:UIElementFactory, IEquipToolUIEFactory{
+	public class EquipToolUIEFactory: UIElementFactory, IEquipToolUIEFactory{
 		public EquipToolUIEFactory(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM): base(uim){
 			thisEqpTool = eqpTool;
 			thisEqpIITAM = eqpIITAM;

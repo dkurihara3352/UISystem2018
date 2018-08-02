@@ -30,8 +30,8 @@ namespace UISystem{
 			else
 				thisText.text = number.ToString();
 		}
-		protected override IDigitPanel CreateUIElement(){
-			IDigitPanelConstArg arg = new DigitPanelConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null, thisPanelDim, thisLocalPosY);
+		protected override IUIElement CreateUIElement(IUIImage image){
+			IDigitPanelConstArg arg = new DigitPanelConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisPanelDim, thisLocalPosY);
 			return new DigitPanel(arg);
 		}
 	}

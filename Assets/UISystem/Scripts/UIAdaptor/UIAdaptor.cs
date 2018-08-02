@@ -2,32 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 namespace UISystem{
-	public interface IMBAdaptor{
-		Transform GetTransform();
-		Rect GetRect();
-		void SetRectLength(float width, float height);
-		Vector2 GetLocalPosition();
-		void SetLocalPosition(Vector2 localPos);
-		Vector2 GetWorldPosition();
-		void SetWorldPosition(Vector2 worldPos);
-		Vector2 GetPositionInThisSpace(Vector2 worldPos);
-	}
-
-	public interface IUIAdaptor: IMBAdaptor {
-		void GetReadyForActivation(IUIAActivationData passedData);
-		IUIElement GetUIElement();
-		IUIElement GetParentUIE();
-		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
-		List<IUIElement> GetAllOffspringUIEs();
-		List<IUIElement> GetChildUIEs();
-		IUIAActivationData GetDomainActivationData();
-	}
-	public abstract class AbsUIAdaptor<T>: MonoBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, ICancelHandler where T: IUIElement{
+	[RequireComponent(typeof(RectTransform))]
+	public class UIAdaptor: /* MonoBehaviour */Selectable, IUIAdaptor, /* ISelectHandler, IDeselectHandler,  */IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, ICancelHandler{
+		protected override void Awake(){
+			RectTransform rectTrans = transform.GetComponent<RectTransform>();
+			rectTrans.pivot = new Vector2(0f, 0f);
+			rectTrans.anchorMin = new Vector2(0f, 0f);
+			rectTrans.anchorMax = new Vector2(0f, 0f);
+		}
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
-				thisUIElement = CreateUIElement();
+				IUIImage uiImage = CreateUIImage();
+				thisUIElement = CreateUIElement(uiImage);
 				thisInputStateEngine = new UIAdaptorStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
@@ -47,6 +36,34 @@ namespace UISystem{
 			void GetAllChildUIAsReadyForActivation(List<IUIAdaptor> childUIAs, IUIAActivationData passedData){
 				foreach(IUIAdaptor childUIA in childUIAs)
 					childUIA.GetReadyForActivation(passedData);
+			}
+			protected virtual IUIImage CreateUIImage(){
+				Image image;
+				Transform childWithImage = GetChildWithImage(out image);
+				RectTransform imageRectTrans = childWithImage.GetComponent<RectTransform>();
+				if(imageRectTrans == null)
+					throw new System.InvalidOperationException("image transform must have RectTransform component");
+				imageRectTrans.pivot = new Vector2(0f, 0f);
+				imageRectTrans.sizeDelta = this.GetRect().size;
+				imageRectTrans.anchoredPosition = Vector3.zero;
+				IUIImage uiImage = new UIImage(image, childWithImage, imageDefaultDarkness, imageDarkenedDarkness);
+				return uiImage;
+			}
+			protected Transform GetChildWithImage(out Image image){
+				for(int i = 0; i < transform.childCount; i ++){
+					Transform child = transform.GetChild(i);
+					Image thisImage = child.GetComponent<Image>();
+					if(thisImage != null){
+						image = thisImage;
+						return child;
+					}
+				}
+				throw new System.InvalidOperationException("there's no child transform with Image component asigned");
+			}
+			public float imageDefaultDarkness;
+			public float imageDarkenedDarkness;
+			public void ActivateUIElement(){
+				thisUIElement.ActivateRecursively();
 			}
 		/* MB adaptor */
 			public Transform GetTransform(){
@@ -80,8 +97,8 @@ namespace UISystem{
 				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
 			}
 		/*  Hierarchy stuff */
-			protected abstract T CreateUIElement();
-			T thisUIElement;
+			protected virtual IUIElement CreateUIElement(IUIImage image){return null;}
+			IUIElement thisUIElement;
 			public IUIElement GetUIElement(){
 				return thisUIElement;
 			}
@@ -124,20 +141,28 @@ namespace UISystem{
 			}
 		/* Event System Imple */
 			IUIAdaptorStateEngine thisInputStateEngine;
-			public virtual void OnPointerEnter(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData);
+			public override void OnPointerEnter(PointerEventData eventData){
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnPointerEnter(customEventData);
+				base.OnPointerEnter(eventData);
 			}
-			public void OnPointerDown(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData);
+			public override void OnPointerExit(PointerEventData eventData){
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+				thisInputStateEngine.OnPointerExit(customEventData);
+				base.OnPointerExit(eventData);
+			}
+			public override void OnPointerDown(PointerEventData eventData){
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnPointerDown(customEventData);
+				base.OnPointerDown(eventData);
 			}
-			public void OnPointerUp(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData);
+			public override void OnPointerUp(PointerEventData eventData){
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnPointerUp(customEventData);
+				base.OnPointerUp(eventData);
 			}
 			public void OnDrag(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData);
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnDrag(customEventData);
 			}
 			public void OnCancel(BaseEventData eventData){

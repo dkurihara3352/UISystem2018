@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace DKUtility{
 	public interface IProcessManager{
 		void AddRunningProcess(IProcess process);
@@ -18,5 +19,5 @@ namespace DKUtility{
 		float GetScrollerElementSnapSpringCoefficient();
 		float GetScrollerElementSnapProcessStopDelta();
 		float GetInertialScrollDeceleration();
-	}
+	}	
 }

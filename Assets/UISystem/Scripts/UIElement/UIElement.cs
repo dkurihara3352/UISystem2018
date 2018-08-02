@@ -125,7 +125,7 @@ namespace UISystem{
 				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
-			bool thisIsEnabledInput;
+			bool thisIsEnabledInput = true;
 
 			public void OnTouch(int touchCount){
 				if(this.IsActivated() && thisIsEnabledInput)

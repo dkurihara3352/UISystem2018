@@ -92,7 +92,7 @@ namespace DKUtility{
 		readonly ProcessConstraint thisProcessConstraint;
 		readonly float thisConstraintValue;
 		protected readonly IWaitAndExpireProcessState thisProcessState;
-		sealed public override void Run(){
+		public override void Run(){
 			if(ValueDifferenceIsBigEnough()){
 				RunImple();
 				base.Run();
@@ -204,8 +204,12 @@ namespace DKUtility{
 		}
 		protected T thisInterpolator;
 		protected abstract T InstantiateInterpolatorWithValues();
-		sealed protected override void RunImple(){
+		public override void Run(){
 			thisInterpolator = InstantiateInterpolatorWithValues();
+			base.Run();
+		}
+		sealed protected override void RunImple(){
+			// thisInterpolator = InstantiateInterpolatorWithValues();
 			base.RunImple();
 		}
 		protected override void UpdateProcessImple(float deltaT){

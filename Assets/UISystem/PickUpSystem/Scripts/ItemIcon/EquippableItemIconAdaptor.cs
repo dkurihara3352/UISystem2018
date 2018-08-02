@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UISystem.PickUpUISystem{
 	public interface IEquipToolElementUIA: IInstatiableUIAdaptor{
@@ -31,7 +32,13 @@ namespace UISystem.PickUpUISystem{
 		IEquippableItemIcon eqpII{
 			get{return this.GetUIElement() as IEquippableItemIcon;}//safe
 		}
-		protected override IEquippableItemIcon CreateUIElement(){
+		protected override IUIImage CreateUIImage(){
+			Image image;
+			Transform child = GetChildWithImage(out image);
+			IItemIconImage itemIconImage = new ItemIconImage(thisItem, image, child, imageDefaultDarkness, imageDarkenedDarkness);
+			return itemIconImage;
+		}
+		protected override IUIElement CreateUIElement(IUIImage image){
 			IEquipToolActivationData data = (IEquipToolActivationData)thisDomainActivationData;
 			IDragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(1f, 1f, data.pickUpSystemProcessFactory, data.pickUpManager);
 			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
@@ -40,8 +47,9 @@ namespace UISystem.PickUpUISystem{
 			IItemIconPickUpImplementor itemIconPickUpImplementor = new ItemIconPickUpImplementor(thisEqpIITAM, data.pickUpSystemUIElementFactory);
 			IItemIconEmptinessStateEngine emptinessStateEngine = new ItemIconEmptinessStateEngine(data.pickUpSystemProcessFactory);
 			IEqpIITransferabilityHandlerImplementor eqpIITransferabilityHandlerImplementor = new EqpIITransferabilityHandlerImplementor(thisEqpIITAM);
+			IItemIconImage itemIconImage = image as IItemIconImage;
 			IQuantityRoller quantityRoller = thisEqpToolUIEFactory.CreateItemIconQuantityRoller(this);
-			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, data.pickUpSystemProcessFactory, data.eqpToolUIEFactory, this, null, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor, quantityRoller);
+			IEquippableItemIconConstArg arg = new EquippableItemIconConstArg(data.uim, data.pickUpSystemProcessFactory, data.eqpToolUIEFactory, this, itemIconImage, thisEqpTool, dragImageImplementor, visualPickednessStateEngine, thisEqpIITAM, thisEqpItem, eqpIITAStateEngine, itemIconPickUpImplementor, emptinessStateEngine, eqpIITransferabilityHandlerImplementor, quantityRoller);
 			
 			return new EquippableItemIcon(arg);
 		}

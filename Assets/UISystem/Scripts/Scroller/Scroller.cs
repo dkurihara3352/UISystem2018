@@ -8,6 +8,9 @@ namespace UISystem{
 		void ClearScrollerElementMotorProcess(IScrollerElementMotorProcess processToClear, int dimension);
 		bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension);
 		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
+		float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension);
+		Vector2 rubberBandLimitMultiplier{get;}
+		Vector2 rubberLimit{get;}
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -47,10 +50,14 @@ namespace UISystem{
 			return result;
 		}
 		protected Rect thisRect;
+		protected Vector2 thisRectMin;
+		protected Vector2 thisRectMax;
 		protected Vector2 thisRectLength;
 		void CacheThisRect(){
 			thisRect = thisUIA.GetRect();
 			thisRectLength = new Vector2(thisRect.width, thisRect.height);
+			thisRectMin = new Vector2(thisRect.x, thisRect.y);
+			thisRectMax = new Vector2(thisRectMin.x + thisRectLength.x, thisRectMin.y + thisRectLength.y);
 		}
 		protected void MakeSureRectIsSet(Rect rect){
 			if(rect.width == 0f || rect.height == 0f)
@@ -58,19 +65,28 @@ namespace UISystem{
 		}
 		protected readonly ScrollerAxis thisScrollerAxis;
 		/* Rubber */
-		readonly protected Vector2 thisRubberBandLimitMultiplier;
+		readonly  protected Vector2 thisRubberBandLimitMultiplier;
+		public Vector2 rubberBandLimitMultiplier{get{return thisRubberBandLimitMultiplier;}}
+		Vector2 thisRubberLimit;
+		public Vector2 rubberLimit{get{return thisRubberLimit;}}
+
 		protected abstract bool[] thisShouldApplyRubberBand{get;}// simply return true if wanna apply
 		RubberBandCalculator[] thisRubberBandCalculator;
 		RubberBandCalculator[] CreateRubberBandCalculator(){
 			RubberBandCalculator[] result = new RubberBandCalculator[2];
+			thisRubberLimit = new Vector2();
 			for(int i = 0; i < 2; i++){
-				result[i] = new RubberBandCalculator(1f, thisRubberBandLimitMultiplier[i] * thisRectLength[i]);
+				float rubberLimit =  thisRubberBandLimitMultiplier[i] * thisRectLength[i];
+				thisRubberLimit[i] = rubberLimit;
+				result[i] = new RubberBandCalculator(10f, rubberLimit);
 			}
 			return result;
 		}
 		/* Activation */
 		public override void ActivateImple(){
 			SetUpCursorTransform();
+			Rect cursorRect = new Rect(thisCursorLocalPosition, thisCursorLength);
+			((IScrollerAdaptor)thisUIA).ShowCursorRectInGUI(cursorRect);
 			SetTheOnlyChildAsScrollerElement();
 			CacheScrollerElementRect();
 			InitializeScrollerElementForActivation();
@@ -146,13 +162,6 @@ namespace UISystem{
 			thisHasDoneDragEvaluation = false;
 			thisShouldProcessDrag = false;
 		}
-		protected override void OnReleaseImple(){
-			if(thisShouldProcessDrag){
-				CheckForStaticBoundarySnap();
-			}else
-				base.OnReleaseImple();
-			ResetDrag();
-		}
 		protected override void OnDragImple(ICustomEventData eventData){
 			if(!thisHasDoneDragEvaluation)
 				EvaluateDrag(eventData);
@@ -179,7 +188,7 @@ namespace UISystem{
 			}
 		}
 		bool DeltaPosIsHorizontal(Vector2 deltaPos){
-			return deltaPos.x >= deltaPos.y;
+			return Mathf.Abs(deltaPos.x) >= Mathf.Abs(deltaPos.y);
 		}
 		protected Vector2 CalcDragDeltaPos(Vector2 deltaP){
 			if(thisScrollerAxis == ScrollerAxis.Both)
@@ -265,18 +274,18 @@ namespace UISystem{
 		protected float GetNormalizedScrollerPosition(float scrollerElementLocalPosOnAxis, int dimension){
 			return GetNormalizedPosition(scrollerElementLocalPosOnAxis, thisRectLength, Vector2.zero, dimension);
 		}
-		protected float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension){
+		public float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension){
 			/* used to calculate rubberbanding */
 			if(ElementIsUndersizedTo(thisCursorLength, dimension)){
 				return thisCursorLocalPosition[dimension] - scrollerElementLocalPosOnAxis;
 			}
 			else{
-				float elePosNormToCursor = GetNormalizedCursoredPosition(scrollerElementLocalPosOnAxis, dimension);
-				float normalizedOffset = elePosNormToCursor;
-				if(elePosNormToCursor <= 1f && elePosNormToCursor >= 0f)
+				float elementNormalizedCursoredPos = GetNormalizedCursoredPosition(scrollerElementLocalPosOnAxis, dimension);
+				float normalizedOffset = elementNormalizedCursoredPos;
+				if(elementNormalizedCursoredPos <= 1f && elementNormalizedCursoredPos >= 0f)
 					normalizedOffset = 0f;
-				else if(elePosNormToCursor > 1f)
-					normalizedOffset = elePosNormToCursor - 1f;
+				else if(elementNormalizedCursoredPos > 1f)
+					normalizedOffset = elementNormalizedCursoredPos - 1f;
 				return normalizedOffset * thisCursorLength[dimension];
 			}
 		}
@@ -286,7 +295,7 @@ namespace UISystem{
 		}
 		protected void PlaceScrollerElement(Vector2 targetCursorValue){
 			Vector2 newLocalPos = CalcLocalPositionFromNormalizedCursoredPosition(targetCursorValue);
-			this.SetLocalPosition(newLocalPos);
+			thisScrollerElement.SetLocalPosition(newLocalPos);
 		}
 		protected Vector2 CalcLocalPositionFromNormalizedCursoredPosition(Vector2 normalizedCursoredPosition){
 			Vector2 result = new Vector2();
@@ -304,17 +313,30 @@ namespace UISystem{
 			}
 		}
 
-
-
+		/* Release */
+		protected override void OnReleaseImple(){
+				CheckForStaticBoundarySnap();
+			if(!thisShouldProcessDrag)
+			// else
+				base.OnReleaseImple();
+			ResetDrag();
+		}
+		/* Tap */
+		protected override void OnTapImple(int tapCount){
+				CheckForStaticBoundarySnap();
+			if(!thisShouldProcessDrag)
+			// else
+				base.OnTapImple(tapCount);
+			ResetDrag();
+		}
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
 				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
 				if(thisIsEnabledInertia)
-					StartInertialScroll(swipeDeltaPos);
+					StartInertialScroll(eventData.velocity);
 			}else
 				base.OnSwipeImple(eventData);
-			
 			ResetDrag();
 		}
 		readonly protected bool thisIsEnabledInertia;
@@ -351,25 +373,25 @@ namespace UISystem{
 				thisRunningScrollerMotorProcess[dimension].Stop();
 		}
 		/*  */
-		protected virtual void StartInertialScroll(Vector2 deltaPos){
+		protected virtual void StartInertialScroll(Vector2 swipeVelocity){
 			if(thisScrollerAxis == ScrollerAxis.Horizontal){
-				IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(deltaPos[0], 1f, this, thisScrollerElement, 0);
+				IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(swipeVelocity[0], 1f, this, thisScrollerElement, 0);
 				process.Run();
 			}else if(thisScrollerAxis == ScrollerAxis.Vertical){
-				IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(deltaPos[1], 1f, this, thisScrollerElement, 1);
+				IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(swipeVelocity[1], 1f, this, thisScrollerElement, 1);
 				process.Run();
 			}else{
 				float sine;
 				float cosine;
-				DKUtility.Calculator.CalcSineAndCosine(deltaPos, out sine, out cosine);
+				DKUtility.Calculator.CalcSineAndCosine(swipeVelocity, out sine, out cosine);
 				if(sine < 0f)
 					sine *= -1f;
 				if(cosine < 0f)
 					cosine *= -1f;
 
-				IInertialScrollProcess horizontalProcess = thisProcessFactory.CreateInertialScrollProcess(deltaPos[0], cosine, this, thisScrollerElement, 0);
+				IInertialScrollProcess horizontalProcess = thisProcessFactory.CreateInertialScrollProcess(swipeVelocity[0], cosine, this, thisScrollerElement, 0);
 				horizontalProcess.Run();
-				IInertialScrollProcess verticalProcess = thisProcessFactory.CreateInertialScrollProcess(deltaPos[1], sine, this, thisScrollerElement, 1);
+				IInertialScrollProcess verticalProcess = thisProcessFactory.CreateInertialScrollProcess(swipeVelocity[1], sine, this, thisScrollerElement, 1);
 				verticalProcess.Run();
 			}
 		}

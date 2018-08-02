@@ -37,8 +37,8 @@ namespace UISystem.PickUpUISystem{
 
 			return new EquipToolUIAActivationData(uim, pickUpSystemProcessFactory, equipToolUIEFactory, eqpIITAM, eqpTool);
 		}
-		protected override IEquipToolUIE CreateUIElement(){
-			IUIElementConstArg arg = new UIElementConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null);
+		protected override IUIElement CreateUIElement(IUIImage image){
+			IUIElementConstArg arg = new UIElementConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
 			IEquipToolUIE uie = new EquipToolUIE(arg);
 			return uie;
 		}

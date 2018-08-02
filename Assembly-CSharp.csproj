@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_64;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_VIDEO;ENABLE_VR;ENABLE_CLUSTERINPUT;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_5_1;UNITY_5_5;UNITY_5;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_GENERICS;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_RUNTIME_GI;ENABLE_SUBSTANCE;ENABLE_GAMECENTER;ENABLE_NETWORK;ENABLE_UNITYWEBREQUEST;ENABLE_VIDEO;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;PLAYERCONNECTION_LISTENS_FIXED_PORT;DEBUGGER_LISTENS_FIXED_PORT;PLATFORM_SUPPORTS_ADS_ID;SUPPORT_ENVIRONMENT_VARIABLES;PLATFORM_SUPPORTS_PROFILER;PLATFORM_HAS_NO_SUPPORT_FOR_BUCKET_ALLOCATOR;STRICTCPP_NEW_DELETE_SIGNATURES;HAS_NEON_SKINNIG;UNITY_GFX_USE_PLATFORM_VSYNC;UNITY_INPUT_SIMULATE_EVENTS;PLATFORM_ALWAYS_USES_STDOUT_FOR_LOG;ENABLE_VR;ENABLE_UNITYADS_RUNTIME;UNITY_UNITYADS_API;UNITY_IOS;UNITY_IPHONE;UNITY_IPHONE_API;SUPPORT_MULTIPLE_DISPLAYS;ENABLE_IL2CPP;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;UNITY_TEAM_LICENSE;ENABLE_IOS_ON_DEMAND_RESOURCES;ENABLE_IOS_APP_SLICING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -53,7 +53,8 @@
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Interpolator.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Process.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessFactory.cs" />
-     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessManager.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessManager\IProcessManager.cs" />
+     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\ProcessManager\ProcessManager.cs" />
      <Compile Include="Assets\DKUtility\Scripts\SwitchableState\SwitchableStateEngine.cs" />
      <Compile Include="Assets\DKUtility\Scripts\WaitAndExpireProcessState.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\DragImageImplementor.cs" />
@@ -127,19 +128,24 @@
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityAnimationProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRoller.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRollerAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\RectData.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\CyclableUIElementGroupScroller.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScroller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\Scroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\InertialScrollProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\ScrollerElementMotorProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\ScrollerElementSnapProcess.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScroller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\ImageDarknessInterpolator.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityState.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\TurnImageDarknessProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TestActivator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\CustomEventData.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\IUIAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\InstatiableUIAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorActivationData.cs" />
@@ -155,12 +161,17 @@
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\EquippableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElement.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElementAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ResizableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\TestUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\TestUIEAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\UIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIImage\UIImage.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIInputHandler.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIManager\UIManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIManager\UIManagerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UISystemProcessFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\VisibilitySwitcher.cs" />
  <Reference Include="UnityEngine.Analytics">

@@ -464,7 +464,7 @@ public class UIAdaptorInputStateTest{
 
 		engine.OnDrag(eventData);
 		
-		if(dragDeltaP.sqrMagnitude >= engine.GetDragThreshold() * engine.GetDragThreshold()){
+		if(dragDeltaP.sqrMagnitude >= engine.GetDragVelocityThreshold() * engine.GetDragVelocityThreshold()){
 			Assert.That(overThreshold, Is.True);
 			uie.Received(1).OnDrag(eventData);
 		}else{
@@ -584,8 +584,8 @@ public class UIAdaptorInputStateTest{
 					this.thisWaitingForReleaseState != null &&
 					this.thisWaitingForNextTouchState != null;
 			}
-			public float GetDragThreshold(){
-				return this.dragDeltaPThreshold;
+			public float GetDragVelocityThreshold(){
+				return this.GetDragVelocityThreshold();
 			}
 		}
 		TestUIAStateEngine CreateTestUIAStateEngine(out UIAStateEngineConstArg arg){

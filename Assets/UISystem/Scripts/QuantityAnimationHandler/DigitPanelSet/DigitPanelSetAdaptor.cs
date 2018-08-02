@@ -18,8 +18,8 @@ namespace UISystem{
 		int thisDigitPlace;
 		Vector2 thisPanelDim;
 		Vector2 thisPadding;
-		protected override DigitPanelSet CreateUIElement(){
-			IDigitPanelSetConstArg arg = new DigitPanelSetConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, null, thisDigitPlace, thisPanelDim, thisPadding);
+		protected override IUIElement CreateUIElement(IUIImage image){
+			IDigitPanelSetConstArg arg = new DigitPanelSetConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisDigitPlace, thisPanelDim, thisPadding);
 			DigitPanelSet digitPanelSet = new DigitPanelSet(arg);
 			return digitPanelSet;
 		}

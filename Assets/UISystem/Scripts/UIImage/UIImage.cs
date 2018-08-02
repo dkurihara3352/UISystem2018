@@ -16,35 +16,58 @@ namespace UISystem{
 		void SetWorldPosition(Vector2 worldPos);
 	}
 
-	public class UIImage: MonoBehaviour, IUIImage{
-		public Image thisImage;
+	public class UIImage: IUIImage{
+		public UIImage(Image image, Transform imageTrans, float defaultDarkness, float darkenedDarkness){
+			thisImage = image;
+			thisImageTrans = imageTrans;
+			thisDefaultDarkness = defaultDarkness;
+			thisDarkenedDarkness = darkenedDarkness;
+			SetDarkness(thisDefaultDarkness);
+		}
+		readonly protected Image thisImage;
 		public float GetCurrentDarkness(){
-			return curDarkness;
+			Color curColor = thisImage.color;
+			float h;
+			float s;
+			float v;
+			Color.RGBToHSV(curColor, out h, out s, out v);
+			return v;
 		}
 		float curDarkness;
 		public float GetDefaultDarkness(){
-			return defaultDarkness;
+			return thisDefaultDarkness;
 		}
-		public float defaultDarkness;
+		readonly float thisDefaultDarkness;
 		public float GetDarkenedDarkness(){
-			return darkenedDarkness;
+			return thisDarkenedDarkness;
 		}
-		public float darkenedDarkness;
+		readonly float thisDarkenedDarkness;
 		public void SetDarkness(float darkness){
-			Color newColor = GetColorFormDarkness(darkness);
+			// Color newColor = GetColorFormDarkness(darkness);
+			// thisImage.color = newColor;
+			// curDarkness = darkness;
+			Color curColor = thisImage.color;
+			float a = curColor.a;
+			float h;
+			float s;
+			float v;
+			Color.RGBToHSV(curColor, out h, out s, out v);
+			v = darkness;
+			Color newColor = Color.HSVToRGB(h, s, v);
+			newColor.a = a;
 			thisImage.color = newColor;
-			curDarkness = darkness;
 		}
-		Color GetColorFormDarkness(float darkness){
-			return Color.Lerp(Color.black, Color.white, darkness);
-		}
+		// Color GetColorFormDarkness(float darkness){
+		// 	return Color.Lerp(Color.black, Color.white, darkness);
+		// }
+		readonly protected Transform thisImageTrans;
 		public Transform GetTransform(){
-			return this.transform;
+			return thisImageTrans;
 		}
 		public void CopyPosition(IUIImage other){
 			Transform otherTrans = other.GetTransform();
 			Vector2 otherLocalPosition = otherTrans.localPosition;
-			this.transform.localPosition = otherLocalPosition;
+			thisImageTrans.localPosition = otherLocalPosition;
 		}
 		public Vector2 GetWorldPosition(){
 			Vector3 worldPosV3 = GetTransform().position;
