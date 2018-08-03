@@ -10,7 +10,7 @@ namespace UISystem{
 		void WaitForRelease();
 		void WaitForNextTouch();
 	}
-	public interface IUIAdaptorStateEngine: ISwitchableStateEngine<IUIAdaptorInputState>, IRawInputHandler, IUIAdaptorStateHandler{
+	public interface IUIAdaptorInputStateEngine: ISwitchableStateEngine<IUIAdaptorInputState>, IRawInputHandler, IUIAdaptorStateHandler{
 		void ResetTouchCounter();
 		void IncrementTouchCounter();
 		int GetTouchCount();
@@ -21,13 +21,14 @@ namespace UISystem{
 		void DelayTouchUIE();
 		void ReleaseUIE();
 		void DelayedReleaseUIE();
+		void BeginDragUIE(ICustomEventData eventData);
 		void DragUIE(ICustomEventData eventData);
 		void HoldUIE(float deltaT);
 		void SwipeUIE(ICustomEventData eventData);
 		float GetSwipeVelocityThreshold();
 	}
-	public class UIAdaptorStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorStateEngine{
-		public UIAdaptorStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
+	public class UIAdaptorInputStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorInputStateEngine{
+		public UIAdaptorInputStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
 			thisUIE = uia.GetUIElement();
 			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(this);
 			thisWaitingForTapState = new WaitingForTapState(procFac, this, uim);
@@ -40,15 +41,15 @@ namespace UISystem{
 		void SetWithInitState(){
 			this.WaitForFirstTouch();
 		}
-		int touchCounter;
+		protected int thisTouchCount;
 		public void ResetTouchCounter(){
-			touchCounter = 0;
+			thisTouchCount = 0;
 		}
 		public void IncrementTouchCounter(){
-			touchCounter ++;
+			thisTouchCount ++;
 		}
 		public int GetTouchCount(){
-			return touchCounter;
+			return thisTouchCount;
 		}
 		public void TouchUIE(){
 			thisUIE.OnTouch(GetTouchCount());
@@ -71,10 +72,9 @@ namespace UISystem{
 		public void DelayedReleaseUIE(){
 			thisUIE.OnDelayedRelease();
 		}
-		bool DragVelocityIsOverThreshold(Vector2 dragVelocity){
-			return dragVelocity.sqrMagnitude >= dragVelocityThreshold * dragVelocityThreshold;
+		public void BeginDragUIE(ICustomEventData eventData){
+			thisUIE.OnBeginDrag(eventData);
 		}
-		protected float dragVelocityThreshold = 5f;
 		public void DragUIE(ICustomEventData eventData){
 			thisUIE.OnDrag(eventData);
 		}
@@ -95,9 +95,12 @@ namespace UISystem{
 			public void OnPointerUp(ICustomEventData eventData){
 				thisCurState.OnPointerUp(eventData);
 			}
+			public void OnBeginDrag(ICustomEventData eventData){
+				thisCurState.OnBeginDrag(eventData);
+			}
 			public void OnDrag(ICustomEventData eventData){
-				if(DragVelocityIsOverThreshold(eventData.velocity))
-					thisCurState.OnDrag(eventData);
+				// if(DragVelocityIsOverThreshold(eventData.velocity))
+				thisCurState.OnDrag(eventData);
 			}
 			public void OnPointerEnter(ICustomEventData eventData){
 				thisCurState.OnPointerEnter(eventData);

@@ -20,6 +20,7 @@ namespace UISystem{
 		void OnDelayedRelease();
 		/* called after both OnRelease and OnTap */
 		void OnTap( int tapCount);
+		void OnBeginDrag(ICustomEventData eventData);
 		void OnDrag( ICustomEventData eventData);
 		void OnHold( float deltaT);
 		/* called every frame from pointer down to up */

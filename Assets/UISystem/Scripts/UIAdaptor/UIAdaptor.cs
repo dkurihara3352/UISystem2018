@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 namespace UISystem{
 	[RequireComponent(typeof(RectTransform))]
-	public class UIAdaptor: /* MonoBehaviour */Selectable, IUIAdaptor, /* ISelectHandler, IDeselectHandler,  */IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IDragHandler, ICancelHandler{
+	public class UIAdaptor: /* MonoBehaviour */Selectable, IUIAdaptor, /* ISelectHandler, IDeselectHandler,  */IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, ICancelHandler{
 		protected override void Awake(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
 			rectTrans.pivot = new Vector2(0f, 0f);
@@ -17,7 +17,7 @@ namespace UISystem{
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
-				thisInputStateEngine = new UIAdaptorStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
+				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
@@ -140,7 +140,7 @@ namespace UISystem{
 				return result;
 			}
 		/* Event System Imple */
-			IUIAdaptorStateEngine thisInputStateEngine;
+			IUIAdaptorInputStateEngine thisInputStateEngine;
 			public override void OnPointerEnter(PointerEventData eventData){
 				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnPointerEnter(customEventData);
@@ -160,6 +160,10 @@ namespace UISystem{
 				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 				thisInputStateEngine.OnPointerUp(customEventData);
 				base.OnPointerUp(eventData);
+			}
+			public void OnBeginDrag(PointerEventData eventData){
+				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+				thisInputStateEngine.OnBeginDrag(customEventData);
 			}
 			public void OnDrag(PointerEventData eventData){
 				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);

@@ -8,6 +8,7 @@ namespace UISystem{
 	public interface IRawInputHandler{
 		void OnPointerDown(ICustomEventData eventData);
 		void OnPointerUp(ICustomEventData eventData);
+		void OnBeginDrag(ICustomEventData eventData);
 		void OnDrag(ICustomEventData eventData);
 		void OnPointerEnter(ICustomEventData eventData);
 		void OnPointerExit(ICustomEventData eventData);
@@ -17,41 +18,39 @@ namespace UISystem{
 	public interface IUIAdaptorInputState: IRawInputHandler, ISwitchableState{
 	}
 	public abstract class AbsUIAdaptorInputState: IUIAdaptorInputState{
-		public AbsUIAdaptorInputState(IUIAdaptorStateEngine engine){
+		public AbsUIAdaptorInputState(IUIAdaptorInputStateEngine engine){
 			this.engine = engine;
 		}
-		protected readonly IUIAdaptorStateEngine engine;
+		protected readonly IUIAdaptorInputStateEngine engine;
 		public abstract void OnEnter();
 		public abstract void OnExit();
 		public abstract void OnPointerDown(ICustomEventData eventData);
 		public abstract void OnPointerUp(ICustomEventData eventData);
+		public abstract void OnBeginDrag(ICustomEventData eventData);
 		public abstract void OnDrag(ICustomEventData eventData);
 		public abstract void OnPointerEnter(ICustomEventData eventData);
 		public abstract void OnPointerExit(ICustomEventData eventData);
 		public abstract void OnCancel();
 	}
 	public abstract class AbsPointerUpInputState: AbsUIAdaptorInputState{
-		public AbsPointerUpInputState(IUIAdaptorStateEngine engine): base(engine){}
+		public AbsPointerUpInputState(IUIAdaptorInputStateEngine engine): base(engine){}
 		public override void OnPointerUp(ICustomEventData eventData){
-			throw new System.InvalidOperationException("OnPointerUp should not be called while pointer is already help up");
+			throw new System.InvalidOperationException("OnPointerUp should not be called while pointer is already held up");
+		}
+		public override void OnBeginDrag(ICustomEventData eventData){
+			throw new System.InvalidOperationException("OnBeginDrag should not be called while pointer is held up");
 		}
 		public override void OnDrag(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnDrag should be impossible when pointer is held up, something's wrong");
 		}
-		// public override void OnPointerEnter(ICustomEventData eventData){
-		// 	throw new System.InvalidOperationException("OnPointerEnter should not be called while pointer is held up");
-		// }
-		// public override void OnPointerExit(ICustomEventData eventData){
-		// 	throw new System.InvalidOperationException("OnPointerExit should not be called while pointer is held up");
-		// }
-		public override void OnPointerEnter(ICustomEventData eventData){}
-		public override void OnPointerExit(ICustomEventData eventData){}
+		public override void OnPointerEnter(ICustomEventData eventData){return;}
+		public override void OnPointerExit(ICustomEventData eventData){return;}
 		public override void OnCancel(){
 			throw new System.InvalidOperationException("OnCancel should not be called while pointer is held up");
 		}
 	}
 	public abstract class AbsPointerUpInputProcessState<T>: AbsPointerUpInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
-		public AbsPointerUpInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorStateEngine engine): base(engine){
+		public AbsPointerUpInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine): base(engine){
 			thisProcessFactory = processFactory;
 		}
 		protected readonly IUISystemProcessFactory thisProcessFactory;
@@ -74,7 +73,7 @@ namespace UISystem{
 		}
 	}
 	public abstract class AbsPointerDownInputState: AbsUIAdaptorInputState{
-		public AbsPointerDownInputState(IUIAdaptorStateEngine engine, IUIManager uim): base(engine){
+		public AbsPointerDownInputState(IUIAdaptorInputStateEngine engine, IUIManager uim): base(engine){
 			thisUIM = uim;
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
@@ -91,7 +90,11 @@ namespace UISystem{
 		void UpdateDragWorldPosition(Vector2 dragWorldPosition){
 			thisUIM.SetDragWorldPosition(dragWorldPosition);
 		}
+		public override void OnBeginDrag(ICustomEventData eventData){
+			engine.BeginDragUIE(eventData);
+		}
 		public override void OnDrag(ICustomEventData eventData){
+			engine.DragUIE(eventData);
 			UpdateDragWorldPosition(eventData.position);
 		}
  		public override void OnCancel(){
@@ -100,7 +103,7 @@ namespace UISystem{
 		}
 	}
 	public abstract class AbsPointerDownInputProcessState<T>: AbsPointerDownInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
-		public AbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorStateEngine engine ,IUIManager uim): base(engine, uim){
+		public AbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine ,IUIManager uim): base(engine, uim){
 			thisProcessFactory = processFactory;
 		}
 		readonly protected IUISystemProcessFactory thisProcessFactory;
@@ -132,7 +135,7 @@ namespace UISystem{
 				OnTouch( touchCounter)
 				WFTapState
 		*/
-		public WaitingForFirstTouchState(IUIAdaptorStateEngine engine): base(engine){}
+		public WaitingForFirstTouchState(IUIAdaptorInputStateEngine engine): base(engine){}
 		public override void OnEnter(){
 			engine.ResetTouchCounter();
 		}
@@ -168,12 +171,10 @@ namespace UISystem{
 			pointer exit =>
 				WFRelease
 		*/
-		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine, IUIManager uim): base(procFac, engine, uim){
+		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim): base(procFac, engine, uim){
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
-			// engine.ReleaseUIE();
-			// if(DeltaPIsOverSwipeThreshold(eventData.deltaPos))
 			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
 				engine.SwipeUIE(eventData);
 			else
@@ -189,10 +190,6 @@ namespace UISystem{
 		}
 		public override void OnProcessUpdate(float deltaT){
 			engine.HoldUIE(deltaT);
-		}
-		public override void OnDrag(ICustomEventData eventData){
-			engine.DragUIE(eventData);
-			base.OnDrag(eventData);
 		}
 		protected override IWaitAndExpireProcess CreateProcess(){
 			return thisProcessFactory.CreateWaitAndExpireProcess(this, engine.GetTapExpireT());
@@ -218,7 +215,7 @@ namespace UISystem{
 			pointer exit =>
 				do nothing
 		*/
-		public WaitingForReleaseState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine, IUIManager uim) :base(procFac, engine, uim){
+		public WaitingForReleaseState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim) :base(procFac, engine, uim){
 		}
 		public override void OnEnter(){
 			base.OnEnter();
@@ -226,8 +223,7 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
-			// engine.ReleaseUIE();
-			if(VelocityIsOverSwipeVelocityThreshold(eventData.deltaPos))
+			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
 				engine.SwipeUIE(eventData);
 			else
 				engine.ReleaseUIE();
@@ -240,10 +236,6 @@ namespace UISystem{
 		}
 		public override void OnProcessUpdate(float deltaT){
 			engine.HoldUIE(deltaT);
-		}
-		public override void OnDrag(ICustomEventData eventData){
-			engine.DragUIE(eventData);
-			base.OnDrag(eventData);
 		}
 		protected override IWaitAndExpireProcess CreateProcess(){
 			return thisProcessFactory.CreateWaitAndExpireProcess(this, 0f);
@@ -261,7 +253,7 @@ namespace UISystem{
 						WFFTouchState
 						DelayedReleaseUIE
 		*/
-		public WaitingForNextTouchState(IUISystemProcessFactory procFac, IUIAdaptorStateEngine engine) :base(procFac, engine){
+		public WaitingForNextTouchState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine) :base(procFac, engine){
 		}
 		protected override IWaitAndExpireProcess CreateProcess(){
 			return thisProcessFactory.CreateWaitAndExpireProcess(this, engine.GetNextTouchExpireT());

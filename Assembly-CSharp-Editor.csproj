@@ -79,6 +79,7 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementMotorProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementSnapProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateEngineTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\UIEActivationStateEngineTest.cs" />

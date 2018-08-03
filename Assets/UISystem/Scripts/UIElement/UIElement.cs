@@ -196,6 +196,19 @@ namespace UISystem{
 				if(thisParentUIE != null)
 					thisParentUIE.OnTap(tapCount);
 			}
+			public void OnBeginDrag(ICustomEventData eventData){
+				if(this.IsActivated() && thisIsEnabledInput)
+					OnBeginDragImple(eventData);
+				else
+					PassOnBeginDragUpward(eventData);
+			}
+			protected virtual void OnBeginDragImple(ICustomEventData eventData){
+				PassOnBeginDragUpward(eventData);
+			}
+			void PassOnBeginDragUpward(ICustomEventData eventData){
+				if(thisParentUIE != null)
+					thisParentUIE.OnBeginDrag(eventData);
+			}
 
 			public void OnDrag( ICustomEventData eventData){
 				if(this.IsActivated() && thisIsEnabledInput)
@@ -277,6 +290,13 @@ namespace UISystem{
 				child.DisableInputRecursively();
 		}
 	}
+
+
+
+
+
+
+
 	public interface IUIElementConstArg{
 		IUIManager uim{get;}
 		IUISystemProcessFactory processFactory{get;}
