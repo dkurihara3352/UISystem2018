@@ -360,15 +360,15 @@ public class UIElementGroupScrollerTest {
         arg.uim.Returns(Substitute.For<IUIManager>());
         arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
         arg.uiElementFactory.Returns(Substitute.For<IUIElementFactory>());
-        IUIAdaptor uia = Substitute.For<IUIAdaptor>();
-            uia.GetRect().Returns(new Rect(Vector2.zero, new Vector2(200f, 100f)));
+        IScrollerAdaptor scrollerAdaptor = Substitute.For<IScrollerAdaptor>();
+            scrollerAdaptor.GetRect().Returns(new Rect(Vector2.zero, new Vector2(200f, 100f)));
             IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
                 uieGroup.GetGroupElementArrayIndex(Arg.Any<IUIElement>()).Returns(new int[]{0, 0});
             IUIElementGroupAdaptor uieGroupAdaptor = Substitute.For<IUIElementGroupAdaptor>();
             uieGroup.GetUIAdaptor().Returns(uieGroupAdaptor);
             uieGroupAdaptor.GetRect().Returns(new Rect(Vector2.zero, new Vector2(130f, 130f)));
-            uia.GetChildUIEs().Returns(new List<IUIElement>(new IUIElement[]{uieGroup}));
-        arg.uia.Returns(uia);
+            scrollerAdaptor.GetChildUIEs().Returns(new List<IUIElement>(new IUIElement[]{uieGroup}));
+        arg.uia.Returns(scrollerAdaptor);
         arg.image.Returns(Substitute.For<IUIImage>());
         return arg;
     }
