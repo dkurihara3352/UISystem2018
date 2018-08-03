@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 namespace UISystem{
 	[RequireComponent(typeof(RectTransform))]
-	public class UIAdaptor: /* MonoBehaviour */Selectable, IUIAdaptor, /* ISelectHandler, IDeselectHandler,  */IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, ICancelHandler{
+	public class UIAdaptor: UIBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler{
 		protected override void Awake(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
 			rectTrans.pivot = new Vector2(0f, 0f);
@@ -15,12 +15,14 @@ namespace UISystem{
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
+				thisUIM = thisDomainActivationData.uim;
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
 				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
+			protected IUIManager thisUIM;
 			public IUIAActivationData GetDomainActivationData(){
 				return thisDomainActivationData;
 			}
@@ -141,36 +143,57 @@ namespace UISystem{
 			}
 		/* Event System Imple */
 			IUIAdaptorInputStateEngine thisInputStateEngine;
-			public override void OnPointerEnter(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnPointerEnter(customEventData);
-				base.OnPointerEnter(eventData);
+			bool PointerIDMatchesTheRegistered(int pointerId){
+				return thisUIM.registeredID == pointerId;
 			}
-			public override void OnPointerExit(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnPointerExit(customEventData);
-				base.OnPointerExit(eventData);
+			public virtual void OnPointerEnter(PointerEventData eventData){
+				if(thisUIM.TouchIDIsRegistered()){
+					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
+						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+						thisInputStateEngine.OnPointerEnter(customEventData);
+					}
+				}
 			}
-			public override void OnPointerDown(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnPointerDown(customEventData);
-				base.OnPointerDown(eventData);
+			public void OnPointerExit(PointerEventData eventData){
+				if(thisUIM.TouchIDIsRegistered()){
+					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
+						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+						thisInputStateEngine.OnPointerExit(customEventData);
+					}
+				}
 			}
-			public override void OnPointerUp(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnPointerUp(customEventData);
-				base.OnPointerUp(eventData);
+			public void OnPointerDown(PointerEventData eventData){
+				if(!thisUIM.TouchIDIsRegistered()){
+					thisUIM.RegisterTouchID(eventData.pointerId);
+					ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+					thisInputStateEngine.OnPointerDown(customEventData);
+				}
 			}
+			public void OnPointerUp(PointerEventData eventData){
+				if(thisUIM.TouchIDIsRegistered()){
+					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
+						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+						thisInputStateEngine.OnPointerUp(customEventData);
+						thisUIM.UnregisterTouchID();
+					}
+				}
+			}
+			/* OnEndDrag is needed too? */
 			public void OnBeginDrag(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnBeginDrag(customEventData);
+				if(thisUIM.TouchIDIsRegistered()){
+					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
+						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+						thisInputStateEngine.OnBeginDrag(customEventData);
+					}
+				}
 			}
 			public void OnDrag(PointerEventData eventData){
-				ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
-				thisInputStateEngine.OnDrag(customEventData);
-			}
-			public void OnCancel(BaseEventData eventData){
-				thisInputStateEngine.OnCancel();
+				if(thisUIM.TouchIDIsRegistered()){
+					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
+						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
+						thisInputStateEngine.OnDrag(customEventData);
+					}
+				}
 			}
 		/*  */
 	}

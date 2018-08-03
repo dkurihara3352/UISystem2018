@@ -12,7 +12,6 @@ namespace UISystem{
 		void OnDrag(ICustomEventData eventData);
 		void OnPointerEnter(ICustomEventData eventData);
 		void OnPointerExit(ICustomEventData eventData);
-		void OnCancel();
 	}
 	/* States */
 	public interface IUIAdaptorInputState: IRawInputHandler, ISwitchableState{
@@ -30,7 +29,6 @@ namespace UISystem{
 		public abstract void OnDrag(ICustomEventData eventData);
 		public abstract void OnPointerEnter(ICustomEventData eventData);
 		public abstract void OnPointerExit(ICustomEventData eventData);
-		public abstract void OnCancel();
 	}
 	public abstract class AbsPointerUpInputState: AbsUIAdaptorInputState{
 		public AbsPointerUpInputState(IUIAdaptorInputStateEngine engine): base(engine){}
@@ -45,9 +43,6 @@ namespace UISystem{
 		}
 		public override void OnPointerEnter(ICustomEventData eventData){return;}
 		public override void OnPointerExit(ICustomEventData eventData){return;}
-		public override void OnCancel(){
-			throw new System.InvalidOperationException("OnCancel should not be called while pointer is held up");
-		}
 	}
 	public abstract class AbsPointerUpInputProcessState<T>: AbsPointerUpInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
 		public AbsPointerUpInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine): base(engine){
@@ -96,10 +91,6 @@ namespace UISystem{
 		public override void OnDrag(ICustomEventData eventData){
 			engine.DragUIE(eventData);
 			UpdateDragWorldPosition(eventData.position);
-		}
- 		public override void OnCancel(){
-			engine.WaitForFirstTouch();
-			engine.ReleaseUIE();
 		}
 	}
 	public abstract class AbsPointerDownInputProcessState<T>: AbsPointerDownInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
@@ -170,6 +161,9 @@ namespace UISystem{
 				do nothing
 			pointer exit =>
 				WFRelease
+		*/
+		/*  In the event of cancel (pointer leaves in bound)
+			OnPointerUp is called first, and then OnPointerExit
 		*/
 		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim): base(procFac, engine, uim){
 		}

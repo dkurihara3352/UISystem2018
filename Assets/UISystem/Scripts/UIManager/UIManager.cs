@@ -8,6 +8,10 @@ namespace UISystem{
 		void SetDragWorldPosition(Vector2 dragPos);
 		Vector2 GetDragWorldPosition();
 		Transform GetUIElementReserveTrans();
+		int registeredID{get;}
+		bool TouchIDIsRegistered();
+		void UnregisterTouchID();
+		void RegisterTouchID(int touchID);
 	}
 	public class UIManager: IUIManager {
 		public UIManager(Transform uieReserveTrans){
@@ -21,6 +25,18 @@ namespace UISystem{
 		readonly Transform thisUIEReserveTrans;
 		public Transform GetUIElementReserveTrans(){
 			return thisUIEReserveTrans;
+		}
+		const int noFingerID = -10;
+		int thisRegisteredID = -10;
+		public int registeredID{get{return thisRegisteredID;}}
+		public bool TouchIDIsRegistered(){
+			return thisRegisteredID != noFingerID;
+		}
+		public void UnregisterTouchID(){
+			thisRegisteredID = noFingerID;
+		}
+		public void RegisterTouchID(int touchID){
+			thisRegisteredID = touchID;
 		}
 	}
 }

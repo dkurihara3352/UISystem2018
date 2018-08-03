@@ -125,17 +125,6 @@ public class UIAdaptorInputStateEngineTest {
         uie.Received(1).OnDrag(data);
     }
     [Test]
-    public void WaitingForTap_OnCancel_CallsUIEOnRelease(){
-        ITestUIAdaptorInputStateEngineConstArg arg = CreateMockConstArg();
-        IUIElement uie = arg.uia.GetUIElement();
-        TestUIAdaptorInputStateEngine engine = new TestUIAdaptorInputStateEngine(arg);
-        engine.OnPointerDown(Substitute.For<ICustomEventData>());
-        Assert.That(engine.isWaitingForTap, Is.True);
-        engine.OnCancel();
-
-        uie.Received(1).OnRelease();
-    }
-    [Test]
     public void WaitingForTap_OnPointerUp_SwitchesToWaitingForNextTouchState(){
         ITestUIAdaptorInputStateEngineConstArg arg = CreateMockConstArg();
         TestUIAdaptorInputStateEngine engine = new TestUIAdaptorInputStateEngine(arg);
@@ -538,8 +527,13 @@ public class UIAdaptorInputStateEngineTest {
         AssertTrue(engine.isWaitingForTap);
         AssertTouchCount(engine, 2);
 
-        engine.OnCancel();
-        uie.Received(1).OnRelease();
+        engine.OnPointerUp(underData);
+        uie.Received(1).OnTap(2);
+        AssertTrue(engine.isWaitingForNextTouch);
+        AssertTouchCount(engine, 2);
+
+        engine.ExpireProcess_Test();
+        uie.Received(2).OnDelayedRelease();
         AssertTrue(engine.isWaitingForFirstTouch);
         AssertTouchCount(engine, 0);
 
@@ -566,17 +560,17 @@ public class UIAdaptorInputStateEngineTest {
         AssertTouchCount(engine, 1);
 
         engine.ExpireProcess_Test();
-        uie.Received(1).OnDelayedRelease();
+        uie.Received(2).OnDelayedTouch();
         AssertTrue(engine.isWaitingForRelease);
         AssertTouchCount(engine, 0);
 
         engine.OnPointerUp(underData);
-        uie.Received(2).OnRelease();
+        uie.Received(1).OnRelease();
         AssertTrue(engine.isWaitingForNextTouch);
         AssertTouchCount(engine, 0);
 
         engine.ExpireProcess_Test();
-        uie.Received(2).OnDelayedRelease();
+        uie.Received(3).OnDelayedRelease();
         AssertTrue(engine.isWaitingForFirstTouch);
         AssertTouchCount(engine, 0);
 

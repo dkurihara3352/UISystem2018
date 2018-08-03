@@ -32,17 +32,6 @@ public class UIAdaptorInputStateTest{
 		);
 	}
 	[Test]
-	public void AbsPointerUpInputState_OnCancel_ThrowsException(){
-		AbsPointerUpInputState state = new TestAbsPointerUpState(Substitute.For<IUIAdaptorInputStateEngine>());
-		
-		Assert.Throws(
-			Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("OnCancel should not be called while pointer is held up"),
-			() =>{
-				state.OnCancel();
-			}
-		);
-	}
-	[Test]
 	public void AbsPointerUpInputState_OnBeginDrag_ThrowsException(){
 		AbsPointerUpInputState state = new TestAbsPointerUpState(Substitute.For<IUIAdaptorInputStateEngine>());
 

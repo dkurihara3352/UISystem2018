@@ -108,9 +108,6 @@ namespace UISystem{
 			public void OnPointerExit(ICustomEventData eventData){
 				thisCurState.OnPointerExit(eventData);
 			}
-			public void OnCancel(){
-				thisCurState.OnCancel();
-			}
 		/* IUIAdaptorStateHandler imple and states switch */
 			protected readonly WaitingForFirstTouchState thisWaitingForFirstTouchState;
 			protected readonly WaitingForTapState thisWaitingForTapState;

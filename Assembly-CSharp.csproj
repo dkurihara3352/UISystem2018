@@ -144,6 +144,7 @@
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\TurnImageDarknessProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\TestActivator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\TestEventHandler.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\CustomEventData.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\IUIAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\InstatiableUIAdaptor.cs" />
