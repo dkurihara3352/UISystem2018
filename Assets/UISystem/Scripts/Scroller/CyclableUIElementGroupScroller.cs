@@ -63,9 +63,17 @@ namespace UISystem{
 				perfectlyContainableElementsCount += 2;
 			return perfectlyContainableElementsCount;
 		}
-		protected override void DisplaceScrollerElement(Vector2 deltaP){
-			base.DisplaceScrollerElement(deltaP);
-			/* already translated to new local pos */
+		// protected override void DisplaceScrollerElement(Vector2 deltaP){
+		// 	base.DisplaceScrollerElement(deltaP);
+		// 	/* already translated to new local pos */
+		// 	for(int i = 0; i < 2; i ++)
+		// 		if(this.IsCyclable(i)){
+		// 			if(this.ShouldCycleThisFrame(i))
+		// 				Cycle();
+		// 	}
+		// }
+		protected override void DisplaceScrollerElementV2(Vector2 dragDeltaSinceTouch){
+			base.DisplaceScrollerElementV2(dragDeltaSinceTouch);
 			for(int i = 0; i < 2; i ++)
 				if(this.IsCyclable(i)){
 					if(this.ShouldCycleThisFrame(i))

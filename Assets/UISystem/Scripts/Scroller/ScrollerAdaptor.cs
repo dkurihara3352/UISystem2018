@@ -38,11 +38,13 @@ namespace UISystem{
 				IUIElement scrollerElement = scroller.GetChildUIEs()[0];
 				Vector2 elementLocalPos = scrollerElement.GetLocalPosition();
 				Vector2 cursorOffset = new Vector2(scroller.GetElementCursorOffsetInPixel(elementLocalPos.x, 0), scroller.GetElementCursorOffsetInPixel(elementLocalPos.y, 1));
+				Vector2 normalizedCursorPos = new Vector2(scroller.GetNormalizedCursoredPosition(elementLocalPos.x, 0), scroller.GetNormalizedCursoredPosition(elementLocalPos.y, 1));
 				Vector2 rectPos = new Vector2(10f, 10f);
 				Vector2 rectLength = new Vector2(300f, 20f);
 				GUI.Label(new Rect(rectPos, rectLength), "CursorOffset: " + cursorOffset.ToString());
 				GUI.Label(new Rect(new Vector2(10f, 30f), rectLength), "rubberMult: " + scroller.rubberBandLimitMultiplier.ToString());
 				GUI.Label(new Rect(new Vector2(10f, 50f), rectLength), "rubberLimit: " + scroller.rubberLimit.ToString());
+				GUI.Label(new Rect(new Vector2(10f, 70f), rectLength), "NormCursPos: " + normalizedCursorPos.ToString());
 			}
 		}
 	}

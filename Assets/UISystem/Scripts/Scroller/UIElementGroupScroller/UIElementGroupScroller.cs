@@ -124,8 +124,12 @@ namespace UISystem{
 				result[i] = GetElementGroupOffset(i);
 			return result;
 		}
-		protected override void DisplaceScrollerElement(Vector2 deltaP){
-			base.DisplaceScrollerElement(deltaP);
+		// protected override void DisplaceScrollerElement(Vector2 deltaP){
+		// 	base.DisplaceScrollerElement(deltaP);
+		// 	EvaluateCursoredGroupElements();
+		// }
+		protected override void DisplaceScrollerElementV2(Vector2 dragDeltaSinceTouch){
+			base.DisplaceScrollerElementV2(dragDeltaSinceTouch);
 			EvaluateCursoredGroupElements();
 		}
 		protected void EvaluateCursoredGroupElements(){
@@ -193,8 +197,8 @@ namespace UISystem{
 			return false;
 		}
 		readonly float thisStartSearchSpeed;
-		public override bool CheckForDynamicBoundarySnap(float deltaPosOnAxis, int dimension){
-			if(!base.CheckForDynamicBoundarySnap(deltaPosOnAxis, dimension)){
+		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, int dimension){
+			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, dimension)){
 				if(Mathf.Abs(deltaPosOnAxis) <= thisStartSearchSpeed){
 					IUIElement groupElementAtCusorRefPoint = GetUIElementUnderCursorReferencePoint();
 					SnapToGroupElement(groupElementAtCusorRefPoint, deltaPosOnAxis, dimension);
