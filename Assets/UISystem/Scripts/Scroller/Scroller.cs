@@ -221,7 +221,14 @@ namespace UISystem{
 			thisScrollerElement.SetLocalPosition(newElementLocalPosition);
 		}
 		protected Vector2 CalcDragDeltaSinceTouch(Vector2 dragPosition){
-			return dragPosition - thisTouchPosition;
+			Vector2 rawDisplacement = dragPosition - thisTouchPosition;
+			if(thisScrollerAxis == ScrollerAxis.Both)
+				return rawDisplacement;
+			else if(thisScrollerAxis == ScrollerAxis.Horizontal)
+				return new Vector2(rawDisplacement.x, 0f);
+			else
+				return new Vector2(0f, rawDisplacement.y);
+			
 		}
 		protected Vector2 GetScrollerElementRubberBandedLocalPosition(Vector2 displacement){
 			Vector2 result = new Vector2();
@@ -350,6 +357,7 @@ namespace UISystem{
 				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
 				if(thisIsEnabledInertia)
 					StartInertialScroll(eventData.velocity);
+				base.OnSwipeImple(eventData);
 			}else{
 				CheckForStaticBoundarySnap();
 				base.OnSwipeImple(eventData);
@@ -457,6 +465,7 @@ namespace UISystem{
 			*/
 			for(int i = 0; i < 2; i ++)
 				StopRunningElementMotorProcess(i);
+			base.OnTouchImple(touchCount);
 		}
 	}
 
