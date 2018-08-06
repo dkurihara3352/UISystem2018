@@ -11,6 +11,58 @@ namespace UISystem{
 			rectTrans.pivot = new Vector2(0f, 0f);
 			rectTrans.anchorMin = new Vector2(0f, 0f);
 			rectTrans.anchorMax = new Vector2(0f, 0f);
+
+
+			Rect guiRect = CreateGUIRect(new Vector2(1f, 1f), new Vector2(.2f, .3f));
+			rect1 = GetSubRect(guiRect, 0, 4);
+			rect2 = GetSubRect(guiRect, 1, 4);
+			rect3 = GetSubRect(guiRect, 2, 4);
+			rect4 = GetSubRect(guiRect, 3, 4);
+		}
+		protected Rect CreateGUIRect(Vector2 normalizedPosition, Vector2 normalizedSize){
+			MakeSureValuesAreInRange(normalizedPosition);
+			MakeSureValuesAreInRange(normalizedSize);
+			Vector2 rectLength = new Vector2(Screen.width * normalizedSize.x, Screen.height * normalizedSize.y);
+			float rectX = (Screen.width - rectLength.x) * normalizedPosition.x;
+			float rectY = (Screen.height - rectLength.y) * normalizedPosition.y;
+			Vector2 rectPosition = new Vector2(rectX, rectY);
+			return new Rect(rectPosition, rectLength);
+		}
+		protected Rect GetSubRect(Rect sourceRect, int index, int rowCount){
+			if(index >= rowCount)
+				throw new System.InvalidOperationException("index out of range");
+			float rectHeight = sourceRect.height/ rowCount;
+			float rectPosY = index * rectHeight + sourceRect.y;
+			return new Rect(new Vector2(sourceRect.x, rectPosY), new Vector2(sourceRect.width, rectHeight));
+		}
+		void MakeSureValuesAreInRange(Vector2 value){
+			for(int i = 0; i < 2; i ++)
+				if(value[i] < 0f || value[i] > 1f)
+					throw new System.InvalidOperationException("value is not in range");
+		}
+		Rect rect1;
+		Rect rect2;
+		Rect rect3;
+		Rect rect4;
+		public bool thisGUIIsEnabled;
+		public virtual void OnGUI(){
+			if(thisGUIIsEnabled){
+				GUI.color = Color.white;
+				GUI.Label(rect1, "event: " + thisEventName);
+				GUI.Label(rect2, "pos: " + thisPointerPos.ToString());
+				GUI.Label(rect3, "del: " + thisPointerDelta.ToString());
+				GUI.Label(rect4, "vel: " + thisPointerVel.ToString());
+			}
+		}
+		Vector2 thisPointerPos;
+		Vector2 thisPointerDelta;
+		Vector2 thisPointerVel;
+		string thisEventName = "no event";
+		void UpdatePointerGUIData(ICustomEventData data, string eventName){
+			thisPointerPos = data.position;
+			thisPointerDelta = data.deltaPos;
+			thisPointerVel = data.velocity;
+			thisEventName = eventName;
 		}
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
@@ -46,6 +98,8 @@ namespace UISystem{
 				if(imageRectTrans == null)
 					throw new System.InvalidOperationException("image transform must have RectTransform component");
 				imageRectTrans.pivot = new Vector2(0f, 0f);
+				imageRectTrans.anchorMin = new Vector2(0f, 0f);
+				imageRectTrans.anchorMax = new Vector2(0f, 0f);
 				imageRectTrans.sizeDelta = this.GetRect().size;
 				imageRectTrans.anchoredPosition = Vector3.zero;
 				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness);
@@ -171,6 +225,7 @@ namespace UISystem{
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerEnter(customEventData);
+						UpdatePointerGUIData(customEventData, "OnPointerEnter");
 					}
 				}
 			}
@@ -179,6 +234,7 @@ namespace UISystem{
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerExit(customEventData);
+						UpdatePointerGUIData(customEventData, "OnPointerExit");
 					}
 				}
 			}
@@ -187,6 +243,7 @@ namespace UISystem{
 					thisUIM.RegisterTouchID(eventData.pointerId);
 					ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 					thisInputStateEngine.OnPointerDown(customEventData);
+					UpdatePointerGUIData(customEventData, "OnPointerDown");
 				}
 			}
 			public void OnPointerUp(PointerEventData eventData){
@@ -195,6 +252,7 @@ namespace UISystem{
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerUp(customEventData);
 						thisUIM.UnregisterTouchID();
+						UpdatePointerGUIData(customEventData, "OnPointerUp");
 					}
 				}
 			}
@@ -204,6 +262,7 @@ namespace UISystem{
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnBeginDrag(customEventData);
+						UpdatePointerGUIData(customEventData, "OnBeginDrag");
 					}
 				}
 			}
@@ -212,6 +271,7 @@ namespace UISystem{
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnDrag(customEventData);
+						UpdatePointerGUIData(customEventData, "OnDrag");
 					}
 				}
 			}

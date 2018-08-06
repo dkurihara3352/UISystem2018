@@ -87,7 +87,7 @@ namespace UISystem{
 		public float GetSwipeVelocityThreshold(){
 			return thisSwipeVelocityThreshold;
 		}
-		float thisSwipeVelocityThreshold = 1f;
+		float thisSwipeVelocityThreshold = 200f;
 		/* IRawInputHandler */
 			public void OnPointerDown(ICustomEventData eventData){
 				thisCurState.OnPointerDown(eventData);

@@ -17,9 +17,9 @@ namespace UISystem{
 		readonly Color thisImageColor;
 		readonly int thisFontSize;
 		public IUIElement CreateUIElementWithIndexText(int index, Vector2 sizeDelta, IUISystemProcessFactory processFactory){
-			IUIElementWithIndexTextAdaptorInitializationData initData = new UIElementWithIndexTextAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor);
-			IUIElementWithIndexTextAdaptorInstantiationData instData = new UIElementWithIndexTextAdaptorInstantiationData(sizeDelta, initData);
-			UIElementWithIndexTextAdaptor uia = this.CreateInstatiableUIA<UIElementWithIndexTextAdaptor>(instData);
+			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor);
+			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(sizeDelta, initData);
+			IndexElementAdaptor uia = this.CreateInstatiableUIA<IndexElementAdaptor>(instData);
 			IUIAActivationData activationData = new RootUIAActivationData(thisUIM, processFactory, this);
 			uia.GetReadyForActivation(activationData);
 			return uia.GetUIElement();

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElementGroupScroller: IScroller{}
+	public interface IUIElementGroupScroller: IScroller{
+		IUIElement[] GetCursoredElements();
+		int GetGroupElementIndex(IUIElement groupElement);
+	}
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller, INonActivatorUIElement{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisCursorSize = MakeCursorSizeAtLeastOne(arg.cursorSize);
@@ -97,6 +100,13 @@ namespace UISystem{
 			}
 		}
 		IUIElement[] thisCursoredElements;
+		public IUIElement[] GetCursoredElements(){
+			return thisCursoredElements;
+		}
+		public int GetGroupElementIndex(IUIElement groupElement){
+			List<IUIElement> groupElements = thisUIElementGroup.GetGroupElements();
+			return groupElements.IndexOf(groupElement);
+		}
 		protected void SnapToGroupElement(IUIElement groupElement, float initialDeltaPosOnAxis, int dimension){
 			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(groupElement, dimension);
 			SnapTo(groupElementNormalizedCursoredPosition, initialDeltaPosOnAxis, dimension);
@@ -124,10 +134,6 @@ namespace UISystem{
 				result[i] = GetElementGroupOffset(i);
 			return result;
 		}
-		// protected override void DisplaceScrollerElement(Vector2 deltaP){
-		// 	base.DisplaceScrollerElement(deltaP);
-		// 	EvaluateCursoredGroupElements();
-		// }
 		protected override void DisplaceScrollerElementV2(Vector2 dragDeltaSinceTouch){
 			base.DisplaceScrollerElementV2(dragDeltaSinceTouch);
 			EvaluateCursoredGroupElements();
@@ -151,7 +157,8 @@ namespace UISystem{
 						uie.OnScrollerDefocus();
 					foreach(IUIElement uie in groupElementsToFocus)
 						uie.OnScrollerFocus();
-					thisCursoredElements = currentCursoredElements;
+					// thisCursoredElements = currentCursoredElements;
+					thisCursoredElements = newCursoredElements;
 				}
 			}
 		}
@@ -191,16 +198,17 @@ namespace UISystem{
 			groupElementsToFocus = groupElementsToFocusResult.ToArray();
 		}
 		bool IsFoundIn(IUIElement uie, IUIElement[] array){
-			foreach(IUIElement uieInAray in array)
-				if(uieInAray == uie)
-					return true;
+			if(array != null)
+				foreach(IUIElement uieInAray in array)
+					if(uieInAray == uie)
+						return true;
 			return false;
 		}
 		readonly float thisStartSearchSpeed;
-		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, int dimension){
-			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, dimension)){
-				if(Mathf.Abs(deltaPosOnAxis) <= thisStartSearchSpeed){
-					IUIElement groupElementAtCusorRefPoint = GetUIElementUnderCursorReferencePoint();
+		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
+			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
+				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
+					IUIElement groupElementAtCusorRefPoint = thisCursoredElements[0];
 					SnapToGroupElement(groupElementAtCusorRefPoint, deltaPosOnAxis, dimension);
 					return true;				
 				}else
@@ -215,10 +223,10 @@ namespace UISystem{
 			if(thisShouldProcessDrag){
 				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
 				if(thisSwipeToSnapNext){
-					SnapNext(swipeDeltaPos);
+					SnapNext(swipeDeltaPos, eventData.velocity);
 				}else{
 					if(thisIsEnabledInertia)
-						StartInertialScroll(swipeDeltaPos);
+						StartInertialScroll(eventData.velocity);
 				}				
 			}else
 				base.OnSwipeImple(eventData);
@@ -226,7 +234,7 @@ namespace UISystem{
 			ResetDrag();
 		}
 		readonly bool thisSwipeToSnapNext;
-		protected void SnapNext(Vector2 swipeDeltaPos){
+		protected void SnapNext(Vector2 swipeDeltaPos, Vector2 velocity){
 			/*  Find the next groupElement in the direction of swipe delta
 				if not found, start inertial scroll instead
 			*/
@@ -239,7 +247,7 @@ namespace UISystem{
 				SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
 			}else{
 				if(thisIsEnabledInertia)
-					StartInertialScroll(swipeDeltaPos);
+					StartInertialScroll(velocity);
 			}
 		}
 		protected int[] GetSwipeNextTargetGroupElementArrayIndex(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
@@ -247,9 +255,9 @@ namespace UISystem{
 			for(int i = 0; i < 2; i ++){
 				if(swipeDeltaPos[i] != 0f){
 					if(swipeDeltaPos[i] < 0f)
-						result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
-					else
 						result[i] = currentGroupElementAtCurRefPointIndex[i] + 1;
+					else
+						result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
 				}else
 					result[i] = currentGroupElementAtCurRefPointIndex[i];
 			}
@@ -260,7 +268,7 @@ namespace UISystem{
 				if(index[i] < 0)
 					return false;
 				else
-					if(index[i] >= thisUIElementGroup.GetGroupElementsArraySize(i))
+					if(index[i] > thisUIElementGroup.GetGroupElementsArraySize(i) - thisCursorSize[i])
 						return false;
 			}
 			return true;

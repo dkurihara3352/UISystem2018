@@ -6,7 +6,7 @@ namespace UISystem{
 	public interface IScroller: IUIElement{
 		void SwitchRunningElementMotorProcess(IScrollerElementMotorProcess process, int dimension);
 		void ClearScrollerElementMotorProcess(IScrollerElementMotorProcess processToClear, int dimension);
-		bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, int dimension);
+		bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension);
 		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
 		float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension);
 		float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension);
@@ -420,11 +420,7 @@ namespace UISystem{
 				verticalProcess.Run();
 			}
 		}
-		protected void CheckForDynamicBoundarySnap(Vector2 deltaPos){
-			for(int i = 0; i < 2; i ++)
-				CheckForDynamicBoundarySnapOnAxis(deltaPos[i], i);
-		}
-		public virtual bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, int dimension){
+		public virtual bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
 			float scrollerElementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
 			if(deltaPosOnAxis != 0f)
 				if(ElementIsScrolledToIncreaseCursorOffset(deltaPosOnAxis, scrollerElementLocalPosOnAxis, dimension)){

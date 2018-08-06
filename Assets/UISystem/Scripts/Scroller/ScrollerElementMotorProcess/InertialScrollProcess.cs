@@ -47,7 +47,7 @@ namespace UISystem{
 			thisScroller.SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis, thisDimension);
 			thisPrevVelocity = newVelocity;
 			thisPrevLocalPosOnAxis = newLocalPosOnAxis;
-			thisScroller.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, thisDimension);
+			thisScroller.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, newVelocity, thisDimension);
 
 			if(thisElapsedTime >= thisExpireTime)
 				Expire();

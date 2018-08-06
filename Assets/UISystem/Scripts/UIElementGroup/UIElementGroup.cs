@@ -6,6 +6,7 @@ using DKUtility;
 namespace UISystem{
 	public interface IUIElementGroup: IUIElement{
 		int GetSize();
+		List<IUIElement> GetGroupElements();
 		int GetGroupElementsArraySize(int dimension);
 		IUIElement GetGroupElement(int index);
 		IUIElement GetGroupElement(int columnIndex, int rowIndex);
@@ -41,6 +42,13 @@ namespace UISystem{
 		protected List<T> thisElements;/* explicitly and externally set */
 		public IUIElement GetGroupElement(int index){
 			return thisElements[index];
+		}
+		public List<IUIElement> GetGroupElements(){
+			List<IUIElement> result = new List<IUIElement>();
+			foreach(T element in thisElements){
+				result.Add(element);
+			}
+			return result;
 		}
 		public int GetSize(){return thisElements.Count;}
 		readonly int thisColumnCountConstraint = 0;

@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace UISystem{
-	public class UIElementWithIndexTextAdaptor : UIAdaptor, IInstatiableUIAdaptor {
+	public class IndexElementAdaptor : UIAdaptor, IInstatiableUIAdaptor {
 		public void SetInitializationFields(IUIAInitializationData data){
-			IUIElementWithIndexTextAdaptorInitializationData typedData = data as IUIElementWithIndexTextAdaptorInitializationData;
+			IIndexElementAdaptorInitializationData typedData = data as IIndexElementAdaptorInitializationData;
 			thisIndexForText = typedData.index;
 			thisFont = typedData.font;
 			thisFontSize = typedData.fontSize;
@@ -74,7 +74,7 @@ namespace UISystem{
 			return text;
 		}
 	}
-	public interface IUIElementWithIndexTextAdaptorInitializationData: IUIAInitializationData{
+	public interface IIndexElementAdaptorInitializationData: IUIAInitializationData{
 		int index{get;}
 		Font font{get;}
 		int fontSize{get;}
@@ -82,8 +82,8 @@ namespace UISystem{
 		float imageDefaultDarkness{get;}
 		float imageDarkenedDarkness{get;}
 	}
-	public struct UIElementWithIndexTextAdaptorInitializationData: IUIElementWithIndexTextAdaptorInitializationData{
-		public UIElementWithIndexTextAdaptorInitializationData(int index, Font font, int fontSize, Color imageColor){
+	public struct IndexElementAdaptorInitializationData: IIndexElementAdaptorInitializationData{
+		public IndexElementAdaptorInitializationData(int index, Font font, int fontSize, Color imageColor){
 			thisIndex = index;
 			thisFont = font;
 			thisImageColor = imageColor;
@@ -100,16 +100,16 @@ namespace UISystem{
 		public float imageDefaultDarkness{get{return .8f;}}
 		public float imageDarkenedDarkness{get{return .5f;}}
 	}
-	public interface IUIElementWithIndexTextAdaptorInstantiationData: IInstantiableUIAdaptorInstantiationData{
+	public interface IIndexElementAdaptorInstantiationData: IInstantiableUIAdaptorInstantiationData{
 	}
-	public struct UIElementWithIndexTextAdaptorInstantiationData: IUIElementWithIndexTextAdaptorInstantiationData{
-		public UIElementWithIndexTextAdaptorInstantiationData(Vector2 sizeDelta, IUIElementWithIndexTextAdaptorInitializationData initData){
+	public struct IndexElementAdaptorInstantiationData: IIndexElementAdaptorInstantiationData{
+		public IndexElementAdaptorInstantiationData(Vector2 sizeDelta, IIndexElementAdaptorInitializationData initData){
 			thisSizeDelta = sizeDelta;
 			thisInitData = initData;
 		}
 		readonly Vector2 thisSizeDelta;
 		public Vector2 sizeDelta{get{return thisSizeDelta;}}
-		readonly IUIElementWithIndexTextAdaptorInitializationData thisInitData;
+		readonly IIndexElementAdaptorInitializationData thisInitData;
 		public IUIAInitializationData initializationData{get{return thisInitData;}}
 	}
 }
