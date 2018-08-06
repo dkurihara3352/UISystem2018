@@ -31,12 +31,13 @@ namespace UISystem{
 		public UIAdaptorInputStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
 			thisUIE = uia.GetUIElement();
 			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(this);
-			thisWaitingForTapState = new WaitingForTapState(procFac, this, uim);
-			thisWaitingForReleaseState = new WaitingForReleaseState(procFac, this, uim);
+			thisWaitingForTapState = new WaitingForTapState(procFac, this, uim, velocityStackSize);
+			thisWaitingForReleaseState = new WaitingForReleaseState(procFac, this, uim, velocityStackSize);
 			thisWaitingForNextTouchState = new WaitingForNextTouchState(procFac, this);
 			SetWithInitState();
 			ResetTouchCounter();
 		}
+		const int velocityStackSize = 3;
 		readonly IUIElement thisUIE;
 		void SetWithInitState(){
 			this.WaitForFirstTouch();

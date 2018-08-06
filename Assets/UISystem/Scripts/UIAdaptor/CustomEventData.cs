@@ -8,6 +8,7 @@ namespace UISystem{
 		Vector2 deltaPos{get;}
 		Vector2 position{get;}
 		Vector2 velocity{get;}
+		void SetVelocity(Vector2 velocity);
 	}
 	public struct CustomEventData: ICustomEventData{
 		public CustomEventData(PointerEventData sourceData, float deltaTime){
@@ -41,5 +42,8 @@ namespace UISystem{
 		Vector2 thisPosition;
 		public Vector2 velocity{get{return thisVelocity;}}
 		Vector2 thisVelocity;
+		public void SetVelocity(Vector2 velocity){
+			thisVelocity = velocity;
+		}
 	}
 }

@@ -9,6 +9,7 @@ using DKUtility;
 
 [TestFixture, Category("UISystem")]
 public class UIAdaptorInputStateTest{
+	const int velocityStackSize = 3;
 	[Test]
 	public void AbsPointerUpInputState_OnPointerUp_ThrowsException(){
 		AbsPointerUpInputState state = new TestAbsPointerUpState(Substitute.For<IUIAdaptorInputStateEngine>());
@@ -79,7 +80,7 @@ public class UIAdaptorInputStateTest{
 	}
 	[Test]
 	public void AbsPointerDownIputState_OnPointerDown_ThrowsException(){
-		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>());
+		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>(), velocityStackSize);
 
 		Assert.Throws(
 			Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("OnPointerDown should not be called while pointer is already held down"),
@@ -91,7 +92,7 @@ public class UIAdaptorInputStateTest{
 	[Test, TestCaseSource(typeof(AbsPointerDownInputState_VelocityIsOverSwipeVelocityThreshold_TestCase), "cases")]
 	public void AbsPointerDownInputState_VelocityIsOverSwipeVelocityThreshold_Various(Vector2 velocity, float velocityThreshold, bool expected){
 		IUIAdaptorInputStateEngine engine = Substitute.For<IUIAdaptorInputStateEngine>();
-		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>());
+		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>(), velocityStackSize);
 		engine.GetSwipeVelocityThreshold().Returns(velocityThreshold);
 
 		bool actual = state.VelocityIsOverSwipeVelocityThreshold_Test(velocity);
@@ -112,7 +113,7 @@ public class UIAdaptorInputStateTest{
 	[Test, TestCaseSource(typeof(AbsPointerDownInputState_OnDrag_CallsUIMUpdateDragWorldPosition_TestCase), "cases")]
 	public void AbsPointerDownInputState_OnDrag_CallsUIMUpdateDragWorldPosition(Vector2 dragWorldPosition){
 		IUIManager uim = Substitute.For<IUIManager>();
-		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(Substitute.For<IUIAdaptorInputStateEngine>(), uim);
+		TestAbsPointerDownInputState state = new TestAbsPointerDownInputState(Substitute.For<IUIAdaptorInputStateEngine>(), uim, velocityStackSize);
 		ICustomEventData customEventData = Substitute.For<ICustomEventData>();
 		customEventData.position.Returns(dragWorldPosition);
 
@@ -128,7 +129,7 @@ public class UIAdaptorInputStateTest{
 	[Test]
 	public void AbsPointerDownInputState_OnDrag_CallsEngineDragUIE(){
 		IUIAdaptorInputStateEngine engine = Substitute.For<IUIAdaptorInputStateEngine>();
-		AbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>());
+		AbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>(), velocityStackSize);
 
 		ICustomEventData data = Substitute.For<ICustomEventData>();
 		state.OnDrag(data);
@@ -138,7 +139,7 @@ public class UIAdaptorInputStateTest{
 	[Test]
 	public void AbsPointerDownInputState_OnBeginDrag_CallsEngineBeginDragUIE(){
 		IUIAdaptorInputStateEngine engine = Substitute.For<IUIAdaptorInputStateEngine>();
-		AbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>());
+		AbsPointerDownInputState state = new TestAbsPointerDownInputState(engine, Substitute.For<IUIManager>(), velocityStackSize);
 
 		ICustomEventData data = Substitute.For<ICustomEventData>();
 		state.OnBeginDrag(data);
@@ -147,7 +148,7 @@ public class UIAdaptorInputStateTest{
 	}
 	[Test]
 	public void AbsPointerDownInputProcessState_OnEnter_CallsThisProcessRun(){
-		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>());
+		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>(), velocityStackSize);
 		
 		state.OnEnter();
 
@@ -155,7 +156,7 @@ public class UIAdaptorInputStateTest{
 	}
 	[Test]
 	public void AbsPointerDownInputProcessState_ExpireProcess_ThisProcessIsRunning_CallsThisProcessExpire(){
-		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>());
+		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>(), velocityStackSize);
 
 		state.OnEnter();
 		Assert.That(state.process.IsRunning(), Is.True);
@@ -169,7 +170,7 @@ public class UIAdaptorInputStateTest{
 	}
 	[Test]
 	public void AbsPointerDownInputProcessState_OnExit_ThisProcessIsRunning_CallsThisProcessStopAndSetNull(){
-		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>());
+		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>(), velocityStackSize);
 		IWaitAndExpireProcess process = state.process;
 		
 		state.OnEnter();
@@ -230,7 +231,7 @@ public class UIAdaptorInputStateTest{
 		Assert.That(process.IsRunning(), Is.False);
 	}
 	public class TestAbsPointerDownInputProcessState: AbsPointerDownInputProcessState<IWaitAndExpireProcess>{
-		public TestAbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine, IUIManager uim):base(processFactory, engine, uim){
+		public TestAbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine, IUIManager uim, int velocityStackSize):base(processFactory, engine, uim, velocityStackSize){
 			thisProcess = Substitute.For<IWaitAndExpireProcess>();
 			thisProcess.When(x => {
 				x.Run();
@@ -256,7 +257,7 @@ public class UIAdaptorInputStateTest{
 	}
 	[Test]
 	public void TestAbsPointerDownInputProcessState_WorksFine(){
-		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>());
+		TestAbsPointerDownInputProcessState state = new TestAbsPointerDownInputProcessState(Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIAdaptorInputStateEngine>(), Substitute.For<IUIManager>(), 3);
 		IWaitAndExpireProcess process = state.process;
 		
 		Assert.That(process.IsRunning(), Is.False);
@@ -270,7 +271,7 @@ public class UIAdaptorInputStateTest{
 		Assert.That(process.IsRunning(), Is.False);
 	}
 	public class TestAbsPointerDownInputState: AbsPointerDownInputState{
-		public TestAbsPointerDownInputState(IUIAdaptorInputStateEngine engine, IUIManager uim): base(engine, uim){}
+		public TestAbsPointerDownInputState(IUIAdaptorInputStateEngine engine, IUIManager uim, int velocityStackSize): base(engine, uim, velocityStackSize){}
 		public override void OnEnter(){}
 		public override void OnExit(){}
 		public override void OnPointerUp(ICustomEventData eventData){}

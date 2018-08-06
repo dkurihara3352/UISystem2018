@@ -68,8 +68,14 @@ namespace UISystem{
 		}
 	}
 	public abstract class AbsPointerDownInputState: AbsUIAdaptorInputState{
-		public AbsPointerDownInputState(IUIAdaptorInputStateEngine engine, IUIManager uim): base(engine){
+		public AbsPointerDownInputState(IUIAdaptorInputStateEngine engine, IUIManager uim, int velocityStackSize): base(engine){
 			thisUIM = uim;
+			thisVelocityStackSize = velocityStackSize;
+			thisVelocityStack = new Vector2[velocityStackSize];
+		}
+		int thisVelocityStackSize;
+		public override void OnEnter(){
+			thisVelocityStack = new Vector2[thisVelocityStackSize];
 		}
 		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
@@ -87,19 +93,46 @@ namespace UISystem{
 		}
 		public override void OnBeginDrag(ICustomEventData eventData){
 			engine.BeginDragUIE(eventData);
+			PushVelocityStack(eventData.velocity);
 		}
 		public override void OnDrag(ICustomEventData eventData){
 			engine.DragUIE(eventData);
 			UpdateDragWorldPosition(eventData.position);
+			PushVelocityStack(eventData.velocity);
+		}
+		protected void PushVelocityStack(Vector2 velocity){
+			int stackSize = thisVelocityStack.Length;
+			Vector2[] newStack = new Vector2[stackSize];
+			for(int i = 0; i < stackSize; i ++){
+				if(i < stackSize -1)
+					newStack[i] = thisVelocityStack[i + 1];
+				else
+					newStack[i] = velocity;
+			}
+			thisVelocityStack = newStack;
+		}
+		Vector2[] thisVelocityStack;
+		protected Vector2 GetAverageVelocity(){
+			int stackSize = thisVelocityStack.Length;
+			Vector2 sum = Vector2.zero;
+			int nonZeroCount = 0;
+			for(int i = 0; i < stackSize; i ++){
+				if(thisVelocityStack[i] != Vector2.zero){
+					nonZeroCount ++;
+					sum += thisVelocityStack[i];
+				}
+			}
+			return sum/ nonZeroCount;
 		}
 	}
 	public abstract class AbsPointerDownInputProcessState<T>: AbsPointerDownInputState, IWaitAndExpireProcessState where T: class, IWaitAndExpireProcess{
-		public AbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine ,IUIManager uim): base(engine, uim){
+		public AbsPointerDownInputProcessState(IUISystemProcessFactory processFactory, IUIAdaptorInputStateEngine engine ,IUIManager uim, int velocityStackSize): base(engine, uim, velocityStackSize){
 			thisProcessFactory = processFactory;
 		}
 		readonly protected IUISystemProcessFactory thisProcessFactory;
 		protected T thisProcess;
 		public override void OnEnter(){
+			base.OnEnter();
 			thisProcess = CreateProcess();
 			thisProcess.Run();
 		}
@@ -165,10 +198,15 @@ namespace UISystem{
 		/*  In the event of cancel (pointer leaves in bound)
 			OnPointerUp is called first, and then OnPointerExit
 		*/
-		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim): base(procFac, engine, uim){
+		public WaitingForTapState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim, int velocityStackSize): base(procFac, engine, uim, velocityStackSize){
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
+
+			PushVelocityStack(eventData.velocity);
+			Vector2 velocity = GetAverageVelocity();
+			eventData.SetVelocity(velocity);
+
 			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
 				engine.SwipeUIE(eventData);
 			else
@@ -209,7 +247,7 @@ namespace UISystem{
 			pointer exit =>
 				do nothing
 		*/
-		public WaitingForReleaseState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim) :base(procFac, engine, uim){
+		public WaitingForReleaseState(IUISystemProcessFactory procFac, IUIAdaptorInputStateEngine engine, IUIManager uim, int velocityStackSize) :base(procFac, engine, uim, velocityStackSize){
 		}
 		public override void OnEnter(){
 			base.OnEnter();
@@ -217,6 +255,11 @@ namespace UISystem{
 		}
 		public override void OnPointerUp(ICustomEventData eventData){
 			engine.WaitForNextTouch();
+
+			PushVelocityStack(eventData.velocity);
+			Vector2 velocity = GetAverageVelocity();
+			eventData.SetVelocity(velocity);
+
 			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
 				engine.SwipeUIE(eventData);
 			else
