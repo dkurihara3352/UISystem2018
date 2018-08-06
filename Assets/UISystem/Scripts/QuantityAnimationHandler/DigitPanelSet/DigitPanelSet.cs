@@ -15,7 +15,11 @@ namespace UISystem{
 			*/
 			thisLesserPanel = CreateDigitPanel(arg.panelDim, arg.padding, isLesser: true);
 			thisGreaterPanel = CreateDigitPanel(arg.panelDim, arg.padding, isLesser: false);
-			CalcAndSetRectDimension(arg.panelDim, arg.padding);
+			// CalcAndSetRectDimension(arg.panelDim, arg.padding);
+			/*  Rect is calced and set in factory
+				width => panelDim.x
+				height => panelDim.y * 2 + padding.y
+			*/
 			thisDigitPlace = arg.digitPlace;
 			thisPanelHeight = arg.panelDim.y;
 			thisPaddingY = arg.padding.y;

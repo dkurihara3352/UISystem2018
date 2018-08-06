@@ -17,16 +17,16 @@ namespace UISystem{
 	}
 
 	public class UIImage: IUIImage{
-		public UIImage(Image image, Transform imageTrans, float defaultDarkness, float darkenedDarkness){
-			thisImage = image;
+		public UIImage(Graphic graphicComponent, Transform imageTrans, float defaultDarkness, float darkenedDarkness){
+			thisGraphicComponent = graphicComponent;
 			thisImageTrans = imageTrans;
 			thisDefaultDarkness = defaultDarkness;
 			thisDarkenedDarkness = darkenedDarkness;
 			SetDarkness(thisDefaultDarkness);
 		}
-		readonly protected Image thisImage;
+		readonly protected Graphic thisGraphicComponent;
 		public float GetCurrentDarkness(){
-			Color curColor = thisImage.color;
+			Color curColor = thisGraphicComponent.color;
 			float h;
 			float s;
 			float v;
@@ -46,7 +46,7 @@ namespace UISystem{
 			// Color newColor = GetColorFormDarkness(darkness);
 			// thisImage.color = newColor;
 			// curDarkness = darkness;
-			Color curColor = thisImage.color;
+			Color curColor = thisGraphicComponent.color;
 			float a = curColor.a;
 			float h;
 			float s;
@@ -55,7 +55,7 @@ namespace UISystem{
 			v = darkness;
 			Color newColor = Color.HSVToRGB(h, s, v);
 			newColor.a = a;
-			thisImage.color = newColor;
+			thisGraphicComponent.color = newColor;
 		}
 		// Color GetColorFormDarkness(float darkness){
 		// 	return Color.Lerp(Color.black, Color.white, darkness);

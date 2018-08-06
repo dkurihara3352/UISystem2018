@@ -7,4 +7,8 @@ namespace UISystem{
 		void SetInitializationFields(IUIAInitializationData data);
 	}
 	public interface IUIAInitializationData{}
+	public interface IInstantiableUIAdaptorInstantiationData{
+		Vector2 sizeDelta{get;}
+		IUIAInitializationData initializationData{get;}
+	}
 }

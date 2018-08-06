@@ -14,11 +14,11 @@ namespace UISystem.PickUpUISystem{
 		}
 		readonly IQuantityRoller thisQuantityRoller;
 		public void SetEmptiness(float emptiness){
-			Color curColor = thisImage.color;
+			Color curColor = thisGraphicComponent.color;
 			curColor.a = emptiness;
 		}
 		public float GetEmptiness(){
-			return thisImage.color.a;
+			return thisGraphicComponent.color.a;
 		}
 		public void SetItemImage(IUIItem item){
 

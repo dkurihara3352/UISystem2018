@@ -7,14 +7,14 @@ namespace UISystem{
 	public interface IUIManager{
 		void SetDragWorldPosition(Vector2 dragPos);
 		Vector2 GetDragWorldPosition();
-		Transform GetUIElementReserveTrans();
+		RectTransform GetUIElementReserveTrans();
 		int registeredID{get;}
 		bool TouchIDIsRegistered();
 		void UnregisterTouchID();
 		void RegisterTouchID(int touchID);
 	}
 	public class UIManager: IUIManager {
-		public UIManager(Transform uieReserveTrans){
+		public UIManager(RectTransform uieReserveTrans){
 			thisUIEReserveTrans = uieReserveTrans;
 		}
 		Vector2 thisDragWorldPosition;
@@ -22,8 +22,8 @@ namespace UISystem{
 			thisDragWorldPosition = dragPos;
 		}
 		public Vector2 GetDragWorldPosition(){return thisDragWorldPosition;}
-		readonly Transform thisUIEReserveTrans;
-		public Transform GetUIElementReserveTrans(){
+		readonly RectTransform thisUIEReserveTrans;
+		public RectTransform GetUIElementReserveTrans(){
 			return thisUIEReserveTrans;
 		}
 		const int noFingerID = -10;

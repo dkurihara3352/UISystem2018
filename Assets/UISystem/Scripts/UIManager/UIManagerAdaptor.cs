@@ -8,7 +8,7 @@ namespace UISystem{
 		IUIManager uiManager;
 		public ProcessManager processManager;
 		public UIAdaptor rootUIAdaptor;/* assigned in inspector*/
-		public Transform uieReserveTrans;
+		public RectTransform uieReserveTrans;
 
 		public void Awake(){
 			uiManager = new UIManager(uieReserveTrans);

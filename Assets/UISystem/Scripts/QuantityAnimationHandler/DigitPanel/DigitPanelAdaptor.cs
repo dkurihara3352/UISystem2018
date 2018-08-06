@@ -35,6 +35,17 @@ namespace UISystem{
 			return new DigitPanel(arg);
 		}
 	}
+	public interface IDigitPanelInstantiationData: IInstantiableUIAdaptorInstantiationData{}
+	public struct DigitPanelInstantiationData: IDigitPanelInstantiationData{
+		public DigitPanelInstantiationData(Vector2 sizeDelta, IDigitPanelAdaptorInitializationData initData){
+			thisSizeDelta = sizeDelta;
+			thisInitData = initData;
+		}
+		readonly Vector2 thisSizeDelta;
+		public Vector2 sizeDelta{get{return thisSizeDelta;}}
+		readonly IDigitPanelAdaptorInitializationData thisInitData;
+		public IUIAInitializationData initializationData{get{return thisInitData;}}
+	}
 	public interface IDigitPanelAdaptorInitializationData: IUIAInitializationData{
 		Vector2 panelDim{get;}
 		float localPosY{get;}

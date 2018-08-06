@@ -12,12 +12,14 @@ namespace UISystem{
 		int[] GetGroupElementArrayIndex(IUIElement groupElement);
 		IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex);
 		IUIElement GetGroupElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace);
+		void SetUpElements(List<IUIElement> elements);
 	}
 	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
 			thisRowCountConstraint = arg.rowCountConstraint;
 			thisColumnCountConstraint = arg.columnCountConstraint;
 			MakeSureConstraintIsProperlySet();
+			CheckAndSetMaxElementsCount();
 			thisTopToBottom = arg.topToBottom;
 			thisLeftToRight = arg.leftToRight;
 			thisRowToColumn = OverrideRowToColumnAccordingToConstraint(arg.rowToColumn);
@@ -52,12 +54,28 @@ namespace UISystem{
 		readonly Vector2 thisElementLength;
 		readonly Vector2 thisPadding;
 		int thisMaxElementCount = 0;/* used only when both axis are constrained */
-		protected void SetUpElements(List<T> elements){
+		void CheckAndSetMaxElementsCount(){
+			if(thisColumnCountConstraint != 0 && thisRowCountConstraint != 0)
+				thisMaxElementCount = thisColumnCountConstraint * thisRowCountConstraint;
+		}
+		public void SetUpElements(List<IUIElement> elements){
 			CheckIfElementsCountIsValid(elements.Count);
-			thisElements = elements;
+			thisElements = CreateTypedList(elements);
+			ChildrenAllElements(elements);
 			thisElementsArray = CreateElements2DArray();
 			this.ResizeToFitElements();
 			PlaceElements();
+		}
+		List<T> CreateTypedList(List<IUIElement> source){
+			List<T> result = new List<T>();
+			foreach(IUIElement uie in source){
+				result.Add(uie as T);
+			}
+			return result;
+		}
+		void ChildrenAllElements(List<IUIElement> elements){
+			foreach(IUIElement uie in elements)
+				uie.SetParentUIE(this, true);
 		}
 		void CheckIfElementsCountIsValid(int count){
 			if(thisIsConstrainedByBothAxis)
@@ -115,7 +133,7 @@ namespace UISystem{
 		protected int CalcRowIndex(int n, int numOfColumns, int numOfRows){
 			int valueA = n / numOfColumns;
 			int valueB = n % numOfRows;
-			if(thisTopToBottom)
+			if(!thisTopToBottom)
 				if(thisRowToColumn)
 					return valueA;
 				else

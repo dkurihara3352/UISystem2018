@@ -48,7 +48,7 @@ namespace UISystem{
 				imageRectTrans.pivot = new Vector2(0f, 0f);
 				imageRectTrans.sizeDelta = this.GetRect().size;
 				imageRectTrans.anchoredPosition = Vector3.zero;
-				IUIImage uiImage = new UIImage(image, childWithImage, imageDefaultDarkness, imageDarkenedDarkness);
+				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness);
 				return uiImage;
 			}
 			protected Transform GetChildWithImage(out Image image){
@@ -62,8 +62,8 @@ namespace UISystem{
 				}
 				throw new System.InvalidOperationException("there's no child transform with Image component asigned");
 			}
-			public float imageDefaultDarkness;
-			public float imageDarkenedDarkness;
+			public float thisImageDefaultDarkness;
+			public float thisImageDarkenedDarkness;
 			public void ActivateUIElement(){
 				thisUIElement.ActivateRecursively();
 			}
@@ -76,9 +76,29 @@ namespace UISystem{
 			}
 			public void SetRectLength(float width, float height){
 				RectTransform rectTrans = (RectTransform)this.GetComponent<RectTransform>();
-				rectTrans.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-				rectTrans.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+				Vector2 newSize = new Vector2(width, height);
+				rectTrans.sizeDelta = newSize;
+				RectTransform[] childGraphicRTArray = GetChildRectTransformsWithGraphicComponent();
+				foreach(RectTransform graphicRT in childGraphicRTArray)
+				if(graphicRT != null){
+					graphicRT.pivot = Vector2.zero;
+					graphicRT.anchorMin = Vector2.zero;
+					graphicRT.anchorMax = Vector2.zero;
+					graphicRT.anchoredPosition = Vector2.zero;
+					graphicRT.sizeDelta = newSize;
+				}
 			}
+			protected RectTransform[] GetChildRectTransformsWithGraphicComponent(){
+				List<RectTransform> result = new List<RectTransform>();
+				for(int i = 0; i < this.transform.childCount; i ++){
+					Transform child = this.transform.GetChild(i);
+					Graphic graphicComp = child.GetComponent<Graphic>();
+					if(graphicComp != null)
+						result.Add(child.GetComponent<RectTransform>());
+				}
+				return result.ToArray();
+			}
+
 			public Vector2 GetWorldPosition(){
 				return new Vector2(this.transform.position.x, this.transform.position.y);
 			}

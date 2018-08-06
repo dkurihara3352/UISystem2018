@@ -13,19 +13,33 @@ namespace UISystem{
 			reserveTrans = uim.GetUIElementReserveTrans();
 		}
 		protected readonly IUIManager thisUIM;
-		protected readonly Transform reserveTrans;
-		protected T CreateInstatiableUIA<T>(IUIAInitializationData uiaInitializationData) where T: MonoBehaviour, IInstatiableUIAdaptor{
-			GameObject go = new GameObject();
-			go.transform.SetParent(reserveTrans);
-			go.transform.localPosition = Vector3.zero;
+		protected readonly RectTransform reserveTrans;
+		protected T CreateInstatiableUIA<T>(IInstantiableUIAdaptorInstantiationData instatiationData) where T: MonoBehaviour, IInstatiableUIAdaptor{
+			GameObject go = new GameObject("uiaGO");
+			RectTransform rectTrans = CreateRectTransform(go, reserveTrans, instatiationData.sizeDelta);
+			go.AddComponent<CanvasRenderer>();
 			go.transform.SetAsLastSibling();
 			T uia = go.AddComponent<T>();
-			uia.SetInitializationFields(uiaInitializationData);
+			uia.SetInitializationFields(instatiationData.initializationData);
 			return uia;
+		}
+		RectTransform CreateRectTransform(GameObject gameObject, RectTransform parentRT, Vector2 sizeDelta){
+			RectTransform rectTrans = gameObject.AddComponent<RectTransform>();
+			rectTrans.SetParent(parentRT);
+			rectTrans.pivot = new Vector2(0f, 0f);
+			rectTrans.anchorMin = Vector2.zero;
+			rectTrans.anchorMax = Vector2.zero;
+			rectTrans.anchoredPosition = new Vector2(0f, 0f);
+			rectTrans.sizeDelta = sizeDelta;
+			return rectTrans;
 		}
 		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller, Vector2 panelDim, Vector2 padding){
 			IDigitPanelSetAdaptorInitializationData uiaInitData = new DigitPanelSetAdaptorInitializationData(digitPlace, panelDim, padding);
-			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateInstatiableUIA<DigitPanelSetAdaptor>(uiaInitData);
+			float panelSetWidth = panelDim.x;
+			float panelSetHeight = panelDim.y * 2 + padding.y;
+			Vector2 panelSetLength = new Vector2(panelSetWidth, panelSetHeight);
+			IDigitPanelSetInstantiationData instData = new DigitPanelSetInstantiationData(panelSetLength, uiaInitData);
+			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateInstatiableUIA<DigitPanelSetAdaptor>(instData);
 			IUIAdaptor quantityRollerAdaptor = quantityRoller.GetUIAdaptor();
 			digitPanelSetAdaptor.SetParentUIA(quantityRollerAdaptor, true);
 			IUIAActivationData activationData = quantityRollerAdaptor.GetDomainActivationData();
@@ -35,7 +49,8 @@ namespace UISystem{
 		}
 		public IDigitPanel CreateDigitPanel(IDigitPanelSet parentDigitPanelSet, Vector2 panelDim, float localPosY){
 			IDigitPanelAdaptorInitializationData uiaInitData = new DigitPanelAdaptorInitializationData(panelDim, localPosY);
-			DigitPanelAdaptor digitPanelAdaptor = CreateInstatiableUIA<DigitPanelAdaptor>(uiaInitData);
+			IDigitPanelInstantiationData instData = new DigitPanelInstantiationData(panelDim, uiaInitData);
+			DigitPanelAdaptor digitPanelAdaptor = CreateInstatiableUIA<DigitPanelAdaptor>(instData);
 			IUIAdaptor parentUIA = parentDigitPanelSet.GetUIAdaptor();
 			digitPanelAdaptor.SetParentUIA(parentUIA, true);
 			IUIAActivationData activationData = parentUIA.GetDomainActivationData();

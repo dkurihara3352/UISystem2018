@@ -42,4 +42,15 @@ namespace UISystem{
 		readonly Vector2 thisPadding;
 		public Vector2 padding{get{return thisPadding;}}
 	}
+	public interface IDigitPanelSetInstantiationData: IInstantiableUIAdaptorInstantiationData{}
+	public struct DigitPanelSetInstantiationData: IDigitPanelSetInstantiationData{
+		public DigitPanelSetInstantiationData(Vector2 sizeDelta, IDigitPanelSetAdaptorInitializationData initializationData){
+			thisSizeDelta = sizeDelta;
+			thisInitData = initializationData;
+		}
+		readonly Vector2 thisSizeDelta;
+		public Vector2 sizeDelta{get{return thisSizeDelta;}}
+		readonly IUIAInitializationData thisInitData;
+		public IUIAInitializationData initializationData{get{return thisInitData;}}
+	}
 }
