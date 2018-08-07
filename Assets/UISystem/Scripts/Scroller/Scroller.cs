@@ -10,8 +10,6 @@ namespace UISystem{
 		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
 		float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension);
 		float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension);
-		Vector2 rubberBandLimitMultiplier{get;}
-		Vector2 rubberLimit{get;}
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -25,9 +23,7 @@ namespace UISystem{
 
 			CacheThisRect();
 			MakeSureRectIsSet(thisRect);
-			for(int i = 0; i < 2; i ++)
-				if(thisShouldApplyRubberBand[i])
-					thisRubberBandCalculator = CreateRubberBandCalculator();
+			SetUpRubberBandCalculators();
 			
 			thisRunningScrollerMotorProcess = new IScrollerElementMotorProcess[2];
 		}
@@ -66,13 +62,16 @@ namespace UISystem{
 		}
 		protected readonly ScrollerAxis thisScrollerAxis;
 		/* Rubber */
-		readonly  protected Vector2 thisRubberBandLimitMultiplier;
-		public Vector2 rubberBandLimitMultiplier{get{return thisRubberBandLimitMultiplier;}}
+		readonly protected Vector2 thisRubberBandLimitMultiplier;
 		Vector2 thisRubberLimit;
-		public Vector2 rubberLimit{get{return thisRubberLimit;}}
 
+		void SetUpRubberBandCalculators(){
+			for(int i = 0; i < 2; i ++)
+				if(thisShouldApplyRubberBand[i])
+					thisRubberBandCalculator = CreateRubberBandCalculator();
+		}
 		protected abstract bool[] thisShouldApplyRubberBand{get;}// simply return true if wanna apply
-		RubberBandCalculator[] thisRubberBandCalculator;
+		RubberBandCalculator[] thisRubberBandCalculator;		
 		RubberBandCalculator[] CreateRubberBandCalculator(){
 			RubberBandCalculator[] result = new RubberBandCalculator[2];
 			thisRubberLimit = new Vector2();
@@ -185,7 +184,7 @@ namespace UISystem{
 		}
 		protected override void OnDragImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
-				DisplaceScrollerElementV2(eventData.position);
+				DisplaceScrollerElement(eventData.position);
 			}else{
 				base.OnDragImple(eventData);
 			}
@@ -215,7 +214,7 @@ namespace UISystem{
 			else
 				return new Vector2(0f, deltaP.y);
 		}
-		protected virtual void DisplaceScrollerElementV2(Vector2 dragPosition){
+		protected virtual void DisplaceScrollerElement(Vector2 dragPosition){
 			Vector2 displacement = CalcDragDeltaSinceTouch(dragPosition);
 			Vector2 newElementLocalPosition =  GetScrollerElementRubberBandedLocalPosition(displacement);
 			thisScrollerElement.SetLocalPosition(newElementLocalPosition);
@@ -354,7 +353,7 @@ namespace UISystem{
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
-				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
+				// Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
 				if(thisIsEnabledInertia)
 					StartInertialScroll(eventData.velocity);
 				base.OnSwipeImple(eventData);

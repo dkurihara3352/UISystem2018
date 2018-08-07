@@ -8,6 +8,7 @@ namespace UISystem{
 		int GetSize();
 		List<IUIElement> GetGroupElements();
 		int GetGroupElementsArraySize(int dimension);
+		int[] GetArraySize();
 		IUIElement GetGroupElement(int index);
 		IUIElement GetGroupElement(int columnIndex, int rowIndex);
 		int[] GetGroupElementArrayIndex(IUIElement groupElement);
@@ -155,6 +156,12 @@ namespace UISystem{
 		public int GetGroupElementsArraySize(int dimension){
 			return thisElementsArray.GetLength(dimension);
 		}
+		public int[] GetArraySize(){
+			int[] result = new int[2];
+			result[0] = thisElementsArray.GetLength(0);
+			result[1] = thisElementsArray.GetLength(1);
+			return result;
+		}
 		protected void ResizeToFitElements(){
 			int columnCount = thisElementsArray.GetLength(0);
 			int rowCount = thisElementsArray.GetLength(1);
@@ -188,12 +195,25 @@ namespace UISystem{
 			}
 		}
 		public IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
+			// List<IUIElement> result = new List<IUIElement>();
+			// foreach(IUIElement element in thisElements){
+			// 	int[] index = GetGroupElementArrayIndex(element);
+			// 	if(index[0] >= minColumnIndex && index[0] <= maxColumnIndex){
+			// 		if(index[1] >= minRowIndex && index[1] <= maxRowIndex){
+			// 			result.Add(element);
+			// 		}
+			// 	}
+			// }
+			// return result.ToArray();
+			int[] arraySize = GetArraySize();
 			List<IUIElement> result = new List<IUIElement>();
-			foreach(IUIElement element in thisElements){
-				int[] index = GetGroupElementArrayIndex(element);
-				if(index[0] >= minColumnIndex && index[0] <= maxColumnIndex){
-					if(index[1] >= minRowIndex && index[1] <= maxRowIndex){
-						result.Add(element);
+			for(int i = 0; i < arraySize[0]; i ++){
+				if(i >= minColumnIndex && i <= maxColumnIndex){
+					for(int j = 0; j < arraySize[1]; j ++){
+						if(j >= minRowIndex && j <= maxRowIndex){
+							IUIElement elementAtIndex = GetGroupElement(i, j);
+							result.Add(elementAtIndex);
+						}
 					}
 				}
 			}

@@ -72,8 +72,8 @@ namespace UISystem{
 		// 				Cycle();
 		// 	}
 		// }
-		protected override void DisplaceScrollerElementV2(Vector2 dragDeltaSinceTouch){
-			base.DisplaceScrollerElementV2(dragDeltaSinceTouch);
+		protected override void DisplaceScrollerElement(Vector2 dragDeltaSinceTouch){
+			base.DisplaceScrollerElement(dragDeltaSinceTouch);
 			for(int i = 0; i < 2; i ++)
 				if(this.IsCyclable(i)){
 					if(this.ShouldCycleThisFrame(i))

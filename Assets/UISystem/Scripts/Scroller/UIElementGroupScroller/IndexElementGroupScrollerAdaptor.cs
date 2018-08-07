@@ -11,7 +11,7 @@ namespace UISystem{
 		public bool swipeToSnapNext;
 		protected override IUIElement CreateUIElement(IUIImage image){
 			GenericUIElementGroupAdaptor uieGroupAdaptor = GetChildUIElementGroupAdaptor();
-			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, uieGroupAdaptor.groupElementLength, uieGroupAdaptor.padding, startSearchSpeed, relativeCursorPosition, this.scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, swipeToSnapNext, thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
+			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, uieGroupAdaptor.groupElementLength, uieGroupAdaptor.padding, startSearchSpeed, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, swipeToSnapNext, thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
 			return new UIElementGroupScroller(arg);
 		}
 		GenericUIElementGroupAdaptor GetChildUIElementGroupAdaptor(){
@@ -23,37 +23,41 @@ namespace UISystem{
 			}
 			throw new System.InvalidOperationException("there's no child with GenericUIElementGroupAdaptor attached");
 		}
-		Rect cursoredElementsRect;
 		protected override void Awake(){
 			base.Awake();
-			Vector2 guiRectLength = new Vector2(120f, 100f);
-			cursoredElementsRect = new Rect(new Vector2(Screen.width - guiRectLength.x, 10f), new Vector2(120f, 20f));
+			Rect guiRect = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.2f, .3f));
+			rect1_1 = GetSubRect(guiRect, 0, 2);
+			rect2_1 = GetSubRect(guiRect, 1, 2);
 		}
+		Rect rect1_1;
+		Rect rect2_1;
 		public override void OnGUI(){
-			base.OnGUI();
-			GUI.Label(cursoredElementsRect, "CursoredElements: ");
-			GUI.Label(new Rect(cursoredElementsRect.position + new Vector2(0f, 20f), cursoredElementsRect.size), GetCursoredElementsIndex());
+			if(thisGUIIsEnabled){
+				GUI.Label(rect1_1, "CursoredElements");
+				string cursoredElementsString = GetCursoredElementsString();
+				GUI.Label(rect2_1, cursoredElementsString);
+			}
 		}
-		string GetCursoredElementsIndex(){
-			if(this.GetUIElement() != null){
+		string GetCursoredElementsString(){
+			if(this.GetUIElement() == null)
+				return "uie is not set yet";
+			else{
 				IUIElementGroupScroller scroller = this.GetUIElement() as IUIElementGroupScroller;
 				IUIElement[] cursoredElements = scroller.GetCursoredElements();
-				if(cursoredElements == null){
-					return " null";
-				}else{
-					List<int> indexList = new List<int>();
+				string result = "null";
+				if(cursoredElements != null){
+					result = "";
 					foreach(IUIElement uie in cursoredElements){
-						int uieIndex = scroller.GetGroupElementIndex(uie);
-						indexList.Add(uieIndex);
+						if(uie == null)
+							result += "null, ";
+						else{
+							int i = scroller.GetGroupElementIndex(uie);
+							result += i.ToString() + ", ";
+						}
 					}
-					string result = "";
-					foreach(int i in indexList){
-						result += i.ToString() +", ";
-					}
-					return result;
 				}
+				return result;
 			}
-			return "scroller not set";
 		}
 	}
 }
