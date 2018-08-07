@@ -353,7 +353,6 @@ namespace UISystem{
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
-				// Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
 				if(thisIsEnabledInertia)
 					StartInertialScroll(eventData.velocity);
 				base.OnSwipeImple(eventData);

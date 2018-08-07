@@ -31,7 +31,7 @@ namespace UISystem{
 				throw new System.InvalidOperationException("startSearchSpeed must be greater than zero");
 			return source;
 		}
-		int GetCorrectedInitiallyCursoredGroupElementIndex(int source){
+		int GetCursoredGroupElementIndexCorrectedForBounds(int source){
 			IUIElement sourceElement = thisUIElementGroup.GetGroupElement(source);
 
 			int columnCount = thisUIElementGroup.GetGroupElementsArraySize(0);
@@ -50,10 +50,15 @@ namespace UISystem{
 			int targetIndex = thisUIElementGroup.GetGroupElements().IndexOf(targetInitElement);
 			return targetIndex;
 		}
+		IUIElement GetCorrectedGroupElementCorrectedForBounds(IUIElement source){
+			int sourceIndex = thisUIElementGroup.GetGroupElements().IndexOf(source);
+			int correctedIndex = GetCursoredGroupElementIndexCorrectedForBounds(sourceIndex);
+			return thisUIElementGroup.GetGroupElement(correctedIndex);
+		}
 		readonly int thisInitiallyCursoredGroupElementIndex;
 		protected override Vector2 GetInitialNormalizedCursoredPosition(){
 			IUIElementGroup uieGroup = thisUIElementGroup;
-			int correctedInitiallyCursoredGroupElementIndex = GetCorrectedInitiallyCursoredGroupElementIndex(thisInitiallyCursoredGroupElementIndex);
+			int correctedInitiallyCursoredGroupElementIndex = GetCursoredGroupElementIndexCorrectedForBounds(thisInitiallyCursoredGroupElementIndex);
 			IUIElement initiallyCursoredGroupElement = uieGroup.GetGroupElement(correctedInitiallyCursoredGroupElementIndex);
 			Vector2 groupElementLocalPos = initiallyCursoredGroupElement.GetLocalPosition();
 			float resultX = GetNormalizedCursoredPositionFromPosInElementSpace(groupElementLocalPos.x - thisPadding[0], 0);
@@ -92,13 +97,7 @@ namespace UISystem{
 		}
 		public override void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension){
 			base.SetScrollerElementLocalPosOnAxis(localPosOnAxis, dimension);
-			if(thisScrollerAxis == ScrollerAxis.Horizontal){
-				if(dimension == 0)
-					EvaluateCursoredGroupElements();
-			}else{// veritcal or both
-				if(dimension == 1)
-					EvaluateCursoredGroupElements();
-			}				
+			EvaluateCursoredGroupElements();
 		}
 
 
@@ -127,16 +126,19 @@ namespace UISystem{
 			List<IUIElement> groupElements = thisUIElementGroup.GetGroupElements();
 			return groupElements.IndexOf(groupElement);
 		}
+
 		protected void SnapToGroupElement(IUIElement groupElement, float initialDeltaPosOnAxis, int dimension){
-			/*  need to correct for OB?
-			*/
-			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(groupElement, dimension);
+			IUIElement targetGroupElement = GetCorrectedGroupElementCorrectedForBounds(groupElement);
+
+			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(/* groupElement */targetGroupElement, dimension);
 			SnapTo(groupElementNormalizedCursoredPosition, initialDeltaPosOnAxis, dimension);
 		}
+
 		protected float GetGroupElementNormalizedCursoredPositionOnAxis(IUIElement groupElement, int dimension){
 			Vector2 groupElementLocalPosMinusPadding = groupElement.GetLocalPosition() - thisPadding;
 			return GetNormalizedCursoredPositionFromPosInElementSpace(groupElementLocalPosMinusPadding[dimension], dimension);
 		}
+
 		protected float GetElementGroupOffset(int dimension){
 			float sectionLength = thisGroupElementLength[dimension] + thisPadding[dimension];
 			Vector2 uieGroupCursoredPosition = thisCursorLocalPosition - thisUIElementGroup.GetLocalPosition();
@@ -180,9 +182,11 @@ namespace UISystem{
 					SortOutCursoredGroupElements(currentCursoredElements, newCursoredElements, out groupElementsToDefocus, out groupElementsToFocus);
 
 					foreach(IUIElement uie in groupElementsToDefocus)
-						uie.OnScrollerDefocus();
+						if(uie != null)
+							uie.OnScrollerDefocus();
 					foreach(IUIElement uie in groupElementsToFocus)
-						uie.OnScrollerFocus();
+						if(uie != null)
+							uie.OnScrollerFocus();
 					thisCursoredElements = newCursoredElements;
 				}
 			}
@@ -236,6 +240,10 @@ namespace UISystem{
 		}
 		readonly float thisStartSearchSpeed;
 		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
+			if(base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
+				SnapToGroupElement(thisCursoredElements[0], deltaPosOnAxis, dimension);
+				return true;
+			}
 			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
 				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
 					IUIElement cursoredElement = thisCursoredElements[0];
@@ -273,23 +281,47 @@ namespace UISystem{
 			int[] targetGroupElementIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, bottomLeftArrayIndex);
 			
 			IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementIndex[0], targetGroupElementIndex[1]);
+
+			if(targetGroupElement == null)
+				targetGroupElement = bottomLeft;
+			
+
 			SnapToGroupElement(targetGroupElement, swipeDeltaPos[0], 0);
 			SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
 		}
+		int GetDominantAxis(Vector2 delta){
+			if(Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))
+				return 0;
+			else
+				return 1;
+		}
+
 		protected int[] GetSwipeNextTargetGroupElementArrayIndex(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
 			int[] result = new int[2];
+
+			int dominantAxis = -1;
+			if(thisScrollerAxis == ScrollerAxis.Both && thisSwipeToSnapNext){
+				dominantAxis = GetDominantAxis(swipeDeltaPos);
+			}
+
 			for(int i = 0; i < 2; i ++){
-				if(swipeDeltaPos[i] != 0f){
-					if(swipeDeltaPos[i] < 0f)
-						result[i] = currentGroupElementAtCurRefPointIndex[i] + 1;
-					else
-						result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
-				}else
+				if(dominantAxis == -1 || dominantAxis == i){
+					if(swipeDeltaPos[i] != 0f){
+						if(swipeDeltaPos[i] < 0f)
+							result[i] = currentGroupElementAtCurRefPointIndex[i] + 1;
+						else
+							result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
+					}else
+						result[i] = currentGroupElementAtCurRefPointIndex[i];
+				}else{
 					result[i] = currentGroupElementAtCurRefPointIndex[i];
+				}
 				result[i] = MakeTargetGroupElementArrayIndexWithinRange(result[i], i);
 			}
 			return result;
 		}
+
+
 		protected virtual bool SwipeTargetGroupElementArrayIndexAreValid(int[] index){
 			for(int i = 0; i < 2; i ++){
 				if(index[i] < 0)
