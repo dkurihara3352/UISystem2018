@@ -112,10 +112,10 @@ namespace UISystem{
 				CounterOffsetElementGroup(0f, dimension);
 			return true;
 		}
-		protected void CounterOffsetElementGroup(float initialDeltaPosOnAxis, int dimension){
+		protected void CounterOffsetElementGroup(float initialVelocity, int dimension){
 			if(GetElementGroupOffset(dimension) != 0f){
 				IUIElement bottomLeft = thisCursoredElements[0];
-				SnapToGroupElement(bottomLeft, initialDeltaPosOnAxis, dimension);
+				SnapToGroupElement(bottomLeft, initialVelocity, dimension);
 			}
 		}
 		IUIElement[] thisCursoredElements;
@@ -127,11 +127,11 @@ namespace UISystem{
 			return groupElements.IndexOf(groupElement);
 		}
 
-		protected void SnapToGroupElement(IUIElement groupElement, float initialDeltaPosOnAxis, int dimension){
+		protected void SnapToGroupElement(IUIElement groupElement, float initialVelocity, int dimension){
 			IUIElement targetGroupElement = GetCorrectedGroupElementCorrectedForBounds(groupElement);
 
 			float groupElementNormalizedCursoredPosition = GetGroupElementNormalizedCursoredPositionOnAxis(/* groupElement */targetGroupElement, dimension);
-			SnapTo(groupElementNormalizedCursoredPosition, initialDeltaPosOnAxis, dimension);
+			SnapTo(groupElementNormalizedCursoredPosition, initialVelocity, dimension);
 		}
 
 		protected float GetGroupElementNormalizedCursoredPositionOnAxis(IUIElement groupElement, int dimension){
@@ -241,13 +241,13 @@ namespace UISystem{
 		readonly float thisStartSearchSpeed;
 		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
 			if(base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
-				SnapToGroupElement(thisCursoredElements[0], deltaPosOnAxis, dimension);
+				SnapToGroupElement(thisCursoredElements[0],　velocity, dimension);
 				return true;
 			}
 			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
 				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
 					IUIElement cursoredElement = thisCursoredElements[0];
-					SnapToGroupElement(cursoredElement, deltaPosOnAxis, dimension);
+					SnapToGroupElement(cursoredElement,　velocity, dimension);
 					return true;				
 				}else
 					return false;
@@ -285,9 +285,15 @@ namespace UISystem{
 			if(targetGroupElement == null)
 				targetGroupElement = bottomLeft;
 			
-
-			SnapToGroupElement(targetGroupElement, swipeDeltaPos[0], 0);
-			SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
+			if(thisScrollerAxis == ScrollerAxis.Both){
+				SnapToGroupElement(targetGroupElement, velocity[0], 0);
+				SnapToGroupElement(targetGroupElement, velocity[1], 1);
+			}else{
+				if(thisScrollerAxis == ScrollerAxis.Horizontal)
+					SnapToGroupElement(targetGroupElement, velocity[0], 0);
+				else
+					SnapToGroupElement(targetGroupElement, velocity[1], 1);
+			}
 		}
 		int GetDominantAxis(Vector2 delta){
 			if(Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))

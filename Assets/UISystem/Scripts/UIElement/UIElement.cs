@@ -24,6 +24,9 @@ namespace UISystem{
 		/*  */
 		void EnableInputRecursively();
 		void DisableInputRecursively();
+		/* Scroller */
+		void CheckAndStopScrollerMotorProcessOnParentScrollers();
+		void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
@@ -288,6 +291,22 @@ namespace UISystem{
 			this.DisableInput();
 			foreach(IUIElement child in thisChildUIEs)
 				child.DisableInputRecursively();
+		}
+		public void CheckAndStopScrollerMotorProcessOnParentScrollers(){
+			IUIElement parentUIE = GetParentUIE();
+			if(parentUIE != null){
+				if(parentUIE is IScroller)
+					((IScroller)parentUIE).StopAllRunningElementMotorProcesses();
+				parentUIE.CheckAndStopScrollerMotorProcessOnParentScrollers();
+			}
+		}
+		public void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers(){
+			IUIElement parentUIE = GetParentUIE();
+			if(parentUIE != null){
+				if(parentUIE is IScroller)
+					((IScroller)parentUIE).CheckForStaticBoundarySnap();
+				parentUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+			}
 		}
 	}
 

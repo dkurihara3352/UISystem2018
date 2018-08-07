@@ -54,9 +54,11 @@ namespace UISystem{
 		}
 		public void TouchUIE(){
 			thisUIE.OnTouch(GetTouchCount());
+			thisUIE.CheckAndStopScrollerMotorProcessOnParentScrollers();
 		}
 		public void TapUIE(){
 			thisUIE.OnTap(GetTouchCount());
+			thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public float GetTapExpireT(){
 			return 0.5f;
@@ -69,6 +71,7 @@ namespace UISystem{
 		}
 		public void ReleaseUIE(){
 			thisUIE.OnRelease();
+			thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public void DelayedReleaseUIE(){
 			thisUIE.OnDelayedRelease();
@@ -84,6 +87,7 @@ namespace UISystem{
 		}
 		public void SwipeUIE(ICustomEventData eventData){
 			thisUIE.OnSwipe(eventData);
+			thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public float GetSwipeVelocityThreshold(){
 			return thisSwipeVelocityThreshold;

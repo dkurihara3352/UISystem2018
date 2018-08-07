@@ -10,6 +10,8 @@ namespace UISystem{
 		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
 		float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension);
 		float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension);
+		void StopAllRunningElementMotorProcesses();
+		bool[] CheckForStaticBoundarySnap();
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -427,7 +429,7 @@ namespace UISystem{
 						snapTargetNormPos = 0f;
 					else	
 						snapTargetNormPos = 1f;
-					SnapTo(snapTargetNormPos, deltaPosOnAxis, dimension);
+					SnapTo(snapTargetNormPos, velocity, dimension);
 					return true;
 				}
 			return false;
@@ -446,7 +448,7 @@ namespace UISystem{
 				}
 			return false;
 		}
-		protected virtual bool[] CheckForStaticBoundarySnap(){
+		public virtual bool[] CheckForStaticBoundarySnap(){
 			bool[] result = new bool[]{false, false};
 			for(int i = 0; i < 2; i ++){
 				result[i] = CheckForStaticBoundarySnapOnAxis(i);
@@ -457,9 +459,12 @@ namespace UISystem{
 		protected override void OnTouchImple(int touchCount){
 			/*  Stop scroll if running
 			*/
+			StopAllRunningElementMotorProcesses();
+			// base.OnTouchImple(touchCount);
+		}
+		public void StopAllRunningElementMotorProcesses(){
 			for(int i = 0; i < 2; i ++)
 				StopRunningElementMotorProcess(i);
-			base.OnTouchImple(touchCount);
 		}
 	}
 
