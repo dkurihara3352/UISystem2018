@@ -48,16 +48,6 @@ namespace UISystem{
 
 			IUIElement targetInitElement = thisUIElementGroup.GetGroupElement(targetArrayIndex[0], targetArrayIndex[1]);
 			int targetIndex = thisUIElementGroup.GetGroupElements().IndexOf(targetInitElement);
-			Debug.Log(
-					"source index: " + source.ToString() +
-					", columnCount: " + columnCount.ToString() +
-					", rowCount: " + rowCount.ToString() +
-					", sourceColumnIndex: " + arrayIndex[0].ToString() + 
-					", sourceRowIndex: " + arrayIndex[1].ToString() + 
-					", targetColumnIndex: " + targetArrayIndex[0].ToString() + 
-					", targetRowIndex: " + targetArrayIndex[1].ToString() +
-					", targetIndex: " + targetIndex.ToString()
-			);
 			return targetIndex;
 		}
 		readonly int thisInitiallyCursoredGroupElementIndex;
@@ -126,18 +116,9 @@ namespace UISystem{
 		protected void CounterOffsetElementGroup(float initialDeltaPosOnAxis, int dimension){
 			if(GetElementGroupOffset(dimension) != 0f){
 				IUIElement bottomLeft = thisCursoredElements[0];
-				// IUIElement bottomLeft = GetUIElementUnderCursorReferencePoint();
-				// IUIElement bottomLeft = GetBottomLeftGroupElement(topLeft);
 				SnapToGroupElement(bottomLeft, initialDeltaPosOnAxis, dimension);
 			}
 		}
-		// IUIElement GetBottomLeftGroupElement(IUIElement topLeft){
-		// 	int[] arrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(topLeft);
-		// 	int targetColumnIndex = arrayIndex[0];
-		// 	int targetRowIndex = arrayIndex[1] - thisCursorSize[1] + 1;
-
-		// 	return thisUIElementGroup.GetGroupElement(targetColumnIndex, targetRowIndex);
-		// }
 		IUIElement[] thisCursoredElements;
 		public IUIElement[] GetCursoredElements(){
 			return thisCursoredElements;
@@ -184,18 +165,13 @@ namespace UISystem{
 			if(groupElementUnderCursorRefPoint != null){
 				if(
 					thisCursoredElements == null || 
-					// thisPrevElementUnderCursorRefPoint == null ||
-					groupElementUnderCursorRefPoint != thisCursoredElements[0]/* thisPrevElementUnderCursorRefPoint */
+					groupElementUnderCursorRefPoint != thisCursoredElements[0]
 				){
 					int[,] indexRange = CalcCursoredGroupElementArrayIndexRange(groupElementUnderCursorRefPoint);
 					int minColumnIndex = indexRange[0, 0];
 					int minRowIndex = indexRange[0, 1];
 					int maxColumnIndex = indexRange[1, 0];
 					int maxRowIndex = indexRange[1, 1];
-					
-					// int rowCount = thisUIElementGroup.GetGroupElementsArraySize(1);
-					// minRowIndex = rowCount - 1 - minRowIndex;
-					// maxRowIndex = minRowIndex + thisCursorSize[1] - 1;
 
 					IUIElement[] newCursoredElements = thisUIElementGroup.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
 					IUIElement[] currentCursoredElements = thisCursoredElements;
@@ -208,19 +184,13 @@ namespace UISystem{
 					foreach(IUIElement uie in groupElementsToFocus)
 						uie.OnScrollerFocus();
 					thisCursoredElements = newCursoredElements;
-					// thisPrevElementUnderCursorRefPoint = groupElementUnderCursorRefPoint;
 				}
 			}
 		}
-		// IUIElement thisPrevElementUnderCursorRefPoint;
 		IUIElement GetUIElementUnderCursorReferencePoint(){
 			/*  returns the top left => NG
 				returns, instread, bottomLeft
 			*/
-			// float cursorRefPointX = thisCursorLocalPosition.x + thisPadding.x + (thisGroupElementLength.x * .5f);
-			// float halfElementHeightPlusPaddingY = (thisGroupElementLength.y * .5f) + thisPadding.y;
-			// float cursorRefPointY = thisCursorLocalPosition.y + thisCursorLength.y - halfElementHeightPlusPaddingY;
-			// Vector2 cursorReferencePoint = new Vector2(cursorRefPointX, cursorRefPointY);
 			Vector2 cursorReferencePoint = thisCursorLocalPosition + thisPadding + (thisGroupElementLength * .5f);
 
 			Vector2 cursorRefPInElementGroupSpace = cursorReferencePoint - thisUIElementGroup.GetLocalPosition();
@@ -229,15 +199,7 @@ namespace UISystem{
 			return leastCursoredElement;
 		}
 		int[,] CalcCursoredGroupElementArrayIndexRange(IUIElement leastCursoredElement){
-			/*  converted for use in elementGroup
-			*/
-			// int[] arrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(leastCursoredElement);
-			// int[] minIndex = new int[2];
-			// int[] maxIndex = new int[2];
-			// minIndex[0] = arrayIndex[0];
-			// minIndex[1] = arrayIndex[1] - thisCursorSize[1] + 1;
-			// maxIndex[0] = minIndex[0] + thisCursorSize[0] -1;
-			// maxIndex[1] = arrayIndex[1];
+
 			int[] minIndex = thisUIElementGroup.GetGroupElementArrayIndex(leastCursoredElement);
 			int thisMaxColumnIndex = minIndex[0] + thisCursorSize[0] - 1;
 			int thisMaxRowIndex = minIndex[1] + thisCursorSize[1] - 1;
@@ -276,8 +238,7 @@ namespace UISystem{
 		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
 			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
 				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
-					IUIElement cursoredElement = /* GetUIElementUnderCursorReferencePoint() */thisCursoredElements[0];
-					// IUIElement bottomLeft = GetBottomLeftGroupElement(topLeft);
+					IUIElement cursoredElement = thisCursoredElements[0];
 					SnapToGroupElement(cursoredElement, deltaPosOnAxis, dimension);
 					return true;				
 				}else
@@ -305,22 +266,15 @@ namespace UISystem{
 		readonly bool thisSwipeToSnapNext;
 		protected void SnapNext(Vector2 swipeDeltaPos, Vector2 velocity){
 			/*  Find the next groupElement in the direction of swipe delta
-				if not found, start inertial scroll instead
+				make the element valid if not
 			*/
-			IUIElement bottomLeft = thisCursoredElements[0]/* GetUIElementUnderCursorReferencePoint() */;
-			// IUIElement bottomLeft = GetBottomLeftGroupElement(groupElementUnderCursorRefPoint);
-			// int[] groupElementIndex = thisUIElementGroup.GetGroupElementArrayIndex(groupElementUnderCursorRefPoint);
+			IUIElement bottomLeft = thisCursoredElements[0];
 			int[] bottomLeftArrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(bottomLeft);
-			// int[] targetGroupElementIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, groupElementIndex);
 			int[] targetGroupElementIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, bottomLeftArrayIndex);
-			if(SwipeTargetGroupElementArrayIndexAreValid(targetGroupElementIndex)){
-				IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementIndex[0], targetGroupElementIndex[1]);
-				SnapToGroupElement(targetGroupElement, swipeDeltaPos[0], 0);
-				SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
-			}else{
-				if(thisIsEnabledInertia)
-					StartInertialScroll(velocity);
-			}
+			
+			IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementIndex[0], targetGroupElementIndex[1]);
+			SnapToGroupElement(targetGroupElement, swipeDeltaPos[0], 0);
+			SnapToGroupElement(targetGroupElement, swipeDeltaPos[1], 1);
 		}
 		protected int[] GetSwipeNextTargetGroupElementArrayIndex(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
 			int[] result = new int[2];
@@ -332,6 +286,7 @@ namespace UISystem{
 						result[i] = currentGroupElementAtCurRefPointIndex[i] - 1;
 				}else
 					result[i] = currentGroupElementAtCurRefPointIndex[i];
+				result[i] = MakeTargetGroupElementArrayIndexWithinRange(result[i], i);
 			}
 			return result;
 		}
@@ -344,6 +299,16 @@ namespace UISystem{
 						return false;
 			}
 			return true;
+		}
+		int MakeTargetGroupElementArrayIndexWithinRange(int source, int dimension){
+			if(source < 0)
+				return 0;
+			else{
+				int allowedMaxArrayIndex = thisUIElementGroup.GetArraySize()[dimension] - thisCursorSize[dimension];
+				if(source > allowedMaxArrayIndex)
+					return allowedMaxArrayIndex;
+			}
+			return source;
 		}
 	}
 

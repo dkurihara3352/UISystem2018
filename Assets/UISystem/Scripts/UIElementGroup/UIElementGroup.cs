@@ -195,16 +195,6 @@ namespace UISystem{
 			}
 		}
 		public IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
-			// List<IUIElement> result = new List<IUIElement>();
-			// foreach(IUIElement element in thisElements){
-			// 	int[] index = GetGroupElementArrayIndex(element);
-			// 	if(index[0] >= minColumnIndex && index[0] <= maxColumnIndex){
-			// 		if(index[1] >= minRowIndex && index[1] <= maxRowIndex){
-			// 			result.Add(element);
-			// 		}
-			// 	}
-			// }
-			// return result.ToArray();
 			int[] arraySize = GetArraySize();
 			List<IUIElement> result = new List<IUIElement>();
 			for(int i = 0; i < arraySize[0]; i ++){
