@@ -71,7 +71,12 @@ public class UIElementGroupScrollerTest {
         Assert.That(actual, Is.EqualTo(expected));
     }
     [Test, TestCaseSource(typeof(ThisCursorLength_ReturnsCalculatedValue_TestCase), "cases")]
-    public void ThisCursorLength_CursorLengthOversizedToScrollerLength_ThrowsException(int[] cursorSize, Vector2 uiElementLength, Vector2 padding, Vector2 expected){
+    public void ThisCursorLength_CursorLengthOversizedToScrollerLength_ThrowsException(
+        int[] cursorSize, 
+        Vector2 uiElementLength, 
+        Vector2 padding, 
+        Vector2 expected
+    ){
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
         Vector2 relativeCursorPosition = new Vector2(.5f, .5f);
         float uiElementGroupLengthX = (cursorSize[0] * 2) * (uiElementLength[0] + padding[0]) + padding[0];
@@ -94,55 +99,6 @@ public class UIElementGroupScrollerTest {
             new object[]{new int[]{2, 2}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f, 130f)},
             new object[]{new int[]{1, 3}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 190f)},
             new object[]{new int[]{5, 5}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(560f, 310f)},
-        };
-    }
-    [Test, TestCaseSource(typeof(GetInitialNormalizedCursoredPosition_TestCase), "cases")]
-    public void GetInitialNormalizedCursoredPosition_Various(int initiallyCursoredElementIndex, Vector2 initiallyCursoredElementLocalPos, Vector2 expected, int[] cursorSize, int[] uieGroupMultiplierToCursor){
-        
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        arg.groupElementLength.Returns(new Vector2(280f, 80f));
-        arg.padding.Returns(new Vector2(10f, 10f));
-        arg.cursorSize.Returns(cursorSize);
-        arg.initiallyCursoredGroupElementIndex.Returns(initiallyCursoredElementIndex);
-
-
-        float scrollerRectLengthX = cursorSize[0] * (arg.groupElementLength[0] + arg.padding[0]) + arg.padding[0];
-        float scrollerRectLengthY = cursorSize[1] * (arg.groupElementLength[1] + arg.padding[1]) + arg.padding[1];
-        Rect scrollerRect = new Rect(Vector2.zero, new Vector2(scrollerRectLengthX, scrollerRectLengthY));
-        arg.uia.GetRect().Returns(scrollerRect);
-        
-        IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
-            IUIElement initiallyCursoredElement = Substitute.For<IUIElement>();
-            uieGroup.GetGroupElement(initiallyCursoredElementIndex).Returns(initiallyCursoredElement);
-                initiallyCursoredElement.GetLocalPosition().Returns(initiallyCursoredElementLocalPos);
-            IUIElementGroupAdaptor uieGroupAdaptor = Substitute.For<IUIElementGroupAdaptor>();
-                float scrollerElementRectLengthX = (arg.groupElementLength[0] + arg.padding[0]) * uieGroupMultiplierToCursor[0] * cursorSize[0] + arg.padding[0];
-                float scrollerElementRectLengthY = (arg.groupElementLength[1] + arg.padding[1]) * uieGroupMultiplierToCursor[1] * cursorSize[1] + arg.padding[1];
-            Rect scrollerElementRect = new Rect(Vector2.zero, new Vector2(scrollerElementRectLengthX, scrollerElementRectLengthY));
-            uieGroupAdaptor.GetRect().Returns(scrollerElementRect);
-            uieGroup.GetUIAdaptor().Returns(uieGroupAdaptor);
-        arg.uia.GetChildUIEs().Returns(new List<IUIElement>(new IUIElement[]{uieGroup}));
-            uieGroup.GetGroupElementArrayIndex(Arg.Any<IUIElement>()).Returns(new int[]{0, 0});
-
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-
-        scroller.ActivateImple();
-
-        Vector2 actual = scroller.GetInitialNormalizedCursoredPosition_Test();
-
-        Assert.That(actual, Is.EqualTo(expected));
-    }
-    public class GetInitialNormalizedCursoredPosition_TestCase{
-        public static object[] cases = {
-            new object[]{0, new Vector2(10f, 10f), new Vector2(0f, 0f), new int[]{1, 3}, new int[]{1,2}},
-            new object[]{1, new Vector2(10f, 100f), new Vector2(0f, 1f/3f), new int[]{1, 3}, new int[]{1,2}},
-            new object[]{2, new Vector2(10f, 190f), new Vector2(0f, 2f/3f), new int[]{1, 3}, new int[]{1,2}},
-            new object[]{0, new Vector2(10f, 10f), new Vector2(0f, 0f), new int[]{2, 2}, new int[]{2,2}},
-            new object[]{0, new Vector2(10f, 100f), new Vector2(0f, .5f), new int[]{2, 2}, new int[]{2,2}},
-            new object[]{0, new Vector2(10f, 190f), new Vector2(0f, 1f), new int[]{2, 2}, new int[]{2,2}},
-            new object[]{0, new Vector2(10f, 280f), new Vector2(0f, 1.5f), new int[]{2, 2}, new int[]{2,2}},
-            new object[]{0, new Vector2(300f, 100f), new Vector2(.5f, .5f), new int[]{2, 2}, new int[]{2,2}},
-            new object[]{0, new Vector2(590f, 190f), new Vector2(1f, 1f), new int[]{2, 2}, new int[]{2,2}},
         };
     }
     [Test, TestCaseSource(typeof(GetUIElementNormalizedCursoredPositionOnAxis_TestCase), "cases")]
@@ -169,7 +125,7 @@ public class UIElementGroupScrollerTest {
         scroller.ActivateImple();
 
         for(int i = 0; i < 2; i ++){
-            float actual = scroller.GetUIElementNormalizedCursoredPositionOnAxis_Test(element, i);
+            float actual = scroller.GetNormalizedCursoredPositionFromGroupElementToCursor_Test(element, i);
             
             Assert.That(actual, Is.EqualTo(expected[i]));
         }
@@ -203,6 +159,9 @@ public class UIElementGroupScrollerTest {
         arg.cursorSize.Returns(new int[]{1, 1});
         arg.relativeCursorPosition.Returns(Vector2.zero);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
+        IUIElement mock = Substitute.For<IUIElement>();
+        uieGroup.GetGroupElement(Arg.Any<int>(), Arg.Any<int>()).Returns(mock);
+        uieGroup.GetGroupElementIndex(mock).Returns(arg.initiallyCursoredGroupElementIndex);
         scroller.ActivateImple();
 
         for(int i = 0; i < 2; i ++){
@@ -294,7 +253,7 @@ public class UIElementGroupScrollerTest {
             },
         };
     }
-    [Test, TestCaseSource(typeof(GetSwipeNextTargetGroupElementArrayIndex_TestCase), "cases")]
+    [Test, TestCaseSource(typeof(GetSwipeNextTargetGroupElementArrayIndex_TestCase), "cases"), Ignore]
     public void GetSwipeNextTargetGroupElementArrayIndex_Various(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex, int[] expected){
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
@@ -344,32 +303,55 @@ public class UIElementGroupScrollerTest {
 
 
 
-
-    public IUIElementGroupScrollerConstArg CreateMockConstArg(){
+    public IUIElementGroupScrollerConstArg CreateMockConstArg(
+        int initiallyCursoredElementIndex,
+        int[] cursorSize,
+        Vector2 groupElementLength,
+        Vector2 padding,
+        Vector2 relativeCursorPosition,
+        ScrollerAxis scrollerAxis,
+        Vector2 rubberBandLimitMultiplier,
+        Vector2 scrollerLength,
+        Vector2 elementGroupLength
+    ){
         IUIElementGroupScrollerConstArg arg = Substitute.For<IUIElementGroupScrollerConstArg>();
-        arg.initiallyCursoredGroupElementIndex.Returns(0);
-        arg.cursorSize.Returns(new int[]{1, 1});
-        arg.groupElementLength.Returns(new Vector2(50f, 50f));
-        arg.padding.Returns(new Vector2(10f, 10f));
+        arg.initiallyCursoredGroupElementIndex.Returns(initiallyCursoredElementIndex);
+        arg.cursorSize.Returns(cursorSize);
+        arg.groupElementLength.Returns(groupElementLength);
+        arg.padding.Returns(padding);
         arg.startSearchSpeed.Returns(1f);
-        arg.relativeCursorPosition.Returns(Vector2.zero);
-        arg.scrollerAxis.Returns(ScrollerAxis.Both);
-        arg.rubberBandLimitMultiplier.Returns(new Vector2(.1f, .1f));
+        arg.relativeCursorPosition.Returns(relativeCursorPosition);
+        arg.scrollerAxis.Returns(scrollerAxis);
+        arg.rubberBandLimitMultiplier.Returns(rubberBandLimitMultiplier);
         arg.isEnabledInertia.Returns(true);
         arg.swipeToSnapNext.Returns(false);
         arg.uim.Returns(Substitute.For<IUIManager>());
         arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
         arg.uiElementFactory.Returns(Substitute.For<IUIElementFactory>());
         IScrollerAdaptor scrollerAdaptor = Substitute.For<IScrollerAdaptor>();
-            scrollerAdaptor.GetRect().Returns(new Rect(Vector2.zero, new Vector2(200f, 100f)));
+            scrollerAdaptor.GetRect().Returns(new Rect(Vector2.zero, scrollerLength));
             IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
                 uieGroup.GetGroupElementArrayIndex(Arg.Any<IUIElement>()).Returns(new int[]{0, 0});
             IUIElementGroupAdaptor uieGroupAdaptor = Substitute.For<IUIElementGroupAdaptor>();
             uieGroup.GetUIAdaptor().Returns(uieGroupAdaptor);
-            uieGroupAdaptor.GetRect().Returns(new Rect(Vector2.zero, new Vector2(130f, 130f)));
+            uieGroupAdaptor.GetRect().Returns(new Rect(Vector2.zero, elementGroupLength));
             scrollerAdaptor.GetChildUIEs().Returns(new List<IUIElement>(new IUIElement[]{uieGroup}));
         arg.uia.Returns(scrollerAdaptor);
         arg.image.Returns(Substitute.For<IUIImage>());
+        return arg;
+    }
+    public IUIElementGroupScrollerConstArg CreateMockConstArg(){
+        IUIElementGroupScrollerConstArg arg = CreateMockConstArg(
+            initiallyCursoredElementIndex: 0,
+            cursorSize: new int[]{1, 1},
+            groupElementLength: new Vector2(50f, 50f),
+            padding: new Vector2(10f, 10f),
+            relativeCursorPosition: new Vector2(0f, 0f),
+            scrollerAxis: ScrollerAxis.Both,
+            rubberBandLimitMultiplier: new Vector2(.1f, .1f),
+            scrollerLength: new Vector2(200f, 100f),
+            elementGroupLength: new Vector2(130f, 130f)
+        );
         return arg;
     }
     public class TestUIElementGroupScroller: UIElementGroupScroller{
@@ -381,8 +363,8 @@ public class UIElementGroupScrollerTest {
         public Vector2 thisCursorLength_Test{get{return thisCursorLength;}}
         public Vector2 thisRectLength_Test{get{return thisRectLength;}}
         public Vector2 thisScrollerElementLength_Test{get{return thisScrollerElementLength;}}
-        public float GetUIElementNormalizedCursoredPositionOnAxis_Test(IUIElement element, int dimension){
-            return this.GetGroupElementNormalizedCursoredPositionOnAxis(element, dimension);
+        public float GetNormalizedCursoredPositionFromGroupElementToCursor_Test(IUIElement element, int dimension){
+            return this.GetNormalizedCursoredPositionFromGroupElementToCursor(element, dimension);
         }
         public float GetElementGroupOffset_Test(int dimension){
             return this.GetElementGroupOffset(dimension);

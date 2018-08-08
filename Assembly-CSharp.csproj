@@ -173,6 +173,7 @@
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\TestUIElementFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\UIEFactory.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\CorrectedCursoredElementIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroupAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\IndexElementGroupAdaptor.cs" />

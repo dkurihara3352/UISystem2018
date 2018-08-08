@@ -843,7 +843,7 @@ public class ScrollerTest{
 
 			AssertResetDragIsCalled(scroller);
 		}
-		[Test, TestCaseSource(typeof(CheckForDynamicBoundarySnap_TestCase), "cases"), Ignore]
+		[Test, TestCaseSource(typeof(CheckForDynamicBoundarySnap_TestCase), "cases")]
 		public void CheckForDynamicBoundarySnap_Various(Vector2 deltaPos, Vector2 elementLocalPos, bool[] expected){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			Rect scrollerRect = new Rect(Vector2.zero, new Vector2(200f, 100f));

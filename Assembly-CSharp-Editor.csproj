@@ -83,6 +83,7 @@
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\UIEActivationStateEngineTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\CorrectedCursoredElementIndexCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\UIElementGroupTest.cs" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>

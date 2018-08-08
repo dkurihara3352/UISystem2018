@@ -10,6 +10,7 @@ namespace UISystem{
 		int GetGroupElementsArraySize(int dimension);
 		int[] GetArraySize();
 		IUIElement GetGroupElement(int index);
+		int GetGroupElementIndex(IUIElement groupElement);
 		IUIElement GetGroupElement(int columnIndex, int rowIndex);
 		int[] GetGroupElementArrayIndex(IUIElement groupElement);
 		IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex);
@@ -40,18 +41,28 @@ namespace UISystem{
 				result = true;
 			return result;
 		}
-		protected List<T> thisElements;/* explicitly and externally set */
+		protected List<T> thisGroupElements;/* explicitly and externally set */
 		public IUIElement GetGroupElement(int index){
-			return thisElements[index];
+			return thisGroupElements[index];
 		}
 		public List<IUIElement> GetGroupElements(){
 			List<IUIElement> result = new List<IUIElement>();
-			foreach(T element in thisElements){
+			foreach(T element in thisGroupElements){
 				result.Add(element);
 			}
 			return result;
 		}
-		public int GetSize(){return thisElements.Count;}
+		public int GetGroupElementIndex(IUIElement groupElement){
+			if(groupElement != null){
+				foreach(T uie in thisGroupElements){
+					if( uie == groupElement)
+						return thisGroupElements.IndexOf(uie);
+				}
+				throw new System.InvalidOperationException("groupElement is not found among thisGroupElements");
+			}else
+				throw new System.InvalidOperationException("groupElement should not be null");
+		}
+		public int GetSize(){return thisGroupElements.Count;}
 		readonly int thisColumnCountConstraint = 0;
 		readonly int thisRowCountConstraint = 0;
 		bool thisIsConstrainedByColumnCount{get{return thisRowCountConstraint == 0 && thisColumnCountConstraint != 0;}}
@@ -69,7 +80,7 @@ namespace UISystem{
 		}
 		public void SetUpElements(List<IUIElement> elements){
 			CheckIfElementsCountIsValid(elements.Count);
-			thisElements = CreateTypedList(elements);
+			thisGroupElements = CreateTypedList(elements);
 			ChildrenAllElements(elements);
 			thisElementsArray = CreateElements2DArray();
 			this.ResizeToFitElements();
@@ -99,8 +110,8 @@ namespace UISystem{
 			int numOfRowsToCreate = CalcNumberOfRowsToCreate();
 			int numOfColumnsToCreate = CalcNumberOfColumnsToCreate();
 			T[ , ] array = new T[ numOfColumnsToCreate, numOfRowsToCreate];
-			foreach(T element in thisElements){
-				int elementIndex = thisElements.IndexOf(element);
+			foreach(T element in thisGroupElements){
+				int elementIndex = thisGroupElements.IndexOf(element);
 				int columnIndex = CalcColumnIndex(elementIndex, numOfColumnsToCreate, numOfRowsToCreate);
 				int rowIndex = CalcRowIndex(elementIndex, numOfColumnsToCreate, numOfRowsToCreate);
 				array[columnIndex, rowIndex] = element;
@@ -111,8 +122,8 @@ namespace UISystem{
 			if(thisColumnCountConstraint != 0)
 				return thisColumnCountConstraint;
 			else{
-				int quotient = thisElements.Count / thisRowCountConstraint;
-				int modulo = thisElements.Count % thisRowCountConstraint;
+				int quotient = thisGroupElements.Count / thisRowCountConstraint;
+				int modulo = thisGroupElements.Count % thisRowCountConstraint;
 				return modulo > 0? quotient + 1 : quotient;
 			}
 		}
@@ -120,8 +131,8 @@ namespace UISystem{
 			if(thisRowCountConstraint != 0)
 				return thisRowCountConstraint;
 			else{
-				int quotient = thisElements.Count / thisColumnCountConstraint;
-				int modulo = thisElements.Count % thisColumnCountConstraint;
+				int quotient = thisGroupElements.Count / thisColumnCountConstraint;
+				int modulo = thisGroupElements.Count % thisColumnCountConstraint;
 				return modulo > 0? quotient + 1 : quotient;
 			}
 		}
@@ -186,7 +197,7 @@ namespace UISystem{
 			return result;
 		}
 		protected void PlaceElements(){
-			foreach(T element in thisElements){
+			foreach(T element in thisGroupElements){
 				int[] index = GetGroupElementArrayIndex(element);
 				float localPosX = (index[0] * (thisElementLength.x + thisPadding.x)) + thisPadding.x;
 				float localPosY = (index[1] * (thisElementLength.y + thisPadding.y)) + thisPadding.y;

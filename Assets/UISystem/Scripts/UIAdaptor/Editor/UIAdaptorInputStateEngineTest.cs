@@ -167,16 +167,16 @@ public class UIAdaptorInputStateEngineTest {
     }
     public class WaitingForTap_OnPointerUp_Velocity_TestCase{
         public static object[] overCases = {
-            new object[]{new Vector2(5f, 0f)},
-            new object[]{new Vector2(0f, 5f)},
-            new object[]{new Vector2(-5f, 0f)},
-            new object[]{new Vector2(0f, -5f)},
+            new object[]{new Vector2(velocityThreshold, 0f)},
+            new object[]{new Vector2(0f, velocityThreshold)},
+            new object[]{new Vector2(-velocityThreshold, 0f)},
+            new object[]{new Vector2(0f, -velocityThreshold)},
         };
         public static object[] underCases = {
-            new object[]{new Vector2(4.99f, 0f)},
-            new object[]{new Vector2(0f, 4.99f)},
-            new object[]{new Vector2(-4.99f, 0f)},
-            new object[]{new Vector2(0f, -4.99f)},
+            new object[]{new Vector2(velocityThreshold - 0.01f, 0f)},
+            new object[]{new Vector2(0f, velocityThreshold - 0.01f)},
+            new object[]{new Vector2(-(velocityThreshold - 0.01f), 0f)},
+            new object[]{new Vector2(0f, -(velocityThreshold - 0.01f))},
         };
     }
     [Test]
@@ -313,18 +313,19 @@ public class UIAdaptorInputStateEngineTest {
         uie.DidNotReceive().OnSwipe(data);
         uie.Received(1).OnRelease();
     }
+    const float velocityThreshold = 200f;
     public class WaitingForRelease_OnPointerUp_Velocity_TestCase{
         public static object[] overCases = {
-            new object[]{new Vector2(5f, 0f)},
-            new object[]{new Vector2(0f, 5f)},
-            new object[]{new Vector2(-5f, 0f)},
-            new object[]{new Vector2(0f, -5f)},
+            new object[]{new Vector2(velocityThreshold, 0f)},
+            new object[]{new Vector2(0f, velocityThreshold)},
+            new object[]{new Vector2(-velocityThreshold, 0f)},
+            new object[]{new Vector2(0f, -velocityThreshold)},
         };
         public static object[] underCases = {
-            new object[]{new Vector2(4.99f, 0f)},
-            new object[]{new Vector2(0f, 4.99f)},
-            new object[]{new Vector2(-4.99f, 0f)},
-            new object[]{new Vector2(0f, -4.99f)},
+            new object[]{new Vector2(velocityThreshold - .01f, 0f)},
+            new object[]{new Vector2(0f, velocityThreshold - .01f)},
+            new object[]{new Vector2(-(velocityThreshold - .01f), 0f)},
+            new object[]{new Vector2(0f, -(velocityThreshold - .01f))},
         };
     }
     [Test]
@@ -481,6 +482,7 @@ public class UIAdaptorInputStateEngineTest {
 
         uie.Received(1).OnDelayedRelease();
     }
+    const float veloctiyThreshold = 200f;
     [Test]
     public void SequenceTest(){
         ITestUIAdaptorInputStateEngineConstArg arg = CreateMockConstArg();
@@ -489,9 +491,9 @@ public class UIAdaptorInputStateEngineTest {
         TestUIAdaptorInputStateEngine engine = new TestUIAdaptorInputStateEngine(arg);
         ICustomEventData someData = Substitute.For<ICustomEventData>();
         ICustomEventData overData = Substitute.For<ICustomEventData>();
-            overData.velocity.Returns(new Vector2(5f, 0f));
+            overData.velocity.Returns(new Vector2(velocityThreshold, 0f));
         ICustomEventData underData = Substitute.For<ICustomEventData>();
-            underData.velocity.Returns(new Vector2(4.99f, 0f));
+            underData.velocity.Returns(new Vector2(velocityThreshold - .01f, 0f));
         Assert.That(engine.isWaitingForFirstTouch, Is.True);
         Assert.That(engine.touchCount, Is.EqualTo(0));
 

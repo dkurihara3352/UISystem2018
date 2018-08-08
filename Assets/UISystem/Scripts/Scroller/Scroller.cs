@@ -87,11 +87,9 @@ namespace UISystem{
 		/* Activation */
 		public override void ActivateImple(){
 			SetUpCursorTransform();
-			Rect cursorRect = new Rect(thisCursorLocalPosition, thisCursorLength);
-			((IScrollerAdaptor)thisUIA).ShowCursorRectInGUI(cursorRect);
-			SetTheOnlyChildAsScrollerElement();
-			CacheScrollerElementRect();
-			InitializeScrollerElementForActivation();
+
+			SetUpScrollerElement();
+
 			base.ActivateImple();
 		}
 		/* Cursor Transform */
@@ -99,6 +97,9 @@ namespace UISystem{
 			thisCursorLength = CalcCursorLength();
 			ClampCursorLengthToThisRect();
 			thisCursorLocalPosition = CalcCursorLocalPos();
+
+			Rect cursorRect = new Rect(thisCursorLocalPosition, thisCursorLength);
+			((IScrollerAdaptor)thisUIA).ShowCursorRectInGUI(cursorRect);
 		}
 		protected Vector2 thisCursorLength;
 		readonly protected Vector2 thisRelativeCursorPosition;
@@ -126,6 +127,15 @@ namespace UISystem{
 			}
 			return result;
 		}
+
+		/* ScrollerElement */
+		protected void SetUpScrollerElement(){
+			SetTheOnlyChildAsScrollerElement();
+			OnScrollerElementReferenceSetUp();
+			CacheScrollerElementRect();
+			InitializeScrollerElementForActivation();
+		}
+		protected virtual void OnScrollerElementReferenceSetUp(){}
 		protected IUIElement thisScrollerElement;
 		protected void SetTheOnlyChildAsScrollerElement(){
 			List<IUIElement> childUIEs = GetChildUIEs();
@@ -144,6 +154,8 @@ namespace UISystem{
 			thisScrollerElementRect = scrollerElementAdaptor.GetRect();
 			thisScrollerElementLength = new Vector2(thisScrollerElementRect.width, thisScrollerElementRect.height);
 		}
+
+		/*  */
 		protected virtual void InitializeScrollerElementForActivation(){
 			Vector2 initialCursorValue = GetInitialNormalizedCursoredPosition();
 			PlaceScrollerElement(initialCursorValue);
