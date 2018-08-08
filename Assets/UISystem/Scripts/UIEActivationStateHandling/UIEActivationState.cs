@@ -30,7 +30,7 @@ namespace UISystem{
 			thisEngine.ExpireProcessOnCurrentProcessState();
 		}
 	}
-	public interface IUIEActivationProcessState: IUIEActivatingState, IWaitAndExpireProcessState{}
+	public interface IUIEActivationProcessState: IUIEActivationState, IWaitAndExpireProcessState{}
 	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IUIEActivationProcessState{
 		public AbsUIEActivationProcessState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory): base(engine, uiElement){
 			thisProcessFactory = processFactory;
@@ -43,7 +43,7 @@ namespace UISystem{
 			thisProcess.Run();
 		}
 		public override void OnExit(){
-			StopAndClearProcess();
+			// StopAndClearProcess();
 		}
 		public void OnProcessUpdate(float deltaT){
 			return;
@@ -53,8 +53,9 @@ namespace UISystem{
 			StopAndClearProcess();
 		}
 		void StopAndClearProcess(){
-			if(thisProcess.IsRunning())
-				thisProcess.Expire();
+			if(thisProcess != null)
+				if(thisProcess.IsRunning())
+					thisProcess.Expire();
 			thisProcess = null;
 		}
 	}
@@ -76,6 +77,10 @@ namespace UISystem{
 	public interface IUIEActivationCompletedState: IUIEActivationState{}
 	public class UIEActivationCompletedState: AbsUIEActivationState, IUIEActivationCompletedState{
 		public UIEActivationCompletedState(IUIEActivationStateEngine engine, IUIElement uiElement):base(engine, uiElement){}
+		public override void OnEnter(){
+			base.OnEnter();
+			thisUIElement.OnActivationComplete();
+		}
 		public override void Activate(){return;}
 		public override void ActivateInstantly(){return;}
 	}
@@ -97,6 +102,10 @@ namespace UISystem{
 	public interface IUIEDeactivationCompletedState: IUIEActivationState{}
 	public class UIEDeactivationCompletedState: AbsUIEActivationState, IUIEDeactivationCompletedState{
 		public UIEDeactivationCompletedState(IUIEActivationStateEngine engine, IUIElement uiElement): base(engine, uiElement){}
+		public override void OnEnter(){
+			base.OnEnter();
+			thisUIElement.OnDeactivationComplete();
+		}
 		public override void Deactivate(){return;}
 		public override void DeactivateInstantly(){return;}
 	}

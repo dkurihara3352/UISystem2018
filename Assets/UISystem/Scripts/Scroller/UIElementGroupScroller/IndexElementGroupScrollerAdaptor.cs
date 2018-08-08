@@ -23,21 +23,6 @@ namespace UISystem{
 			}
 			throw new System.InvalidOperationException("there's no child with GenericUIElementGroupAdaptor attached");
 		}
-		protected override void Awake(){
-			base.Awake();
-			Rect guiRect = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.2f, .3f));
-			rect1_1 = GetSubRect(guiRect, 0, 2);
-			rect2_1 = GetSubRect(guiRect, 1, 2);
-		}
-		Rect rect1_1;
-		Rect rect2_1;
-		public override void OnGUI(){
-			if(thisGUIIsEnabled){
-				GUI.Label(rect1_1, "CursoredElements");
-				string cursoredElementsString = GetCursoredElementsString();
-				GUI.Label(rect2_1, cursoredElementsString);
-			}
-		}
 		string GetCursoredElementsString(){
 			if(this.GetUIElement() == null)
 				return "uie is not set yet";

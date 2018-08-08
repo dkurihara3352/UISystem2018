@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElementGroupScroller: IScroller{
+	public interface IUIElementGroupScroller: IScroller, INonActivatorUIElement{
 		IUIElement[] GetCursoredElements();
 		int GetGroupElementIndex(IUIElement groupElement);
 	}
-	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller, INonActivatorUIElement{
+	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisCursorSize = MakeCursorSizeAtLeastOne(arg.cursorSize);
 			thisGroupElementLength = arg.groupElementLength;
@@ -96,7 +96,6 @@ namespace UISystem{
 			base.SetScrollerElementLocalPosOnAxis(localPosOnAxis, dimension);
 			EvaluateCursoredGroupElements();
 		}
-
 
 
 		/* Cursored Elements Evaluation */

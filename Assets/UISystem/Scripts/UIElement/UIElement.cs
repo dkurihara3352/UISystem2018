@@ -18,13 +18,14 @@ namespace UISystem{
 		void DeactivateInstantlyRecursively();
 		void ActivateImple();
 		void DeactivateImple();
-		/*  */
-		void OnScrollerFocus();
-		void OnScrollerDefocus();
+		void OnActivationComplete();
+		void OnDeactivationComplete();
 		/*  */
 		void EnableInputRecursively();
 		void DisableInputRecursively();
 		/* Scroller */
+		void OnScrollerFocus();
+		void OnScrollerDefocus();
 		void CheckAndStopScrollerMotorProcessOnParentScrollers();
 		void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 	}
@@ -65,6 +66,9 @@ namespace UISystem{
 			return thisImage;
 		}
 		protected IUIImage thisImage;
+		protected string thisName{
+			get{return thisUIA.GetName();}
+		}
 		/* Activation */
 			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
 			readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
@@ -107,6 +111,8 @@ namespace UISystem{
 			public virtual void DeactivateImple(){
 
 			}
+			public virtual void OnActivationComplete(){}
+			public virtual void OnDeactivationComplete(){}
 		/* SelectabilityState */
 			protected virtual void InitializeSelectabilityState(){
 				if(thisIsFocusedInScroller)

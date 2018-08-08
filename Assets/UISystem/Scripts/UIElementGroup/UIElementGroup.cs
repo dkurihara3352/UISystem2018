@@ -243,6 +243,15 @@ namespace UISystem{
 			}
 			return false;
 		}
+		/*  */
+
+		public override void OnScrollerFocus(){
+			IUIElement parentUIE = GetParentUIE();
+			if(parentUIE != null && parentUIE is IScroller)
+				thisIsFocusedInScroller = true;
+			else
+				base.OnScrollerFocus();
+		}
 	}
 
 

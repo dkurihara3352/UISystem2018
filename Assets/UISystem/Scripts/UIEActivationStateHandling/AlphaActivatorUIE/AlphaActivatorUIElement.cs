@@ -14,13 +14,13 @@ namespace UISystem{
 			return new AlphaActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
 		public float GetNormalizedGroupAlphaForActivation(){
-			return ((IAlphaActivatorUIAdaptor)thisUIA).GetNormalizedGroupAlpha();
+			return ((IAlphaActivatorUIElementAdaptor)thisUIA).GetNormalizedGroupAlpha();
 		}
 		public void SetNormalizedGroupAlphaForActivation(float groupAlpha){
-			((IAlphaActivatorUIAdaptor)thisUIA).SetNormalizedGroupAlpha(groupAlpha);
+			((IAlphaActivatorUIElementAdaptor)thisUIA).SetNormalizedGroupAlpha(groupAlpha);
 		}
 	}
-	public interface IAlphaActivatorUIAdaptor: IUIAdaptor{
+	public interface IAlphaActivatorUIElementAdaptor: IUIAdaptor{
 		float GetNormalizedGroupAlpha();
 		void SetNormalizedGroupAlpha(float groupAlpha);
 	}

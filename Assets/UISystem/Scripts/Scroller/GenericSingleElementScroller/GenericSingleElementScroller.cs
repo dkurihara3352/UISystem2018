@@ -34,6 +34,10 @@ namespace UISystem{
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
+		protected override void InitializeScrollerElementForActivation(){
+			base.InitializeScrollerElementForActivation();
+			thisScrollerElement.OnScrollerFocus();
+		}
 	}
 
 

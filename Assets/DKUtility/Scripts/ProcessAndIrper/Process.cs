@@ -47,7 +47,11 @@ namespace DKUtility{
 		float thisElapsedT;
 		readonly float thisExpireT;
 		protected float thisNormlizedT{
-			get{return thisElapsedT/ thisExpireT;}
+			get{
+				if(thisElapsedT == 0f || thisExpireT == 0f)
+					return 0f;
+				return thisElapsedT/ thisExpireT;
+			}
 		}
 		public sealed override void UpdateProcess(float deltaT){
 			thisState.OnProcessUpdate(deltaT);

@@ -10,27 +10,28 @@ namespace UISystem{
 		IUISystemProcessFactory processFactory;
 		public RectTransform uieReserveTrans;
 		public ProcessManager processManager;
-		public UIAdaptor roolUIAdaptor;
+		public UIAdaptor rootUIAdaptor;
 		
 		void Awake(){
 			uiManager = new UIManager(uieReserveTrans);
 			uieFactory = new UIElementFactory(uiManager);
 			processFactory = new UISystemProcessFactory(processManager, uiManager);
-
-			Vector2 buttonPos = new Vector2(10f, 10f);
-			Vector2 buttonLength = new Vector2(100f, 20f);
-			readyForActivBurronRect = new Rect(buttonPos, buttonLength);
-			activationButtonRect = new Rect(buttonPos + new Vector2(0f, 20f), buttonLength);
 		}
-		Rect readyForActivBurronRect;
-		Rect activationButtonRect;
-		void OnGUI(){
-			if(GUI.Button(readyForActivBurronRect, "GetReadyForA")){
-				IUIAActivationData activationData = new RootUIAActivationData(uiManager, processFactory, uieFactory);
-				roolUIAdaptor.GetReadyForActivation(activationData);
-			}
-			if(GUI.Button(activationButtonRect, "Activate"))
-				roolUIAdaptor.ActivateUIElement();
+		public void GetRootUIAReadyForActivation(){
+			IUIAActivationData activationData = new RootUIAActivationData(uiManager, processFactory, uieFactory);
+			rootUIAdaptor.GetReadyForActivation(activationData);
+		}
+		public void ActivateRootUIElement(){
+			rootUIAdaptor.ActivateUIElement();
+		}
+		public void DeactivateRootUIElement(){
+			rootUIAdaptor.DeactivateUIElement();
+		}
+		public void ActivateRootUIElementInstantly(){
+			rootUIAdaptor.ActivateUIElementInstantly();
+		}
+		public void DeactivateRootUIElementInstantly(){
+			rootUIAdaptor.DeactivateUIElementInstantly();
 		}
 	}
 }
