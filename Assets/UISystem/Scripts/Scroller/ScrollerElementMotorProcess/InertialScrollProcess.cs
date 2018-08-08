@@ -6,8 +6,8 @@ using DKUtility;
 namespace UISystem{
 	public interface IInertialScrollProcess: IScrollerElementMotorProcess{}
 	public class InertialScrollProcess: AbsScrollerElementMotorProcess, IInertialScrollProcess{
-		public InertialScrollProcess(float initialDeltaPosOnAxis, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, dimension, processManager){
-			thisInitialVelocity = initialDeltaPosOnAxis;
+		public InertialScrollProcess(float initialVelocity, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, dimension, processManager){
+			thisInitialVelocity = initialVelocity;
 			thisPrevVelocity = thisInitialVelocity;
 			thisPrevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisDeceleration = MakeSureDecelerationIsGreaterThanZero(deceleration) * MakeSureDecelAxisCompMultiplierIsNotLessThanZero(decelerationAxisComponentMultiplier);

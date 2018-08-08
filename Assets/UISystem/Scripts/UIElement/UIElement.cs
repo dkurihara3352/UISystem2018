@@ -109,7 +109,10 @@ namespace UISystem{
 			}
 		/* SelectabilityState */
 			protected virtual void InitializeSelectabilityState(){
-				BecomeSelectable();
+				if(thisIsFocusedInScroller)
+					BecomeSelectable();
+				else
+					BecomeUnselectable();
 			}
 			ISelectabilityStateEngine thisSelectabilityEngine;
 			public void BecomeSelectable(){
@@ -255,14 +258,6 @@ namespace UISystem{
 					thisParentUIE.OnSwipe(eventData);
 			}
 		/*  */
-		public virtual void OnScrollerFocus(){
-			foreach(IUIElement child in GetChildUIEs())
-				child.OnScrollerFocus();
-		}
-		public virtual void OnScrollerDefocus(){
-			foreach(IUIElement child in GetChildUIEs())
-				child.OnScrollerDefocus();
-		}
 		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
 			return thisUIA.GetPositionInThisSpace(worldPos);
 		}
@@ -291,6 +286,18 @@ namespace UISystem{
 			this.DisableInput();
 			foreach(IUIElement child in thisChildUIEs)
 				child.DisableInputRecursively();
+		}
+		/* Scrolller */
+		protected bool thisIsFocusedInScroller = false;
+		public virtual void OnScrollerFocus(){
+			thisIsFocusedInScroller = true;
+			foreach(IUIElement child in GetChildUIEs())
+				child.OnScrollerFocus();
+		}
+		public virtual void OnScrollerDefocus(){
+			thisIsFocusedInScroller = false;
+			foreach(IUIElement child in GetChildUIEs())
+				child.OnScrollerDefocus();
 		}
 		public void CheckAndStopScrollerMotorProcessOnParentScrollers(){
 			IUIElement parentUIE = GetParentUIE();

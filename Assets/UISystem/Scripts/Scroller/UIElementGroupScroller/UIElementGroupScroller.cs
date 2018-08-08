@@ -71,9 +71,6 @@ namespace UISystem{
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 		}
-		protected override void InitializeSelectabilityState(){
-			BecomeSelectable();
-		}
 		/*  */
 		protected IUIElementGroup thisUIElementGroup{
 			get{
@@ -243,16 +240,15 @@ namespace UISystem{
 			if(base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
 				SnapToGroupElement(thisCursoredElements[0],　velocity, dimension);
 				return true;
-			}
-			if(!base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
+			}else{
 				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
 					IUIElement cursoredElement = thisCursoredElements[0];
 					SnapToGroupElement(cursoredElement,　velocity, dimension);
 					return true;				
-				}else
+				}else{
 					return false;
-			}else
-				return true;
+				}
+			}
 		}
 		
 		
@@ -265,10 +261,12 @@ namespace UISystem{
 				}else{
 					if(thisIsEnabledInertia)
 						StartInertialScroll(eventData.velocity);
-				}				
-			}else
+				}	
 				base.OnSwipeImple(eventData);
-			
+			}else{
+				CheckForStaticBoundarySnap();
+				base.OnSwipeImple(eventData);
+			}
 			ResetDrag();
 		}
 		readonly bool thisSwipeToSnapNext;

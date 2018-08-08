@@ -10,6 +10,14 @@ namespace UISystem{
 			NonActivatorUIEActivationStateEngine engine = new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
 			return engine;
 		}
+		public override void OnScrollerDefocus(){
+			base.OnScrollerDefocus();
+			BecomeUnselectable();
+		}
+		public override void OnScrollerFocus(){
+			base.OnScrollerFocus();
+			BecomeSelectable();
+		}
 	}
 }
 

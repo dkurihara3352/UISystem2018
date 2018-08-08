@@ -22,9 +22,6 @@ namespace UISystem{
 		protected override bool[] thisShouldApplyRubberBand{
 			get{return new bool[]{true, true};}
 		}
-		protected override void InitializeSelectabilityState(){
-			BecomeSelectable();
-		}
 		protected override Vector2 GetInitialNormalizedCursoredPosition(){
 			return Vector2.zero;
 		}

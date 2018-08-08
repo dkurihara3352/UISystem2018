@@ -344,6 +344,7 @@ namespace UISystem{
 			if(!thisShouldProcessDrag)
 				base.OnReleaseImple();
 			ResetDrag();
+			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		/* Tap */
 		protected override void OnTapImple(int tapCount){
@@ -351,6 +352,7 @@ namespace UISystem{
 			if(!thisShouldProcessDrag)
 				base.OnTapImple(tapCount);
 			ResetDrag();
+			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
@@ -460,7 +462,7 @@ namespace UISystem{
 			/*  Stop scroll if running
 			*/
 			StopAllRunningElementMotorProcesses();
-			// base.OnTouchImple(touchCount);
+			CheckAndStopScrollerMotorProcessOnParentScrollers();
 		}
 		public void StopAllRunningElementMotorProcesses(){
 			for(int i = 0; i < 2; i ++)
