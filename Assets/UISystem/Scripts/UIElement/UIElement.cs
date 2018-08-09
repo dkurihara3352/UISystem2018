@@ -21,6 +21,7 @@ namespace UISystem{
 		void OnActivationComplete();
 		void OnDeactivationComplete();
 		/*  */
+		void EnableInput();
 		void EnableInputRecursively();
 		void DisableInputRecursively();
 		/* Scroller */
@@ -277,7 +278,7 @@ namespace UISystem{
 			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
 		}
 		/*  */
-		protected void EnableInput(){
+		public void EnableInput(){
 			thisIsEnabledInput = true;
 		}
 		public void EnableInputRecursively(){

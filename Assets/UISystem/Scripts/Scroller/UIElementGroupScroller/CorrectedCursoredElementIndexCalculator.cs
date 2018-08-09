@@ -4,17 +4,14 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface ICorrectedCursoredElementIndexCalculator{
-		void SetUIElementGroup(IUIElementGroup uieGroup);
 		int Calculate(int sourceIndex);
 	}
 	public class CorrectedCursoredElementIndexCalculator : ICorrectedCursoredElementIndexCalculator{
-		public CorrectedCursoredElementIndexCalculator(int[] cursorSize){
+		public CorrectedCursoredElementIndexCalculator(IUIElementGroup uieGroup, int[] cursorSize){
+			thisUIElementGroup = uieGroup;
 			thisCursorSize = cursorSize;
 		}
-		protected IUIElementGroup thisUIElementGroup;
-		public void SetUIElementGroup(IUIElementGroup uieGroup){
-			thisUIElementGroup = uieGroup;
-		}
+		readonly IUIElementGroup thisUIElementGroup;
 		readonly int[] thisCursorSize;
 		public int Calculate(int sourceIndex){
 			

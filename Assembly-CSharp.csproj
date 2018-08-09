@@ -138,7 +138,10 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\InertialScrollProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\ScrollerElementMotorProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\ScrollerElementSnapProcess.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\CorrectedCursoredElementIndexCalculator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\ElementGroupOffsetCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\IndexElementGroupScrollerAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\SwipeNextTargetGroupElementArrayIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\ImageDarknessInterpolator.cs" />
@@ -173,7 +176,6 @@
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\TestUIElementFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\UIEFactory.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\CorrectedCursoredElementIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroupAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\IndexElementGroupAdaptor.cs" />

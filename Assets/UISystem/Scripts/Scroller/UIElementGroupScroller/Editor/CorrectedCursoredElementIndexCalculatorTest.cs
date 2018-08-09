@@ -17,7 +17,6 @@ public class CorrectedCursoredElementIndexCalculatorTest {
 		int[] expectedArrayIndex,
 		int expectedIndex
 	){
-		ICorrectedCursoredElementIndexCalculator calculator = new CorrectedCursoredElementIndexCalculator(cursorSize);
 
 		IUIElement sourceElement = Substitute.For<IUIElement>();
 
@@ -30,8 +29,7 @@ public class CorrectedCursoredElementIndexCalculatorTest {
 		uieGroup.GetGroupElement(expectedArrayIndex[0], expectedArrayIndex[1]).Returns(expectedMock);
 		uieGroup.GetGroupElementIndex(expectedMock).Returns(expectedIndex);
 
-		calculator.SetUIElementGroup(uieGroup);
-
+		ICorrectedCursoredElementIndexCalculator calculator = new CorrectedCursoredElementIndexCalculator(uieGroup, cursorSize);
 
 		int actual = calculator.Calculate(sourceIndex);
 

@@ -131,8 +131,8 @@ namespace UISystem{
 		/* ScrollerElement */
 		protected void SetUpScrollerElement(){
 			SetTheOnlyChildAsScrollerElement();
-			OnScrollerElementReferenceSetUp();
 			CacheScrollerElementRect();
+			OnScrollerElementReferenceSetUp();
 			InitializeScrollerElementForActivation();
 		}
 		protected virtual void OnScrollerElementReferenceSetUp(){}
@@ -353,28 +353,24 @@ namespace UISystem{
 		/* Release */
 		protected override void OnReleaseImple(){
 			CheckForStaticBoundarySnap();
-			if(!thisShouldProcessDrag)
-				base.OnReleaseImple();
-			ResetDrag();
 			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+			ResetDrag();
 		}
 		/* Tap */
 		protected override void OnTapImple(int tapCount){
 			CheckForStaticBoundarySnap();
-			if(!thisShouldProcessDrag)
-				base.OnTapImple(tapCount);
-			ResetDrag();
 			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+			ResetDrag();
 		}
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
 			if(thisShouldProcessDrag){
 				if(thisIsEnabledInertia)
 					StartInertialScroll(eventData.velocity);
-				base.OnSwipeImple(eventData);
+					CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			}else{
-				CheckForStaticBoundarySnap();
 				base.OnSwipeImple(eventData);
+				CheckForStaticBoundarySnap();
 			}
 			ResetDrag();
 		}
@@ -405,7 +401,8 @@ namespace UISystem{
 				if(process != null)
 					runningProcessFound = true;
 			if(!runningProcessFound)
-				thisScrollerElement.EnableInputRecursively();
+				// thisScrollerElement.EnableInputRecursively();
+				thisScrollerElement.EnableInput();
 		}
 		void StopRunningElementMotorProcess(int dimension){
 			if(thisRunningScrollerMotorProcess[dimension] != null)

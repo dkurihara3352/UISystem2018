@@ -253,7 +253,7 @@ public class UIElementGroupScrollerTest {
             },
         };
     }
-    [Test, TestCaseSource(typeof(GetSwipeNextTargetGroupElementArrayIndex_TestCase), "cases"), Ignore]
+    [Test, TestCaseSource(typeof(GetSwipeNextTargetGroupElementArrayIndex_TestCase), "cases")]
     public void GetSwipeNextTargetGroupElementArrayIndex_Various(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex, int[] expected){
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
@@ -273,27 +273,6 @@ public class UIElementGroupScrollerTest {
             new object[]{new Vector2(-1f, 0f), new int[]{0, 0}, new int[]{-1, 0}},
             new object[]{new Vector2(-1f, -1f), new int[]{0, 0}, new int[]{-1, -1}},
             new object[]{new Vector2(0f, -1f), new int[]{0, 0}, new int[]{0, -1}},
-        };
-    }
-    [Test, TestCaseSource(typeof(SwipeTargetGroupElementArrayIndexAreValid_TestCase), "cases")]
-    public void SwipeTargetGroupElementArrayIndexAreValid_Various(int[] arraySize, int[] index, bool expected){
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        IUIElementGroup uieGroup = arg.uia.GetChildUIEs()[0] as IUIElementGroup;
-        for(int i = 0; i < 2; i ++)
-            uieGroup.GetGroupElementsArraySize(i).Returns(arraySize[i]);
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        scroller.ActivateImple();
-
-        bool actual = scroller.SwipeTargetGroupElementArrayIndexAreValid_Test(index);
-
-        Assert.That(actual, Is.EqualTo(expected));
-    }
-    public class SwipeTargetGroupElementArrayIndexAreValid_TestCase{
-        public static object[] cases = {
-            new object[]{new int[]{2, 2}, new int[]{-1, -1}, false},
-            new object[]{new int[]{2, 2}, new int[]{0, 0}, true},
-            new object[]{new int[]{2, 2}, new int[]{1, 1}, true},
-            new object[]{new int[]{2, 2}, new int[]{2, 2}, false},
         };
     }
 
@@ -378,9 +357,6 @@ public class UIElementGroupScrollerTest {
         }
         public int[] GetSwipeNextTargetGroupElementArrayIndex_Test(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
             return this.GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, currentGroupElementAtCurRefPointIndex);
-        }
-        public bool SwipeTargetGroupElementArrayIndexAreValid_Test(int[] index){
-            return this.SwipeTargetGroupElementArrayIndexAreValid(index);
         }
     }
 }

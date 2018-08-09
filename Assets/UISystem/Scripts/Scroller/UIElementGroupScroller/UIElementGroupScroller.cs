@@ -15,7 +15,6 @@ namespace UISystem{
 			thisInitiallyCursoredGroupElementIndex = arg.initiallyCursoredGroupElementIndex;
 			thisStartSearchSpeed = MakeSureStartSearchSpeedIsGreaterThanZero(arg.startSearchSpeed);
 			thisSwipeToSnapNext = arg.swipeToSnapNext;
-			thisCorrectedCursoredElementIndexCalculator = new CorrectedCursoredElementIndexCalculator(thisCursorSize);
 		}
 		int[] MakeCursorSizeAtLeastOne(int[] source){
 			int[] result = new int[2];
@@ -34,11 +33,13 @@ namespace UISystem{
 		}
 		protected override void OnScrollerElementReferenceSetUp(){
 			base.OnScrollerElementReferenceSetUp();
-			thisCorrectedCursoredElementIndexCalculator.SetUIElementGroup(thisUIElementGroup);
+			thisCorrectedCursoredElementIndexCalculator = new CorrectedCursoredElementIndexCalculator(thisUIElementGroup, thisCursorSize);
+			thisElementGroupOffsetCalculator = new ElementGroupOffsetCalculator(thisUIElementGroup, thisGroupElementLength, thisPadding, thisCursorLocalPosition);
+			thisSwipeNextTargetGroupElementArrayIndexCalculator = new SwipeNextTargetGroupElementArrayIndexCalculator(thisUIElementGroup, thisCursorSize, thisScrollerAxis, thisSwipeToSnapNext);
 		}
 
 
-		readonly ICorrectedCursoredElementIndexCalculator thisCorrectedCursoredElementIndexCalculator;
+		ICorrectedCursoredElementIndexCalculator thisCorrectedCursoredElementIndexCalculator;
 		int GetCursoredGroupElementIndexCorrectedForBounds(int source){
 			return thisCorrectedCursoredElementIndexCalculator.Calculate(source);
 		}
@@ -131,19 +132,9 @@ namespace UISystem{
 			SnapTo(targetNormalizedCursoredPosition, initialVelocity, dimension);
 		}
 
-
+		IElementGroupOffsetCalculator thisElementGroupOffsetCalculator;
 		protected float GetElementGroupOffset(int dimension){
-			float sectionLength = thisGroupElementLength[dimension] + thisPadding[dimension];
-			Vector2 uieGroupCursoredPosition = thisCursorLocalPosition - thisUIElementGroup.GetLocalPosition();
-			float modulo = uieGroupCursoredPosition[dimension] % sectionLength;
-			if(modulo == 0f)
-				return 0f;
-			else{
-				float cursoredPosNormalziedToSectionLength = modulo/ sectionLength;
-				if(cursoredPosNormalziedToSectionLength < 0f)
-					cursoredPosNormalziedToSectionLength = 1f + cursoredPosNormalziedToSectionLength;
-				return cursoredPosNormalziedToSectionLength;
-			}
+			return thisElementGroupOffsetCalculator.Calculate(dimension);
 		}
 		protected Vector2 GetGroupElementsOffset(){
 			Vector2 result = new Vector2();
@@ -257,11 +248,11 @@ namespace UISystem{
 				}else{
 					if(thisIsEnabledInertia)
 						StartInertialScroll(eventData.velocity);
-				}	
-				base.OnSwipeImple(eventData);
+				}
+				CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			}else{
-				CheckForStaticBoundarySnap();
 				base.OnSwipeImple(eventData);
+				CheckForStaticBoundarySnap();
 			}
 			ResetDrag();
 		}
@@ -270,14 +261,14 @@ namespace UISystem{
 			/*  Find the next groupElement in the direction of swipe delta
 				make the element valid if not
 			*/
-			IUIElement bottomLeft = thisCursoredElements[0];
-			int[] bottomLeftArrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(bottomLeft);
-			int[] targetGroupElementIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, bottomLeftArrayIndex);
+			IUIElement cursoredElement = thisCursoredElements[0];
+			int[] cursoredElementArrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(cursoredElement);
+			int[] targetGroupElementArrayIndex = GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, cursoredElementArrayIndex);
 			
-			IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementIndex[0], targetGroupElementIndex[1]);
+			IUIElement targetGroupElement = thisUIElementGroup.GetGroupElement(targetGroupElementArrayIndex[0], targetGroupElementArrayIndex[1]);
 
 			if(targetGroupElement == null)
-				targetGroupElement = bottomLeft;
+				targetGroupElement = cursoredElement;
 			
 			if(thisScrollerAxis == ScrollerAxis.Both){
 				SnapToGroupElement(targetGroupElement, velocity[0], 0);
@@ -295,8 +286,9 @@ namespace UISystem{
 			else
 				return 1;
 		}
-
+		ISwipeNextTargetGroupElementArrayIndexCalculator thisSwipeNextTargetGroupElementArrayIndexCalculator;
 		protected int[] GetSwipeNextTargetGroupElementArrayIndex(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
+			// return thisSwipeNextTargetGroupElementArrayIndexCalculator.Calculate(swipeDeltaPos, currentGroupElementAtCurRefPointIndex);
 			int[] result = new int[2];
 
 			int dominantAxis = -1;
@@ -321,17 +313,6 @@ namespace UISystem{
 			return result;
 		}
 
-
-		protected virtual bool SwipeTargetGroupElementArrayIndexAreValid(int[] index){
-			for(int i = 0; i < 2; i ++){
-				if(index[i] < 0)
-					return false;
-				else
-					if(index[i] > thisUIElementGroup.GetGroupElementsArraySize(i) - thisCursorSize[i])
-						return false;
-			}
-			return true;
-		}
 		int MakeTargetGroupElementArrayIndexWithinRange(int source, int dimension){
 			if(source < 0)
 				return 0;
