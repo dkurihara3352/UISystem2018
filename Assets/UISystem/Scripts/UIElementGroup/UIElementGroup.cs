@@ -26,6 +26,7 @@ namespace UISystem{
 			thisTopToBottom = arg.topToBottom;
 			thisLeftToRight = arg.leftToRight;
 			thisRowToColumn = OverrideRowToColumnAccordingToConstraint(arg.rowToColumn);
+			thisArrayIndexCalculator = new UIElementGroupArrayIndexCalculator(thisTopToBottom, thisLeftToRight, thisRowToColumn);
 			thisElementLength = arg.elementLength;
 			thisPadding = arg.padding;
 		}
@@ -82,8 +83,12 @@ namespace UISystem{
 			CheckIfElementsCountIsValid(elements.Count);
 			thisGroupElements = CreateTypedList(elements);
 			ChildrenAllElements(elements);
-			thisElementsArray = CreateElements2DArray();
+			int numOfColumns = CalcNumberOfColumnsToCreate();
+			int numOfRows = CalcNumberOfRowsToCreate();
+			thisElementsArray = CreateElements2DArray(numOfColumns, numOfRows);
 			this.ResizeToFitElements();
+			thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(thisElementsArray, thisElementLength, thisPadding, thisUIA.GetRect().size);
+			thisGroupElementsArrayCalculator = new GroupElementsArrayCalculator(thisElementsArray);
 			PlaceElements();
 		}
 		List<T> CreateTypedList(List<IUIElement> source){
@@ -106,14 +111,12 @@ namespace UISystem{
 		public IUIElement GetGroupElement(int columnIndex, int rowIndex){
 			return thisElementsArray[columnIndex, rowIndex];
 		}
-		protected T[ , ] CreateElements2DArray(){
-			int numOfRowsToCreate = CalcNumberOfRowsToCreate();
-			int numOfColumnsToCreate = CalcNumberOfColumnsToCreate();
-			T[ , ] array = new T[ numOfColumnsToCreate, numOfRowsToCreate];
+		protected T[ , ] CreateElements2DArray(int numOfColumns, int numOfRows){
+			T[ , ] array = new T[ numOfColumns, numOfRows];
 			foreach(T element in thisGroupElements){
 				int elementIndex = thisGroupElements.IndexOf(element);
-				int columnIndex = CalcColumnIndex(elementIndex, numOfColumnsToCreate, numOfRowsToCreate);
-				int rowIndex = CalcRowIndex(elementIndex, numOfColumnsToCreate, numOfRowsToCreate);
+				int columnIndex = CalcColumnIndex(elementIndex, numOfColumns, numOfRows);
+				int rowIndex = CalcRowIndex(elementIndex, numOfColumns, numOfRows);
 				array[columnIndex, rowIndex] = element;
 			}
 			return array;
@@ -136,34 +139,15 @@ namespace UISystem{
 				return modulo > 0? quotient + 1 : quotient;
 			}
 		}
+		UIElementGroupArrayIndexCalculator thisArrayIndexCalculator;
 		protected int CalcColumnIndex(int n, int numOfColumns, int numOfRows){
-			int valueA = n % numOfColumns;
-			int valueB = n / numOfRows;
-			if(thisLeftToRight)
-				if(thisRowToColumn)
-					return valueA;
-				else
-					return valueB;
-			else
-				if(thisRowToColumn)
-					return numOfColumns - valueA - 1;
-				else
-					return numOfColumns - valueB - 1;
+			return thisArrayIndexCalculator.CalcColumnIndex(n, numOfColumns, numOfRows);
 		}
 		protected int CalcRowIndex(int n, int numOfColumns, int numOfRows){
-			int valueA = n / numOfColumns;
-			int valueB = n % numOfRows;
-			if(!thisTopToBottom)
-				if(thisRowToColumn)
-					return valueA;
-				else
-					return valueB;
-			else
-				if(thisRowToColumn)
-					return numOfRows - 1 - valueA;
-				else
-					return numOfRows - 1 - valueB;
+			return thisArrayIndexCalculator.CalcRowIndex(n, numOfColumns, numOfRows);
 		}
+
+		
 		public int GetGroupElementsArraySize(int dimension){
 			return thisElementsArray.GetLength(dimension);
 		}
@@ -182,77 +166,24 @@ namespace UISystem{
 			uia.SetRectLength(targetWidth, targetHeight);
 		}
 		public int[] GetGroupElementArrayIndex(IUIElement element){
-			int[] result = new int[2]{-1, -1};
-			for(int i = 0; i < thisElementsArray.GetLength(0); i ++){
-				for(int j = 0; j < thisElementsArray.GetLength(1); j ++){
-					T elementAtIndex = thisElementsArray[i, j];
-					if(elementAtIndex != null)
-						if(elementAtIndex == element){
-							result[0] = i;
-							result[1] = j;
-							return result;
-						}
-				}
-			}
-			return result;
+			return thisGroupElementsArrayCalculator.GetGroupElementArrayIndex(element);
 		}
 		protected void PlaceElements(){
 			foreach(T element in thisGroupElements){
-				int[] index = GetGroupElementArrayIndex(element);
-				float localPosX = (index[0] * (thisElementLength.x + thisPadding.x)) + thisPadding.x;
-				float localPosY = (index[1] * (thisElementLength.y + thisPadding.y)) + thisPadding.y;
+				int[] arrayIndex = GetGroupElementArrayIndex(element);
+				float localPosX = (arrayIndex[0] * (thisElementLength.x + thisPadding.x)) + thisPadding.x;
+				float localPosY = (arrayIndex[1] * (thisElementLength.y + thisPadding.y)) + thisPadding.y;
 				Vector2 newLocalPos = new Vector2(localPosX, localPosY);
 				element.SetLocalPosition(newLocalPos);
 			}
 		}
+		IGroupElementsArrayCalculator thisGroupElementsArrayCalculator;
 		public IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
-			int[] arraySize = GetArraySize();
-			List<IUIElement> result = new List<IUIElement>();
-			for(int i = 0; i < arraySize[0]; i ++){
-				if(i >= minColumnIndex && i <= maxColumnIndex){
-					for(int j = 0; j < arraySize[1]; j ++){
-						if(j >= minRowIndex && j <= maxRowIndex){
-							IUIElement elementAtIndex = GetGroupElement(i, j);
-							result.Add(elementAtIndex);
-						}
-					}
-				}
-			}
-			return result.ToArray();
+			return thisGroupElementsArrayCalculator.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
 		}
+		IGroupElementAtPositionInGroupSpaceCalculator thisGroupElementAtPositionInGroupSpaceCalculator;
 		public IUIElement GetGroupElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace){
-			//return null if the point is at padding space
-			if(PositionIsOutOfThisRectBouds(positionInElementGroupSpace))
-				return null;
-			else{
-				int[] arrayIndex = new int[2];
-				for(int i = 0; i < 2; i ++){
-					float elementLengthPlusPadding = thisElementLength[i] + thisPadding[i];
-					float modulo = positionInElementGroupSpace[i] % elementLengthPlusPadding;
-					if(modulo == 0f){
-						if(positionInElementGroupSpace[i] > thisPadding[i]){
-							int quotient = Mathf.FloorToInt(positionInElementGroupSpace[i]/ elementLengthPlusPadding) -1;
-							arrayIndex[i] = quotient;
-						}else
-							return null;
-					}else{
-						if(modulo >= thisPadding[i]){
-							int quotient = Mathf.FloorToInt(positionInElementGroupSpace[i] / elementLengthPlusPadding);
-							arrayIndex[i] = quotient;
-						}else
-							return null;
-					}
-				}
-				IUIElement elementAtIndex = thisElementsArray[arrayIndex[0], arrayIndex[1]];
-				return elementAtIndex;
-			}
-		}
-		bool PositionIsOutOfThisRectBouds(Vector2 position){
-			for(int i = 0; i < 2; i ++){
-				if(position[i] < thisPadding[i] || position[i] > thisUIA.GetRect().size[i] - thisPadding[i])
-					return true;
-			}
-			return false;
+			return thisGroupElementAtPositionInGroupSpaceCalculator.Calculate(positionInElementGroupSpace);
 		}
 		/*  */
 

@@ -78,12 +78,16 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementMotorProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementSnapProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\CorrectedCursoredElementIndexCalculatorTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\SwipeNextTargetGroupElementArrayIndexCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\UIElementGroupScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateEngineTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\UIEActivationStateEngineTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\GroupElementAtPositionInGroupSpaceCalculatorTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\GroupElementsArrayCalculatorTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\UIElementGroupArrayIndexCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\UIElementGroupTest.cs" />
  <Reference Include="UnityEngine.Analytics">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>

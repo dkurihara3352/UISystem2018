@@ -7,28 +7,26 @@ namespace UISystem{
 		int[] Calculate(Vector2 swipeDeltaPos, int[] currentGroupElementAtCursorArrayIndex);
 	}
 	public class SwipeNextTargetGroupElementArrayIndexCalculator : ISwipeNextTargetGroupElementArrayIndexCalculator {
-		public SwipeNextTargetGroupElementArrayIndexCalculator(IUIElementGroup uieGroup, int[] cursorSize, ScrollerAxis scrollerAxis, bool swipeToSnapNext){
+		public SwipeNextTargetGroupElementArrayIndexCalculator(IUIElementGroup uieGroup, int[] cursorSize, ScrollerAxis scrollerAxis){
 			thisUIElementGroup = uieGroup;
 			thisCursorSize = cursorSize;
 			thisScrollerAxis = scrollerAxis;
-			thisSwipeToSnapNext = swipeToSnapNext;
 		}
 		readonly IUIElementGroup thisUIElementGroup;
 		readonly int[] thisCursorSize;
 		readonly ScrollerAxis thisScrollerAxis;
-		readonly bool thisSwipeToSnapNext;
-		public int[] Calculate(Vector2 swipeDeltaPos, int[] currentGroupElementAtCursorArrayIndex){
+		public int[] Calculate(Vector2 velocity, int[] currentGroupElementAtCursorArrayIndex){
 			int[] result = new int[2];
 
 			int dominantAxis = -1;
-			if(thisScrollerAxis == ScrollerAxis.Both && thisSwipeToSnapNext){
-				dominantAxis = GetDominantAxis(swipeDeltaPos);
+			if(thisScrollerAxis == ScrollerAxis.Both){
+				dominantAxis = GetDominantAxis(velocity);
 			}
 
 			for(int i = 0; i < 2; i ++){
 				if(dominantAxis == -1 || dominantAxis == i){
-					if(swipeDeltaPos[i] != 0f){
-						if(swipeDeltaPos[i] < 0f)
+					if(velocity[i] != 0f){
+						if(velocity[i] < 0f)
 							result[i] = currentGroupElementAtCursorArrayIndex[i] + 1;
 						else
 							result[i] = currentGroupElementAtCursorArrayIndex[i] - 1;

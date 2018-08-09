@@ -401,7 +401,7 @@ namespace UISystem{
 				if(process != null)
 					runningProcessFound = true;
 			if(!runningProcessFound)
-				// thisScrollerElement.EnableInputRecursively();
+				//don't do it recursively, that'd be an overdo
 				thisScrollerElement.EnableInput();
 		}
 		void StopRunningElementMotorProcess(int dimension){

@@ -253,28 +253,6 @@ public class UIElementGroupScrollerTest {
             },
         };
     }
-    [Test, TestCaseSource(typeof(GetSwipeNextTargetGroupElementArrayIndex_TestCase), "cases")]
-    public void GetSwipeNextTargetGroupElementArrayIndex_Various(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex, int[] expected){
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        scroller.ActivateImple();
-
-        int[] actual = scroller.GetSwipeNextTargetGroupElementArrayIndex_Test(swipeDeltaPos, currentGroupElementAtCurRefPointIndex);
-
-        Assert.That(actual, Is.EqualTo(expected));
-    }
-    public class GetSwipeNextTargetGroupElementArrayIndex_TestCase{
-        public static object[] cases = {
-            new object[]{new Vector2(0f, 0f), new int[]{0, 0}, new int[]{0, 0}},
-            new object[]{new Vector2(1f, 0f), new int[]{0, 0}, new int[]{1, 0}},
-            new object[]{new Vector2(1f, 1f), new int[]{0, 0}, new int[]{1, 1}},
-            new object[]{new Vector2(0f, 1f), new int[]{0, 0}, new int[]{0, 1}},
-            new object[]{new Vector2(-1f, 1f), new int[]{0, 0}, new int[]{-1, 1}},
-            new object[]{new Vector2(-1f, 0f), new int[]{0, 0}, new int[]{-1, 0}},
-            new object[]{new Vector2(-1f, -1f), new int[]{0, 0}, new int[]{-1, -1}},
-            new object[]{new Vector2(0f, -1f), new int[]{0, 0}, new int[]{0, -1}},
-        };
-    }
 
 
 

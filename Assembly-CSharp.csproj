@@ -178,8 +178,11 @@
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\UIEFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroupAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GroupElementAtPositionInGroupSpaceCalculator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GroupElementsArrayCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\IndexElementGroupAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\UIElementGroup.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\UIElementGroupArrayIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIImage\UIImage.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIInputHandler.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIManager\TestUIManagerAdaptor.cs" />

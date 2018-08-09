@@ -780,19 +780,6 @@ public class ScrollerTest{
 		}
 	/* Release */
 		[Test]
-		public void OnReleaseImple_ThisNotProcessedDrag_CallsParentUIEOnRelease(){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			IUIElement parentUIE = Substitute.For<IUIElement>();
-			arg.uia.GetParentUIE().Returns(parentUIE);
-			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
-			Assert.That(scroller.thisShouldProcessDrag_Test, Is.False);
-
-			scroller.OnReleaseImple_Test();
-
-			parentUIE.Received(1).OnRelease();
-		}
-		[Test]
 		public void OnReleaseImple_ResetsDrag(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.scrollerAxis.Returns(ScrollerAxis.Both);
@@ -939,7 +926,7 @@ public class ScrollerTest{
 
 			horProcessB.Run();
 			horProcessA.Received(1).Stop();
-			scrollerElement.Received(1).EnableInputRecursively();
+			scrollerElement.Received(1).EnableInput();
 			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.SameAs(horProcessB));
 			scrollerElement.Received(2).DisableInputRecursively();
 
@@ -953,7 +940,7 @@ public class ScrollerTest{
 			verProcessB.Run();
 			verProcessA.Received(1).Stop();
 			scrollerElement.Received(4).DisableInputRecursively();
-			scrollerElement.Received(1).EnableInputRecursively();
+			scrollerElement.Received(1).EnableInput();
 			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.SameAs(verProcessB));
 
 			scroller.OnTouchImple_Test(1);
@@ -961,7 +948,7 @@ public class ScrollerTest{
 			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.Null);
 			verProcessB.Received(1).Stop();
 			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.Null);
-			scrollerElement.Received(2).EnableInputRecursively();
+			scrollerElement.Received(2).EnableInput();
 		}
 		IScrollerElementMotorProcess CreateMockProcess(IScroller scroller, int dimension){
 			IScrollerElementMotorProcess process = Substitute.For<IScrollerElementMotorProcess>();
