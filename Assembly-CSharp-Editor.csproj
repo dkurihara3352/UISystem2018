@@ -51,7 +51,6 @@
      <Compile Include="Assets\DKUtility\Scripts\Editor\CalculatorTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\ConstrainedProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\InterpolatorProcessTest.cs" />
-     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\TurnImageDarknessProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\WaitAndExpireProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\SwitchableState\Editor\SwitchableStateTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\EquipToolIconGroupTest.cs" />

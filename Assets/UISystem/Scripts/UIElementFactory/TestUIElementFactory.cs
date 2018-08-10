@@ -8,16 +8,20 @@ namespace UISystem{
 	}
 	public class TestUIElementFactory : UIElementFactory, ITestUIElementFactory {
 
-		public TestUIElementFactory(IUIManager uim, Font textFont, int fontSize, Color imageColor): base(uim){
+		public TestUIElementFactory(IUIManager uim, Font textFont, int fontSize, Color imageColor, float imageDefaultDarkness, float imageDarkenedDarkness): base(uim){
 			thisFont = textFont;
 			thisImageColor = imageColor;
 			thisFontSize = fontSize;
+			thisImageDefaultDarkness = imageDefaultDarkness;
+			thisImageDarkenedDarkness = imageDarkenedDarkness;
 		}
 		readonly Font thisFont;
 		readonly Color thisImageColor;
 		readonly int thisFontSize;
+		readonly float thisImageDefaultDarkness;
+		readonly float thisImageDarkenedDarkness;
 		public IUIElement CreateUIElementWithIndexText(int index, Vector2 sizeDelta, IUISystemProcessFactory processFactory){
-			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor);
+			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor, thisImageDefaultDarkness, thisImageDarkenedDarkness);
 			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(sizeDelta, initData);
 			IndexElementAdaptor uia = this.CreateInstatiableUIA<IndexElementAdaptor>(instData);
 			IUIAActivationData activationData = new RootUIAActivationData(thisUIM, processFactory, this);

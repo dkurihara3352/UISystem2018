@@ -11,6 +11,11 @@ public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 			IGenericSingleElementScrollerConstArg arg = new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, isEnabledInertia, thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
 			return new GenericSingleElementScroller(arg);
 		}
+		public override void GetReadyForActivation(IUIAActivationData passedData){
+			base.GetReadyForActivation(passedData);
+			IScroller scroller = (IScroller)GetUIElement();
+			scroller.SetUpScrollerElement();
+		}
 	}
 }
 

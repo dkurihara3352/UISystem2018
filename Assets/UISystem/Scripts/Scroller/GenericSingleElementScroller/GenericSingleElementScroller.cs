@@ -7,6 +7,7 @@ namespace UISystem{
 	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller, INonActivatorUIElement{
 		public GenericSingleElementScroller(IGenericSingleElementScrollerConstArg arg): base(arg){
 			thisRelativeCursorLength = MakeRelativeCursorLengthInRange(arg.relativeCursorLength);
+			SetUpCursorTransform();
 		}
 		Vector2 MakeRelativeCursorLengthInRange(Vector2 source){
 			Vector2 newSizeV2 = new Vector2(source.x, source.y);
@@ -33,10 +34,6 @@ namespace UISystem{
 		}
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
-		}
-		protected override void InitializeScrollerElementForActivation(){
-			base.InitializeScrollerElementForActivation();
-			thisScrollerElement.OnScrollerFocus();
 		}
 	}
 

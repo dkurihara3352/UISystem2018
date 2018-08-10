@@ -5,12 +5,14 @@ using UISystem;
 public class GUIManager : MonoBehaviour {
 	void Awake(){
 		Rect topLeftRect = CreateGUIRect(new Vector2(0f, 0f), new Vector2(.17f, .5f));
-			topLeftSubRect_0 = GetSubRect(topLeftRect, 0, 6);
-			topLeftSubRect_1 = GetSubRect(topLeftRect, 1, 6);
-			topLeftSubRect_2 = GetSubRect(topLeftRect, 2, 6);
-			topLeftSubRect_3 = GetSubRect(topLeftRect, 3, 6);
-			topLeftSubRect_4 = GetSubRect(topLeftRect, 4, 6);
-			topLeftSubRect_5 = GetSubRect(topLeftRect, 5, 6);
+			topLeftSubRect_0 = GetSubRect(topLeftRect, 0, 8);
+			topLeftSubRect_1 = GetSubRect(topLeftRect, 1, 8);
+			topLeftSubRect_2 = GetSubRect(topLeftRect, 2, 8);
+			topLeftSubRect_3 = GetSubRect(topLeftRect, 3, 8);
+			topLeftSubRect_4 = GetSubRect(topLeftRect, 4, 8);
+			topLeftSubRect_5 = GetSubRect(topLeftRect, 5, 8);
+			topLeftSubRect_6 = GetSubRect(topLeftRect, 6, 8);
+			topLeftSubRect_7 = GetSubRect(topLeftRect, 7, 8);
 	}
 	Rect topLeftRect;
 	Rect topLeftSubRect_0;
@@ -19,6 +21,8 @@ public class GUIManager : MonoBehaviour {
 	Rect topLeftSubRect_3;
 	Rect topLeftSubRect_4;
 	Rect topLeftSubRect_5;
+	Rect topLeftSubRect_6;
+	Rect topLeftSubRect_7;
 	public bool thisGUIIsEnabled;
 	void OnGUI(){
 		if(thisGUIIsEnabled){
@@ -33,6 +37,10 @@ public class GUIManager : MonoBehaviour {
 				testUIManagerAdaptor.ActivateRootUIElementInstantly();
 			if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
 				testUIManagerAdaptor.DeactivateRootUIElementInstantly();
+			if(GUI.Button(topLeftSubRect_6, "TurnRed"))
+				testUIManagerAdaptor.TurnTargetRed();
+			if(GUI.Button(topLeftSubRect_7, "ToOriginal"))
+				testUIManagerAdaptor.TurnTargetColorToOriginal();
 		}
 	}
 	public TestUIManagerAdaptor testUIManagerAdaptor;

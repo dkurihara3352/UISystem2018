@@ -28,7 +28,7 @@ namespace UISystem{
 			RectTransform imageRT = CreateChildWithImageComponent(out image);
 			Text text;
 			RectTransform textRT = CreateChildWithTextComponent(out text);
-			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultDarkness, thisImageDarkenedDarkness);
+			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainActivationData.processFactory);
 			return uiImage;
 		}
 		RectTransform CreateChildWithImageComponent(out Image image){
@@ -83,11 +83,13 @@ namespace UISystem{
 		float imageDarkenedDarkness{get;}
 	}
 	public struct IndexElementAdaptorInitializationData: IIndexElementAdaptorInitializationData{
-		public IndexElementAdaptorInitializationData(int index, Font font, int fontSize, Color imageColor){
+		public IndexElementAdaptorInitializationData(int index, Font font, int fontSize, Color imageColor, float imageDefaultDarkness, float imageDarkenedDarkness){
 			thisIndex = index;
 			thisFont = font;
 			thisImageColor = imageColor;
 			thisFontSize = fontSize;
+			thisImageDefaultDarkness = imageDefaultDarkness;
+			thisImageDarkenedDarkness = imageDarkenedDarkness;
 		}
 		readonly int thisIndex;
 		public int index{get{return thisIndex;}}
@@ -97,8 +99,10 @@ namespace UISystem{
 		public int fontSize{get{return thisFontSize;}}
 		readonly Color thisImageColor;
 		public Color imageColor{get{return thisImageColor;}}
-		public float imageDefaultDarkness{get{return .8f;}}
-		public float imageDarkenedDarkness{get{return .5f;}}
+		readonly float thisImageDefaultDarkness;
+		public float imageDefaultDarkness{get{return thisImageDefaultDarkness;}}
+		readonly float thisImageDarkenedDarkness;
+		public float imageDarkenedDarkness{get{return thisImageDarkenedDarkness;}}
 	}
 	public interface IIndexElementAdaptorInstantiationData: IInstantiableUIAdaptorInstantiationData{
 	}

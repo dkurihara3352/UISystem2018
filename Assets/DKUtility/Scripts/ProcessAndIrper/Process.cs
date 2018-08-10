@@ -213,7 +213,6 @@ namespace DKUtility{
 			base.Run();
 		}
 		sealed protected override void RunImple(){
-			// thisInterpolator = InstantiateInterpolatorWithValues();
 			base.RunImple();
 		}
 		protected override void UpdateProcessImple(float deltaT){

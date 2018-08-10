@@ -43,16 +43,22 @@ namespace UISystem{
 			thisProcess.Run();
 		}
 		public override void OnExit(){
-			// StopAndClearProcess();
+			StopAndClearProcess(); 
 		}
 		public void OnProcessUpdate(float deltaT){
 			return;
 		}
 		public abstract void OnProcessExpire();
 		public void ExpireProcess(){
-			StopAndClearProcess();
+			ExpireAndClearProcess();
 		}
 		void StopAndClearProcess(){
+			if(thisProcess != null)
+				if(thisProcess.IsRunning())
+					thisProcess.Stop();
+			thisProcess = null;
+		}
+		void ExpireAndClearProcess(){
 			if(thisProcess != null)
 				if(thisProcess.IsRunning())
 					thisProcess.Expire();

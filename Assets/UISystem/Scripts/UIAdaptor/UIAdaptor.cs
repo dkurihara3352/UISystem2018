@@ -50,7 +50,7 @@ namespace UISystem{
 				imageRectTrans.anchorMax = new Vector2(0f, 0f);
 				imageRectTrans.sizeDelta = this.GetRect().size;
 				imageRectTrans.anchoredPosition = Vector3.zero;
-				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness);
+				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainActivationData.processFactory);
 				return uiImage;
 			}
 			protected Transform GetChildWithImage(out Image image){
@@ -64,8 +64,8 @@ namespace UISystem{
 				}
 				throw new System.InvalidOperationException("there's no child transform with Image component asigned");
 			}
-			public float thisImageDefaultDarkness;
-			public float thisImageDarkenedDarkness;
+			public float thisImageDefaultDarkness = .8f;
+			public float thisImageDarkenedDarkness = .5f;
 			public void ActivateUIElement(){
 				thisUIElement.ActivateRecursively();
 			}

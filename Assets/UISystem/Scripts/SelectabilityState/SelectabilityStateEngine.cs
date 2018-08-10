@@ -14,14 +14,11 @@ namespace UISystem{
 
 	}
 	public class SelectabilityStateEngine: DKUtility.AbsSwitchableStateEngine<ISelectabilityState>, ISelectabilityStateEngine{
-		public SelectabilityStateEngine(IUIElement uie, IUISystemProcessFactory procFac){
-			IUIImage image = uie.GetUIImage();
-			float selectableDarkness = 1f;
-			float unselectableDarkness = .5f;
-
-			selectableState = new SelectableState(procFac, image, selectableDarkness);
-			unselectableState = new UnselectableState(procFac, image, unselectableDarkness);
-			selectedState = new SelectedState(uie);
+		public SelectabilityStateEngine(IUIImage uiImage, IUISystemProcessFactory procFac){
+			
+			selectableState = new SelectableState(uiImage);
+			unselectableState = new UnselectableState(uiImage);
+			selectedState = new SelectedState(uiImage);
 
 			MakeSureStatesAreSet();
 

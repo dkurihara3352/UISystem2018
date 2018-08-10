@@ -5,7 +5,6 @@ using DKUtility;
 
 namespace UISystem{
 	public interface IUISystemProcessFactory: IProcessFactory{
-		ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness);
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
 		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
@@ -13,6 +12,8 @@ namespace UISystem{
 		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */);
 		IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension);
 		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, float decelerationOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
+		IImageColorTurnProcess CreateGenericImageColorTurnProcess(IUIImage uiImage, Color targetColor);
+		IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor);
 	}
 	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
 		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
@@ -23,10 +24,6 @@ namespace UISystem{
 
 		}
 		protected readonly IUIManager thisUIManager;
-		public ITurnImageDarknessProcess CreateTurnImageDarknessProcess(IUIImage image, float targetDarkness){
-			ITurnImageDarknessProcess process = new TurnImageDarknessProcess(thisProcessManager, ProcessConstraint.rateOfChange, 1f, .05f, image, targetDarkness, false);
-			return process;
-		}
 		public IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime){
 			IWaitAndExpireProcess process = new GenericWaitAndExpireProcess(thisProcessManager, waitTime, state);
 			return process;
@@ -59,6 +56,12 @@ namespace UISystem{
 			IInertialScrollProcess process = new InertialScrollProcess(deltaPosOnAxis, deceleration, decelerationAxisFactor, scroller, scrollerElement, dimension, thisProcessManager);
 
 			return process;
+		}
+		public IImageColorTurnProcess CreateGenericImageColorTurnProcess(IUIImage uiImage, Color targetColor){
+			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageColorTurnProcessExpireTime(), uiImage, targetColor, false);
+		}
+		public IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor){
+			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageColorTurnProcessExpireTime(), uiImage, targetColor, true);
 		}
 	}
 }

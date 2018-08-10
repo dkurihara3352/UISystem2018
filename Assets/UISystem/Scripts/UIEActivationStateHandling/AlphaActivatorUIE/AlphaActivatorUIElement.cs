@@ -20,8 +20,4 @@ namespace UISystem{
 			((IAlphaActivatorUIElementAdaptor)thisUIA).SetNormalizedGroupAlpha(groupAlpha);
 		}
 	}
-	public interface IAlphaActivatorUIElementAdaptor: IUIAdaptor{
-		float GetNormalizedGroupAlpha();
-		void SetNormalizedGroupAlpha(float groupAlpha);
-	}
 }

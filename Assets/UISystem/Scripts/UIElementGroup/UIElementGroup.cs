@@ -90,11 +90,18 @@ namespace UISystem{
 			thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(thisElementsArray, thisElementLength, thisPadding, thisUIA.GetRect().size);
 			thisGroupElementsArrayCalculator = new GroupElementsArrayCalculator(thisElementsArray);
 			PlaceElements();
+			CheckAndSetUpScrollerElementOnParentScroller();
+		}
+		void CheckAndSetUpScrollerElementOnParentScroller(){
+			IUIElement parentUIE = GetParentUIE();
+			if(parentUIE != null)
+				if(parentUIE is IScroller)
+					((IScroller)parentUIE).SetUpScrollerElement();
 		}
 		List<T> CreateTypedList(List<IUIElement> source){
 			List<T> result = new List<T>();
 			foreach(IUIElement uie in source){
-				result.Add(uie as T);
+				result.Add((T)uie);
 			}
 			return result;
 		}
@@ -188,11 +195,19 @@ namespace UISystem{
 		/*  */
 
 		public override void OnScrollerFocus(){
-			IUIElement parentUIE = GetParentUIE();
-			if(parentUIE != null && parentUIE is IScroller)
-				thisIsFocusedInScroller = true;
-			else
-				base.OnScrollerFocus();
+			thisIsFocusedInScroller = true;
+			// IUIElement parentUIE = GetParentUIE();
+			// if(parentUIE != null && parentUIE is IUIElementGroupScroller){
+			// 	// focusing cursored elements are taken care in uieGroupScroller
+			// }
+			// else
+			// 	base.OnScrollerFocus();
+		}
+		public override void ActivateRecursively(){
+			thisUIEActivationStateEngine.Activate();
+		}
+		public override void ActivateInstantlyRecursively(){
+			thisUIEActivationStateEngine.ActivateInstantly();
 		}
 	}
 
@@ -232,5 +247,8 @@ namespace UISystem{
 		readonly Vector2 thisPadding;
 		public Vector2 padding{get{return thisPadding;}}
 	}
-	public interface IUIElementGroupAdaptor: IUIAdaptor{}
+	public interface IUIElementGroupAdaptor: IUIAdaptor{
+		Vector2 GetGroupElementLength();
+		Vector2 GetPadding();
+	}
 }

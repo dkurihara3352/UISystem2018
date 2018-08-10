@@ -11,8 +11,28 @@ namespace UISystem{
 		public Vector2 padding;
 		public float startSearchSpeed;
 		public bool swipeToSnapNext;
+		public bool activatesCursoredElementsOnly;
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, groupElementLength, padding, startSearchSpeed, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, swipeToSnapNext, thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
+			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
+				initiallyCursoredElementIndex, 
+				cursorSize, 
+				groupElementLength, 
+				padding, 
+				startSearchSpeed, 
+				activatesCursoredElementsOnly,
+
+				relativeCursorPosition, 
+				scrollerAxis, 
+				rubberBandLimitMultiplier, 
+				isEnabledInertia, 
+				swipeToSnapNext, 
+				
+				thisDomainActivationData.uim, 
+				thisDomainActivationData.processFactory, 
+				thisDomainActivationData.uiElementFactory, 
+				this, 
+				image
+			);
 			return new UIElementGroupScroller(arg);
 		}
 	}

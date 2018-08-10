@@ -10,7 +10,7 @@ namespace UISystem.PickUpUISystem{
 		float GetVisualPickedness();
 	}
 	public class PickableUIImage: UIImage, IPickableUIImage{
-		public PickableUIImage(Image image, Transform imageTrans, float defaultDarkness, float darkenedDarkness): base(image, imageTrans, defaultDarkness, darkenedDarkness){}
+		public PickableUIImage(Image image, Transform imageTrans, float defaultDarkness, float darkenedDarkness): base(image, imageTrans, defaultDarkness, darkenedDarkness, null){}
 		public void DetachTo(IPickUpContextUIE contextUIE){
 			IPickUpContextUIAdaptor contextUIA = (IPickUpContextUIAdaptor)contextUIE.GetUIAdaptor();
 			thisImageTrans.SetParent(contextUIA.GetTransform(), worldPositionStays:true);

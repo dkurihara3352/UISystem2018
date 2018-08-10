@@ -20,6 +20,7 @@ namespace UISystem{
 		void DeactivateImple();
 		void OnActivationComplete();
 		void OnDeactivationComplete();
+		bool IsActivated();
 		/*  */
 		void EnableInput();
 		void EnableInputRecursively();
@@ -37,7 +38,7 @@ namespace UISystem{
 			thisUIElementFactory = arg.uiElementFactory;
 			thisUIA = arg.uia;
 			thisImage = arg.image;
-			thisSelectabilityEngine = new SelectabilityStateEngine(this, thisProcessFactory);
+			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisProcessFactory);
 			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
 			thisUIEActivationStateEngine.DeactivateInstantly();
 		}
@@ -72,16 +73,22 @@ namespace UISystem{
 		}
 		/* Activation */
 			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
-			readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
-			public void ActivateRecursively(){
+			protected readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
+			public virtual void ActivateRecursively(){
 				thisUIEActivationStateEngine.Activate();
+				ActivateAllChildren();
+			}
+			protected void ActivateAllChildren(){
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
 						childUIE.ActivateRecursively(); 
 				}
 			}
-			public void ActivateInstantlyRecursively(){
+			public virtual void ActivateInstantlyRecursively(){
 				thisUIEActivationStateEngine.ActivateInstantly();
+				ActivateAllChildrenInstantly();
+			}
+			protected void ActivateAllChildrenInstantly(){
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
 						childUIE.ActivateInstantlyRecursively(); 
@@ -106,14 +113,18 @@ namespace UISystem{
 			bool IsActivationComplete(){
 				return thisUIEActivationStateEngine.IsActivationComplete();
 			}
-			bool IsActivated(){
+			public bool IsActivated(){
 				return thisUIEActivationStateEngine.IsActivated();
 			}
 			public virtual void DeactivateImple(){
 
 			}
-			public virtual void OnActivationComplete(){}
-			public virtual void OnDeactivationComplete(){}
+			public virtual void OnActivationComplete(){
+				GetUIImage().FlashGreen();
+			}
+			public virtual void OnDeactivationComplete(){
+				GetUIImage().FlashRed();
+			}
 		/* SelectabilityState */
 			protected virtual void InitializeSelectabilityState(){
 				if(thisIsFocusedInScroller)

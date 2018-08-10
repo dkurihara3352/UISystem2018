@@ -12,6 +12,8 @@ namespace UISystem{
 		float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension);
 		void StopAllRunningElementMotorProcesses();
 		bool[] CheckForStaticBoundarySnap();
+		void SetUpScrollerElement();
+		void SetUpCursorTransform();
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -86,14 +88,14 @@ namespace UISystem{
 		}
 		/* Activation */
 		public override void ActivateImple(){
-			SetUpCursorTransform();
+			// SetUpCursorTransform();
 
-			SetUpScrollerElement();
+			// SetUpScrollerElement();
 
 			base.ActivateImple();
 		}
 		/* Cursor Transform */
-		void SetUpCursorTransform(){
+		public void SetUpCursorTransform(){
 			thisCursorLength = CalcCursorLength();
 			ClampCursorLengthToThisRect();
 			thisCursorLocalPosition = CalcCursorLocalPos();
@@ -129,7 +131,7 @@ namespace UISystem{
 		}
 
 		/* ScrollerElement */
-		protected void SetUpScrollerElement(){
+		public void SetUpScrollerElement(){
 			SetTheOnlyChildAsScrollerElement();
 			CacheScrollerElementRect();
 			OnScrollerElementReferenceSetUp();

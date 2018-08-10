@@ -3,21 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IIndexElementGroupScrollerAdaptor: IUIElementGroupScrollerAdaptor{}
-	public class IndexElementGroupScrollerAdaptor : AbsScrollerAdaptor<IUIElementGroupScroller>, IIndexElementGroupScrollerAdaptor{
+	public interface IGenericElementGroupScrollerAdaptor: IUIElementGroupScrollerAdaptor{}
+	public class GenericElementGroupScrollerAdaptor : AbsScrollerAdaptor<IUIElementGroupScroller>, IGenericElementGroupScrollerAdaptor{
 		public int initiallyCursoredElementIndex;
 		public int[] cursorSize;
 		public float startSearchSpeed;
 		public bool swipeToSnapNext;
+		public bool activatesCursoredElementsOnly;
 		protected override IUIElement CreateUIElement(IUIImage image){
-			GenericUIElementGroupAdaptor uieGroupAdaptor = GetChildUIElementGroupAdaptor();
-			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(initiallyCursoredElementIndex, cursorSize, uieGroupAdaptor.groupElementLength, uieGroupAdaptor.padding, startSearchSpeed, relativeCursorPosition, scrollerAxis, rubberBandLimitMultiplier, isEnabledInertia, swipeToSnapNext, thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
+			IUIElementGroupAdaptor uieGroupAdaptor = GetChildUIElementGroupAdaptor();
+			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
+				initiallyCursoredElementIndex, 
+				cursorSize, 
+				uieGroupAdaptor.GetGroupElementLength(), 
+				uieGroupAdaptor.GetPadding(), 
+				startSearchSpeed, 
+				activatesCursoredElementsOnly, 
+
+				relativeCursorPosition, 
+				scrollerAxis, 
+				rubberBandLimitMultiplier, 
+				isEnabledInertia, 
+				swipeToSnapNext, 
+
+				thisDomainActivationData.uim, 
+				thisDomainActivationData.processFactory, 
+				thisDomainActivationData.uiElementFactory, 
+				this, 
+				image
+			);
 			return new UIElementGroupScroller(arg);
 		}
-		GenericUIElementGroupAdaptor GetChildUIElementGroupAdaptor(){
+		IUIElementGroupAdaptor GetChildUIElementGroupAdaptor(){
 			for(int i = 0; i < transform.childCount; i ++){
 				Transform child = transform.GetChild(i);
-				GenericUIElementGroupAdaptor adaptor = child.GetComponent<GenericUIElementGroupAdaptor>();
+				IUIElementGroupAdaptor adaptor = child.GetComponent<IUIElementGroupAdaptor>();
 				if(adaptor != null)
 					return adaptor;
 			}

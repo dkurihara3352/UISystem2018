@@ -11,6 +11,7 @@ namespace UISystem{
 		public RectTransform uieReserveTrans;
 		public ProcessManager processManager;
 		public UIAdaptor rootUIAdaptor;
+		public UIAdaptor turnColorUIA;
 		
 		void Awake(){
 			uiManager = new UIManager(uieReserveTrans);
@@ -32,6 +33,16 @@ namespace UISystem{
 		}
 		public void DeactivateRootUIElementInstantly(){
 			rootUIAdaptor.DeactivateUIElementInstantly();
+		}
+		public void TurnTargetRed(){
+			IUIElement uie = turnColorUIA.GetUIElement();
+			IUIImage image = uie.GetUIImage();
+			image.FlashRed();
+		}
+		public void TurnTargetColorToOriginal(){
+			IUIElement uie = turnColorUIA.GetUIElement();
+			IUIImage image = uie.GetUIImage();
+			image.TurnToOriginalColor();
 		}
 	}
 }
