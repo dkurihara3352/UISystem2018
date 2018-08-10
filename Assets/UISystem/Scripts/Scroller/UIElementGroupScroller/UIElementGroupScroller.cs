@@ -148,6 +148,8 @@ namespace UISystem{
 		/* Cursored Elements Evaluation */
 		protected override void InitializeScrollerElementForActivation(){
 			base.InitializeScrollerElementForActivation();
+			foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
+				uie.OnScrollerDefocus();
 			EvaluateCursoredGroupElements();
 		}
 		protected override bool CheckForStaticBoundarySnapOnAxis(int dimension){

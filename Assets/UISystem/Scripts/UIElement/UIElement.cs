@@ -30,6 +30,9 @@ namespace UISystem{
 		void OnScrollerDefocus();
 		void CheckAndStopScrollerMotorProcessOnParentScrollers();
 		void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+		/* Debug */
+		void TurnTo(Color color);
+		void Flash(Color color);
 	}
 	public abstract class AbsUIElement: IUIElement{
 		public AbsUIElement(IUIElementConstArg arg){
@@ -40,7 +43,6 @@ namespace UISystem{
 			thisImage = arg.image;
 			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisProcessFactory);
 			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
-			thisUIEActivationStateEngine.DeactivateInstantly();
 		}
 		protected readonly IUIManager thisUIM;
 		public IUIManager GetUIM(){
@@ -120,10 +122,10 @@ namespace UISystem{
 
 			}
 			public virtual void OnActivationComplete(){
-				GetUIImage().FlashGreen();
+				// Flash(Color.green);
 			}
 			public virtual void OnDeactivationComplete(){
-				GetUIImage().FlashRed();
+				// Flash(Color.red);
 			}
 		/* SelectabilityState */
 			protected virtual void InitializeSelectabilityState(){
@@ -332,6 +334,13 @@ namespace UISystem{
 					((IScroller)parentUIE).CheckForStaticBoundarySnap();
 				parentUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			}
+		}
+		/*  */
+		public void TurnTo(Color color){
+			GetUIImage().TurnTo(color);
+		}
+		public void Flash(Color color){
+			GetUIImage().Flash(color);
 		}
 	}
 

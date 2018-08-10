@@ -15,14 +15,13 @@ namespace UISystem{
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
-				thisUIM = thisDomainActivationData.uim;
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
 				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;
-			protected IUIManager thisUIM;
+			protected IUIManager thisUIM{get{return thisDomainActivationData.uim;}}
 			public IUIAActivationData GetDomainActivationData(){
 				return thisDomainActivationData;
 			}

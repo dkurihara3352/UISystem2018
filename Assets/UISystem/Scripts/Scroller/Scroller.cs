@@ -87,13 +87,6 @@ namespace UISystem{
 			return result;
 		}
 		/* Activation */
-		public override void ActivateImple(){
-			// SetUpCursorTransform();
-
-			// SetUpScrollerElement();
-
-			base.ActivateImple();
-		}
 		/* Cursor Transform */
 		public void SetUpCursorTransform(){
 			thisCursorLength = CalcCursorLength();

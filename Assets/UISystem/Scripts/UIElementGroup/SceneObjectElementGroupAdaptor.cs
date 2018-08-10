@@ -47,7 +47,7 @@ namespace UISystem{
 			base.GetReadyForActivation(passedData);
 			List<IUIElement> childSceneObjectUIEs = GetChildUIEs();
 			MakeSureAllChildrenHaveReferenceLength(childSceneObjectUIEs);
-			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();	
+			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
 			uieGroup.SetUpElements(childSceneObjectUIEs);
 		}
 		void MakeSureAllChildrenHaveReferenceLength(List<IUIElement> childSceneObjectUIEs){

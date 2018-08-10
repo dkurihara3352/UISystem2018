@@ -21,11 +21,9 @@ namespace UISystem{
 		Color GetOriginalColor();
 		Color GetColor();
 		void SetColor(Color color);
-		void TurnRed();
-		void TurnGreen();
+		void TurnTo(Color color);
+		void Flash(Color color);
 		void TurnToOriginalColor();
-		void FlashRed();
-		void FlashGreen();
 	}
 
 	public class UIImage: IUIImage{
@@ -102,23 +100,13 @@ namespace UISystem{
 		}
 		/*  */
 		IUISystemProcessFactory thisProcessFactory;
-		public void FlashRed(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateFalshColorProcess(this, Color.red);
+		public void TurnTo(Color color){
+			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, color);
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}
-		public void FlashGreen(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateFalshColorProcess(this, Color.green);
-			process.Run();
-			SetRunningTurnColorProcess(process);
-		}
-		public void TurnRed(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, Color.red);
-			process.Run();
-			SetRunningTurnColorProcess(process);
-		}
-		public void TurnGreen(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, Color.green);
+		public void Flash(Color color){
+			IImageColorTurnProcess process = thisProcessFactory.CreateFalshColorProcess(this, color);
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}

@@ -34,16 +34,6 @@ namespace UISystem{
 		public void DeactivateRootUIElementInstantly(){
 			rootUIAdaptor.DeactivateUIElementInstantly();
 		}
-		public void TurnTargetRed(){
-			IUIElement uie = turnColorUIA.GetUIElement();
-			IUIImage image = uie.GetUIImage();
-			image.FlashRed();
-		}
-		public void TurnTargetColorToOriginal(){
-			IUIElement uie = turnColorUIA.GetUIElement();
-			IUIImage image = uie.GetUIImage();
-			image.TurnToOriginalColor();
-		}
 	}
 }
 

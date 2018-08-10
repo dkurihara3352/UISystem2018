@@ -196,12 +196,6 @@ namespace UISystem{
 
 		public override void OnScrollerFocus(){
 			thisIsFocusedInScroller = true;
-			// IUIElement parentUIE = GetParentUIE();
-			// if(parentUIE != null && parentUIE is IUIElementGroupScroller){
-			// 	// focusing cursored elements are taken care in uieGroupScroller
-			// }
-			// else
-			// 	base.OnScrollerFocus();
 		}
 		public override void ActivateRecursively(){
 			thisUIEActivationStateEngine.Activate();

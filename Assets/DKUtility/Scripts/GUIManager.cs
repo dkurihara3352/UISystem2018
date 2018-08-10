@@ -37,10 +37,7 @@ public class GUIManager : MonoBehaviour {
 				testUIManagerAdaptor.ActivateRootUIElementInstantly();
 			if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
 				testUIManagerAdaptor.DeactivateRootUIElementInstantly();
-			if(GUI.Button(topLeftSubRect_6, "TurnRed"))
-				testUIManagerAdaptor.TurnTargetRed();
-			if(GUI.Button(topLeftSubRect_7, "ToOriginal"))
-				testUIManagerAdaptor.TurnTargetColorToOriginal();
+
 		}
 	}
 	public TestUIManagerAdaptor testUIManagerAdaptor;
