@@ -6,11 +6,6 @@ using DKUtility;
 
 namespace UISystem{
 	public interface IUIImage{
-		/* Darkness */
-		float GetCurrentDarkness();/* range is from 0f to 1f */
-		float GetDefaultDarkness();/* usually, 1f */
-		float GetDarkenedDarkness();/* somewhere around .5f */
-		void SetDarkness(float darkness);
 		void TurnToSelectableDarkness();
 		void TurnToUnselectableDarkenss();
 		/* Transform */
@@ -19,6 +14,8 @@ namespace UISystem{
 		Vector2 GetWorldPosition();
 		void SetWorldPosition(Vector2 worldPos);
 		Color GetOriginalColor();
+		Color GetDefaultColor();
+		Color GetDarkenedColor();
 		Color GetColor();
 		void SetColor(Color color);
 		void TurnTo(Color color);
@@ -40,13 +37,23 @@ namespace UISystem{
 			thisImageTrans = imageTrans;
 			thisDefaultDarkness = defaultDarkness;
 			thisDarkenedDarkness = darkenedDarkness;
-			SetDarkness(thisDefaultDarkness);
+			thisDefaultColor = GetColorAtDarkness(thisDefaultDarkness);
+			thisDarkenedColor = GetColorAtDarkness(thisDarkenedDarkness);
+			SetColor(thisDefaultColor);
 			thisProcessFactory = processFactory;
 		}
 		readonly protected Graphic thisGraphicComponent;
 		Color thisOriginalColor;
 		public Color GetOriginalColor(){
 			return thisOriginalColor;
+		}
+		Color thisDefaultColor;
+		public Color GetDefaultColor(){
+			return thisDefaultColor;
+		}
+		Color thisDarkenedColor;
+		public Color GetDarkenedColor(){
+			return thisDarkenedColor;
 		}
 		public float GetCurrentDarkness(){
 			Color curColor = GetColor();
@@ -56,18 +63,8 @@ namespace UISystem{
 			Color.RGBToHSV(curColor, out h, out s, out v);
 			return v;
 		}
-		public float GetDefaultDarkness(){
-			return thisDefaultDarkness;
-		}
 		readonly float thisDefaultDarkness;
-		public float GetDarkenedDarkness(){
-			return thisDarkenedDarkness;
-		}
 		readonly float thisDarkenedDarkness;
-		public void SetDarkness(float darkness){
-			Color newColor = GetColorAtDarkness(darkness);
-			SetColor(newColor);
-		}
 		Color GetColorAtDarkness(float darkness){
 			float a = thisOriginalColor.a;
 			float h;
@@ -116,12 +113,12 @@ namespace UISystem{
 			SetRunningTurnColorProcess(process);
 		}
 		public void TurnToSelectableDarkness(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, GetColorAtDarkness(thisDefaultDarkness));
+			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, thisDefaultColor);
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}
 		public void TurnToUnselectableDarkenss(){
-			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, GetColorAtDarkness(thisDarkenedDarkness));
+			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, thisDarkenedColor);
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}

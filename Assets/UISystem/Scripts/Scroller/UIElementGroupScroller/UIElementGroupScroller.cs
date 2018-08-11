@@ -373,6 +373,7 @@ namespace UISystem{
 		}
 		/*  */
 		public override void EvaluateScrollerFocusRecursively(){
+			BecomeFocusedInScrollerSelf();
 			thisUIElementGroup.BecomeFocusedInScrollerSelf();
 			EvaluateCursoredGroupElementsRaw();
 			foreach(IUIElement cursoredUIE in thisCursoredElements)

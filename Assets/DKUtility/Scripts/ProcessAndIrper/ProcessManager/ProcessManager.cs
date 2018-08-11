@@ -76,9 +76,13 @@ namespace DKUtility{
 		public float GetInertialScrollDeceleration(){
 			return inertialScrollDeceleration;
 		}
-		public float imageColorTurnProcessExpireTime = 1f;
+		public float imageColorTurnProcessExpireTime = .2f;
 		public float GetImageColorTurnProcessExpireTime(){
 			return imageColorTurnProcessExpireTime;
+		}
+		public float imageFlashTime = .4f;
+		public float GetImageFlashTime(){
+			return imageFlashTime;
 		}
 	}
 }

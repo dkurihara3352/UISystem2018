@@ -61,7 +61,7 @@ namespace UISystem{
 			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageColorTurnProcessExpireTime(), uiImage, targetColor, false);
 		}
 		public IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor){
-			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageColorTurnProcessExpireTime(), uiImage, targetColor, true);
+			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageFlashTime(), uiImage, targetColor, true);
 		}
 	}
 }

@@ -361,8 +361,11 @@ namespace UISystem{
 		public void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers(){
 			IUIElement parentUIE = GetParentUIE();
 			if(parentUIE != null){
-				if(parentUIE is IScroller)
-					((IScroller)parentUIE).CheckForStaticBoundarySnap();
+				if(parentUIE is IScroller){
+					IScroller parentScroller = (IScroller)parentUIE;
+					parentScroller.CheckForStaticBoundarySnap();
+					parentScroller.ResetDrag();
+				}
 				parentUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			}
 		}

@@ -58,17 +58,17 @@ namespace UISystem{
 		public ImageColorFlashInterpolator(IUIImage uiImage, Color targetColor){
 			thisUIImage = uiImage;
 			thisTargetColor = targetColor;
-			thisOriginalColor = uiImage.GetOriginalColor();
+			thisInitialColor = uiImage.GetDefaultColor();
 		}
 		readonly IUIImage thisUIImage;
 		readonly Color thisTargetColor;
-		readonly Color thisOriginalColor;
+		readonly Color thisInitialColor;
 		protected override void InterpolateImple(float normalizedT){
 			Color newColor;
 			if(normalizedT < .5f)
-				newColor = Color.Lerp(thisOriginalColor, thisTargetColor, normalizedT * 2f);
+				newColor = Color.Lerp(thisInitialColor, thisTargetColor, normalizedT * 2f);
 			else
-				newColor = Color.Lerp(thisTargetColor, thisOriginalColor, (normalizedT - .5f) * 2f);
+				newColor = Color.Lerp(thisTargetColor, thisInitialColor, (normalizedT - .5f) * 2f);
 			thisUIImage.SetColor(newColor);
 		}
 		public override void Terminate(){}

@@ -20,5 +20,6 @@ namespace DKUtility{
 		float GetScrollerElementSnapProcessStopDelta();
 		float GetInertialScrollDeceleration();
 		float GetImageColorTurnProcessExpireTime();
+		float GetImageFlashTime();
 	}	
 }

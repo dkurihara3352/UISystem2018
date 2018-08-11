@@ -14,6 +14,7 @@ namespace UISystem{
 		bool[] CheckForStaticBoundarySnap();
 		void SetUpScrollerElement();
 		void SetUpCursorTransform();
+		void ResetDrag();
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
@@ -166,10 +167,11 @@ namespace UISystem{
 		protected bool thisHasDoneDragEvaluation;
 		protected bool thisShouldProcessDrag;//returns true if this is the one to handle the drag, false if passed upward
 	
-		protected void ResetDrag(){
+		public void ResetDrag(){
 			thisHasDoneDragEvaluation = false;
 			thisShouldProcessDrag = false;
 			ClearTouchPositionCache();
+			// TurnTo(GetUIImage().GetDefaultColor());
 		}
 		protected Vector2 thisTouchPosition;
 		protected Vector2 thisElementLocalPositionAtTouch;
@@ -200,6 +202,8 @@ namespace UISystem{
 		void EvaluateDrag(ICustomEventData eventData){
 			thisHasDoneDragEvaluation = true;
 			thisShouldProcessDrag = DetermineIfThisShouldProcessDrag(eventData.deltaPos);
+			// if(thisShouldProcessDrag)
+				// TurnTo(Color.blue);
 		}
 		bool DetermineIfThisShouldProcessDrag(Vector2 deltaPos){
 			if(thisScrollerAxis == ScrollerAxis.Both)
@@ -347,14 +351,14 @@ namespace UISystem{
 		/* Release */
 		protected override void OnReleaseImple(){
 			CheckForStaticBoundarySnap();
-			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			ResetDrag();
+			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		/* Tap */
 		protected override void OnTapImple(int tapCount){
 			CheckForStaticBoundarySnap();
-			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 			ResetDrag();
+			CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		/* Swipe */
 		protected override void OnSwipeImple(ICustomEventData eventData){
@@ -395,8 +399,7 @@ namespace UISystem{
 				if(process != null)
 					runningProcessFound = true;
 			if(!runningProcessFound)
-				//don't do it recursively, that'd be an overdo
-				thisScrollerElement.EnableInput();
+				thisScrollerElement.EnableInputRecursively();
 		}
 		void StopRunningElementMotorProcess(int dimension){
 			if(thisRunningScrollerMotorProcess[dimension] != null)
