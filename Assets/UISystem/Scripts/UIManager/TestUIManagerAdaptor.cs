@@ -12,6 +12,7 @@ namespace UISystem{
 		public ProcessManager processManager;
 		public UIAdaptor rootUIAdaptor;
 		public UIAdaptor turnColorUIA;
+		IUIElement thisRootUIElement;
 		
 		void Awake(){
 			uiManager = new UIManager(uieReserveTrans);
@@ -21,18 +22,19 @@ namespace UISystem{
 		public void GetRootUIAReadyForActivation(){
 			IUIAActivationData activationData = new RootUIAActivationData(uiManager, processFactory, uieFactory);
 			rootUIAdaptor.GetReadyForActivation(activationData);
+			thisRootUIElement = rootUIAdaptor.GetUIElement();
 		}
 		public void ActivateRootUIElement(){
-			rootUIAdaptor.ActivateUIElement();
+			thisRootUIElement.InitiateActivation();
 		}
 		public void DeactivateRootUIElement(){
-			rootUIAdaptor.DeactivateUIElement();
+			thisRootUIElement.DeactivateRecursively();
 		}
 		public void ActivateRootUIElementInstantly(){
-			rootUIAdaptor.ActivateUIElementInstantly();
+			thisRootUIElement.InitiateInstantActivation();
 		}
 		public void DeactivateRootUIElementInstantly(){
-			rootUIAdaptor.DeactivateUIElementInstantly();
+			thisRootUIElement.DeactivateInstantlyRecursively();
 		}
 	}
 }

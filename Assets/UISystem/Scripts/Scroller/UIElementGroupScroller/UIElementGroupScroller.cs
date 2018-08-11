@@ -21,7 +21,8 @@ namespace UISystem{
 		/* Activation */
 		readonly bool thisActivatesCursoredElementsOnly;
 		public override void ActivateRecursively(){
-			base.ActivateRecursively();
+			this.ActivateSelf();
+			thisUIElementGroup.ActivateSelf();
 			if(thisActivatesCursoredElementsOnly)
 				ActivateCursoredElements();
 			else
@@ -33,12 +34,13 @@ namespace UISystem{
 					uie.ActivateRecursively();
 		}
 		void ActivateAllGroupElements(){
-			foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
+			foreach(IUIElement uie in thisGroupElements)
 				if(uie != null)
 					uie.ActivateRecursively();
 		}
 		public override void ActivateInstantlyRecursively(){
-			base.ActivateInstantlyRecursively();
+			ActivateSelfInstantly();
+			thisUIElementGroup.ActivateSelfInstantly();
 			if(thisActivatesCursoredElementsOnly)
 				ActivateCursoredElementsInstantly();
 			else
@@ -146,12 +148,6 @@ namespace UISystem{
 
 
 		/* Cursored Elements Evaluation */
-		protected override void InitializeScrollerElementForActivation(){
-			base.InitializeScrollerElementForActivation();
-			foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
-				uie.OnScrollerDefocus();
-			EvaluateCursoredGroupElements();
-		}
 		protected override bool CheckForStaticBoundarySnapOnAxis(int dimension){
 			if(!base.CheckForStaticBoundarySnapOnAxis(dimension))
 				CounterOffsetElementGroup(0f, dimension);
@@ -209,19 +205,61 @@ namespace UISystem{
 
 					foreach(IUIElement uie in groupElementsToDefocus)
 						if(uie != null){
-							uie.OnScrollerDefocus();
-							if(thisActivatesCursoredElementsOnly && this.IsActivated())
+							uie.BecomeDefocusedInScrollerRecursively();
+							if(thisActivatesCursoredElementsOnly )
 								uie.DeactivateRecursively();
 						}
 					foreach(IUIElement uie in groupElementsToFocus)
 						if(uie != null){
-							uie.OnScrollerFocus();
-							if(thisActivatesCursoredElementsOnly && this.IsActivated())
-								uie.ActivateRecursively();
+							uie.BecomeFocusedInScrollerRecursively();
+							if(thisActivatesCursoredElementsOnly )
+								uie.InitiateActivation();
 						}
 					thisCursoredElements = newCursoredElements;
+					thisNoncursoredElements = CalcNoncurosredElements();
 				}
 			}
+		}
+		void EvaluateCursoredGroupElementsRaw(){
+			IUIElement groupElementUnderCursorRefPoint = GetUIElementUnderCursorReferencePoint();
+			if(groupElementUnderCursorRefPoint != null){
+				if(
+					thisCursoredElements == null || 
+					groupElementUnderCursorRefPoint != thisCursoredElements[0]
+				){
+					int[,] indexRange = CalcCursoredGroupElementArrayIndexRange(groupElementUnderCursorRefPoint);
+					int minColumnIndex = indexRange[0, 0];
+					int minRowIndex = indexRange[0, 1];
+					int maxColumnIndex = indexRange[1, 0];
+					int maxRowIndex = indexRange[1, 1];
+
+					IUIElement[] newCursoredElements = thisUIElementGroup.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
+
+					thisCursoredElements = newCursoredElements;
+					thisNoncursoredElements = CalcNoncurosredElements();
+				}
+			}
+		}
+		IUIElement[] thisNoncursoredElements;
+		IUIElement[] thisGroupElements{
+			get{
+				return thisUIElementGroup.GetGroupElements().ToArray();
+			}
+		}
+		IUIElement[] CalcNoncurosredElements(){
+			List<IUIElement> result = new List<IUIElement>();
+			foreach(IUIElement groupElement in thisGroupElements)
+				if(groupElement != null){
+					bool found = false;
+					foreach(IUIElement cursoredElement in thisCursoredElements)
+						if(cursoredElement == groupElement){
+							found = true;
+							break;
+						}
+					if(!found)
+						result.Add(groupElement);
+				}
+			return result.ToArray();
 		}
 		IUIElement GetUIElementUnderCursorReferencePoint(){
 			/*  returns the top left => NG
@@ -334,10 +372,22 @@ namespace UISystem{
 			return thisSwipeNextTargetGroupElementArrayIndexCalculator.Calculate(velocity, currentGroupElementAtCurRefPointIndex);
 		}
 		/*  */
-		public override void OnScrollerFocus(){
-			base.OnScrollerFocus();
+		public override void EvaluateScrollerFocusRecursively(){
+			thisUIElementGroup.BecomeFocusedInScrollerSelf();
+			EvaluateCursoredGroupElementsRaw();
+			foreach(IUIElement cursoredUIE in thisCursoredElements)
+				if(cursoredUIE != null)
+					cursoredUIE.EvaluateScrollerFocusRecursively();
+			foreach(IUIElement noncursoredUIE in thisNoncursoredElements)
+				if(noncursoredUIE != null)
+					noncursoredUIE.BecomeDefocusedInScrollerRecursively();
+		}
+		public override void BecomeFocusedInScrollerRecursively(){
+			BecomeFocusedInScrollerSelf();
+			thisUIElementGroup.BecomeFocusedInScrollerSelf();
 			foreach(IUIElement cursoredElement in thisCursoredElements)
-				cursoredElement.OnScrollerFocus();
+				if(cursoredElement != null)
+					cursoredElement.BecomeFocusedInScrollerRecursively();
 		}
 	}
 

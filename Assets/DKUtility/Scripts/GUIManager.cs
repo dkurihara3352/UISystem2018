@@ -13,6 +13,12 @@ public class GUIManager : MonoBehaviour {
 			topLeftSubRect_5 = GetSubRect(topLeftRect, 5, 8);
 			topLeftSubRect_6 = GetSubRect(topLeftRect, 6, 8);
 			topLeftSubRect_7 = GetSubRect(topLeftRect, 7, 8);
+		Rect topRight = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.2f, .3f));
+			topRightSub_0 = GetSubRect(topRight, 0, 2);
+			topRightSub_1 = GetSubRect(topRight, 1, 2);
+			// topRightSub_2 = GetSubRect(topLeftRect, 2, 4);
+			// topRightSub_3 = GetSubRect(topLeftRect, 3, 4);
+		
 	}
 	Rect topLeftRect;
 	Rect topLeftSubRect_0;
@@ -24,19 +30,27 @@ public class GUIManager : MonoBehaviour {
 	Rect topLeftSubRect_6;
 	Rect topLeftSubRect_7;
 	public bool thisGUIIsEnabled;
+	public bool topLeftIsEnabled = true;
+	public bool topRightIsEnabled = true;
 	void OnGUI(){
 		if(thisGUIIsEnabled){
-			GUI.Label(topLeftSubRect_0, "Activation");
-			if(GUI.Button(topLeftSubRect_1, "GetReadyForA"))
-				testUIManagerAdaptor.GetRootUIAReadyForActivation();
-			if(GUI.Button(topLeftSubRect_2, "Activate"))
-				testUIManagerAdaptor.ActivateRootUIElement();
-			if(GUI.Button(topLeftSubRect_3, "Deactivate"))
-				testUIManagerAdaptor.DeactivateRootUIElement();
-			if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
-				testUIManagerAdaptor.ActivateRootUIElementInstantly();
-			if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
-				testUIManagerAdaptor.DeactivateRootUIElementInstantly();
+			if(topLeftIsEnabled){
+				GUI.Label(topLeftSubRect_0, "Activation");
+				if(GUI.Button(topLeftSubRect_1, "GetReadyForA"))
+					testUIManagerAdaptor.GetRootUIAReadyForActivation();
+				if(GUI.Button(topLeftSubRect_2, "Activate"))
+					testUIManagerAdaptor.ActivateRootUIElement();
+				if(GUI.Button(topLeftSubRect_3, "Deactivate"))
+					testUIManagerAdaptor.DeactivateRootUIElement();
+				if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
+					testUIManagerAdaptor.ActivateRootUIElementInstantly();
+				if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
+					testUIManagerAdaptor.DeactivateRootUIElementInstantly();
+			}
+			if(topRightIsEnabled){
+				GUI.Label(topRightSub_0, "CursoredElements: ");
+				GUI.Label(topRightSub_1, GetCursoredElementsText());
+			}
 
 		}
 	}
@@ -62,4 +76,28 @@ public class GUIManager : MonoBehaviour {
 			if(value[i] < 0f || value[i] > 1f)
 				throw new System.InvalidOperationException("value is not in range");
 	}
+	public UIAdaptor uieGroupScrollerAdaptor;
+	string GetCursoredElementsText(){
+		IUIElementGroupScroller uieGroupScroller = (IUIElementGroupScroller)uieGroupScrollerAdaptor.GetUIElement();
+		string result = "";
+		if(uieGroupScroller != null){
+			IUIElement[] curosredElements = uieGroupScroller.GetCursoredElements();
+			if(curosredElements != null)
+				foreach(IUIElement cursoredElement in curosredElements)
+					if(cursoredElement == null)
+						result += ", null";
+					else
+						result += ", " + uieGroupScroller.GetGroupElementIndex(cursoredElement).ToString();
+			else
+				result = "cursoredElements not evaluated";
+		}else{
+			result = "uie is not evaluated yet";
+		}
+		return result;
+	}
+	Rect topRight;
+	Rect topRightSub_0;
+	Rect topRightSub_1;
+	Rect topRightSub_2;
+	Rect topRightSub_3;
 }

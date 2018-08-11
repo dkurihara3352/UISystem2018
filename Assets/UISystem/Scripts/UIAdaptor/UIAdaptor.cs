@@ -65,18 +65,6 @@ namespace UISystem{
 			}
 			public float thisImageDefaultDarkness = .8f;
 			public float thisImageDarkenedDarkness = .5f;
-			public void ActivateUIElement(){
-				thisUIElement.ActivateRecursively();
-			}
-			public void DeactivateUIElement(){
-				thisUIElement.DeactivateRecursively();
-			}
-			public void ActivateUIElementInstantly(){
-				thisUIElement.ActivateInstantlyRecursively();
-			}
-			public void DeactivateUIElementInstantly(){
-				thisUIElement.DeactivateInstantlyRecursively();
-			}
 		/* MB adaptor */
 			public Transform GetTransform(){
 				return this.transform;

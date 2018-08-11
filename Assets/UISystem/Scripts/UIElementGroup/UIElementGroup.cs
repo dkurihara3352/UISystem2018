@@ -193,16 +193,6 @@ namespace UISystem{
 			return thisGroupElementAtPositionInGroupSpaceCalculator.Calculate(positionInElementGroupSpace);
 		}
 		/*  */
-
-		public override void OnScrollerFocus(){
-			thisIsFocusedInScroller = true;
-		}
-		public override void ActivateRecursively(){
-			thisUIEActivationStateEngine.Activate();
-		}
-		public override void ActivateInstantlyRecursively(){
-			thisUIEActivationStateEngine.ActivateInstantly();
-		}
 	}
 
 

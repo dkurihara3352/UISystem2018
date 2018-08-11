@@ -86,7 +86,6 @@ namespace UISystem{
 			}
 			return result;
 		}
-		/* Activation */
 		/* Cursor Transform */
 		public void SetUpCursorTransform(){
 			thisCursorLength = CalcCursorLength();

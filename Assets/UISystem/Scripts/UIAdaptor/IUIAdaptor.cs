@@ -23,9 +23,5 @@ namespace UISystem{
 		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
 		IUIAActivationData GetDomainActivationData();
-		void ActivateUIElement();
-		void DeactivateUIElement();
-		void ActivateUIElementInstantly();
-		void DeactivateUIElementInstantly();
 	}
 }
