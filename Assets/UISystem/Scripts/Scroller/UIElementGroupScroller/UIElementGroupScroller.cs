@@ -19,43 +19,43 @@ namespace UISystem{
 			SetUpCursorTransform();
 		}
 		/* Activation */
-		readonly bool thisActivatesCursoredElementsOnly;
-		public override void ActivateRecursively(){
-			this.ActivateSelf();
-			thisUIElementGroup.ActivateSelf();
-			if(thisActivatesCursoredElementsOnly)
-				ActivateCursoredElements();
-			else
-				ActivateAllGroupElements();
-		}
-		void ActivateCursoredElements(){
-			foreach(IUIElement uie in thisCursoredElements)
-				if(uie != null)
-					uie.ActivateRecursively();
-		}
-		void ActivateAllGroupElements(){
-			foreach(IUIElement uie in thisGroupElements)
-				if(uie != null)
-					uie.ActivateRecursively();
-		}
-		public override void ActivateInstantlyRecursively(){
-			ActivateSelfInstantly();
-			thisUIElementGroup.ActivateSelfInstantly();
-			if(thisActivatesCursoredElementsOnly)
-				ActivateCursoredElementsInstantly();
-			else
-				ActivateAllGroupElementsInstantly();
-		}
-		void ActivateCursoredElementsInstantly(){
-			foreach(IUIElement uie in thisCursoredElements)
-				if(uie != null)
-					uie.ActivateInstantlyRecursively();
-		}
-		void ActivateAllGroupElementsInstantly(){
-			foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
-				if(uie != null)
-					uie.ActivateInstantlyRecursively();
-		}
+			readonly bool thisActivatesCursoredElementsOnly;
+			public override void ActivateRecursively(){
+				this.ActivateSelf();
+				thisUIElementGroup.ActivateSelf();
+				if(thisActivatesCursoredElementsOnly)
+					ActivateCursoredElements();
+				else
+					ActivateAllGroupElements();
+			}
+			void ActivateCursoredElements(){
+				foreach(IUIElement uie in thisCursoredElements)
+					if(uie != null)
+						uie.ActivateRecursively();
+			}
+			void ActivateAllGroupElements(){
+				foreach(IUIElement uie in thisGroupElements)
+					if(uie != null)
+						uie.ActivateRecursively();
+			}
+			public override void ActivateInstantlyRecursively(){
+				ActivateSelfInstantly();
+				thisUIElementGroup.ActivateSelfInstantly();
+				if(thisActivatesCursoredElementsOnly)
+					ActivateCursoredElementsInstantly();
+				else
+					ActivateAllGroupElementsInstantly();
+			}
+			void ActivateCursoredElementsInstantly(){
+				foreach(IUIElement uie in thisCursoredElements)
+					if(uie != null)
+						uie.ActivateInstantlyRecursively();
+			}
+			void ActivateAllGroupElementsInstantly(){
+				foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
+					if(uie != null)
+						uie.ActivateInstantlyRecursively();
+			}
 		/*  */
 		int[] MakeCursorSizeAtLeastOne(int[] source){
 			int[] result = new int[2];
@@ -148,15 +148,17 @@ namespace UISystem{
 
 
 		/* Cursored Elements Evaluation */
-		protected override bool CheckForStaticBoundarySnapOnAxis(int dimension){
-			if(!base.CheckForStaticBoundarySnapOnAxis(dimension))
-				CounterOffsetElementGroup(0f, dimension);
-			return true;
+		protected override void OnStaticBoundaryCheckFail(int dimension){
+			CounterOffsetElementGroup(0f, dimension);
 		}
 		protected void CounterOffsetElementGroup(float initialVelocity, int dimension){
 			if(GetElementGroupOffset(dimension) != 0f){
 				IUIElement cursoredElement = thisCursoredElements[0];
+				Debug.Log("counterOffset is called on " + this.GetName());
 				SnapToGroupElement(cursoredElement, initialVelocity, dimension);
+				return;
+			}else{
+				base.OnStaticBoundaryCheckFail(dimension);
 			}
 		}
 		IUIElement[] thisCursoredElements;
@@ -309,41 +311,34 @@ namespace UISystem{
 			return false;
 		}
 		readonly float thisStartSearchSpeed;
-		public override bool CheckForDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension){
-			if(base.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, velocity, dimension)){
-				SnapToGroupElement(thisCursoredElements[0],　velocity, dimension);
-				return true;
-			}else{
-				if(Mathf.Abs(velocity) <= thisStartSearchSpeed){
-					IUIElement cursoredElement = thisCursoredElements[0];
-					SnapToGroupElement(cursoredElement,　velocity, dimension);
-					return true;				
-				}else{
-					return false;
-				}
+		protected override void OnDynamicBoundaryCheckSuccess(float deltaPosOnAxis, float velocityOnAxis, int dimension){
+			SnapToGroupElement(thisCursoredElements[0],　velocityOnAxis, dimension);
+		}
+		protected override void OnDynamicBoundaryCheckFail(float delatPosOnAxis, float velocityOnAxis, int dimension){
+			if(Mathf.Abs(velocityOnAxis) <= thisStartSearchSpeed){
+				IUIElement cursoredElement = thisCursoredElements[0];
+				SnapToGroupElement(cursoredElement,　velocityOnAxis, dimension);
 			}
 		}
-		
 		
 		/* Swipe override  */
-		protected override void OnSwipeImple(ICustomEventData eventData){
-			if(thisShouldProcessDrag){
-				Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
-				if(thisSwipeToSnapNext){
-					SnapNext(swipeDeltaPos, eventData.velocity);
-				}else{
-					if(thisIsEnabledInertia)
-						StartInertialScroll(eventData.velocity);
-				}
-				CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+		protected override void OnSwipeImpleInner(ICustomEventData eventData){
+			Vector2 swipeDeltaPos = CalcDragDeltaPos(eventData.deltaPos);
+			if(thisSwipeToSnapNext){
+				SnapNext(swipeDeltaPos, eventData.velocity);
 			}else{
-				base.OnSwipeImple(eventData);
-				CheckForStaticBoundarySnap();
+				if(thisIsEnabledInertia)
+					StartInertialScroll(eventData.velocity);
+				else
+					CheckAndPerformStaticBoundarySnapFrom(this);
 			}
+		}
+		void SnapNext(Vector2 swipeDeltaPos, Vector2 velocity){
 			ResetDrag();
+			SnapNextImple(swipeDeltaPos, velocity);
 		}
 		readonly bool thisSwipeToSnapNext;
-		protected void SnapNext(Vector2 swipeDeltaPos, Vector2 velocity){
+		protected void SnapNextImple(Vector2 swipeDeltaPos, Vector2 velocity){
 			/*  Find the next groupElement in the direction of swipe delta
 				make the element valid if not
 			*/
@@ -417,6 +412,7 @@ namespace UISystem{
 			Vector2 rubberBandLimitMultiplier, 
 			bool isEnabledInertia, 
 			bool swipeToSnapNext, 
+			float newScrollSpeedThreshold,
 
 			IUIManager uim, 
 			IUISystemProcessFactory processFactory, 
@@ -428,6 +424,8 @@ namespace UISystem{
 			relativeCursorPosition, 
 			rubberBandLimitMultiplier, 
 			isEnabledInertia, 
+			newScrollSpeedThreshold,
+
 			uim, 
 			processFactory, 
 			uieFactory, 

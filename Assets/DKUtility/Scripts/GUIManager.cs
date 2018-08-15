@@ -13,11 +13,13 @@ public class GUIManager : MonoBehaviour {
 			topLeftSubRect_5 = GetSubRect(topLeftRect, 5, 8);
 			topLeftSubRect_6 = GetSubRect(topLeftRect, 6, 8);
 			topLeftSubRect_7 = GetSubRect(topLeftRect, 7, 8);
-		Rect topRight = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.2f, .3f));
-			topRightSub_0 = GetSubRect(topRight, 0, 2);
-			topRightSub_1 = GetSubRect(topRight, 1, 2);
-			// topRightSub_2 = GetSubRect(topLeftRect, 2, 4);
-			// topRightSub_3 = GetSubRect(topLeftRect, 3, 4);
+		Rect topRight = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.25f, .65f));
+			topRightSub_0 = GetSubRect(topRight, 0, 6);
+			topRightSub_1 = GetSubRect(topRight, 1, 6);
+			topRightSub_2 = GetSubRect(topRight, 2, 6);
+			topRightSub_3 = GetSubRect(topRight, 3, 6);
+			topRightSub_4 = GetSubRect(topRight, 4, 6);
+			topRightSub_4 = GetSubRect(topRight, 5, 6);
 		
 	}
 	Rect topLeftRect;
@@ -48,13 +50,20 @@ public class GUIManager : MonoBehaviour {
 					testUIManagerAdaptor.DeactivateRootUIElementInstantly();
 			}
 			if(topRightIsEnabled){
-				GUI.Label(topRightSub_0, "CursoredElements: ");
-				GUI.Label(topRightSub_1, GetCursoredElementsText());
+				GUI.Label(topRightSub_0, GetInputHandlingScrollerString());
+				GUI.Label(topRightSub_1, GetEventHandledString());
+				GUI.Label(topRightSub_2, GetCursoredElementsText());
+				GUI.Label(topRightSub_3, GetTopMostScrollerInMotionString());
+				GUI.Label(topRightSub_4, GetHandlingScrollerVelocityString());
+				GUI.Label(topRightSub_5, GetScrollerProximateParentScrollerString());
 			}
 
 		}
 	}
 	public TestUIManagerAdaptor testUIManagerAdaptor;
+	IUIManager uim{
+		get{return testUIManagerAdaptor.uiManager;}
+	}
 	protected Rect CreateGUIRect(Vector2 normalizedPosition, Vector2 normalizedSize){
 		MakeSureValuesAreInRange(normalizedPosition);
 		MakeSureValuesAreInRange(normalizedSize);
@@ -95,9 +104,72 @@ public class GUIManager : MonoBehaviour {
 		}
 		return result;
 	}
+	string GetHandlingScrollerVelocityString(){
+		IUIManager uim = testUIManagerAdaptor.uiManager;
+		if(uim != null){
+			IScroller scrollerInMotion = uim.GetInputHandlingScroller();
+			if(scrollerInMotion != null){
+				Vector2 velocity = scrollerInMotion.GetVelocity();
+				return velocity.magnitude.ToString();
+			}else
+				return "scroller: null";
+
+		}else{
+			return "uim is not set";
+		}
+	}
+	string GetScrollerProximateParentScrollerString(){
+		IUIManager uim = testUIManagerAdaptor.uiManager;
+		if(uim != null){
+			IScroller scrollerInMotion = uim.GetInputHandlingScroller();
+			if(scrollerInMotion != null){
+				IScroller proximateParentScroller = scrollerInMotion.GetProximateParentScroller();
+				string result = "par: ";
+				if(proximateParentScroller != null)
+					result += proximateParentScroller.GetUIAdaptor().GetName();
+				else
+					result += "null";
+				return result;
+			}else
+				return "scroller: null";
+
+		}else{
+			return "uim is not set";
+		}
+	}
 	Rect topRight;
 	Rect topRightSub_0;
 	Rect topRightSub_1;
 	Rect topRightSub_2;
 	Rect topRightSub_3;
+	Rect topRightSub_4;
+	Rect topRightSub_5;
+	string GetInputHandlingScrollerString(){
+		string result = "InputHandling: \n";
+		IScroller scroller = uim.GetInputHandlingScroller();
+		if(scroller == null)
+			return result += "null";
+		else
+			return result += scroller.GetUIAdaptor().GetName();
+		
+	}
+	string GetEventHandledString(){
+		string result = "Event: \n";
+		return result += uim.GetEventName();
+		
+	}
+	string GetTopMostScrollerInMotionString(){
+		string result = "TopMost: \n";
+		IScroller handlingScroller = uim.GetInputHandlingScroller();
+		if(handlingScroller == null)
+			result += "no handling scroller";
+		else{
+			IScroller topMost = handlingScroller.GetTopmostScrollerInMotion();
+			if(topMost == null)
+				result += "null";
+			else
+				result += topMost.GetUIAdaptor().GetName();
+		}
+		return result;
+	}
 }

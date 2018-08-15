@@ -11,6 +11,7 @@ namespace UISystem{
 		public Vector2 relativeCursorPosition;
 		public Vector2 rubberBandLimitMultiplier;
 		public bool isEnabledInertia;
+		public float newScrollSpeedThreshold = 200f;
 		public void ShowCursorRectInGUI(Rect cursorRect){
 			thisCursorRect = cursorRect;
 			cursorRectIsReady = true;

@@ -18,15 +18,15 @@ public class ScrollerElementMotorProcessTest {
 
 		scroller.Received(1).SwitchRunningElementMotorProcess(process, 0);
 	}
-	[Test]
-	public void Stop_CallsScrollerClearRunningElementMotorProcessThis(){
-		IScroller scroller;
-		TestScrollerElementMotorProcess process = CreateProcessWithMockScroller(out scroller);
+	// [Test]
+	// public void Stop_CallsScrollerClearRunningElementMotorProcessThis(){
+	// 	IScroller scroller;
+	// 	TestScrollerElementMotorProcess process = CreateProcessWithMockScroller(out scroller);
 
-		process.Stop();
+	// 	process.Stop();
 
-		scroller.Received(1).ClearScrollerElementMotorProcess(process, 0);
-	}
+	// 	scroller.Received(1).ClearScrollerElementMotorProcess(process, 0);
+	// }
 	public class SetScrollerElementLocalPosOnAxis_TestCase{
 		public static object[] cases = {
 			new object[]{0f, 0, new Vector2(5f, 5f), new Vector2(0f, 5f)},

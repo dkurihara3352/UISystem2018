@@ -6,11 +6,22 @@ using UnityEngine.UI;
 namespace UISystem{
 	[RequireComponent(typeof(RectTransform))]
 	public class UIAdaptor: UIBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler{
+		public bool resizeRelativeToScreenSize = false;
+		public Vector2 sizeRelativeToReferenceRect = Vector2.one;
 		protected override void Awake(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
 			rectTrans.pivot = new Vector2(0f, 0f);
 			rectTrans.anchorMin = new Vector2(0f, 0f);
 			rectTrans.anchorMax = new Vector2(0f, 0f);
+			if(resizeRelativeToScreenSize){
+				Vector2 newSize = new Vector2();
+				Vector2 screenRect = new Vector2(Screen.width, Screen.height);
+				for(int i = 0; i < 2; i ++){
+					float newLength = screenRect[i] * sizeRelativeToReferenceRect[i];
+					newSize[i] = newLength;
+				}
+				rectTrans.sizeDelta = newSize;
+			}
 		}
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){

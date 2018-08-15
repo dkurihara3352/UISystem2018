@@ -19,7 +19,6 @@ namespace UISystem{
 		}
 		public override void Stop(){
 			base.Stop();
-			thisScroller.ClearScrollerElementMotorProcess(this, thisDimension);
 		}
 	}
 }

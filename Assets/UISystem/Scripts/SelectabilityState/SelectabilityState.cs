@@ -6,27 +6,31 @@ namespace UISystem{
 	public interface ISelectabilityState: DKUtility.ISwitchableState{
 	}
 	public abstract class AbsSelectabilityState: ISelectabilityState{
-		public AbsSelectabilityState(IUIImage uiImage){
+		public AbsSelectabilityState(IUIImage uiImage, IUIManager uim){
 			thisUIImage = uiImage;
+			thisUIM = uim;
 		}
 		protected readonly IUIImage thisUIImage;
+		protected readonly IUIManager thisUIM;
 		public abstract void OnEnter();
 		public virtual void OnExit(){}
 	}
 	public class SelectableState: AbsSelectabilityState{
-		public SelectableState(IUIImage uiImage): base(uiImage){}
+		public SelectableState(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
 		public override void OnEnter(){
+			if(thisUIM.ShowsNormal())
 			thisUIImage.TurnToSelectableDarkness();
 		}
 	}
 	public class UnselectableState: AbsSelectabilityState{
-		public UnselectableState(IUIImage uiImage): base(uiImage){}
+		public UnselectableState(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
 		public override void OnEnter(){
+			if(thisUIM.ShowsNormal())
 			thisUIImage.TurnToUnselectableDarkenss();
 		}
 	}
 	public class SelectedState: AbsSelectabilityState{
-		public SelectedState(IUIImage uiImage): base(uiImage){}
+		public SelectedState(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
 		public override void OnEnter(){
 			
 		}

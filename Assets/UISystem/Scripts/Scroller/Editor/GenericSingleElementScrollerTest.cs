@@ -104,8 +104,22 @@ public class GenericSingleElementScrollerTest{
 			List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{child});
 			uia.GetChildUIEs().Returns(returnedList);
 		IUIImage image = Substitute.For<IUIImage>();
+		float newScrollSpeedThreshold = 200f;
 
-		IGenericSingleElementScrollerConstArg arg = new GenericSingleElementScrollerConstArg(relativeCursorLength, scrollerAxis, rubberBandLimitMultiplier, relativeCursorPosition, true, uim, processFactory, uieFactory, uia, image);
+		IGenericSingleElementScrollerConstArg arg = new GenericSingleElementScrollerConstArg(
+			relativeCursorLength, 
+			scrollerAxis, 
+			rubberBandLimitMultiplier, 
+			relativeCursorPosition, 
+			true, 
+			newScrollSpeedThreshold,
+
+			uim, 
+			processFactory, 
+			uieFactory, 
+			uia, 
+			image
+		);
 
 		return new TestGenericSingleElementScroller(arg);
 	}

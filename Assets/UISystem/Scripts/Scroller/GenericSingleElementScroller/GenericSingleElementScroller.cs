@@ -43,7 +43,32 @@ namespace UISystem{
 		Vector2 relativeCursorLength{get;}
 	}
 	public class GenericSingleElementScrollerConstArg: ScrollerConstArg, IGenericSingleElementScrollerConstArg{
-		public GenericSingleElementScrollerConstArg(Vector2 relativeCursorLength, ScrollerAxis scrollerAxis, Vector2 rubberBandLimitMultiplier, Vector2 relativeCursorPosition, bool isEnabledInertia, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IGenericSingleElementScrollerAdaptor uia, IUIImage image):base(scrollerAxis, relativeCursorPosition, rubberBandLimitMultiplier, isEnabledInertia, uim, processFactory, uieFactory, uia, image){
+		public GenericSingleElementScrollerConstArg(
+			Vector2 relativeCursorLength, 
+			ScrollerAxis scrollerAxis, 
+			Vector2 rubberBandLimitMultiplier, 
+			Vector2 relativeCursorPosition, 
+			bool isEnabledInertia, 
+			float newScrollSpeedThreshold,
+
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uieFactory, 
+			IGenericSingleElementScrollerAdaptor uia, 
+			IUIImage image
+		):base(
+			scrollerAxis, 
+			relativeCursorPosition, 
+			rubberBandLimitMultiplier, 
+			isEnabledInertia, 
+			newScrollSpeedThreshold,
+
+			uim, 
+			processFactory, 
+			uieFactory, 
+			uia, 
+			image
+		){
 			thisRelativeCursorLength = relativeCursorLength;
 		}
 		protected Vector2 thisRelativeCursorLength;

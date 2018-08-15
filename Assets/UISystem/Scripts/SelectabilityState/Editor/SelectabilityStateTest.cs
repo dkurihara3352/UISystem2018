@@ -127,15 +127,15 @@ public class SelectabilityStateTest {
     }
     /* Test Support Classes */
         class TestSelectabilityStateEngine: SelectabilityStateEngine{
-            public TestSelectabilityStateEngine(IUIImage uiImage, IUISystemProcessFactory procFac): base(uiImage, procFac){}
+            public TestSelectabilityStateEngine(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
             public bool StatesAreAllSet(){
                 return this.selectableState != null && this.unselectableState != null && this.selectedState != null;
             }
         }
         TestSelectabilityStateEngine CreateTestSelectabilityStateEngine(out TestSelStateEngineConstArg arg){
             IUIImage image = Substitute.For<IUIImage>();
-            IUISystemProcessFactory procFac = Substitute.For<IUISystemProcessFactory>();
-            TestSelectabilityStateEngine engine = new TestSelectabilityStateEngine(image, procFac);
+            IUIManager uim = Substitute.For<IUIManager>();
+            TestSelectabilityStateEngine engine = new TestSelectabilityStateEngine(image, uim);
             TestSelStateEngineConstArg thisArg = new TestSelStateEngineConstArg();
             arg = thisArg;
             return engine;

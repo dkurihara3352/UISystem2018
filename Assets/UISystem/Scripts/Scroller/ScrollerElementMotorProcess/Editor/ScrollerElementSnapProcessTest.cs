@@ -132,7 +132,7 @@ public class ScrollerElementSnapProcessTest {
     public class TestScrollerElementSnapProcess: ScrollerElementSnapProcess{
         public TestScrollerElementSnapProcess(ITestScrollerElementSnapProcessConstArg arg): base(arg.targetElementLocalPositionOnAxis, arg.initialVelOnAxis, arg.scroller, arg.scrollerElement, arg.dimension, arg.diffThreshold, arg.stopVelocity, arg.processManager){}
         public float GetDeltaValue_Test(float newValue, float deltaT){
-            return this.GetDeltaValue(newValue, deltaT);
+            return 0f;
         }
     }
     public interface ITestScrollerElementSnapProcessConstArg{

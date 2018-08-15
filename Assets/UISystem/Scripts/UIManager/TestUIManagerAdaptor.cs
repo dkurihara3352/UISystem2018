@@ -5,7 +5,7 @@ using DKUtility;
 
 namespace UISystem{
 	public class TestUIManagerAdaptor: MonoBehaviour{
-		IUIManager uiManager;
+		public IUIManager uiManager;
 		IUIElementFactory uieFactory;
 		IUISystemProcessFactory processFactory;
 		public RectTransform uieReserveTrans;
@@ -13,9 +13,10 @@ namespace UISystem{
 		public UIAdaptor rootUIAdaptor;
 		public UIAdaptor turnColorUIA;
 		IUIElement thisRootUIElement;
+		public bool showsInputability;
 		
 		void Awake(){
-			uiManager = new UIManager(uieReserveTrans);
+			uiManager = new UIManager(uieReserveTrans, showsInputability);
 			uieFactory = new UIElementFactory(uiManager);
 			processFactory = new UISystemProcessFactory(processManager, uiManager);
 		}

@@ -11,6 +11,7 @@ namespace UISystem{
 		void SetLocalPosition(Vector2 localPos);
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
+		string GetName();
 		/* Activation */
 		void InitiateActivation();
 		void ActivateSelf();
@@ -29,14 +30,20 @@ namespace UISystem{
 		void EnableInput();
 		void EnableInputRecursively();
 		void DisableInputRecursively();
+		void DisableScrollInputRecursively(IScroller disablingScroller);
+		void EnableScrollInputRecursively();
+		void EnableScrollInputSelf();
+		void CheckForScrollInputEnable();
+		IScroller GetTopmostScrollerInMotion();
+
 		/* Scroller */
 		void EvaluateScrollerFocusRecursively();
 		void BecomeFocusedInScrollerSelf();
-		void OnScrollerDefocusSelf();
+		void BecomeDefocuesedInScrollerSelf();
 		void BecomeFocusedInScrollerRecursively();
 		void BecomeDefocusedInScrollerRecursively();
-		void CheckAndStopScrollerMotorProcessOnParentScrollers();
-		void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+		// void CheckAndStopScrollerMotorProcessOnParentScrollers();
+		// void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		/* Debug */
 		void TurnTo(Color color);
 		void Flash(Color color);
@@ -48,7 +55,7 @@ namespace UISystem{
 			thisUIElementFactory = arg.uiElementFactory;
 			thisUIA = arg.uia;
 			thisImage = arg.image;
-			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisProcessFactory);
+			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisUIM);
 			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
 		}
 		protected readonly IUIManager thisUIM;
@@ -80,6 +87,7 @@ namespace UISystem{
 		protected string thisName{
 			get{return thisUIA.GetName();}
 		}
+		public string GetName(){return thisName;}
 		/* Activation */
 			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
 			protected readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
@@ -140,7 +148,7 @@ namespace UISystem{
 				return thisUIEActivationStateEngine.IsActivated();
 			}
 			public virtual void DeactivateImple(){
-				this.OnScrollerDefocusSelf();
+				this.BecomeDefocuesedInScrollerSelf();
 			}
 			public virtual void OnActivationComplete(){
 			}
@@ -312,6 +320,8 @@ namespace UISystem{
 		/*  */
 		public void EnableInput(){
 			thisIsEnabledInput = true;
+			if(thisUIM.ShowsInputability())
+				TurnTo(GetUIImage().GetDefaultColor());
 		}
 		public void EnableInputRecursively(){
 			this.EnableInput();
@@ -320,55 +330,64 @@ namespace UISystem{
 		}
 		protected void DisableInput(){
 			thisIsEnabledInput = false;
+			if(thisUIM.ShowsInputability())
+				TurnTo(Color.red);
 		}
 		public void DisableInputRecursively(){
 			this.DisableInput();
 			foreach(IUIElement child in thisChildUIEs)
 				child.DisableInputRecursively();
 		}
+		protected IScroller thisTopmostScrollerInMotion;
+		public IScroller GetTopmostScrollerInMotion(){
+			return thisTopmostScrollerInMotion;
+		}
+		public virtual void DisableScrollInputRecursively(IScroller disablingScroller){
+			this.DisableInput();
+			thisTopmostScrollerInMotion = disablingScroller;
+			foreach(IUIElement child in thisChildUIEs){
+				child.DisableScrollInputRecursively(disablingScroller);
+			}
+		}
+		public virtual void EnableScrollInputRecursively(){
+			EnableScrollInputSelf();
+			foreach(IUIElement child in thisChildUIEs){
+				child.EnableScrollInputRecursively();
+			}
+		}
+		public virtual void EnableScrollInputSelf(){
+			this.EnableInput();
+			thisTopmostScrollerInMotion = null;
+		}
+		public virtual void CheckForScrollInputEnable(){
+			this.EnableScrollInputSelf();
+			foreach(IUIElement child in thisChildUIEs)
+				child.CheckForScrollInputEnable();
+		}
 		/* Scrolller */
-		public virtual void EvaluateScrollerFocusRecursively(){
-			this.BecomeFocusedInScrollerSelf();
-			foreach(IUIElement childUIE in GetChildUIEs())
-				if(childUIE != null)
-					childUIE.EvaluateScrollerFocusRecursively();
-		}
-		protected bool thisIsFocusedInScroller = false;
-		public void BecomeFocusedInScrollerSelf(){
-			thisIsFocusedInScroller = true;
-		}
-		public void OnScrollerDefocusSelf(){
-			thisIsFocusedInScroller = false;
-		}
-		public virtual void BecomeFocusedInScrollerRecursively(){
-			thisIsFocusedInScroller = true;
-			foreach(IUIElement child in GetChildUIEs())
-				child.BecomeFocusedInScrollerRecursively();
-		}
-		public virtual void BecomeDefocusedInScrollerRecursively(){
-			thisIsFocusedInScroller = false;
-			foreach(IUIElement child in GetChildUIEs())
-				child.BecomeDefocusedInScrollerRecursively();
-		}
-		public void CheckAndStopScrollerMotorProcessOnParentScrollers(){
-			IUIElement parentUIE = GetParentUIE();
-			if(parentUIE != null){
-				if(parentUIE is IScroller)
-					((IScroller)parentUIE).StopAllRunningElementMotorProcesses();
-				parentUIE.CheckAndStopScrollerMotorProcessOnParentScrollers();
+			public virtual void EvaluateScrollerFocusRecursively(){
+				this.BecomeFocusedInScrollerSelf();
+				foreach(IUIElement childUIE in GetChildUIEs())
+					if(childUIE != null)
+						childUIE.EvaluateScrollerFocusRecursively();
 			}
-		}
-		public void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers(){
-			IUIElement parentUIE = GetParentUIE();
-			if(parentUIE != null){
-				if(parentUIE is IScroller){
-					IScroller parentScroller = (IScroller)parentUIE;
-					parentScroller.CheckForStaticBoundarySnap();
-					parentScroller.ResetDrag();
-				}
-				parentUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
+			protected bool thisIsFocusedInScroller = false;
+			public void BecomeFocusedInScrollerSelf(){
+				thisIsFocusedInScroller = true;
 			}
-		}
+			public void BecomeDefocuesedInScrollerSelf(){
+				thisIsFocusedInScroller = false;
+			}
+			public virtual void BecomeFocusedInScrollerRecursively(){
+				thisIsFocusedInScroller = true;
+				foreach(IUIElement child in GetChildUIEs())
+					child.BecomeFocusedInScrollerRecursively();
+			}
+			public virtual void BecomeDefocusedInScrollerRecursively(){
+				thisIsFocusedInScroller = false;
+				foreach(IUIElement child in GetChildUIEs())
+					child.BecomeDefocusedInScrollerRecursively();
+			}
 		/*  */
 		public void TurnTo(Color color){
 			GetUIImage().TurnTo(color);

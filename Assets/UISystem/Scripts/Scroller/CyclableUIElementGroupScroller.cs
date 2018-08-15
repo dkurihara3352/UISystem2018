@@ -106,6 +106,7 @@ namespace UISystem{
 			Vector2 rubberBandLimitMultiplier, 
 			bool isEnabledInertia, 
 			bool swipeToSnapNext, 
+			float newScrollSpeedThreshold,
 
 			IUIManager uim, 
 			IUISystemProcessFactory processFactory, 
@@ -125,6 +126,7 @@ namespace UISystem{
 			rubberBandLimitMultiplier, 
 			isEnabledInertia, 
 			swipeToSnapNext, 
+			newScrollSpeedThreshold,
 
 			uim, 
 			processFactory, 

@@ -12,10 +12,18 @@ namespace UISystem{
 		bool TouchIDIsRegistered();
 		void UnregisterTouchID();
 		void RegisterTouchID(int touchID);
+		bool ShowsInputability();
+		bool ShowsNormal();
+		IScroller GetLatestScrollerInMotion();
+		void SetLatestScrollerInMotion(IScroller scroller);
+		void SetInputHandlingScroller(IScroller scroller, UIManager.InputName inputName);
+		IScroller GetInputHandlingScroller();
+		string GetEventName();
 	}
 	public class UIManager: IUIManager {
-		public UIManager(RectTransform uieReserveTrans){
+		public UIManager(RectTransform uieReserveTrans, bool showsInputability){
 			thisUIEReserveTrans = uieReserveTrans;
+			thisShowsInputability = showsInputability;
 		}
 		Vector2 thisDragWorldPosition;
 		public void SetDragWorldPosition(Vector2 dragPos){
@@ -38,5 +46,41 @@ namespace UISystem{
 		public void RegisterTouchID(int touchID){
 			thisRegisteredID = touchID;
 		}
+		readonly bool thisShowsInputability;
+		public bool ShowsInputability(){
+			return thisShowsInputability;
+		}
+		public bool ShowsNormal(){
+			return !ShowsInputability();
+		}
+
+		IScroller thisLatestScrollerInMotion;
+		public void SetLatestScrollerInMotion(IScroller scroller){
+			thisLatestScrollerInMotion = scroller;
+		}
+		public IScroller GetLatestScrollerInMotion(){
+			return thisLatestScrollerInMotion;
+		}
+		public void SetInputHandlingScroller(IScroller scroller, InputName inputName){
+			thisInputHandlingScroller = scroller;
+			thisInputName = inputName;
+		}
+		InputName thisInputName = InputName.None;
+		IScroller thisInputHandlingScroller;
+		public IScroller GetInputHandlingScroller(){
+			return thisInputHandlingScroller;
+		}
+		public string GetEventName(){
+			return thisInputName.ToString();
+		}
+	public enum InputName{
+		None,
+		Release,
+		Tap,
+		Swipe,
+		BeginDrag,
+		Drag,
+		Touch,
+	}
 	}
 }

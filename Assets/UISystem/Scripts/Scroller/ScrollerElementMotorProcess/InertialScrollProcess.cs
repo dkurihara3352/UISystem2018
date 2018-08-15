@@ -15,6 +15,7 @@ namespace UISystem{
 				thisExpireTime = 0f;
 			else
 				thisExpireTime = Mathf.Abs(thisInitialVelocity / thisDeceleration);
+			thisScroller.UpdateVelocity(thisInitialVelocity, thisDimension);
 		}
 		readonly float thisInitialVelocity;
 		readonly protected float thisDeceleration;
@@ -47,10 +48,15 @@ namespace UISystem{
 			thisScroller.SetScrollerElementLocalPosOnAxis(newLocalPosOnAxis, thisDimension);
 			thisPrevVelocity = newVelocity;
 			thisPrevLocalPosOnAxis = newLocalPosOnAxis;
-			thisScroller.CheckForDynamicBoundarySnapOnAxis(deltaPosOnAxis, newVelocity, thisDimension);
+			thisScroller.UpdateVelocity(newVelocity, thisDimension);
+			thisScroller.CheckAndPerformDynamicBoundarySnapOnAxis(deltaPosOnAxis, newVelocity, thisDimension);
 
 			if(thisElapsedTime >= thisExpireTime)
 				Expire();
+		}
+		public override void Expire(){
+			base.Expire();
+			thisScroller.UpdateVelocity(0f, thisDimension);
 		}
 	}
 }

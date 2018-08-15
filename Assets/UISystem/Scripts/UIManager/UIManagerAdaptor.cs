@@ -9,9 +9,10 @@ namespace UISystem{
 		public ProcessManager processManager;
 		public UIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public RectTransform uieReserveTrans;
+		public bool showsInputability;
 
 		public void Awake(){
-			uiManager = new UIManager(uieReserveTrans);
+			uiManager = new UIManager(uieReserveTrans, showsInputability);
 			IUISystemProcessFactory processFactory = new UISystemProcessFactory(processManager, uiManager);
 			IUIElementFactory uiElementFactory = new UIElementFactory(uiManager);
 			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, processFactory, uiElementFactory);
