@@ -548,6 +548,7 @@ namespace UISystem{
 				if(this == disablingScroller){// initiating
 					if(thisUIM.ShowsInputability())
 						TurnTo(Color.blue);
+					DKUtility.DebugHelper.PrintInRed(GetName() + " is initiating disable");
 				}
 				thisTopmostScrollerInMotion = disablingScroller;
 				thisScrollerElement.DisableScrollInputRecursively(disablingScroller);
@@ -556,6 +557,7 @@ namespace UISystem{
 				if(thisIsTopmostScrollerInMotion){
 					if(thisUIM.ShowsInputability())
 						TurnTo(GetUIImage().GetDefaultColor());
+					DKUtility.DebugHelper.PrintInBlue(GetName() + " is enabling");
 				}
 				thisTopmostScrollerInMotion = null;
 			}
@@ -577,8 +579,10 @@ namespace UISystem{
 			public Vector2 GetVelocity(){return thisVelocity;}
 			public void UpdateVelocity(float velocityOnAxis, int dimension){
 				thisVelocity[dimension] = velocityOnAxis;
-				if(thisIsTopmostScrollerInMotion)
-					CheckForScrollInputEnable();
+				// if(thisIsTopmostScrollerInMotion)
+				// CheckForScrollInputEnable();
+				CheckAndTriggerScrollInputEnable();
+				Debug.Log(thisVelocity.ToString());
 			}
 			public override void CheckForScrollInputEnable(){
 				if(thisIsTopmostScrollerInMotion){
@@ -592,6 +596,17 @@ namespace UISystem{
 					}else{
 						EnableScrollInputRecursively();
 					}
+				}
+			}
+			void CheckAndTriggerScrollInputEnable(){
+				if(thisTopmostScrollerInMotion != null){
+					if(thisIsTopmostScrollerInMotion){
+						CheckForScrollInputEnable();
+					}else
+						return;
+				}else{//null
+					if(this.IsMovingWithSpeedOverNewScrollThreshold())
+						CheckForScrollInputEnable();
 				}
 			}
 			readonly float thisNewScrollSpeedThreshold;

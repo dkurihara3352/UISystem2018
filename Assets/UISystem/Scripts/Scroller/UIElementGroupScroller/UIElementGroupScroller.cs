@@ -154,7 +154,6 @@ namespace UISystem{
 		protected void CounterOffsetElementGroup(float initialVelocity, int dimension){
 			if(GetElementGroupOffset(dimension) != 0f){
 				IUIElement cursoredElement = thisCursoredElements[0];
-				Debug.Log("counterOffset is called on " + this.GetName());
 				SnapToGroupElement(cursoredElement, initialVelocity, dimension);
 				return;
 			}else{
