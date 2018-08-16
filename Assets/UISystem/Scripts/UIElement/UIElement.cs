@@ -42,8 +42,6 @@ namespace UISystem{
 		void BecomeDefocuesedInScrollerSelf();
 		void BecomeFocusedInScrollerRecursively();
 		void BecomeDefocusedInScrollerRecursively();
-		// void CheckAndStopScrollerMotorProcessOnParentScrollers();
-		// void CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		/* Debug */
 		void TurnTo(Color color);
 		void Flash(Color color);

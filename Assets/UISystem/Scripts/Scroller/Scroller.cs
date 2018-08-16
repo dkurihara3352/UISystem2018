@@ -41,26 +41,27 @@ namespace UISystem{
 			
 			thisRunningScrollerMotorProcess = new IScrollerElementMotorProcess[2];
 		}
-		Vector2 MakeSureRelativeCursorPosIsClampedZeroToOne(Vector2 source){
-			Vector2 result = source;
-			for(int i = 0; i < 2; i ++)
-				if(result[i] < 0f)
-					result[i] = 0f;
-				else if(result[i] > 1f)
-					result[i] = 1f;
-			return result;
-		}
-		const float thisMinimumRubberBandMultiplier = .01f;
-		Vector2 MakeRubberBandLimitMultiplierInRange(Vector2 source){
-			Vector2 result = new Vector2(source.x, source.y);
-			for(int i = 0; i < 2; i++)
-				if(result[i] <= 0f)
-					result[i] = thisMinimumRubberBandMultiplier;
-				else if(result[i] > 1f)
-					result[i] = 1f;
-			return result;
-		}
-		protected readonly ScrollerAxis thisScrollerAxis;
+		/* SetUp */
+			Vector2 MakeSureRelativeCursorPosIsClampedZeroToOne(Vector2 source){
+				Vector2 result = source;
+				for(int i = 0; i < 2; i ++)
+					if(result[i] < 0f)
+						result[i] = 0f;
+					else if(result[i] > 1f)
+						result[i] = 1f;
+				return result;
+			}
+			const float thisMinimumRubberBandMultiplier = .01f;
+			Vector2 MakeRubberBandLimitMultiplierInRange(Vector2 source){
+				Vector2 result = new Vector2(source.x, source.y);
+				for(int i = 0; i < 2; i++)
+					if(result[i] <= 0f)
+						result[i] = thisMinimumRubberBandMultiplier;
+					else if(result[i] > 1f)
+						result[i] = 1f;
+				return result;
+			}
+			protected readonly ScrollerAxis thisScrollerAxis;
 		/* ScrollerRect */
 			protected Rect thisRect;
 			protected Vector2 thisRectMin;
@@ -171,7 +172,7 @@ namespace UISystem{
 			}
 		/* Drag */
 			protected bool thisHasDoneDragEvaluation;
-			protected bool thisShouldProcessDrag;//returns true if this is the one to handle the drag, false if passed upward
+			protected bool thisShouldProcessDrag;
 		
 			public void ResetDrag(){
 				thisHasDoneDragEvaluation = false;
@@ -396,8 +397,6 @@ namespace UISystem{
 				}
 			}
 			void ClearTopMostScroller(){
-				/*  probably required to clear velocity on all scrollers up before Enabling all to be thorough
-				*/
 				ClearAllParentScrollerVelocity();
 				if(thisTopmostScrollerInMotion != null)
 					thisTopmostScrollerInMotion.EnableScrollInputRecursively();
@@ -419,14 +418,14 @@ namespace UISystem{
 					thisUIM.SetInputHandlingScroller(this, UIManager.InputName.Swipe);
 					if(thisTopmostScrollerInMotion != null){
 						if(thisIsTopmostScrollerInMotion){
-							OnSwipeImpleInner(eventData);
+							ProcessSwipe(eventData);
 						}else{
 							thisTopmostScrollerInMotion.OnSwipe(eventData);
 							CheckAndPerformStaticBoundarySnap();
 							ResetDrag();
 						}
 					}else{
-						OnSwipeImpleInner(eventData);
+						ProcessSwipe(eventData);
 					}
 				}else{
 					base.OnSwipeImple(eventData);
@@ -434,7 +433,7 @@ namespace UISystem{
 					ResetDrag();
 				}
 			}
-			protected virtual void OnSwipeImpleInner(ICustomEventData eventData){
+			protected virtual void ProcessSwipe(ICustomEventData eventData){
 				if(thisIsEnabledInertia){
 					StartInertialScroll(eventData.velocity);
 					CheckAndPerformStaticBoundarySnapFrom(thisProximateParentScroller);
@@ -442,17 +441,16 @@ namespace UISystem{
 				else
 					CheckAndPerformStaticBoundarySnapFrom(this);
 			}
-			protected void StartInertialScroll(Vector2 velocity){
-				ResetDrag();
-				if(InitialVelocityIsOverThreshold(velocity))
-					DisableScrollInputRecursively(this);
-				StartInertialScrollImple(velocity);
-			}
 			protected bool InitialVelocityIsOverThreshold(Vector2 velocity){
 				return velocity.sqrMagnitude >= thisNewScrollSpeedThreshold * thisNewScrollSpeedThreshold;
 			}
 			readonly protected bool thisIsEnabledInertia;
-			protected virtual void StartInertialScrollImple(Vector2 swipeVelocity){
+			protected virtual void StartInertialScroll(Vector2 swipeVelocity){
+				ResetDrag();
+
+				if(InitialVelocityIsOverThreshold(swipeVelocity))
+					DisableScrollInputRecursively(this);
+
 				if(thisScrollerAxis == ScrollerAxis.Horizontal){
 					IInertialScrollProcess process = thisProcessFactory.CreateInertialScrollProcess(swipeVelocity[0], 1f, this, thisScrollerElement, 0);
 					process.Run();
@@ -518,10 +516,12 @@ namespace UISystem{
 					CheckAndPerformStaticBoundarySnapOnAxis(i);
 			}
 			protected void SnapTo(float targetNormalizedCursoredPosOnAxis, float initVelOnAxis, int dimension){
+
 				UpdateVelocity(initVelOnAxis, dimension);
 				Vector2 curVelocity = GetVelocity();
 				if(InitialVelocityIsOverThreshold(curVelocity))
 					DisableScrollInputRecursively(this);
+					
 				float targetElementLocalPosOnAxis = CalcLocalPositionFromNormalizedCursoredPositionOnAxis(targetNormalizedCursoredPosOnAxis, dimension);
 				IScrollerElementSnapProcess newProcess = thisProcessFactory.CreateScrollerElementSnapProcess(this, thisScrollerElement, targetElementLocalPosOnAxis, initVelOnAxis, dimension);
 				newProcess.Run();
