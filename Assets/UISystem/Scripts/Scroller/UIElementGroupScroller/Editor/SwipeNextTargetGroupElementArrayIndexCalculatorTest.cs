@@ -5,7 +5,7 @@ using UnityEditor;
 using NUnit.Framework;
 using NSubstitute;
 using UISystem;
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class SwipeNextTargetGroupElementArrayIndexCalculatorTest{
 
 	[Test, TestCaseSource(typeof(Calculate_TestCase), "cases")]

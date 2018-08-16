@@ -130,8 +130,11 @@
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRoller.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\QuantityRoller\QuantityRollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\CyclableUIElementGroupScroller.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\ElementCursorOffsetInPixelCalculator\ElementCursorOffsetInPixelCalculator.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\ElementIsScrolledToIncreaseCursorOffsetCalculator\ElementIsScrolledToIncreaseCursorOffsetCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScrollerAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Scroller\ProximateParentScrollerCalculator\ProximateParentScrollerCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\Scroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\InertialScrollProcess.cs" />

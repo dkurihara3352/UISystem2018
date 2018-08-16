@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class GroupElementAtPositionInGroupSpaceCalculatorTest {
 	[Test, TestCaseSource(typeof(Calculate_TestCase), "cases")]
 	public void Calculate_Various(int[] expectedArrayIndex){

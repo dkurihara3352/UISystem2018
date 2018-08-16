@@ -28,8 +28,43 @@ public class ScrollerElementSnapProcessTest {
             new object[]{-100f},
         };
     }
+    [Test, TestCaseSource(typeof(Consruction_DiffThresholdGreaterThanZeroButTooSmall_TestCase), "cases")]
+    public void Consruction_DiffThresholdGreaterThanZeroButTooSmall_SetMinimum(float diffThreshold, float expected){
+        ITestScrollerElementSnapProcessConstArg arg = CreateMockConstArg();
+        arg.diffThreshold.Returns(diffThreshold);
+        TestScrollerElementSnapProcess process = new TestScrollerElementSnapProcess(arg);
+
+        float actual = process.GetDiffThreshold_Test();
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
+    const float thisMinThreshold = 1f;
+    public class Consruction_DiffThresholdGreaterThanZeroButTooSmall_TestCase{
+        public static object[] cases = {
+            new object[]{
+                1f, 
+                thisMinThreshold
+            },
+            new object[]{
+                .9f, 
+                thisMinThreshold
+            },
+            new object[]{
+                .01f, 
+                thisMinThreshold
+            },
+            
+        };
+    }
     [Test, TestCaseSource(typeof(Construction_ValueDifferenceNotGreaterThanThreshold_TestCase), "cases")]
-    public void Construction_ValueDifferenceNotGreaterThanThreshold_CallsScrollerSetScrollerElementLocalPosOnAxis(Vector2 initialLocalPos, float targetLocalPosOnAxis, int dimension, float diffThreshold, bool callExpected, Vector2 expectedLocalPos){
+    public void Construction_ValueDifferenceNotGreaterThanThreshold_CallsScrollerSetScrollerElementLocalPosOnAxis(
+        Vector2 initialLocalPos, 
+        float targetLocalPosOnAxis, 
+        int dimension, 
+        float diffThreshold, 
+        bool callExpected, 
+        Vector2 expectedLocalPos
+    ){
         ITestScrollerElementSnapProcessConstArg arg = CreateMockConstArg();
         IScroller scroller = Substitute.For<IScroller>();
         arg.scroller.Returns(scroller);
@@ -50,30 +85,9 @@ public class ScrollerElementSnapProcessTest {
         public static object[] cases = {
             new object[]{new Vector2(10f, 10f), 20f, 0, 10f, true, new Vector2(20f, 10f)},
             new object[]{new Vector2(10f, 10f), 20f, 1, 10f, true, new Vector2(10f, 20f)},
-            new object[]{new Vector2(10f, 10f), 20f, 0, 9f, true, new Vector2(20f, 10f)},
-            new object[]{new Vector2(10f, 10f), 20f, 1, 9f, true, new Vector2(10f, 20f)},
-            new object[]{new Vector2(10f, 10f), 20f, 0, 11f, false, Vector2.zero},
-        };
-    }
-    [Test, TestCaseSource(typeof(GetDeltaValue_TestCase), "cases")]
-    public void GetDeltaValue_Various(float newValue, float deltaT, float expected){
-        ITestScrollerElementSnapProcessConstArg arg = CreateMockConstArg();
-        TestScrollerElementSnapProcess process = new TestScrollerElementSnapProcess(arg);
-
-        float actual = process.GetDeltaValue_Test(newValue, deltaT);
-
-        Assert.That(actual, Is.EqualTo(expected));
-
-    }
-    public class GetDeltaValue_TestCase{
-        public static object[] cases = {
-            new object[]{10f, .1f, 100f},
-            new object[]{10f, 1f, 10f},
-            new object[]{10f, 10f, 1f},
-            
-            new object[]{-10f, .1f, 100f},
-            new object[]{-10f, 1f, 10f},
-            new object[]{-10f, 10f, 1f},
+            new object[]{new Vector2(10f, 10f), 20f, 0, 9f, false, new Vector2(20f, 10f)},
+            new object[]{new Vector2(10f, 10f), 20f, 1, 9f, false, new Vector2(10f, 20f)},
+            new object[]{new Vector2(10f, 10f), 20f, 0, 11f, true, new Vector2(20f, 10f)},
         };
     }
     [Test, TestCaseSource(typeof(UpdateProcess_Demo_TestCase), "cases"), Ignore]
@@ -131,8 +145,8 @@ public class ScrollerElementSnapProcessTest {
 
     public class TestScrollerElementSnapProcess: ScrollerElementSnapProcess{
         public TestScrollerElementSnapProcess(ITestScrollerElementSnapProcessConstArg arg): base(arg.targetElementLocalPositionOnAxis, arg.initialVelOnAxis, arg.scroller, arg.scrollerElement, arg.dimension, arg.diffThreshold, arg.stopVelocity, arg.processManager){}
-        public float GetDeltaValue_Test(float newValue, float deltaT){
-            return 0f;
+        public float GetDiffThreshold_Test(){
+            return thisDiffThreshold;
         }
     }
     public interface ITestScrollerElementSnapProcessConstArg{

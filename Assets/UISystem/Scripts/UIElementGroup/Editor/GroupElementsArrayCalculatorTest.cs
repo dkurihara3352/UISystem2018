@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class GroupElementsArrayCalculatorTest {
 
 	[Test, TestCaseSource(typeof(GetGroupElementsWithinIndexRange_TestCase), "cases")]

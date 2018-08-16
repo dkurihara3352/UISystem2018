@@ -6,7 +6,7 @@ using NUnit.Framework;
 using NSubstitute;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class UIElementGroupArrayIndexCalculatorTest {
 	[Test, TestCaseSource(typeof(CalcColumnIndex_TestCase), "cases")]
 	public void CalcColumnIndex_Various(bool topToBottom, bool leftToRight, bool rowToColumn, int numOfColumns, int numOfRows, int elementIndex, int expected){

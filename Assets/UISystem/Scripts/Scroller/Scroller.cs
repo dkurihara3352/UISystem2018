@@ -7,13 +7,15 @@ namespace UISystem{
 		void SwitchRunningElementMotorProcess(IScrollerElementMotorProcess process, int dimension);
 		void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension);
 		float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension);
-		float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension);
+		float GetNormalizedCursoredPositionOnAxis(float scrollerElementLocalPosOnAxis, int dimension);
 
 		bool IsMovingWithSpeedOverNewScrollThreshold();
 		void UpdateVelocity(float velocityOnAxis, int dimension);
 
 		void SetUpScrollerElement();
 		void SetUpCursorTransform();
+		bool ScrollerElementIsUndersizedTo(Vector2 referenceLength, int dimension);
+
 		void ResetDrag();
 		void ClearTouchPositionCache();
 		Vector2 GetVelocity();
@@ -40,6 +42,7 @@ namespace UISystem{
 			SetUpRubberBandCalculators();
 			
 			thisRunningScrollerMotorProcess = new IScrollerElementMotorProcess[2];
+			thisElementIsScrolledToIncreaseCursorOffsetCalculator = new ElementIsScrolledToIncreaseCursorOffsetCalculator(this);
 		}
 		/* SetUp */
 			Vector2 MakeSureRelativeCursorPosIsClampedZeroToOne(Vector2 source){
@@ -100,6 +103,9 @@ namespace UISystem{
 			}
 		/* Cursor Transform */
 			public void SetUpCursorTransform(){
+				/*  Called in the end of subclasses's constructor, 
+					after what it needs to calculate cursor transform is all set
+				*/
 				thisCursorLength = CalcCursorLength();
 				ClampCursorLengthToThisRect();
 				thisCursorLocalPosition = CalcCursorLocalPos();
@@ -136,12 +142,21 @@ namespace UISystem{
 
 		/* ScrollerElement */
 			public void SetUpScrollerElement(){
+				/*  called at the end of GetReadyForActivation, just before Activate
+				*/
 				SetTheOnlyChildAsScrollerElement();
 				CacheScrollerElementRect();
 				OnScrollerElementReferenceSetUp();
 				InitializeScrollerElementForActivation();
 			}
-			protected virtual void OnScrollerElementReferenceSetUp(){}
+			protected virtual void OnScrollerElementReferenceSetUp(){
+				thisElementCursorOffsetInPixelCalculator = new ElementCursorOffsetInPixelCalculator(
+					this,
+					thisCursorLength,
+					thisCursorLocalPosition,
+					thisScrollerElementLength
+				);
+			}
 			protected IUIElement thisScrollerElement;
 			protected void SetTheOnlyChildAsScrollerElement(){
 				List<IUIElement> childUIEs = GetChildUIEs();
@@ -171,11 +186,9 @@ namespace UISystem{
 				thisScrollerElement.SetLocalPosition(newScrollerElementLocalPos);
 			}
 		/* Drag */
-			protected bool thisHasDoneDragEvaluation;
 			protected bool thisShouldProcessDrag;
 		
 			public void ResetDrag(){
-				thisHasDoneDragEvaluation = false;
 				thisShouldProcessDrag = false;
 				ClearTouchPositionCache();
 			}
@@ -200,8 +213,7 @@ namespace UISystem{
 						thisTopmostScrollerInMotion.OnBeginDrag(eventData);
 					}
 				}else{
-					if(!thisHasDoneDragEvaluation)
-						EvaluateDrag(eventData);
+					EvaluateDrag(eventData);
 					if(thisShouldProcessDrag){
 						thisUIM.SetInputHandlingScroller(this, UIManager.InputName.BeginDrag);
 						CacheTouchPosition(eventData.position);
@@ -226,7 +238,6 @@ namespace UISystem{
 				}
 			}
 			void EvaluateDrag(ICustomEventData eventData){
-				thisHasDoneDragEvaluation = true;
 				thisShouldProcessDrag = DetermineIfThisShouldProcessDrag(eventData.deltaPos);
 			}
 			bool DetermineIfThisShouldProcessDrag(Vector2 deltaPos){
@@ -294,16 +305,9 @@ namespace UISystem{
 				}
 				return result;
 			}
+			IElementIsScrolledToIncreaseCursorOffsetCalculator thisElementIsScrolledToIncreaseCursorOffsetCalculator;
 			protected bool ElementIsScrolledToIncreaseCursorOffset(float deltaPosOnAxis, float scrollerElementLocalPosOnAxis, int dimension){
-				float cursorOffsetInPixel = GetElementCursorOffsetInPixel(scrollerElementLocalPosOnAxis, dimension);
-				if(cursorOffsetInPixel == 0f)
-					return false;
-				else{
-					if(cursorOffsetInPixel < 0f)//too right
-						return deltaPosOnAxis > 0f;
-					else//displacement > 0f: too left
-						return deltaPosOnAxis < 0f;
-				}
+				return thisElementIsScrolledToIncreaseCursorOffsetCalculator.Calculate(deltaPosOnAxis, scrollerElementLocalPosOnAxis, dimension);
 			}
 			protected bool thisRequiresToCheckForHorizontalAxis{
 				get{return thisScrollerAxis == ScrollerAxis.Horizontal || thisScrollerAxis == ScrollerAxis.Both;}
@@ -312,7 +316,7 @@ namespace UISystem{
 				get{return thisScrollerAxis == ScrollerAxis.Vertical || thisScrollerAxis == ScrollerAxis.Both;}
 			}
 		/* Rect calculation */
-			protected bool ElementIsUndersizedTo(Vector2 referenceLength, int dimension){
+			public bool ScrollerElementIsUndersizedTo(Vector2 referenceLength, int dimension){
 				return thisScrollerElementLength[dimension] <= referenceLength[dimension];
 			}
 			protected float GetNormalizedPosition(float scrollerElementLocalPosOnAxis, Vector2 referenceLength, Vector2 referenceMin, int dimension){
@@ -320,7 +324,7 @@ namespace UISystem{
 					(1f, 1f) if cursor rests on bottom right corner of the element
 					value below 0f and over 1f indicates the element's displacement beyond cursor bounds
 				*/
-				if(ElementIsUndersizedTo(referenceLength, dimension)){
+				if(ScrollerElementIsUndersizedTo(referenceLength, dimension)){
 					return 0f;
 				}else{
 					float referenceLengthOnAxis = referenceLength[dimension];
@@ -329,30 +333,34 @@ namespace UISystem{
 
 				}
 			}
-			public float GetNormalizedCursoredPosition(float scrollerElementLocalPosOnAxis, int dimension){
+			public float GetNormalizedCursoredPositionOnAxis(float scrollerElementLocalPosOnAxis, int dimension){
 				return GetNormalizedPosition(scrollerElementLocalPosOnAxis, thisCursorLength, thisCursorLocalPosition, dimension);
 			}
 			protected float GetNormalizedScrollerPosition(float scrollerElementLocalPosOnAxis, int dimension){
 				return GetNormalizedPosition(scrollerElementLocalPosOnAxis, thisRectLength, Vector2.zero, dimension);
 			}
+
+			/* ElementCursorOffsetInPixel calculation */
+			IElementCursorOffsetInPixelCalculator thisElementCursorOffsetInPixelCalculator;
 			public float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension){
-				/* used to calculate rubberbanding */
-				if(ElementIsUndersizedTo(thisCursorLength, dimension)){
-					return thisCursorLocalPosition[dimension] - scrollerElementLocalPosOnAxis;
-				}
-				else{
-					float elementNormalizedCursoredPos = GetNormalizedCursoredPosition(scrollerElementLocalPosOnAxis, dimension);
-					float normalizedOffset = elementNormalizedCursoredPos;
-					if(elementNormalizedCursoredPos <= 1f && elementNormalizedCursoredPos >= 0f)
-						normalizedOffset = 0f;
-					else if(elementNormalizedCursoredPos > 1f)
-						normalizedOffset = elementNormalizedCursoredPos - 1f;
-					return normalizedOffset * (thisScrollerElementLength[dimension]- thisCursorLength[dimension]);
-				}
+				// /* used to calculate rubberbanding */
+				return thisElementCursorOffsetInPixelCalculator.Calculate(scrollerElementLocalPosOnAxis, dimension);
+				// if(ScrollerElementIsUndersizedTo(thisCursorLength, dimension)){
+				// 	return thisCursorLocalPosition[dimension] - scrollerElementLocalPosOnAxis;
+				// }
+				// else{
+				// 	float elementNormalizedCursoredPos = GetNormalizedCursoredPosition(scrollerElementLocalPosOnAxis, dimension);
+				// 	float normalizedOffset = elementNormalizedCursoredPos;
+				// 	if(elementNormalizedCursoredPos <= 1f && elementNormalizedCursoredPos >= 0f)
+				// 		normalizedOffset = 0f;
+				// 	else if(elementNormalizedCursoredPos > 1f)
+				// 		normalizedOffset = elementNormalizedCursoredPos - 1f;
+				// 	return normalizedOffset * (thisScrollerElementLength[dimension]- thisCursorLength[dimension]);
+				// }
 			}
 			protected float GetNormalizedCursoredPositionFromPosInElementSpace(float positionInElementSpaceOnAxis, int dimension){
 				float prospectiveElementLocalPosOnAxis = thisCursorLocalPosition[dimension] - positionInElementSpaceOnAxis;
-				return GetNormalizedCursoredPosition(prospectiveElementLocalPosOnAxis, dimension);
+				return GetNormalizedCursoredPositionOnAxis(prospectiveElementLocalPosOnAxis, dimension);
 			}
 			protected void PlaceScrollerElement(Vector2 targetCursorValue){
 				Vector2 newLocalPos = CalcLocalPositionFromNormalizedCursoredPosition(targetCursorValue);
@@ -366,7 +374,7 @@ namespace UISystem{
 				return result;
 			}
 			protected float CalcLocalPositionFromNormalizedCursoredPositionOnAxis(float normalizedCursoredPositionOnAxis, int dimension){
-				if(ElementIsUndersizedTo(thisCursorLength, dimension))
+				if(ScrollerElementIsUndersizedTo(thisCursorLength, dimension))
 					return thisCursorLocalPosition[dimension];
 				else{
 					float scrollerElementLocalPosOnAxis = thisCursorLocalPosition[dimension] - (normalizedCursoredPositionOnAxis * (thisScrollerElementLength[dimension] - thisCursorLength[dimension]));
@@ -531,20 +539,9 @@ namespace UISystem{
 			public IScroller GetProximateParentScroller(){
 				return thisProximateParentScroller;
 			}
-			IScroller FindProximateParentScroller(){
-				IUIElement uieToExamine = this;
-				while(true){
-					IUIElement parentUIE = uieToExamine.GetParentUIE();
-					if(parentUIE != null){
-						if(parentUIE is IScroller){
-							return ((IScroller)parentUIE);
-						}else
-							uieToExamine = parentUIE;
-					}else{
-						break;
-					}
-				}	
-				return null;
+			protected virtual IScroller FindProximateParentScroller(){
+				IProximateParentScrollerCalculator calculator = new ProximateParentScrollerCalculator(this);
+				return calculator.Calculate();
 			}
 			public override void DisableScrollInputRecursively(IScroller disablingScroller){
 				if(this == disablingScroller){// initiating

@@ -7,13 +7,26 @@ using DKUtility.CurveUtility;
 namespace UISystem{
 	public interface IScrollerElementSnapProcess: IScrollerElementMotorProcess{}
 	public class ScrollerElementSnapProcess: AbsScrollerElementMotorProcess, IScrollerElementSnapProcess{
-		public ScrollerElementSnapProcess(float targetElementLocalPositionOnAxis, float initialVelOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension, float diffThreshold, float stopVelocity, IProcessManager processManager): base(scroller, dimension, processManager){
+		public ScrollerElementSnapProcess(
+			float targetElementLocalPositionOnAxis, 
+			float initialVelOnAxis, 
+			IScroller scroller, 
+			IUIElement scrollerElement, 
+			int dimension, 
+			float diffThreshold, 
+			float stopVelocity, 
+			IProcessManager processManager
+		): base(
+			scroller, 
+			dimension, 
+			processManager
+		){
 
 			float initialElementLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisTargetElementLocalPositionOnAxis = targetElementLocalPositionOnAxis;
 
 			thisDiffThreshold = MakeSureDiffThresholdIsInRange(diffThreshold);
-			ExpireIfValueDifferenceIsSmallEnough(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, diffThreshold);
+			ExpireIfValueDifferenceIsSmallEnough(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, thisDiffThreshold);
 
 			float springCoefficient = processManager.GetScrollerElementSnapSpringCoefficient();
 			thisSpringCalculator = new RealTimeCriticallyDampedSpringCalculator(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, initialVelOnAxis, springCoefficient);
@@ -44,7 +57,7 @@ namespace UISystem{
 		}
 		readonly float thisTargetElementLocalPositionOnAxis;
 		readonly IRealTimeCriticallyDampedSpringCalculator thisSpringCalculator;
-		readonly float thisDiffThreshold;
+		protected readonly float thisDiffThreshold;
 		const float thisMinDiffThreshold = 1f;
 		
 		float prevLocalPosOnAxis;

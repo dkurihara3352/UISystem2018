@@ -22,6 +22,7 @@ namespace UISystem{
 				}
 				rectTrans.sizeDelta = newSize;
 			}
+			this.enabled = false;
 		}
 		/*  Activation and init */
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
@@ -29,6 +30,7 @@ namespace UISystem{
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
 				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
+				this.enabled = true;
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
 			protected IUIAActivationData thisDomainActivationData;

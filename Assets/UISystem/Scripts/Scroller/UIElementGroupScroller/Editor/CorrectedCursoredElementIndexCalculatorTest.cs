@@ -6,7 +6,7 @@ using NSubstitute;
 using NUnit.Framework;
 using UISystem;
 
-[TestFixture]
+[TestFixture, Category("UISystem")]
 public class CorrectedCursoredElementIndexCalculatorTest {
 	[Test, TestCaseSource(typeof(Calculate_TestCase), "cases")]
 	public void Calculate_Various(

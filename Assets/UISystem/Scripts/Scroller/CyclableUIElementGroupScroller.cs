@@ -83,7 +83,7 @@ namespace UISystem{
 		bool ShouldCycleThisFrame(int dimension){
 			/* precond: element is never undersized */
 			float elementLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[dimension];
-			float elementPositionNormalizedToCursor = GetNormalizedCursoredPosition(elementLocalPosOnAxis, dimension);
+			float elementPositionNormalizedToCursor = GetNormalizedCursoredPositionOnAxis(elementLocalPosOnAxis, dimension);
 			return elementPositionNormalizedToCursor != 0;
 		}
 		void Cycle(){}

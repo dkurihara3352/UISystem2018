@@ -85,6 +85,12 @@ public class GenericSingleElementScrollerTest{
 		}
 		public Vector2 thisRelativeCursorLength_Test{get{return thisRelativeCursorLength;}}
 		public Vector2 thisCursorLength_Test{get{return thisCursorLength;}}
+		protected override IScroller FindProximateParentScroller(){
+			IScroller parentScroller = Substitute.For<IScroller>();
+			IScroller nullScroller = null;
+			parentScroller.GetProximateParentScroller().Returns(nullScroller);
+			return parentScroller;
+		}
 	}
 	TestGenericSingleElementScroller CreateGenericSingleElementScroller(Vector2 relativeCursorLength){
 		ScrollerAxis scrollerAxis = ScrollerAxis.Both;

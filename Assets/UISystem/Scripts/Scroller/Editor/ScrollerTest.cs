@@ -86,38 +86,38 @@ public class ScrollerTest{
 			};
 		}
 	/* Activation */
-		[Test, TestCaseSource(typeof(Activate_CursorLengthGreaterThanScrollerLength_TestCase), "cases")]
-		public void ActivateImple_CursorLengthGreaterThanScrollerLength_ClampTheLength(Vector2 scrollerLength, Vector2 cursorLength, Vector2 expected){
+		[Test, TestCaseSource(typeof(SetUpCursorTransform_CursorLengthGreaterThanScrollerLength_TestCase), "cases")]
+		public void SetUpCursorTransform_CursorLengthGreaterThanScrollerLength_ClampTheLength(Vector2 scrollerLength, Vector2 cursorLength, Vector2 expected){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.uia.GetRect().Returns(new Rect(Vector2.zero, scrollerLength));
 			arg.cursorLength.Returns(cursorLength);
 			TestScroller testScroller = new TestScroller(arg);
 
-			testScroller.ActivateImple();
+			testScroller.SetUpCursorTransform();
 
 			Vector2 actual = testScroller.thisCursorLength_Test;
 			Assert.That(actual, Is.EqualTo(expected));
 		}
-		public class Activate_CursorLengthGreaterThanScrollerLength_TestCase{
+		public class SetUpCursorTransform_CursorLengthGreaterThanScrollerLength_TestCase{
 			static object[] cases = {
 				new object[]{new Vector2(200f, 100f), new Vector2(20f, 10f), new Vector2(20f, 10f)},
 				new object[]{new Vector2(200f, 100f), new Vector2(210f, 110f), new Vector2(200f, 100f)}
 			};
 		}
-		[Test, TestCaseSource(typeof(ActivateImple_RelativeCursorPos_Various_TestCase), "cases")]
-		public void ActivateImple_RelativeCursorPos_Various(Vector2 scrollerLength, Vector2 cursorLength, Vector2 relativeCursorPos, Vector2 expectedPos){
+		[Test, TestCaseSource(typeof(SetUpCursorTransform_RelativeCursorPos_Various_TestCase), "cases")]
+		public void SetUpCursorTransform_RelativeCursorPos_Various(Vector2 scrollerLength, Vector2 cursorLength, Vector2 relativeCursorPos, Vector2 expectedPos){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.uia.GetRect().Returns(new Rect(Vector2.zero, scrollerLength));
 			arg.cursorLength.Returns(cursorLength);
 			arg.relativeCursorPosition.Returns(relativeCursorPos);
 			TestScroller testScroller = new TestScroller(arg);
 
-			testScroller.ActivateImple();
+			testScroller.SetUpCursorTransform();
 
 			Vector2 actual = testScroller.thisCursorLocalPosition_Test;
 			Assert.That(actual, Is.EqualTo(expectedPos));
 		}
-		public class ActivateImple_RelativeCursorPos_Various_TestCase{
+		public class SetUpCursorTransform_RelativeCursorPos_Various_TestCase{
 			public static object[] cases = {
 				new object[]{new Vector2(200f, 100f), new Vector2(200f, 100f), Vector2.zero, Vector2.zero},
 				new object[]{new Vector2(200f, 100f), new Vector2(100f, 50f), Vector2.one, new Vector2(100f, 50f)},
@@ -129,16 +129,16 @@ public class ScrollerTest{
 			};
 		}
 		[Test]
-		public void ActivateImple_ChildrenNull_ThrowsError(){
+		public void SetUpScrollerElement_ChildrenNull_ThrowsError(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			List<IUIElement> returnedList = null;
 			arg.uia.GetChildUIEs().Returns(returnedList);
 			TestScroller scroller = new TestScroller(arg);
 
-			Assert.Throws(Is.TypeOf(typeof(System.NullReferenceException)).And.Message.EqualTo("childUIEs must not be null"), ()=> {scroller.ActivateImple();});
+			Assert.Throws(Is.TypeOf(typeof(System.NullReferenceException)).And.Message.EqualTo("childUIEs must not be null"), ()=> {scroller.SetUpScrollerElement();});
 		}
 		[Test]
-		public void ActivateImple_ChildrenCountNotOne_ThrowsError([Values(0, 2, 5)]int childCount){
+		public void SetUpScrollerElement_ChildrenCountNotOne_ThrowsError([Values(0, 2, 5)]int childCount){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			List<IUIElement> returnedList = new List<IUIElement>();
 			for(int i = 0; i < childCount; i++)
@@ -146,59 +146,109 @@ public class ScrollerTest{
 			arg.uia.GetChildUIEs().Returns(returnedList);
 			TestScroller scroller = new TestScroller(arg);
 
-			Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller must have only one UIE child as Scroller Element"), () => {scroller.ActivateImple();});
+			Assert.Throws(
+				Is.TypeOf(typeof(System.InvalidOperationException))
+				.And.Message.EqualTo("Scroller must have only one UIE child as Scroller Element"), 
+				() => {
+					scroller.SetUpScrollerElement();
+				}
+			);
 		}
 		[Test]
-		public void ActivateImple_FirstChildIsNull_ThrowsError(){
+		public void SetUpScrollerElement_FirstChildIsNull_ThrowsError(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			IUIElement returnedChild = null;
 			List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{returnedChild});
 			arg.uia.GetChildUIEs().Returns(returnedList);
 			TestScroller scroller = new TestScroller(arg);
 
-			Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("Scroller's only child must not be null"), () => {scroller.ActivateImple();});
+			Assert.Throws(
+				Is.TypeOf(typeof(System.InvalidOperationException))
+				.And.Message.EqualTo("Scroller's only child must not be null"), 
+
+				() => {
+					scroller.SetUpScrollerElement();
+				}
+			);
 		}
 		[Test]
-		public void ActivateImple_OnlyChildNotNull_DoesNotThrowException(){
+		public void SetUpScrollerElement_OnlyChildNotNull_DoesNotThrowException(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			IUIElement child = Substitute.For<IUIElement>();
 			List<IUIElement> returnedList = new List<IUIElement>(new IUIElement[]{child});
 			arg.uia.GetChildUIEs().Returns(returnedList);
 			TestScroller scroller = new TestScroller(arg);
 
-			Assert.DoesNotThrow(()=>{scroller.ActivateImple();});
+			Assert.DoesNotThrow(()=>{scroller.SetUpScrollerElement();});
 		}
 		[Test]
-		public void ActivateImple_SetsScrollerElementRectFields(){
+		public void SetUpScrollerElement_SetsScrollerElementRectFields(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			Vector2 actualLength = new Vector2(100f, 200f);
 			Rect actualRect = new Rect(Vector2.zero, actualLength);
 			arg.uia.GetChildUIEs()[0].GetUIAdaptor().GetRect().Returns(actualRect);
 			TestScroller testScroller = new TestScroller(arg);
 
-			testScroller.ActivateImple();
+			testScroller.SetUpScrollerElement();
 
 			Assert.That(testScroller.thisScrollerElementRect_Test, Is.EqualTo(actualRect));
 			Assert.That(testScroller.thisScrollerElementLength_Test, Is.EqualTo(actualLength));
 		}
 	/* Dragging */
 		[Test]
-		public void OnBeginDragImple_ThisHasNotDoneDragEvaluation_MakesThisHasDoneDragEvaluation(){
+		public void OnBeginDragImple_TopmostScrollerInMotionNotNull_BecomeShouldProcessDrag(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.False);
+			scroller.SetTopmostScrollerInMotion(Substitute.For<IScroller>());
 
 			scroller.OnBeginDragImple_Test(Substitute.For<ICustomEventData>());
 
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.True);
+			bool actual = scroller.thisShouldProcessDrag_Test;
+
+			Assert.That(actual, Is.True);
 		}
 		[Test]
-		public void OnBeginDragImple_ThisScrollerAxisIsBoth_SetsThisShouldProcessDragTrue(){
+		public void OnBeginDrag_ThisIsTopmostScrollerInMotion_CachesTouchPosition(){
+			ITestScrollerConstArg arg = CreateMockConstArg();
+			TestScroller testScroller = new TestScroller(arg);
+			testScroller.SetTopmostScrollerInMotion(testScroller);
+
+			IUIElement scrollerElement = Substitute.For<IUIElement>();
+			Vector2 scrollerElementLocalPosition = new Vector2(30f, 20f);
+			scrollerElement.GetLocalPosition().Returns(scrollerElementLocalPosition);
+			testScroller.SetScrollerElement_Test(scrollerElement);
+
+			Vector2 touchPosition = new Vector2(14f, 33f);
+			ICustomEventData eventData = Substitute.For<ICustomEventData>();
+			eventData.position.Returns(touchPosition);
+
+			testScroller.OnBeginDragImple_Test(eventData);
+
+			Vector2 actualTouchPos = testScroller.thisTouchPosition_Test;
+			Vector2 actualElementLocalPos = testScroller.thisElementLocalPositionAtTouch_Test;
+
+			Assert.That(actualTouchPos, Is.EqualTo(touchPosition));
+			Assert.That(actualElementLocalPos, Is.EqualTo(scrollerElementLocalPosition));
+		}
+		[Test]
+		public void OnBeginDragImple_TopmostScrollerNotNull_ThisIsNotTopmost_CallTopmostScrollerOnBeginDrag(){
+			ITestScrollerConstArg arg = CreateMockConstArg();
+			TestScroller scroller = new TestScroller(arg);
+			IScroller anotherTopmostScroller = Substitute.For<IScroller>();
+			scroller.SetTopmostScrollerInMotion(anotherTopmostScroller);
+
+			ICustomEventData data = Substitute.For<ICustomEventData>();
+			scroller.OnBeginDragImple_Test(data);
+
+			anotherTopmostScroller.Received(1).OnBeginDrag(data);
+		}
+		[Test]
+		public void OnBeginDragImple_TopmostScrollerNull_ThisScrollerAxisIsBoth_SetsThisShouldProcessDragTrue(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.scrollerAxis.Returns(ScrollerAxis.Both);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			scroller.SetScrollerElement_Test(Substitute.For<IUIElement>());//for cache
+			scroller.SetTopmostScrollerInMotion(null);
 			Assert.That(scroller.thisScrollerAxis_Test, Is.EqualTo(ScrollerAxis.Both));
 
 			scroller.OnBeginDragImple_Test(Substitute.For<ICustomEventData>());
@@ -206,11 +256,12 @@ public class ScrollerTest{
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.True);
 		}
 		[Test, TestCaseSource(typeof(OnBeginDragImple_ThisScrollerAxis_DragDirection_TestCase), "cases")]
-		public void OnBeginDragImple_ThisScrollerAxis_DragDirection_SetsThisShouldProcessDragVarious(ScrollerAxis scrollerAxis, Vector2 dragDelta, bool expected){
+		public void OnBeginDragImple_TopmostScrollerNull_ThisScrollerAxis_DragDirection_SetsThisShouldProcessDragVarious(ScrollerAxis scrollerAxis, Vector2 dragDelta, bool expected){
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.scrollerAxis.Returns(scrollerAxis);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			scroller.SetScrollerElement_Test(Substitute.For<IUIElement>());
+			scroller.SetTopmostScrollerInMotion(null);
 
 			ICustomEventData data = Substitute.For<ICustomEventData>();
 			data.deltaPos.Returns(dragDelta);
@@ -241,12 +292,14 @@ public class ScrollerTest{
 			};
 		}
 		[Test, TestCaseSource(typeof(OnBeginDragImple_ThisShouldProcessDrag_TestCase), "cases")]
-		public void OnBeginDragImple_ThisShouldProcessDrag_CacheTouchPosition(Vector2 dragPosition, Vector2 elementLocalPosAtTouch){
+		public void OnBeginDragImple_TopmostScrollerNull_ThisShouldProcessDrag_CacheTouchPosition(Vector2 dragPosition, Vector2 elementLocalPosAtTouch){
 			ITestScrollerConstArg arg = CreateMockConstArg();
-			arg.uia.GetChildUIEs()[0].GetLocalPosition().Returns(elementLocalPosAtTouch);
 			arg.scrollerAxis.Returns(ScrollerAxis.Both);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			IUIElement scrollerElement = Substitute.For<IUIElement>();
+			scrollerElement.GetLocalPosition().Returns(elementLocalPosAtTouch);
+			scroller.SetScrollerElement_Test(scrollerElement);
+			scroller.SetTopmostScrollerInMotion(null);
 			ICustomEventData data = Substitute.For<ICustomEventData>();
 			data.position.Returns(dragPosition);
 
@@ -280,15 +333,16 @@ public class ScrollerTest{
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.False);
 			parentUIE.Received(1).OnBeginDrag(data);
 		}
+		/*  */
 		[Test, TestCaseSource(typeof(CalcDragDeltaSinceTouch_TestCase), "cases")]
-		public void CalcDragDeltaSinceTouch_Various(Vector2 touchPosition, Vector2 dragPosition, Vector2 expected){
+		public void CalcDragDeltaSinceTouch_Various(Vector2 touchPosition, Vector2 dragPosition, ScrollerAxis axis, Vector2 expected){
 			ITestScrollerConstArg arg = CreateMockConstArg();
-			arg.scrollerAxis.Returns(ScrollerAxis.Both);
+			arg.scrollerAxis.Returns(axis);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+
 			ICustomEventData data = Substitute.For<ICustomEventData>();
 			data.position.Returns(touchPosition);
-			scroller.OnBeginDragImple_Test(data);
+			scroller.SetTouchPosition_Test(touchPosition);
 
 			Vector2 actual = scroller.CalcDragDeltaSinceTouch_Test(dragPosition);
 
@@ -296,9 +350,62 @@ public class ScrollerTest{
 		}
 		public class CalcDragDeltaSinceTouch_TestCase{
 			public static object[] cases = {
-				new object[]{new Vector2(10f, 10f), new Vector2(30f, 50f), new Vector2(20f, 40f)},
-				new object[]{new Vector2(10f, 10f), new Vector2(-30f, -50f), new Vector2(-40f, -60f)},
-				new object[]{new Vector2(-10f, -10f), new Vector2(-30f, -50f), new Vector2(-20f, -40f)},
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(30f, 50f), 
+					ScrollerAxis.Both,
+					new Vector2(20f, 40f)
+				},
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Both,
+					new Vector2(-40f, -60f)
+				},
+				new object[]{
+					new Vector2(-10f, -10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Both,
+					new Vector2(-20f, -40f)
+				},
+				
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(30f, 50f), 
+					ScrollerAxis.Horizontal,
+					new Vector2(20f, 0f)
+				},
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Horizontal,
+					new Vector2(-40f, 0f)
+				},
+				new object[]{
+					new Vector2(-10f, -10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Horizontal,
+					new Vector2(-20f, 0f)
+				},
+
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(30f, 50f), 
+					ScrollerAxis.Vertical,
+					new Vector2(0f, 40f)
+				},
+				new object[]{
+					new Vector2(10f, 10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Vertical,
+					new Vector2(0f, -60f)
+				},
+				new object[]{
+					new Vector2(-10f, -10f), 
+					new Vector2(-30f, -50f), 
+					ScrollerAxis.Vertical,
+					new Vector2(0f, -40f)
+				},
 			};
 		}
 		[Test, TestCaseSource(typeof(GetScrollerElementRubberBandedLocalPosition_TestCase), "cases"), Ignore]
@@ -362,13 +469,13 @@ public class ScrollerTest{
 				new object[]{new Vector2(100f, 100f), new Vector2(150f, 150f), new Vector2(0f, 0f)},
 			};
 		}
-		[Test]
-		public void ThisHasDoneDragEvaluation_Initially_IsFalse(){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			TestScroller scroller = new TestScroller(arg);
+		// [Test]
+		// public void ThisHasDoneDragEvaluation_Initially_IsFalse(){
+		// 	ITestScrollerConstArg arg = CreateMockConstArg();
+		// 	TestScroller scroller = new TestScroller(arg);
 
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.False);
-		}
+		// 	Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.False);
+		// }
 		[Test]
 		public void ThisShouldProcessDrag_Initially_IsFalse(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
@@ -397,7 +504,7 @@ public class ScrollerTest{
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.uia.GetChildUIEs()[0].GetUIAdaptor().GetRect().Returns(new Rect(Vector2.zero, new Vector2(100f, 100f)));
 			TestScroller testScroller = new TestScroller(arg);
-			testScroller.ActivateImple();
+			testScroller.SetUpScrollerElement();
 
 			bool actual = testScroller.ElementIsUndersizedTo_Test(referenceLength, dimension);
 
@@ -418,7 +525,8 @@ public class ScrollerTest{
 		public void GetElementPositionNormalizedToCursor_ElementNotUndersized_Various(Vector2 elementLocalPos, Vector2 expected){
 			TestScroller testScroller = CreateTestScrollerOversizedToCursor();
 
-			testScroller.ActivateImple();
+			testScroller.SetUpCursorTransform();
+			testScroller.SetUpScrollerElement();
 			
 			for(int i = 0; i < 2; i++){
 				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.False);
@@ -486,7 +594,9 @@ public class ScrollerTest{
 		[Test, TestCaseSource(typeof(GetElementNormalizedPosition_TestCase), "cursorZeroCases")]
 		public void GetElementPositionNormalizedToCursor_ElementIsUndersized_ReturnsZero(Vector2 elementLocalPos){
 			TestScroller testScroller = CreateTestScrollerUndersizedToCursor();
-			testScroller.ActivateImple();
+
+			testScroller.SetUpCursorTransform();
+			testScroller.SetUpScrollerElement();
 
 			for(int i =0; i < 2; i++){
 				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.True);
@@ -547,7 +657,9 @@ public class ScrollerTest{
 		public void GetElementPositionNormalizedToScroller_ElementIsNotUndersized_Various(Vector2 elementLocalPos, Vector2 expected){
 			TestScroller scroller = CreateTestScrollerOversizedToScroller();
 
-			scroller.ActivateImple();
+			// scroller.ActivateImple();
+			scroller.SetUpCursorTransform();
+			scroller.SetUpScrollerElement();
 			
 			for(int i = 0; i < 2; i++){
 				Assert.That(scroller.ElementIsUndersizedTo_Test(scroller.thisRect_Test.size, i), Is.False);
@@ -559,6 +671,8 @@ public class ScrollerTest{
 		[Test, TestCaseSource(typeof(GetElementNormalizedPosition_TestCase), "scrollerZeroCases")]
 		public void GetElementPositionNormalizedToScroller_ElementIsUndersized_ReturnsZero(Vector2 elementLocalPos){
 			TestScroller testScroller = CreateTestScrollerUndersizedToScroller();
+			testScroller.SetUpCursorTransform();
+			testScroller.SetUpScrollerElement();
 
 			for(int i =0; i < 2; i++){
 				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisRect_Test.size, i), Is.True);
@@ -567,63 +681,12 @@ public class ScrollerTest{
 				Assert.That(actual, Is.EqualTo(0f));
 			}
 		}
-		[Test, TestCaseSource(typeof(GetElementCursorOffsetInPixel_TestCase), "cases")]
-		public void GetElementCursorOffsetInPixel_ElementIsNotUndersized_Various(Vector2 elementLocalPos, Vector2 expected){
-			TestScroller testScroller = CreateTestScrollerOversizedToCursor();
-			testScroller.ActivateImple();
-
-			for(int i =0; i < 2; i++){
-				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.False);
-				float actual = testScroller.GetElementCursorOffsetInPixel_Test(elementLocalPos[i], i);
-
-				Assert.That(actual, Is.EqualTo(expected[i]));
-			}
-		}
-		[Test, TestCaseSource(typeof(GetElementCursorOffsetInPixel_TestCase), "undersizedCases")]
-		public void GetElementCursorOffsetInPixel_ElementIsUndersized_Various(Vector2 elementLocalPos, Vector2 expected){
-			TestScroller testScroller = CreateTestScrollerUndersizedToCursor();
-			testScroller.ActivateImple();
-
-			for(int i =0; i < 2; i++){
-				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.True);
-				float actual = testScroller.GetElementCursorOffsetInPixel_Test(elementLocalPos[i], i);
-
-				Assert.That(actual, Is.EqualTo(expected[i]));
-			}
-		}
-		public class GetElementCursorOffsetInPixel_TestCase{
-			public static object[] cases = {
-				new object[]{new Vector2(75f, 25f), new Vector2(0f, 0f)},
-				new object[]{new Vector2(100f, 25f), new Vector2(-25f, 0f)},
-				new object[]{new Vector2(75f, 50f), new Vector2(0f, -25f)},
-				new object[]{new Vector2(100f, 50f), new Vector2(-25f, -25f)},
-				new object[]{new Vector2(125f, 75f), new Vector2(-50f, -50f)},
-				new object[]{new Vector2(50f, 0f), new Vector2(0f, 0f)},
-				new object[]{new Vector2(25f, -25f), new Vector2(0f, 0f)},
-				new object[]{new Vector2(0f, -25f), new Vector2(25f, 0f)},
-				new object[]{new Vector2(0f, -50f), new Vector2(25f, 25f)},
-				new object[]{new Vector2(-25f, -75f), new Vector2(50f, 50f)},
-			};
-			public static object[] undersizedCases = {
-				new object[]{new Vector2(75f, 25f), new Vector2(0f, 0f)},
-				new object[]{new Vector2(100f, 25f), new Vector2(-25f, 0f)},
-				new object[]{new Vector2(125f, 25f), new Vector2(-50f, 0f)},
-				new object[]{new Vector2(75f, 50f), new Vector2(0f, -25f)},
-				new object[]{new Vector2(75f, 75f), new Vector2(0f, -50f)},
-				new object[]{new Vector2(100f, 50f), new Vector2(-25f, -25f)},
-
-				new object[]{new Vector2(50f, 25f), new Vector2(25f, 0f)},
-				new object[]{new Vector2(25f, 25f), new Vector2(50f, 0f)},
-				new object[]{new Vector2(50f, 0f), new Vector2(25f, 25f)},
-				new object[]{new Vector2(75f, 0f), new Vector2(0f, 25f)},
-				new object[]{new Vector2(75f, -25f), new Vector2(0f, 50f)},
-				new object[]{new Vector2(25f, -25f), new Vector2(50f, 50f)},
-			};
-		}
 		[Test, TestCaseSource(typeof(GetNormalizedCursoredPosFromPosInElementSpace_TestCase), "cases")]
 		public void GetNormalizedCursoredPosFromPosInElementSpace_ElementIsNotUndersized_Various(Vector2 positionInElementSpace, Vector2 expected){
 			TestScroller testScroller = CreateTestScrollerOversizedToCursor();
-			testScroller.ActivateImple();
+			// testScroller.ActivateImple();
+			testScroller.SetUpCursorTransform();
+			testScroller.SetUpScrollerElement();
 
 			for(int i = 0; i < 2; i ++){
 				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.False);
@@ -635,7 +698,8 @@ public class ScrollerTest{
 		[Test, TestCaseSource(typeof(GetNormalizedCursoredPosFromPosInElementSpace_TestCase), "undersizedCases")]
 		public void GetNormalizedCursoredPosFromPosInElementSpace_ElementIsUndersized_ReturnsZero(Vector2 positionInElementSpace){
 			TestScroller testScroller = CreateTestScrollerUndersizedToCursor();
-			testScroller.ActivateImple();
+			testScroller.SetUpCursorTransform();
+			testScroller.SetUpScrollerElement();
 
 			for(int i = 0; i < 2; i ++){
 				Assert.That(testScroller.ElementIsUndersizedTo_Test(testScroller.thisCursorLength_Test, i), Is.True);
@@ -671,45 +735,6 @@ public class ScrollerTest{
 
 			};
 		}
-		[Test, TestCaseSource(typeof(ElementIsDisplacedInDragDirection_TestCase), "cases")]
-		public void ElementIsDisplacedInDragDirection_Various(Vector2 elementLocalPosition, Vector2 dragDelta, bool[] expected){
-			TestScroller testScroller = CreateTestScrollerOversizedToCursor();
-			testScroller.ActivateImple();
-
-			for(int i = 0; i < 2; i ++){
-				bool actual = testScroller.ElementIsScrolledToIncreaseCursorOffset_Test(dragDelta[i], elementLocalPosition[i], i);
-
-				Assert.That(actual, Is.EqualTo(expected[i]));
-			}
-		}
-		public class ElementIsDisplacedInDragDirection_TestCase{
-			public static object[] cases = {
-				new object[]{new Vector2(76f, 26f), new Vector2(-1f, -1f), new bool[]{false, false}},
-				new object[]{new Vector2(76f, 26f), new Vector2(1f, 1f), new bool[]{true, true}},
-				new object[]{new Vector2(76f, 26f), new Vector2(1f, -1f), new bool[]{true, false}},
-				new object[]{new Vector2(76f, 26f), new Vector2(-1f, 1f), new bool[]{false, true}},
-				
-				new object[]{new Vector2(50f, 0f), new Vector2(-1f, -1f), new bool[]{false, false}},
-				new object[]{new Vector2(50f, 0f), new Vector2(1f, 1f), new bool[]{false, false}},
-				new object[]{new Vector2(50f, 0f), new Vector2(1f, -1f), new bool[]{false, false}},
-				new object[]{new Vector2(50f, 0f), new Vector2(-1f, 1f), new bool[]{false, false}},
-				
-				new object[]{new Vector2(24f, 26f), new Vector2(-1f, -1f), new bool[]{true, false}},
-				new object[]{new Vector2(24f, 26f), new Vector2(1f, 1f), new bool[]{false, true}},
-				new object[]{new Vector2(24f, 26f), new Vector2(1f, -1f), new bool[]{false, false}},
-				new object[]{new Vector2(24f, 26f), new Vector2(-1f, 1f), new bool[]{true, true}},
-				
-				new object[]{new Vector2(24f, -26f), new Vector2(-1f, -1f), new bool[]{true, true}},
-				new object[]{new Vector2(24f, -26f), new Vector2(1f, 1f), new bool[]{false, false}},
-				new object[]{new Vector2(24f, -26f), new Vector2(1f, -1f), new bool[]{false, true}},
-				new object[]{new Vector2(24f, -26f), new Vector2(-1f, 1f), new bool[]{true, false}},
-				
-				new object[]{new Vector2(76f, -26f), new Vector2(-1f, -1f), new bool[]{false, true}},
-				new object[]{new Vector2(76f, -26f), new Vector2(1f, 1f), new bool[]{true, false}},
-				new object[]{new Vector2(76f, -26f), new Vector2(1f, -1f), new bool[]{true, true}},
-				new object[]{new Vector2(76f, -26f), new Vector2(-1f, 1f), new bool[]{false, false}},
-			};
-		}
 		[Test, TestCaseSource(typeof(CalcLocalPositionFromNormalizedCursoredPosition_TestCase), "cases")]
 		public void CalcLocalPositionFromNormalizedCursoredPosition_Various(Vector2 scrollerLength, Vector2 cursorLength, Vector2 relativeCursorPos, Vector2 elementLength, Vector2 normalizedCursoredPosition, Vector2 expected){
 			ITestScrollerConstArg arg = CreateMockConstArg();
@@ -719,7 +744,9 @@ public class ScrollerTest{
 			Rect elementRect = new Rect(Vector2.zero, elementLength);
 			arg.uia.GetChildUIEs()[0].GetUIAdaptor().GetRect().Returns(elementRect);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			// scroller.ActivateImple();
+			scroller.SetUpCursorTransform();
+			scroller.SetUpScrollerElement();
 
 			Vector2 actual = scroller.CalcLocalPositionFromNormalizedCursoredPosition_Test(normalizedCursoredPosition);
 
@@ -784,18 +811,17 @@ public class ScrollerTest{
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.scrollerAxis.Returns(ScrollerAxis.Both);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			scroller.SetUpCursorTransform();
+			scroller.SetUpScrollerElement();
 			Vector2 dragDelta = new Vector2(1f, 0f);
 			scroller.OnBeginDragImple_Test(CreateCustomEventDataFromDelta(dragDelta));
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.True);
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.True);
 
 			scroller.OnReleaseImple_Test();
 
 			AssertResetDragIsCalled(scroller);
 		}
 		void AssertResetDragIsCalled(TestScroller scroller){
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.False);
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.False);
 			Assert.That(scroller.thisTouchPosition_Test, Is.EqualTo(new Vector2(10000f, 10000f)));
 			Assert.That(scroller.thisElementLocalPositionAtTouch_Test, Is.EqualTo(new Vector2(10000f, 10000f)));
@@ -807,7 +833,8 @@ public class ScrollerTest{
 			IUIElement parentUIE = Substitute.For<IUIElement>();
 			arg.uia.GetParentUIE().Returns(parentUIE);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			scroller.SetUpCursorTransform();
+			scroller.SetUpScrollerElement();
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.False);
 			ICustomEventData data = Substitute.For<ICustomEventData>();
 
@@ -820,150 +847,17 @@ public class ScrollerTest{
 			ITestScrollerConstArg arg = CreateMockConstArg();
 			arg.scrollerAxis.Returns(ScrollerAxis.Both);
 			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
+			scroller.SetUpCursorTransform();
+			scroller.SetUpScrollerElement();
 			Vector2 dragDelta = new Vector2(1f, 0f);
 			scroller.OnBeginDragImple_Test(CreateCustomEventDataFromDelta(dragDelta));
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.True);
-			Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.True);
 
 			scroller.OnSwipeImple_Test(Substitute.For<ICustomEventData>());
 
 			AssertResetDragIsCalled(scroller);
 		}
-		[Test, TestCaseSource(typeof(CheckForDynamicBoundarySnap_TestCase), "cases")]
-		public void CheckForDynamicBoundarySnap_Various(Vector2 deltaPos, Vector2 elementLocalPos, bool[] expected){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			Rect scrollerRect = new Rect(Vector2.zero, new Vector2(200f, 100f));
-			Vector2 cursorLength = new Vector2(50f, 50f);
-			Vector2 relativeCursorPos = new Vector2(.5f, .5f);
-			Rect elementRect = new Rect(Vector2.zero, new Vector2(100f, 100f));
-			arg.uia.GetRect().Returns(scrollerRect);
-			arg.cursorLength.Returns(cursorLength);
-			arg.relativeCursorPosition.Returns(relativeCursorPos);
-			arg.uia.GetChildUIEs()[0].GetUIAdaptor().GetRect().Returns(elementRect);
-			arg.uia.GetChildUIEs()[0].GetLocalPosition().Returns(elementLocalPos);
-			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
-
-			for(int i = 0; i < 2; i ++){
-				bool actual = scroller.CheckForDynamicBoundarySnap_Test(deltaPos[i], 0f, i);
-				Assert.That(actual, Is.EqualTo(expected[i]));
-			}
-		}
-		public class CheckForDynamicBoundarySnap_TestCase{
-			public static object[] cases = {
-				new object[]{new Vector2(0f, 0f), new Vector2(75f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(1f, 0f), new Vector2(75f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(-1f, 0f), new Vector2(75f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(0f, 1f), new Vector2(75f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(0f, -1f), new Vector2(75f, 25f), new bool[]{false, false}},
-				
-				new object[]{new Vector2(1f, 0f), new Vector2(76f, 26f), new bool[]{true, false}},
-				new object[]{new Vector2(.01f, 0f), new Vector2(75.0001f, 26f), new bool[]{true, false}},
-				new object[]{new Vector2(1f, 1f), new Vector2(76f, 26f), new bool[]{true, true}},
-				new object[]{new Vector2(-1f, -1f), new Vector2(76f, 26f), new bool[]{false, false}},
-				
-				new object[]{new Vector2(-1f, 1f), new Vector2(25f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(-1f, 1f), new Vector2(24f, 26f), new bool[]{true, true}},
-				new object[]{new Vector2(1f, -1f), new Vector2(24f, 26f), new bool[]{false, false}},
-				
-				new object[]{new Vector2(-1f, -1f), new Vector2(25f, -25f), new bool[]{false, false}},
-				new object[]{new Vector2(-1f, -1f), new Vector2(24f, -26f), new bool[]{true, true}},
-				new object[]{new Vector2(1f, 1f), new Vector2(24f, -26f), new bool[]{false, false}},
-				
-				new object[]{new Vector2(1f, -1f), new Vector2(75f, -25f), new bool[]{false, false}},
-				new object[]{new Vector2(1f, -1f), new Vector2(76f, -26f), new bool[]{true, true}},
-				new object[]{new Vector2(-1f, 1f), new Vector2(76f, -26f), new bool[]{false, false}},
-			};
-		}
-		[Test, TestCaseSource(typeof(CheckForStaticBoundarySnap_TestCase), "cases")]
-		public void CheckForStaticBoundarySnap_Various(Vector2 elementLocalPosition, bool[] expected){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			Rect scrollerRect = new Rect(Vector2.zero, new Vector2(200f, 100f));
-			Vector2 cursorLength = new Vector2(50f, 50f);
-			Vector2 relativeCursorPos = new Vector2(.5f, .5f);
-			Rect elementRect = new Rect(Vector2.zero, new Vector2(100f, 100f));
-			arg.uia.GetRect().Returns(scrollerRect);
-			arg.cursorLength.Returns(cursorLength);
-			arg.relativeCursorPosition.Returns(relativeCursorPos);
-			arg.uia.GetChildUIEs()[0].GetUIAdaptor().GetRect().Returns(elementRect);
-			arg.uia.GetChildUIEs()[0].GetLocalPosition().Returns(elementLocalPosition);
-			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
-
-			for(int i = 0; i < 2; i ++){
-				bool actual = scroller.CheckForStaticBoundarySnapOnAxis_Test(i);
-				Assert.That(actual, Is.EqualTo(expected[i]));
-			}
-		}
-		public class CheckForStaticBoundarySnap_TestCase{
-			public static object[] cases = {
-				new object[]{new Vector2(75f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(76f, 26f), new bool[]{true, true}},
-				new object[]{new Vector2(25f, 25f), new bool[]{false, false}},
-				new object[]{new Vector2(24f, 26f), new bool[]{true, true}},
-				new object[]{new Vector2(25f, -25f), new bool[]{false, false}},
-				new object[]{new Vector2(24f, -26f), new bool[]{true, true}},
-				new object[]{new Vector2(75f, -25f), new bool[]{false, false}},
-				new object[]{new Vector2(76f, -26f), new bool[]{true, true}},
-			};
-		}
 	/* Process */
-		[Test]
-		public void ProcessSwitching_Demo(){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			IUIElement scrollerElement = arg.uia.GetChildUIEs()[0];
-			TestScroller scroller = new TestScroller(arg);
-			scroller.ActivateImple();
-
-			IScrollerElementMotorProcess horProcessA = CreateMockProcess(scroller, 0);
-			IScrollerElementMotorProcess horProcessB = CreateMockProcess(scroller, 0);
-
-			horProcessA.Run();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.SameAs(horProcessA));
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.Null);
-			scrollerElement.Received(1).DisableInputRecursively();
-
-			horProcessB.Run();
-			horProcessA.Received(1).Stop();
-			scrollerElement.Received(1).EnableInput();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.SameAs(horProcessB));
-			scrollerElement.Received(2).DisableInputRecursively();
-
-			IScrollerElementMotorProcess verProcessA = CreateMockProcess(scroller, 1);
-			IScrollerElementMotorProcess verProcessB = CreateMockProcess(scroller, 1);
-			
-			verProcessA.Run();
-			scrollerElement.Received(3).DisableInputRecursively();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.SameAs(verProcessA));
-
-			verProcessB.Run();
-			verProcessA.Received(1).Stop();
-			scrollerElement.Received(4).DisableInputRecursively();
-			scrollerElement.Received(1).EnableInput();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.SameAs(verProcessB));
-
-			scroller.OnTouchImple_Test(1);
-			horProcessB.Received(1).Stop();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[0], Is.Null);
-			verProcessB.Received(1).Stop();
-			Assert.That(scroller.thisRunningScrollerMotorProcess_Test[1], Is.Null);
-			scrollerElement.Received(2).EnableInput();
-		}
-		IScrollerElementMotorProcess CreateMockProcess(IScroller scroller, int dimension){
-			IScrollerElementMotorProcess process = Substitute.For<IScrollerElementMotorProcess>();
-			// process.When(
-			// 	x =>{x.Run();}
-			// ).Do(
-			// 	x => {scroller.SwitchRunningElementMotorProcess(process, dimension);}
-			// );
-			// process.When(
-			// 	x =>{x.Stop();}
-			// ).Do(
-			// 	x =>{scroller.ClearScrollerElementMotorProcess(process, dimension);}
-			// );
-			return process;
-		}
 	/* Touch */
 
 
@@ -979,9 +873,24 @@ public class ScrollerTest{
 		protected override Vector2 CalcCursorLength(){
 			return thisTestCursorLength;
 		}
+		protected override IScroller FindProximateParentScroller(){
+			IScroller parentScroller = Substitute.For<IScroller>();
+			IScroller nullParent = null;
+			parentScroller.GetProximateParentScroller().Returns(nullParent);
+			return parentScroller;
+		}
 		protected override bool[] thisShouldApplyRubberBand{get{return new bool[]{true, true};}}
 		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
 			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
+		}
+		public void SetTopmostScrollerInMotion(IScroller scroller){
+			thisTopmostScrollerInMotion = scroller;
+		}
+		public void SetScrollerElement_Test(IUIElement scrollerElement){
+			thisScrollerElement = scrollerElement;
+		}
+		public void SetTouchPosition_Test(Vector2 touchPosition){
+			thisTouchPosition = touchPosition;
 		}
 		protected override Vector2 GetInitialNormalizedCursoredPosition(){return Vector2.zero;}
 		/* Test exposures */
@@ -993,7 +902,7 @@ public class ScrollerTest{
 		public Vector2 thisCursorLocalPosition_Test{get{return thisCursorLocalPosition;}}
 		public Rect thisScrollerElementRect_Test{get{return thisScrollerElementRect;}}
 		public Vector2 thisScrollerElementLength_Test{get{return thisScrollerElementLength;}}
-		public bool thisHasDoneDragEvaluation_Test{get{return thisHasDoneDragEvaluation;}}
+		// public bool thisHasDoneDragEvaluation_Test{get{return thisHasDoneDragEvaluation;}}
 		public bool thisShouldProcessDrag_Test{get{return thisShouldProcessDrag;}}
 		public ScrollerAxis thisScrollerAxis_Test{get{return thisScrollerAxis;}}
 		public Vector2 thisTouchPosition_Test{get{return thisTouchPosition;}}
@@ -1002,10 +911,10 @@ public class ScrollerTest{
 			this.OnDragImple(eventData);
 		}
 		public bool ElementIsUndersizedTo_Test(Vector2 referenceLength, int dimension){
-			return this.ElementIsUndersizedTo(referenceLength, dimension);
+			return this.ScrollerElementIsUndersizedTo(referenceLength, dimension);
 		}
 		public float GetElementPositionNormalizedToCursor_Test(float elementLocalPosOnAxis, int dimension){
-			return GetNormalizedCursoredPosition(elementLocalPosOnAxis, dimension);
+			return GetNormalizedCursoredPositionOnAxis(elementLocalPosOnAxis, dimension);
 		}
 		public float GetElementPositionNormalizedToScroller_Test(float elementLocalPosOnAxis, int dimension){
 			return GetNormalizedScrollerPosition(elementLocalPosOnAxis, dimension);
@@ -1028,11 +937,8 @@ public class ScrollerTest{
 		public void OnSwipeImple_Test(ICustomEventData data){
 			this.OnSwipeImple(data);
 		}
-		public bool CheckForDynamicBoundarySnap_Test(float deltaPosOnAxis, float velocity, int dimension){
-			return false;
-		}
-		public bool CheckForStaticBoundarySnapOnAxis_Test(int dimension){
-			return false;
+		public void CheckAndPerformStaticBoundarySnapOnAxis_Test(int dimension){
+			this.CheckAndPerformStaticBoundarySnapOnAxis(dimension);
 		}
 		public IScrollerElementMotorProcess[] thisRunningScrollerMotorProcess_Test{
 			get{return thisRunningScrollerMotorProcess;}
@@ -1078,7 +984,8 @@ public class ScrollerTest{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			uiImage){
+			uiImage
+		){
 			thisCursorLength = cursorLength;
 		}
 		readonly Vector2 thisCursorLength;

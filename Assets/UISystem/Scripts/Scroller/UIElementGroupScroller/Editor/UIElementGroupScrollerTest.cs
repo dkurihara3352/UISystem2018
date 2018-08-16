@@ -13,6 +13,7 @@ public class UIElementGroupScrollerTest {
     [Test, TestCaseSource(typeof(Construction_CursorSizeNotGreaterThan0_TestCase), "cases")]
     public void Construction_CursorSizeLessThanOne_ReturnsOne(int[] cursorSize, int[] expected){
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
+        arg.uia.GetRect().Returns(new Rect(Vector2.zero, new Vector2(130f, 130f)));
         arg.cursorSize.Returns(cursorSize);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
         
@@ -64,7 +65,7 @@ public class UIElementGroupScrollerTest {
         arg.padding.Returns(padding);
         arg.cursorSize.Returns(cursorSize);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        scroller.ActivateImple();
+        scroller.SetUpScrollerElement();
 
         Vector2 actual = scroller.thisCursorLength_Test;
 
@@ -88,9 +89,15 @@ public class UIElementGroupScrollerTest {
         arg.cursorSize.Returns(cursorSize);
         arg.relativeCursorPosition.Returns(relativeCursorPosition);
         arg.uia.GetRect().Returns(scrollerRect);
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
+        // TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
         
-        Assert.Throws(Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("cursorLength cannot exceed this rect length. provide lesser cursor size"), () => {scroller.ActivateImple();});
+        Assert.Throws(
+            Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("cursorLength cannot exceed this rect length. provide lesser cursor size"), 
+            () => {
+                // scroller.ActivateImple();
+                new TestUIElementGroupScroller(arg);
+            }
+        );
 
     }
     public class ThisCursorLength_ReturnsCalculatedValue_TestCase{
@@ -122,7 +129,8 @@ public class UIElementGroupScrollerTest {
         arg.relativeCursorPosition.Returns(Vector2.zero);
         TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
         element.GetLocalPosition().Returns(elementLocalPos);
-        scroller.ActivateImple();
+        // scroller.ActivateImple();
+        scroller.SetUpScrollerElement();
 
         for(int i = 0; i < 2; i ++){
             float actual = scroller.GetNormalizedCursoredPositionFromGroupElementToCursor_Test(element, i);
@@ -162,7 +170,7 @@ public class UIElementGroupScrollerTest {
         IUIElement mock = Substitute.For<IUIElement>();
         uieGroup.GetGroupElement(Arg.Any<int>(), Arg.Any<int>()).Returns(mock);
         uieGroup.GetGroupElementIndex(mock).Returns(arg.initiallyCursoredGroupElementIndex);
-        scroller.ActivateImple();
+        scroller.SetUpScrollerElement();
 
         for(int i = 0; i < 2; i ++){
             float actual = scroller.GetElementGroupOffset_Test(i);
@@ -335,6 +343,12 @@ public class UIElementGroupScrollerTest {
         }
         public int[] GetSwipeNextTargetGroupElementArrayIndex_Test(Vector2 swipeDeltaPos, int[] currentGroupElementAtCurRefPointIndex){
             return this.GetSwipeNextTargetGroupElementArrayIndex(swipeDeltaPos, currentGroupElementAtCurRefPointIndex);
+        }
+        protected override IScroller FindProximateParentScroller(){
+            IScroller parentScroller = Substitute.For<IScroller>();
+            IScroller nullParentScroller = null;
+            parentScroller.GetProximateParentScroller().Returns(nullParentScroller);
+            return parentScroller;
         }
     }
 }
