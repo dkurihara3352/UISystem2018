@@ -326,8 +326,10 @@ namespace UISystem{
 			if(thisSwipeToSnapNext){
 				SnapNext(swipeDeltaPos, eventData.velocity);
 			}else{
-				if(thisIsEnabledInertia)
+				if(thisIsEnabledInertia){
 					StartInertialScroll(eventData.velocity);
+					CheckAndPerformStaticBoundarySnapFrom(thisProximateParentScroller);
+				}
 				else
 					CheckAndPerformStaticBoundarySnapFrom(this);
 			}
@@ -335,6 +337,7 @@ namespace UISystem{
 		void SnapNext(Vector2 swipeDeltaPos, Vector2 velocity){
 			ResetDrag();
 			SnapNextImple(swipeDeltaPos, velocity);
+			CheckAndPerformStaticBoundarySnapFrom(thisProximateParentScroller);
 		}
 		readonly bool thisSwipeToSnapNext;
 		protected void SnapNextImple(Vector2 swipeDeltaPos, Vector2 velocity){
