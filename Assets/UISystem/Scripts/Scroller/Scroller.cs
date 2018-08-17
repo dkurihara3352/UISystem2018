@@ -345,18 +345,6 @@ namespace UISystem{
 			public float GetElementCursorOffsetInPixel(float scrollerElementLocalPosOnAxis, int dimension){
 				// /* used to calculate rubberbanding */
 				return thisElementCursorOffsetInPixelCalculator.Calculate(scrollerElementLocalPosOnAxis, dimension);
-				// if(ScrollerElementIsUndersizedTo(thisCursorLength, dimension)){
-				// 	return thisCursorLocalPosition[dimension] - scrollerElementLocalPosOnAxis;
-				// }
-				// else{
-				// 	float elementNormalizedCursoredPos = GetNormalizedCursoredPosition(scrollerElementLocalPosOnAxis, dimension);
-				// 	float normalizedOffset = elementNormalizedCursoredPos;
-				// 	if(elementNormalizedCursoredPos <= 1f && elementNormalizedCursoredPos >= 0f)
-				// 		normalizedOffset = 0f;
-				// 	else if(elementNormalizedCursoredPos > 1f)
-				// 		normalizedOffset = elementNormalizedCursoredPos - 1f;
-				// 	return normalizedOffset * (thisScrollerElementLength[dimension]- thisCursorLength[dimension]);
-				// }
 			}
 			protected float GetNormalizedCursoredPositionFromPosInElementSpace(float positionInElementSpaceOnAxis, int dimension){
 				float prospectiveElementLocalPosOnAxis = thisCursorLocalPosition[dimension] - positionInElementSpaceOnAxis;

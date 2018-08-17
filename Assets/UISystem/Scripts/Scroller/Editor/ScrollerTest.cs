@@ -460,22 +460,12 @@ public class ScrollerTest{
 		}
 		public class GetScrollerElementRubberBandedLocalPosition_TestCase{
 			public static object[] cases = {
-				// new object[]{new Vector2(0f, 0f), new Vector2(150f, 150f), new Vector2(200f, 200f)},
-
-				// new object[]{new Vector2(100f, 0f), new Vector2(150f, 150f), new Vector2(200f, 200f)},
 				new object[]{new Vector2(100f, 100f), new Vector2(150f, 150f), new Vector2(300f, 300f)},
 				new object[]{new Vector2(100f, 100f), new Vector2(150f, 150f), new Vector2(300f, 0f)},
 				new object[]{new Vector2(100f, 100f), new Vector2(150f, 150f), new Vector2(0f, 300f)},
 				new object[]{new Vector2(100f, 100f), new Vector2(150f, 150f), new Vector2(0f, 0f)},
 			};
 		}
-		// [Test]
-		// public void ThisHasDoneDragEvaluation_Initially_IsFalse(){
-		// 	ITestScrollerConstArg arg = CreateMockConstArg();
-		// 	TestScroller scroller = new TestScroller(arg);
-
-		// 	Assert.That(scroller.thisHasDoneDragEvaluation_Test, Is.False);
-		// }
 		[Test]
 		public void ThisShouldProcessDrag_Initially_IsFalse(){
 			ITestScrollerConstArg arg = CreateMockConstArg();
@@ -498,6 +488,21 @@ public class ScrollerTest{
 			
 			Assert.That(testScroller.thisShouldProcessDrag_Test, Is.False);
 			parentUIE.Received(1).OnDrag(data);
+		}
+		[Test]
+		public void OnDragImple_ShouldProcessDrag_TopmostNotNull_IsNotTopMost_CallsTopmostOnDrag(){
+			ITestScrollerConstArg arg = CreateMockConstArg();
+			TestScroller scroller = new TestScroller(arg);
+			scroller.SetShouldProcessDrag_Test(true);
+			IScroller parentScroller = Substitute.For<IScroller>();
+			IScroller nullParentScroller = null;
+			scroller.SetTopmostScrollerInMotion(parentScroller);
+			parentScroller.GetProximateParentScroller().Returns(nullParentScroller);
+
+			ICustomEventData data = Substitute.For<ICustomEventData>();
+			scroller.OnDragImple_Test(data);
+
+			parentScroller.Received(1).OnDrag(data);
 		}
 		[Test, TestCaseSource(typeof(ElementIsUndersizedTo_Various_TestCase), "cases")]
 		public void ElementIsUndersizedTo_Various(Vector2 referenceLength, int dimension, bool expectedBool){
@@ -891,6 +896,9 @@ public class ScrollerTest{
 		}
 		public void SetTouchPosition_Test(Vector2 touchPosition){
 			thisTouchPosition = touchPosition;
+		}
+		public void SetShouldProcessDrag_Test(bool should){
+			thisShouldProcessDrag = should;
 		}
 		protected override Vector2 GetInitialNormalizedCursoredPosition(){return Vector2.zero;}
 		/* Test exposures */
