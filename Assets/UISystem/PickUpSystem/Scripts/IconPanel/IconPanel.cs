@@ -8,8 +8,7 @@ namespace UISystem.PickUpUISystem{
 	public abstract class AbsIconPanel: AbsNonActivatorUIElement, IIconPanel{
 		public AbsIconPanel(IUIElementConstArg arg) :base(arg){
 		}
-		public override void ActivateImple(){
-			base.ActivateImple();
+		protected override void OnUIActivate(){
 			WaitForPickUp();
 		}
 		public abstract void CheckForHover();

@@ -11,8 +11,7 @@ namespace UISystem{
 			thisIsCycleEnabled = arg.isCycleEnabled;
 		}
 		readonly bool[] thisIsCycleEnabled;
-		public override void ActivateImple(){
-			base.ActivateImple();
+		protected override void OnUIActivate(){
 			EvaluateCyclability();
 		}
 		protected override bool[] thisShouldApplyRubberBand{

@@ -26,6 +26,7 @@ namespace UISystem{
 		void HoldUIE(float deltaT);
 		void SwipeUIE(ICustomEventData eventData);
 		float GetSwipeVelocityThreshold();
+		string GetName();
 	}
 	public class UIAdaptorInputStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorInputStateEngine{
 		public UIAdaptorInputStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
@@ -36,6 +37,9 @@ namespace UISystem{
 			thisWaitingForNextTouchState = new WaitingForNextTouchState(procFac, this);
 			SetWithInitState();
 			ResetTouchCounter();
+		}
+		public string GetName(){
+			return thisUIE.GetName();
 		}
 		const int velocityStackSize = 3;
 		readonly IUIElement thisUIE;

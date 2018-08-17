@@ -24,6 +24,7 @@ namespace UISystem{
 			IUIAActivationData activationData = new RootUIAActivationData(uiManager, processFactory, uieFactory);
 			rootUIAdaptor.GetReadyForActivation(activationData);
 			thisRootUIElement = rootUIAdaptor.GetUIElement();
+			thisRootUIElement.CallOnUIReferenceSetRecursively();
 		}
 		public void ActivateRootUIElement(){
 			thisRootUIElement.InitiateActivation();

@@ -9,16 +9,14 @@ using DKUtility;
 
 [TestFixture, Category("UISystem")]
 public class GenericSingleElementScrollerTest{
-	[Test, TestCaseSource(typeof(ActivateImple_CalcAndSetsCursorSize_TestCase), "cases")]
-	public void ActivateImple_CalcAndSetsCursorSize(Vector2 relativeCursorLength, Vector2 expected){
+	[Test, TestCaseSource(typeof(Construction_CalcAndSetsCursorSize_TestCase), "cases")]
+	public void Construction_CalcAndSetsCursorSize(Vector2 relativeCursorLength, Vector2 expected){
 		TestGenericSingleElementScroller scroller = CreateGenericSingleElementScroller(relativeCursorLength);
-		
-		scroller.ActivateImple();
 		
 		Vector2 actual = scroller.thisCursorLength_Test;
 		Assert.That(actual, Is.EqualTo(expected));
 	}
-	public class ActivateImple_CalcAndSetsCursorSize_TestCase{
+	public class Construction_CalcAndSetsCursorSize_TestCase{
 		public static object[] cases = {
 			new object[]{new Vector2(1f, 1f), new Vector2(200f, 100f)},
 			new object[]{new Vector2(.1f, .1f), new Vector2(20f, 10f)},

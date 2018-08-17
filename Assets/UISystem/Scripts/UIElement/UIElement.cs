@@ -13,6 +13,7 @@ namespace UISystem{
 		IUIImage GetUIImage();
 		string GetName();
 		/* Activation */
+		void CallOnUIReferenceSetRecursively();
 		void InitiateActivation();
 		void ActivateSelf();
 		void ActivateRecursively();
@@ -37,6 +38,8 @@ namespace UISystem{
 		IScroller GetTopmostScrollerInMotion();
 
 		/* Scroller */
+		void CheckAndPerformStaticBoundarySnapFrom(IUIElement uieToStartCheck);
+		IScroller GetProximateParentScroller();
 		void EvaluateScrollerFocusRecursively();
 		void BecomeFocusedInScrollerSelf();
 		void BecomeDefocuesedInScrollerSelf();
@@ -55,6 +58,7 @@ namespace UISystem{
 			thisImage = arg.image;
 			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisUIM);
 			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
+			thisProximateParentScroller = FindProximateParentScroller();
 		}
 		protected readonly IUIManager thisUIM;
 		public IUIManager GetUIM(){
@@ -87,6 +91,16 @@ namespace UISystem{
 		}
 		public string GetName(){return thisName;}
 		/* Activation */
+			public void CallOnUIReferenceSetRecursively(){
+				OnUIReferenceSet();
+				foreach(IUIElement child in thisChildUIEs){
+					if(child != null)
+						child.CallOnUIReferenceSetRecursively();
+				}
+			}
+			protected virtual void OnUIReferenceSet(){
+				return;
+			}
 			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
 			protected readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
 			public void InitiateActivation(){
@@ -123,9 +137,11 @@ namespace UISystem{
 						childUIE.ActivateInstantlyRecursively(); 
 				}
 			}
-			public virtual void ActivateImple(){
+			public void ActivateImple(){
 				InitializeSelectabilityState();
+				OnUIActivate();
 			}
+			protected virtual void OnUIActivate(){}
 			public virtual void DeactivateRecursively(){
 				thisUIEActivationStateEngine.Deactivate();
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
@@ -145,9 +161,11 @@ namespace UISystem{
 			public bool IsActivated(){
 				return thisUIEActivationStateEngine.IsActivated();
 			}
-			public virtual void DeactivateImple(){
+			public void DeactivateImple(){
 				this.BecomeDefocuesedInScrollerSelf();
+				OnUIDeactivate();
 			}
+			protected virtual void OnUIDeactivate(){}
 			public virtual void OnActivationComplete(){
 			}
 			public virtual void OnDeactivationComplete(){
@@ -177,10 +195,14 @@ namespace UISystem{
 			}
 		/* UIInput */
 			bool thisIsEnabledInput = true;
-
+			/* Touch */
 			public void OnTouch(int touchCount){
-				if(this.IsActivated() && thisIsEnabledInput)
+				if(this.IsActivated() && thisIsEnabledInput){
+					IScroller scrollerToStartPauseMotorProcess = GetTargetUIEOrItsProximateParentAsScroller(this);
+					if(scrollerToStartPauseMotorProcess != null)
+						scrollerToStartPauseMotorProcess.PauseRunningMotorProcessRecursivelyUp();
 					OnTouchImple(touchCount);
+				}
 				else
 					PassOnTouchUpward(touchCount);
 			}
@@ -191,7 +213,7 @@ namespace UISystem{
 				if(thisParentUIE != null)
 					thisParentUIE.OnTouch(touchCount);
 			}
-			
+			/* delayed touch */
 			public void OnDelayedTouch(){
 				if(this.IsActivated() && thisIsEnabledInput)
 					OnDelayedTouchImple();
@@ -205,10 +227,12 @@ namespace UISystem{
 				if(thisParentUIE != null)
 					thisParentUIE.OnDelayedTouch();
 			}
-
+			/* Release */
 			public void OnRelease(){
-				if(this.IsActivated() && thisIsEnabledInput)
+				if(this.IsActivated() && thisIsEnabledInput){
+					CheckAndPerformStaticBoundarySnapFrom(this);
 					OnReleaseImple();
+				}
 				else
 					PassOnReleaseUpward();
 			}
@@ -219,7 +243,68 @@ namespace UISystem{
 				if(thisParentUIE != null)
 					thisParentUIE.OnRelease();
 			}
-
+			/* tap */
+			public void OnTap(int tapCount){
+				if(this.IsActivated() && thisIsEnabledInput){
+					CheckAndPerformStaticBoundarySnapFrom(this);
+					OnTapImple(tapCount);
+				}
+				else
+					PassOnTapUpward(tapCount);
+			}
+			protected virtual void OnTapImple(int tapCount){
+				PassOnTapUpward(tapCount);
+			}
+			void PassOnTapUpward(int tapCount){
+				if(thisParentUIE != null)
+					thisParentUIE.OnTap(tapCount);
+			}
+			public void CheckAndPerformStaticBoundarySnapFrom(IUIElement uieToStartCheck){
+				ClearTopMostScroller();
+				IScroller scrollerToStartCheck = GetTargetUIEOrItsProximateParentAsScroller(uieToStartCheck);
+				IScroller scrollerToExamine = scrollerToStartCheck;
+				while(true){
+					if(scrollerToExamine == null)
+						break;
+					scrollerToExamine.ResetDrag();
+					scrollerToExamine.CheckAndPerformStaticBoundarySnap();
+					scrollerToExamine = scrollerToExamine.GetProximateParentScroller();
+				}
+			}
+			IScroller GetTargetUIEOrItsProximateParentAsScroller(IUIElement targetUIElement){
+				if(targetUIElement != null){
+					if(targetUIElement is IScroller)
+						return (IScroller)targetUIElement;
+					else
+						return targetUIElement.GetProximateParentScroller();
+				}else
+					return null;
+			}
+			readonly protected IScroller thisProximateParentScroller;
+			public IScroller GetProximateParentScroller(){
+				return thisProximateParentScroller;
+			}
+			protected virtual IScroller FindProximateParentScroller(){
+				IProximateParentScrollerCalculator calculator = new ProximateParentScrollerCalculator(this);
+				return calculator.Calculate();
+			}
+			void ClearTopMostScroller(){
+				ClearAllParentScrollerVelocity();
+				if(thisTopmostScrollerInMotion != null)
+					thisTopmostScrollerInMotion.EnableScrollInputRecursively();
+			}
+			void ClearAllParentScrollerVelocity(){
+				IScroller scrollerToExamine = GetTargetUIEOrItsProximateParentAsScroller(this);
+				while(true){
+					if(scrollerToExamine == null)
+						break;
+					for(int i = 0; i < 2; i ++){
+						scrollerToExamine.UpdateVelocity(0f, i);
+					}
+					scrollerToExamine = scrollerToExamine.GetProximateParentScroller();
+				}
+			}
+			/*  */
 			public void OnDelayedRelease(){
 				if(this.IsActivated() && thisIsEnabledInput)
 					OnDelayedReleaseImple();
@@ -232,20 +317,6 @@ namespace UISystem{
 			void PassOnDelayedReleaseUpward(){
 				if(thisParentUIE != null)
 					thisParentUIE.OnDelayedRelease();
-			}
-
-			public void OnTap(int tapCount){
-				if(this.IsActivated() && thisIsEnabledInput)
-					OnTapImple(tapCount);
-				else
-					PassOnTapUpward(tapCount);
-			}
-			protected virtual void OnTapImple(int tapCount){
-				PassOnTapUpward(tapCount);
-			}
-			void PassOnTapUpward(int tapCount){
-				if(thisParentUIE != null)
-					thisParentUIE.OnTap(tapCount);
 			}
 			public void OnBeginDrag(ICustomEventData eventData){
 				if(this.IsActivated() && thisIsEnabledInput)

@@ -28,8 +28,7 @@ namespace UISystem.PickUpUISystem{
 			thisQuantityAnimationEngine = new QuantityAnimationEngine(thisProcessFactory);
 			thisQuantityAnimationEngine.SetQuantityRoller(arg.quantityRoller);
 		}
-		public override void ActivateImple(){
-			base.ActivateImple();
+		protected override void OnUIActivate(){
 			InitializeTransactionState();
 			InitializeEmptinessState();
 		}

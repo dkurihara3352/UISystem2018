@@ -118,6 +118,8 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TransactionManager\PickUpManager.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelProcess.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelableUIE.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Button\ColorChangeButton.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Button\ColorChangeButtonAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Item.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanel\DigitPanel.cs" />
