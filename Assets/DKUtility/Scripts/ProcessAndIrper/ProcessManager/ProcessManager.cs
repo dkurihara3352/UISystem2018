@@ -84,5 +84,9 @@ namespace DKUtility{
 		public float GetImageFlashTime(){
 			return imageFlashTime;
 		}
+		public float alhpaPopUpExpireTime;
+		public float GetAlphaPopUpExpireTime(){
+			return alhpaPopUpExpireTime;
+		}
 	}
 }

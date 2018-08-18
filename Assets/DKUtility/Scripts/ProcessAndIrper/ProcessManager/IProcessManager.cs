@@ -21,5 +21,6 @@ namespace DKUtility{
 		float GetInertialScrollDeceleration();
 		float GetImageColorTurnProcessExpireTime();
 		float GetImageFlashTime();
+		float GetAlphaPopUpExpireTime();
 	}	
 }

@@ -124,6 +124,7 @@
      <Compile Include="Assets\UISystem\Scripts\Item\ItemTemplate.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\AbsPopUp.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpManager.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpState.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\QuantityAnimationHandler\DigitPanel\DigitPanel.cs" />

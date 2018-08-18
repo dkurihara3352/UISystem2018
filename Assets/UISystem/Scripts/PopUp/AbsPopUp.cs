@@ -8,16 +8,33 @@ namespace UISystem{
 		void OnShowBegin();
 		void OnHideComplete();
 		void OnShowComplete();
+
+		bool DisablesOtherElements();
+	}
+	public enum PopUpMode{
+		Alpha,
 	}
 	public class PopUp : UIElement, IPopUp {
 		public PopUp(IPopUpConstArg arg): base(arg){
 			thisPopUpManager = arg.popUpManager;
 			thisDisablesOthers = arg.disablesOthers;
 			thisHidesOnTappingOthers = arg.hidesOnTappingOthers;
-			thisStateEngine = arg.popUpStateEngine;
+
+			IPopUpStateEngineConstArg popUpStateEngineConstArg = new PopUpStateEngineConstArg(
+				thisProcessFactory,
+				this,
+				thisPopUpManager,
+				arg.popUpMode
+			);
+			thisStateEngine = new PopUpStateEngine(popUpStateEngineConstArg);
+			if(arg.popUpMode == PopUpMode.Alpha)
+				this.GetUIAdaptor().SetUpCanvasGroupComponent();
 		}
 		readonly IPopUpManager thisPopUpManager;
 		readonly bool thisDisablesOthers;
+		public bool DisablesOtherElements(){
+			return thisDisablesOthers;
+		}
 		readonly bool thisHidesOnTappingOthers;
 		protected readonly IPopUpStateEngine thisStateEngine;
 		public void Hide(bool instantly){
@@ -35,7 +52,7 @@ namespace UISystem{
 		IPopUpManager popUpManager{get;}
 		bool disablesOthers{get;}
 		bool hidesOnTappingOthers{get;}
-		IPopUpStateEngine popUpStateEngine{get;}
+		PopUpMode popUpMode{get;}
 	}
 
 }

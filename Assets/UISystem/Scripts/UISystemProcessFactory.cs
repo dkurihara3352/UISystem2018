@@ -27,6 +27,11 @@ namespace UISystem{
 		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, float decelerationOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
 		IImageColorTurnProcess CreateGenericImageColorTurnProcess(IUIImage uiImage, Color targetColor);
 		IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor);
+		IAlphaPopUpProcess CreateAlphaPopUpProcess(
+			IPopUp popUp,
+			IPopUpStateEngine engine,
+			bool hides
+		);
 	}
 	public class UISystemProcessFactory: AbsProcessFactory, IUISystemProcessFactory{
 		public UISystemProcessFactory(IProcessManager procManager, IUIManager uim): base(procManager){
@@ -93,6 +98,20 @@ namespace UISystem{
 		}
 		public IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor){
 			return new GenericImageColorTurnProcess(thisProcessManager, thisProcessManager.GetImageFlashTime(), uiImage, targetColor, true);
+		}
+		public IAlphaPopUpProcess CreateAlphaPopUpProcess(
+			IPopUp popUp,
+			IPopUpStateEngine engine,
+			bool hides
+		){
+			IAlphaPopUpProcess process = new AlphaPopUpProcess(
+				thisProcessManager,
+				thisProcessManager.GetAlphaPopUpExpireTime(),
+				popUp,
+				engine,
+				hides
+			);
+			return process;
 		}
 	}
 }
