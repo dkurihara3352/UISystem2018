@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IGenericSingleElementScroller: IScroller{}
-	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller, INonActivatorUIElement{
+	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller{
 		public GenericSingleElementScroller(IGenericSingleElementScrollerConstArg arg): base(arg){
 			thisRelativeCursorLength = MakeRelativeCursorLengthInRange(arg.relativeCursorLength);
 			SetUpCursorTransform();
@@ -32,9 +32,6 @@ namespace UISystem{
 			float cursorHeight = thisRect.height * relativeCursorLength.y;
 			return new Vector2(cursorWidth, cursorHeight);
 		}
-		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
-			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
-		}
 	}
 
 
@@ -55,7 +52,8 @@ namespace UISystem{
 			IUISystemProcessFactory processFactory, 
 			IUIElementFactory uieFactory, 
 			IGenericSingleElementScrollerAdaptor uia, 
-			IUIImage image
+			IUIImage image,
+			ActivationMode activationMode
 		):base(
 			scrollerAxis, 
 			relativeCursorPosition, 
@@ -67,7 +65,8 @@ namespace UISystem{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			image
+			image,
+			activationMode
 		){
 			thisRelativeCursorLength = relativeCursorLength;
 		}

@@ -8,7 +8,7 @@ namespace UISystem{
 		float GetRollerValue();
 
 	}
-	public class QuantityRoller: AbsNonActivatorUIElement, IQuantityRoller{
+	public class QuantityRoller: UIElement, IQuantityRoller{
 		public QuantityRoller(IQuantityRollerConstArg arg): base(arg){
 			thisAllDigitPanelSets = CreateDigitPanelSets(arg.maxQuantity, arg.panelDim, arg.padding);
 			CalcAndSetRectDimension(arg.panelDim, arg.rollerNormalizedPos, arg.padding);
@@ -101,7 +101,25 @@ namespace UISystem{
 		Vector2 rollerNormalizedPos{get;}
 	}
 	public class QuantityRollerConstArg: UIElementConstArg, IQuantityRollerConstArg{
-		public QuantityRollerConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IQuantityRollerAdaptor quaRolAdaptor, IUIImage image, int maxQuantity, Vector2 panelDim, Vector2 padding, Vector2 rollerNormalizedPos): base(uim, processFactory, uiElementFactory, quaRolAdaptor, image){
+		public QuantityRollerConstArg(
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uiElementFactory, 
+			IQuantityRollerAdaptor quaRolAdaptor, 
+			IUIImage image,
+
+			int maxQuantity, 			
+			Vector2 panelDim, 
+			Vector2 padding, 
+			Vector2 rollerNormalizedPos
+		): base(
+			uim, 
+			processFactory, 
+			uiElementFactory, 
+			quaRolAdaptor, 
+			image,
+			ActivationMode.None
+		){
 			thisMaxQuantity = maxQuantity;
 			thisUIEFactory = uieFactory;
 			thisPanelDim = panelDim;

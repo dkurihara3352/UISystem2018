@@ -16,12 +16,12 @@ namespace UISystem{
 			List<IHoverPad> thisHoverPads;
 			public void ActivateHoverPads(){
 				foreach(IHoverPad hoverPad in thisHoverPads){
-					hoverPad.ActivateRecursively();
+					hoverPad.ActivateRecursively(true);
 				}
 			}
 			public void DeactivateHoverPads(){
 				foreach(IHoverPad hoverPad in thisHoverPads){
-					hoverPad.DeactivateRecursively();
+					hoverPad.DeactivateRecursively(true);
 				}
 			}
 		}

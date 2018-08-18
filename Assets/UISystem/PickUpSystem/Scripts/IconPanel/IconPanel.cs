@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UISystem.PickUpUISystem{
 	public interface IIconPanel: IPickUpReceiver, IUIElement{
 	}
-	public abstract class AbsIconPanel: AbsNonActivatorUIElement, IIconPanel{
+	public abstract class AbsIconPanel: UIElement, IIconPanel{
 		public AbsIconPanel(IUIElementConstArg arg) :base(arg){
 		}
 		protected override void OnUIActivate(){

@@ -54,7 +54,8 @@ namespace DKUtility{
 			}
 		}
 		public sealed override void UpdateProcess(float deltaT){
-			thisState.OnProcessUpdate(deltaT);
+			if(thisState != null)
+				thisState.OnProcessUpdate(deltaT);
 			thisElapsedT += deltaT;
 			UpdateProcessImple(deltaT);
 			if(this.ExpirationIsEnabled())
@@ -68,7 +69,8 @@ namespace DKUtility{
 		}
 		public override void Expire(){
 			base.Expire();
-			thisState.OnProcessExpire();
+			if(thisState != null)
+				thisState.OnProcessExpire();
 		}
 		public override void Stop(){
 			base.Stop();
@@ -174,7 +176,7 @@ namespace DKUtility{
 		}
 		protected abstract void UpdateProcessImple(float deltaT);
 		protected float thisElapsedT;
-		sealed public override void Expire(){
+		public override void Expire(){
 			if(thisProcessState != null)
 				thisProcessState.OnProcessExpire();
 			SetTerminalValue();

@@ -16,7 +16,7 @@ namespace UISystem.PickUpUISystem{
 
 		IPickableUIImage GetPickableUIImage();
 	}
-	public abstract class AbsPickableUIE: AbsNonActivatorUIElement, IPickableUIE{
+	public abstract class AbsPickableUIE: UIElement, IPickableUIE{
 		public AbsPickableUIE(IPickableUIEConstArg arg): base(arg){
 			thisDragImageImplementor = arg.dragImageImplementor;
 			thisDragImageImplementor.SetPickableUIE(this);
@@ -101,7 +101,23 @@ namespace UISystem.PickUpUISystem{
 		IVisualPickednessStateEngine visualPickednessStateEngine{get;}
 	}
 	public class PickableUIEConstArg: UIElementConstArg, IPickableUIEConstArg{
-		public PickableUIEConstArg(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, IUIAdaptor uia, IPickableUIImage pickableUIImage, IUITool tool, IDragImageImplementor dragImageImplementor, IVisualPickednessStateEngine visualPickednessStateEngine): base(uim, pickUpSystemProcessFactory, pickUpSystemUIElementFactory, uia, pickableUIImage){
+		public PickableUIEConstArg(
+			IUIManager uim, 
+			IPickUpSystemProcessFactory pickUpSystemProcessFactory, 
+			IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, 
+			IUIAdaptor uia, 
+			IPickableUIImage pickableUIImage, 
+			IUITool tool, 
+			IDragImageImplementor dragImageImplementor, 
+			IVisualPickednessStateEngine visualPickednessStateEngine
+		): base(
+			uim, 
+			pickUpSystemProcessFactory, 
+			pickUpSystemUIElementFactory, 
+			uia, 
+			pickableUIImage,
+			ActivationMode.None
+		){
 			thisDragImageImplementor = dragImageImplementor;
 			thisVisualPickednessStateEngien = visualPickednessStateEngine;
 		}

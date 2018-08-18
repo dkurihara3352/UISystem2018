@@ -8,9 +8,22 @@ namespace UISystem{
 		IWaitAndExpireProcess CreateWaitAndExpireProcess(IWaitAndExpireProcessState state, float waitTime);
 		IIncrementalQuantityAnimationProcess CreateIncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
 		IOneshotQuantityAnimationProcess CreateOneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity);
-		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement);
-		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */);
-		IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension);
+		IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(
+			IUIElement uiElement, 
+			IUIEActivationStateEngine engine, 
+			bool doesActivate
+		);
+		INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(
+			IUIEActivationStateEngine engine, 
+			bool doesActivate
+		);
+		IScrollerElementSnapProcess CreateScrollerElementSnapProcess(
+			IScroller scroller, 
+			IUIElement scrollerElement, 
+			float targetElementLocalPosOnAxis, 
+			float initialVelOnAxis, 
+			int dimension
+		);
 		IInertialScrollProcess CreateInertialScrollProcess(float deltaPosOnAxis, float decelerationOnAxis, IScroller scroller, IUIElement scrollerElement, int dimension);
 		IImageColorTurnProcess CreateGenericImageColorTurnProcess(IUIImage uiImage, Color targetColor);
 		IImageColorTurnProcess CreateFalshColorProcess(IUIImage uiImage, Color targetColor);
@@ -36,12 +49,30 @@ namespace UISystem{
 			OneshotQuantityAnimationProcess process = new OneshotQuantityAnimationProcess(quantityRoller, targetQuantity, thisProcessManager, ProcessConstraint.expireTime, thisProcessManager.GetQuantityAnimationProcessExpireTime(), 0f, true);
 			return process;
 		}
-		public IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate, IAlphaActivatorUIElement alphaActivatorUIElement){
-			IAlphaActivatorUIEActivationProcess process = new AlphaActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetAlphaActivatorUIEActivationProcessExpireT(), doesActivate, state, alphaActivatorUIElement);
+		public IAlphaActivatorUIEActivationProcess CreateAlphaActivatorUIEActivationProcess(
+			IUIElement uiElement, 
+			IUIEActivationStateEngine engine, 
+			bool doesActivate
+		){
+			IAlphaActivatorUIEActivationProcess process = new AlphaActivatorUIEActivationProcess(
+				thisProcessManager, 
+				thisProcessManager.GetAlphaActivatorUIEActivationProcessExpireT(), 
+				engine,
+				uiElement, 
+				doesActivate
+			);
 			return process;
 		}
-		public INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(IUIEActivationProcessState state, bool doesActivate/* , INonActivatorUIElement nonActivatorUIElement */){
-			INonActivatorUIEActivationProcess process = new NonActivatorUIEActivationProcess(thisProcessManager, thisProcessManager.GetNonActivatorUIEActivationProcessExpireT(), state);
+		public INonActivatorUIEActivationProcess CreateNonActivatorUIEActivationProcess(
+			IUIEActivationStateEngine engine, 
+			bool doesActivate
+		){
+			INonActivatorUIEActivationProcess process = new NonActivatorUIEActivationProcess(
+				thisProcessManager, 
+				thisProcessManager.GetNonActivatorUIEActivationProcessExpireT(),
+				engine,
+				doesActivate
+			);
 			return process;
 		}
 		public IScrollerElementSnapProcess CreateScrollerElementSnapProcess(IScroller scroller, IUIElement scrollerElement, float targetElementLocalPosOnAxis, float initialVelOnAxis, int dimension){

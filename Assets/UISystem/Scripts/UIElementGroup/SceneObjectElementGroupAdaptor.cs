@@ -34,11 +34,13 @@ namespace UISystem{
 				rowToColumn,
 				groupElementLength,
 				padding,
+
 				thisDomainActivationData.uim,
 				thisDomainActivationData.processFactory,
 				thisDomainActivationData.uiElementFactory,
 				this,
-				image
+				image,
+				activationMode
 			);
 			IGenericUIElementGroup uie = new GenericUIElementGroup(arg);
 			return uie;

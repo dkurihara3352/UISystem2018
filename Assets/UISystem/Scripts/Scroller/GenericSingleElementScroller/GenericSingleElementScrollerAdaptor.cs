@@ -20,7 +20,8 @@ public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 				thisDomainActivationData.processFactory, 
 				thisDomainActivationData.uiElementFactory, 
 				this, 
-				image
+				image,
+				activationMode
 			);
 			return new GenericSingleElementScroller(arg);
 		}

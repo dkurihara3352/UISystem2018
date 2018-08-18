@@ -8,7 +8,7 @@ namespace UISystem{
 		/*  if number = -1, substitute the panel image with Blank image
 		*/
 	}
-	public class DigitPanel: AbsNonActivatorUIElement, IDigitPanel{
+	public class DigitPanel: UIElement, IDigitPanel{
 		public DigitPanel(IDigitPanelConstArg arg): base(arg){
 			CalcAndSetRectDimension(arg.panelDim, arg.localPosY);
 		}
@@ -25,7 +25,23 @@ namespace UISystem{
 		float localPosY{get;}
 	}
 	public class DigitPanelConstArg: UIElementConstArg, IDigitPanelConstArg{
-		public DigitPanelConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IDigitPanelAdaptor digitPanelAdaptor, IUIImage image, Vector2 panelDim, float localPosY): base(uim, processFactory, uiElementFactory, digitPanelAdaptor, image){
+		public DigitPanelConstArg(
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uiElementFactory, 
+			IDigitPanelAdaptor digitPanelAdaptor, 
+			IUIImage image, 
+
+			Vector2 panelDim, 
+			float localPosY
+		): base(
+			uim, 
+			processFactory, 
+			uiElementFactory, 
+			digitPanelAdaptor, 
+			image,
+			ActivationMode.None
+		){
 			thisPanelDim = panelDim;
 			thisLocalPosY = localPosY;
 		}

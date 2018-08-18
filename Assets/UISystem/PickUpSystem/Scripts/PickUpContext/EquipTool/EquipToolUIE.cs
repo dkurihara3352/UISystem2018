@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
 	public interface IEquipToolUIE: IPickUpContextUIE{}
-	public class EquipToolUIE: AbsAlphaActivatorUIElement, IEquipToolUIE{
+	public class EquipToolUIE: UIElement, IEquipToolUIE{
 		public EquipToolUIE(IUIElementConstArg arg): base(arg){}
 		public Vector2 GetPickUpReservePosition(){
 			IEquipToolUIAdaptor eqpToolUIA = (IEquipToolUIAdaptor)this.GetUIAdaptor();

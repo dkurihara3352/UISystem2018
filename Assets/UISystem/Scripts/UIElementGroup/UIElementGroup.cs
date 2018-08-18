@@ -17,7 +17,7 @@ namespace UISystem{
 		IUIElement GetGroupElementAtPositionInGroupSpace(Vector2 positionInElementGroupSpace);
 		void SetUpElements(List<IUIElement> elements);
 	}
-	public abstract class AbsUIElementGroup<T> : AbsUIElement, IUIElementGroup where T: class, IUIElement{
+	public abstract class AbsUIElementGroup<T> : UIElement, IUIElementGroup where T: class, IUIElement{
 		public AbsUIElementGroup(IUIElementGroupConstArg arg) :base(arg){
 			thisRowCountConstraint = arg.rowCountConstraint;
 			thisColumnCountConstraint = arg.columnCountConstraint;
@@ -207,7 +207,29 @@ namespace UISystem{
 		Vector2 padding{get;}
 	}
 	public class UIElementGroupConstArg: UIElementConstArg ,IUIElementGroupConstArg{
-		public UIElementGroupConstArg(int columnCountConstraint, int rowCountConstraint, bool topToBottom, bool leftToRight, bool rowToColumn, Vector2 elementLength, Vector2 padding, IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uieFactory, IUIElementGroupAdaptor uia, IUIImage image): base(uim, processFactory, uieFactory, uia, image){
+		public UIElementGroupConstArg(
+			int columnCountConstraint, 
+			int rowCountConstraint, 
+			bool topToBottom, 
+			bool leftToRight, 
+			bool rowToColumn, 
+			Vector2 elementLength, 
+			Vector2 padding, 
+
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uieFactory, 
+			IUIElementGroupAdaptor uia, 
+			IUIImage image,
+			ActivationMode activationMode
+		): base(
+			uim, 
+			processFactory, 
+			uieFactory, 
+			uia, 
+			image,
+			activationMode
+		){
 			thisColumnCountConstraint = columnCountConstraint;
 			thisRowCountConstraint = rowCountConstraint;
 			thisTopToBottom = topToBottom;

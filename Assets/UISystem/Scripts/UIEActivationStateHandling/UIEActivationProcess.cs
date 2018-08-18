@@ -8,19 +8,56 @@ namespace UISystem{
 	}
 	public interface INonActivatorUIEActivationProcess: IUIEActivationProcess{}
 	public class NonActivatorUIEActivationProcess: GenericWaitAndExpireProcess, INonActivatorUIEActivationProcess{
-		public NonActivatorUIEActivationProcess(IProcessManager processManager, float expireT, IUIEActivationProcessState state): base(processManager, expireT, state){}
+		public NonActivatorUIEActivationProcess(
+			IProcessManager processManager, 
+			float expireT,
+			IUIEActivationStateEngine engine, 
+			bool doesActivate
+		): 
+		base(
+			processManager, 
+			expireT, 
+			null
+		){
+		}
+		protected readonly IUIEActivationStateEngine thisEngine;
+		protected readonly bool thisDoesActivate;
+		public override void Expire(){
+			base.Expire();
+			if(thisDoesActivate)
+				thisEngine.SetToActivationCompletedState();
+			else
+				thisEngine.SetToDeactivationCompletedState();
+		}
 	}
 	public interface IAlphaActivatorUIEActivationProcess: IUIEActivationProcess{
 	}
 	public class AlphaActivatorUIEActivationProcess: AbsInterpolatorProcess<IGroupAlphaInterpolator>, IAlphaActivatorUIEActivationProcess{
-		public AlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate, IUIEActivationProcessState state, IAlphaActivatorUIElement alphaActivatorUIElement): base(processManager, ProcessConstraint.expireTime, expireT, .05f, false, state){
+		public AlphaActivatorUIEActivationProcess(
+			IProcessManager processManager, 
+			float expireT, 
+			IUIEActivationStateEngine engine,
+			IUIElement uiElement,
+			bool doesActivate
+		): base(
+			processManager, 
+			ProcessConstraint.expireTime, 
+			expireT, 
+			.05f, 
+			false, 
+			null
+		){
+			thisEngine = engine;
+			thisUIElement = uiElement;
 			thisDoesActivate = doesActivate;
-			thisAlphaActivatorUIElement = alphaActivatorUIElement;
+			thisUIAdaptor = thisUIElement.GetUIAdaptor();
 		}
+		readonly IUIEActivationStateEngine thisEngine;
+		readonly IUIElement thisUIElement;
 		readonly bool thisDoesActivate;
-		readonly IAlphaActivatorUIElement thisAlphaActivatorUIElement;
+		readonly IUIAdaptor thisUIAdaptor;
 		protected override float GetLatestInitialValueDifference(){
-			float currentGroupAlpha = thisAlphaActivatorUIElement.GetNormalizedGroupAlphaForActivation();
+			float currentGroupAlpha = thisUIAdaptor.GetGroupAlpha();
 			currentGroupAlpha = MakeGroupAlphaValueInRange(currentGroupAlpha);
 			float targetGroupAlpha = thisDoesActivate? 1f: 0f;
 			return targetGroupAlpha - currentGroupAlpha;
@@ -34,23 +71,30 @@ namespace UISystem{
 		}
 		protected override IGroupAlphaInterpolator InstantiateInterpolatorWithValues(){
 			float targetGroupAlpha = thisDoesActivate? 1f: 0f;
-			IGroupAlphaInterpolator irper = new GroupAlphaInterpolator(thisAlphaActivatorUIElement, targetGroupAlpha);
+			IGroupAlphaInterpolator irper = new GroupAlphaInterpolator(thisUIAdaptor, targetGroupAlpha);
 			return irper;
+		}
+		public override void Expire(){
+			base.Expire();
+			if(thisDoesActivate)
+				thisEngine.SetToActivationCompletedState();
+			else
+				thisEngine.SetToDeactivationCompletedState();
 		}
 	}
 	public interface IGroupAlphaInterpolator: IInterpolator{}
 	public class GroupAlphaInterpolator: IGroupAlphaInterpolator{
-		public GroupAlphaInterpolator(IAlphaActivatorUIElement alphaActivatorUIElement, float targetGroupAlpha){
-			thisAlphaActivatorUIElement = alphaActivatorUIElement;
+		public GroupAlphaInterpolator(IUIAdaptor uiAdaptor, float targetGroupAlpha){
+			thisUIAdaptor = uiAdaptor;
 			thisTargetGroupAlpha = targetGroupAlpha;
-			thisInitialGroupAlpha = alphaActivatorUIElement.GetNormalizedGroupAlphaForActivation();
+			thisInitialGroupAlpha = uiAdaptor.GetGroupAlpha();
 		}
-		readonly IAlphaActivatorUIElement thisAlphaActivatorUIElement;
+		readonly IUIAdaptor thisUIAdaptor;
 		readonly float thisTargetGroupAlpha;
 		readonly float thisInitialGroupAlpha;
 		public void Interpolate(float t){
 			float newAlpha = Mathf.Lerp(thisInitialGroupAlpha, thisTargetGroupAlpha, t);
-			thisAlphaActivatorUIElement.SetNormalizedGroupAlphaForActivation(newAlpha);
+			thisUIAdaptor.SetGroupAlpha(newAlpha);
 		}
 		public void Terminate(){}
 	}

@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture, Category("PickUpSystem")]
+[TestFixture, Category("PickUpSystem"), Ignore]
 public class IITAMStateEngineTest{
     [Test]
     public void SetIITAM_CallsBothStatesSetIITAM(){

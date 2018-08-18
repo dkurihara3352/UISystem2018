@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture, Category("PickUpSystem")]
+[TestFixture, Category("PickUpSystem"), Ignore]
 public class IconGroup_SlotsAndIIsManagementTest : IconGroupTest {
 	[Test, TestCaseSource(typeof(HasSlotSpaceTestCases), "validCases")]
 	public void HasSlotSpace_CurSizeLessThanMaxSize_ReturnsTrue(int iisSize, int maxSize){

@@ -108,7 +108,6 @@ namespace UISystem{
 				thisCurState.OnBeginDrag(eventData);
 			}
 			public void OnDrag(ICustomEventData eventData){
-				// if(DragVelocityIsOverThreshold(eventData.velocity))
 				thisCurState.OnDrag(eventData);
 			}
 			public void OnPointerEnter(ICustomEventData eventData){

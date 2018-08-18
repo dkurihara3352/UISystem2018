@@ -9,6 +9,11 @@ namespace UISystem{
 		public bool resizeRelativeToScreenSize = false;
 		public Vector2 sizeRelativeToReferenceRect = Vector2.one;
 		protected override void Awake(){
+			SetUpRectSize();
+
+			this.enabled = false;
+		}
+		void SetUpRectSize(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
 			rectTrans.pivot = new Vector2(0f, 0f);
 			rectTrans.anchorMin = new Vector2(0f, 0f);
@@ -22,14 +27,34 @@ namespace UISystem{
 				}
 				rectTrans.sizeDelta = newSize;
 			}
-			this.enabled = false;
 		}
 		/*  Activation and init */
+			public ActivationMode activationMode;
+			public void SetUpCanvasGroupComponent(){
+				CanvasGroup canvasGroup = this.gameObject.AddComponent<CanvasGroup>();
+				canvasGroup.alpha = 0f;
+				thisCanvasGroup = canvasGroup;
+			}
+			CanvasGroup thisCanvasGroup;
+			public float GetGroupAlpha(){
+				CheckForValidActivationMode();
+				return thisCanvasGroup.alpha;
+			}
+			public void SetGroupAlpha(float alpha){
+				CheckForValidActivationMode();
+				thisCanvasGroup.alpha = alpha;
+			}
+			void CheckForValidActivationMode(){
+				if(activationMode != ActivationMode.Alpha)
+					throw new System.InvalidOperationException("ActivationMode must be set to Alpha before accessing group alpha");
+
+			}
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
 				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
+
 				this.enabled = true;
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
@@ -133,7 +158,9 @@ namespace UISystem{
 				return this.transform.gameObject.name;
 			}
 		/*  Hierarchy stuff */
-			protected virtual IUIElement CreateUIElement(IUIImage image){return null;}
+			protected virtual IUIElement CreateUIElement(IUIImage image){
+				return null;
+			}
 			IUIElement thisUIElement;
 			public IUIElement GetUIElement(){
 				return thisUIElement;

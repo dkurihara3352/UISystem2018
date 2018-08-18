@@ -4,46 +4,55 @@ using UnityEngine;
 using DKUtility;
 namespace UISystem{
 	public interface IUIEActivationHandler{
-		void Activate();
-		void ActivateInstantly();
-		void Deactivate();
-		void DeactivateInstantly();
+		void Activate(bool instantly);
+		void Deactivate(bool instantly);
 	}
 	public interface IUIEActivationStateEngine: ISwitchableStateEngine<IUIEActivationState>, IUIEActivationHandler{
-		void ExpireProcessOnCurrentProcessState();
+		void ExpireCurrentProcess();
 		bool IsActivated();
 		bool IsActivationComplete();
+
 		void SetToActivatingState();
 		void SetToActivationCompletedState();
 		void SetToDeactivatingState();
 		void SetToDeactivationCompletedState();
+
+		void StartNewActivateProcess();
+		void StartNewDeactivateProcess();
+
+		void CallUIElementOnActivationComplete();
+		void CallUIElementOnDeactivationComplete();
 	}
-	public abstract class AbsUIEActivationStateEngine: AbsSwitchableStateEngine<IUIEActivationState>, IUIEActivationStateEngine{
-		public AbsUIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			thisActivatingState = CreateUIEActivatingState(processFactory, uiElement);
-			thisActivationCompletedState = new UIEActivationCompletedState(this, uiElement);
-			thisDeactivatingState = CreateUIEDeactivatingState(processFactory, uiElement);
-			thisDeactivationCompletedState = new UIEDeactivationCompletedState(this, uiElement);
+	public enum ActivationMode{
+		None,
+		Alpha
+	}
+	public class UIEActivationStateEngine: AbsSwitchableStateEngine<IUIEActivationState>, IUIEActivationStateEngine{
+		public UIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement, ActivationMode activationMode){
+			thisProcessFactory = processFactory;
+			thisUIElement = uiElement;
+			thisActivationMode = activationMode;
+			thisActivatingState = new UIEActivatingState(this);
+			thisActivationCompletedState = new UIEActivationCompletedState(this);
+			thisDeactivatingState = new UIEDeactivatingState(this);
+			thisDeactivationCompletedState = new UIEDeactivationCompletedState(this);
+			
 			SetToDeactivationCompletedState();
 		}
-		protected abstract IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement);
-		protected abstract IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement);
-		readonly protected IUIEActivatingState thisActivatingState;
-		readonly protected IUIEActivationCompletedState thisActivationCompletedState;
-		readonly protected IUIEDeactivatingState thisDeactivatingState;
-		readonly protected IUIEDeactivationCompletedState thisDeactivationCompletedState;
-		readonly protected IUIEActivationState[] thisStates;
-		public void Activate(){
-			thisCurState.Activate();
+		readonly IUIEActivatingState thisActivatingState;
+		readonly IUIEActivationCompletedState thisActivationCompletedState;
+		readonly IUIEDeactivatingState thisDeactivatingState;
+		readonly IUIEDeactivationCompletedState thisDeactivationCompletedState;
+		readonly IUIEActivationState[] thisStates;
+		readonly IUISystemProcessFactory thisProcessFactory;
+		readonly IUIElement thisUIElement;
+		readonly ActivationMode thisActivationMode;
+
+		public void Activate(bool instantly){
+			thisCurState.Activate(instantly);
 		}
-		public void ActivateInstantly(){
-			thisCurState.ActivateInstantly();
-		}
-		public void Deactivate(){
-			thisCurState.Deactivate();
-		}
-		public void DeactivateInstantly(){
-			thisCurState.DeactivateInstantly();
+		public void Deactivate(bool instantly){
+			thisCurState.Deactivate(instantly);
 		}
 		public bool IsActivated(){
 			return thisCurState is IUIEActivatingState || IsActivationComplete();
@@ -51,10 +60,8 @@ namespace UISystem{
 		public bool IsActivationComplete(){
 			return thisCurState is IUIEActivationCompletedState;
 		}
-		public void ExpireProcessOnCurrentProcessState(){
-			if(thisCurState is IWaitAndExpireProcessState)
-				((IWaitAndExpireProcessState)thisCurState).ExpireProcess();
-		}
+
+
 		public void SetToActivatingState(){
 			TrySwitchState(thisActivatingState);
 		}
@@ -67,28 +74,46 @@ namespace UISystem{
 		public void SetToDeactivationCompletedState(){
 			TrySwitchState(thisDeactivationCompletedState);
 		}
-	}
-	public class NonActivatorUIEActivationStateEngine: AbsUIEActivationStateEngine{
-		public NonActivatorUIEActivationStateEngine(IUISystemProcessFactory processFactory, INonActivatorUIElement uiElement): base(processFactory, uiElement){}
-		protected override IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			NonActivatorUIEActivatingState state = new NonActivatorUIEActivatingState(this, (INonActivatorUIElement)uiElement, processFactory);
-			return state;
+
+		public void StartNewActivateProcess(){
+			StartNewActivationProcess(true);
 		}
-		protected override IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			NonActivatorUIEDeactivatingState state = new NonActivatorUIEDeactivatingState(this, (INonActivatorUIElement)uiElement, processFactory);
-			return state;
+		public void StartNewDeactivateProcess(){
+			StartNewActivationProcess(false);
 		}
-	}
-	public class AlphaActivatorUIEActivationStateEngine: AbsUIEActivationStateEngine{
-		public AlphaActivatorUIEActivationStateEngine(IUISystemProcessFactory processFactory, IAlphaActivatorUIElement alphaActivatorUIE): base(processFactory, alphaActivatorUIE){
+		void StartNewActivationProcess(bool activates){
+			IUIEActivationProcess newProcess = CreateNewProcess(activates);
+			if(thisRunningProcess != null || thisRunningProcess.IsRunning())
+				thisRunningProcess.Stop();
+			thisRunningProcess = newProcess;
+			newProcess.Run();
 		}
-		protected override IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			AlphaActivatorUIEActivatingState state = new AlphaActivatorUIEActivatingState(this, (IAlphaActivatorUIElement)uiElement, processFactory);
-			return state;
+		public void ExpireCurrentProcess(){
+			if(thisRunningProcess != null)
+				thisRunningProcess.Expire();
 		}
-		protected override IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			AlphaActivatorUIEDeactivatingState state = new AlphaActivatorUIEDeactivatingState(this, (IAlphaActivatorUIElement)uiElement, processFactory);
-			return state;
+		IUIEActivationProcess thisRunningProcess;
+		IUIEActivationProcess CreateNewProcess(bool activates){
+			IUIEActivationProcess newProcess;
+			switch(thisActivationMode){
+				case ActivationMode.None: 
+					newProcess = thisProcessFactory.CreateNonActivatorUIEActivationProcess(this, true);
+					break;
+				case ActivationMode.Alpha:
+					newProcess = thisProcessFactory.CreateAlphaActivatorUIEActivationProcess(thisUIElement, this, true);
+					break;
+				default: 
+					newProcess = null;
+					break;
+			}
+			return newProcess;
+		}
+
+		public void CallUIElementOnActivationComplete(){
+			thisUIElement.OnActivationComplete();
+		}
+		public void CallUIElementOnDeactivationComplete(){
+			thisUIElement.OnDeactivationComplete();
 		}
 	}
 }

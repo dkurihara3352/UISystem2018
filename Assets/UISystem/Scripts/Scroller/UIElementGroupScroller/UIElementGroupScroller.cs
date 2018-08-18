@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElementGroupScroller: IScroller, INonActivatorUIElement{
+	public interface IUIElementGroupScroller: IScroller{
 		IUIElement[] GetCursoredElements();
 		int GetGroupElementIndex(IUIElement groupElement);
 	}
@@ -20,41 +20,23 @@ namespace UISystem{
 		}
 		/* Activation */
 			readonly bool thisActivatesCursoredElementsOnly;
-			public override void ActivateRecursively(){
-				this.ActivateSelf();
-				thisUIElementGroup.ActivateSelf();
+			public override void ActivateRecursively(bool instantly){
+				this.ActivateSelf(instantly);
+				thisUIElementGroup.ActivateSelf(instantly);
 				if(thisActivatesCursoredElementsOnly)
-					ActivateCursoredElements();
+					ActivateCursoredElements(instantly);
 				else
-					ActivateAllGroupElements();
+					ActivateAllGroupElements(instantly);
 			}
-			void ActivateCursoredElements(){
+			void ActivateCursoredElements(bool instantly){
 				foreach(IUIElement uie in thisCursoredElements)
 					if(uie != null)
-						uie.ActivateRecursively();
+						uie.ActivateRecursively(instantly);
 			}
-			void ActivateAllGroupElements(){
+			void ActivateAllGroupElements(bool instantly){
 				foreach(IUIElement uie in thisGroupElements)
 					if(uie != null)
-						uie.ActivateRecursively();
-			}
-			public override void ActivateInstantlyRecursively(){
-				ActivateSelfInstantly();
-				thisUIElementGroup.ActivateSelfInstantly();
-				if(thisActivatesCursoredElementsOnly)
-					ActivateCursoredElementsInstantly();
-				else
-					ActivateAllGroupElementsInstantly();
-			}
-			void ActivateCursoredElementsInstantly(){
-				foreach(IUIElement uie in thisCursoredElements)
-					if(uie != null)
-						uie.ActivateInstantlyRecursively();
-			}
-			void ActivateAllGroupElementsInstantly(){
-				foreach(IUIElement uie in thisUIElementGroup.GetGroupElements())
-					if(uie != null)
-						uie.ActivateInstantlyRecursively();
+						uie.ActivateRecursively(instantly);
 			}
 		/* SetUp */
 			int[] MakeCursorSizeAtLeastOne(int[] source){
@@ -75,9 +57,6 @@ namespace UISystem{
 			protected readonly int[] thisCursorSize;
 			protected readonly Vector2 thisPadding;
 			protected readonly Vector2 thisGroupElementLength;
-			protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
-				return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
-			}
 			protected IUIElementGroup thisUIElementGroup{
 				get{
 					return (IUIElementGroup)thisScrollerElement;
@@ -202,13 +181,13 @@ namespace UISystem{
 							if(uie != null){
 								uie.BecomeDefocusedInScrollerRecursively();
 								if(thisActivatesCursoredElementsOnly )
-									uie.DeactivateRecursively();
+									uie.DeactivateRecursively(false);
 							}
 						foreach(IUIElement uie in groupElementsToFocus)
 							if(uie != null){
 								uie.BecomeFocusedInScrollerRecursively();
 								if(thisActivatesCursoredElementsOnly )
-									uie.InitiateActivation();
+									uie.InitiateActivation(false);
 							}
 						thisCursoredElements = newCursoredElements;
 						thisNoncursoredElements = CalcNoncurosredElements();
@@ -412,7 +391,8 @@ namespace UISystem{
 			IUISystemProcessFactory processFactory, 
 			IUIElementFactory uieFactory, 
 			IUIElementGroupScrollerAdaptor uia, 
-			IUIImage image
+			IUIImage image,
+			ActivationMode activationMode
 		): base(
 			scrollerAxis, 
 			relativeCursorPosition, 
@@ -424,7 +404,8 @@ namespace UISystem{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			image
+			image,
+			activationMode
 		){
 			thisCursorSize = cursorSize;
 			thisElementDimension = uiElementLength;

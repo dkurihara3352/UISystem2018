@@ -7,113 +7,69 @@ namespace UISystem{
 	public interface IUIEActivationState: ISwitchableState, IUIEActivationHandler{
 	}
 	public abstract class AbsUIEActivationState: IUIEActivationState{
-		public AbsUIEActivationState(IUIEActivationStateEngine engine, IUIElement uiElement){
+		public AbsUIEActivationState(IUIEActivationStateEngine engine){
 			thisEngine = engine;
-			thisUIElement = uiElement;
 		}
 		readonly protected IUIEActivationStateEngine thisEngine;
-		readonly protected IUIElement thisUIElement;
-		public virtual void OnEnter(){}
-		public virtual void OnExit(){}
-		public virtual void Activate(){
-			thisEngine.SetToActivatingState();
-		}
-		public virtual void ActivateInstantly(){
-			thisEngine.SetToActivatingState();
-			thisEngine.ExpireProcessOnCurrentProcessState();
-		}
-		public virtual void Deactivate(){
-			thisEngine.SetToDeactivatingState();
-		}
-		public virtual void DeactivateInstantly(){
-			thisEngine.SetToDeactivatingState();
-			thisEngine.ExpireProcessOnCurrentProcessState();
-		}
-	}
-	public interface IUIEActivationProcessState: IUIEActivationState, IWaitAndExpireProcessState{}
-	public abstract class AbsUIEActivationProcessState: AbsUIEActivationState, IUIEActivationProcessState{
-		public AbsUIEActivationProcessState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory): base(engine, uiElement){
-			thisProcessFactory = processFactory;
-		}
-		protected IUIEActivationProcess thisProcess;
-		readonly protected IUISystemProcessFactory thisProcessFactory;
-		protected abstract IUIEActivationProcess CreateUIEActivationProcess();
-		public override void OnEnter(){
-			thisProcess = CreateUIEActivationProcess();
-			thisProcess.Run();
-		}
-		public override void OnExit(){
-			StopAndClearProcess(); 
-		}
-		public void OnProcessUpdate(float deltaT){
+		public virtual void OnEnter(){
 			return;
 		}
-		public abstract void OnProcessExpire();
-		public void ExpireProcess(){
-			ExpireAndClearProcess();
+		public virtual void OnExit(){
+			return;
 		}
-		void StopAndClearProcess(){
-			if(thisProcess != null)
-				if(thisProcess.IsRunning())
-					thisProcess.Stop();
-			thisProcess = null;
+		public virtual void Activate(bool instantly){
+			thisEngine.SetToActivatingState();
+			if(instantly)
+				thisEngine.ExpireCurrentProcess();
 		}
-		void ExpireAndClearProcess(){
-			if(thisProcess != null)
-				if(thisProcess.IsRunning())
-					thisProcess.Expire();
-			thisProcess = null;
+		public virtual void Deactivate(bool instantly){
+			thisEngine.SetToDeactivatingState();
+			if(instantly)
+				thisEngine.ExpireCurrentProcess();
 		}
 	}
-	public interface IUIEActivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
-	public abstract class AbsUIEActivatingState: AbsUIEActivationProcessState, IUIEActivatingState{
-		public AbsUIEActivatingState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory):base(engine, uiElement, processFactory){}
+
+	public interface IUIEActivatingState: IUIEActivationState{}
+	public class UIEActivatingState: AbsUIEActivationState, IUIEActivatingState{
+		public UIEActivatingState(IUIEActivationStateEngine engine): base(engine){}
 		public override void OnEnter(){
-			base.OnEnter();
-			thisUIElement.ActivateImple();
+			thisEngine.StartNewActivateProcess();
 		}
-		public override void OnProcessExpire(){
-			thisEngine.SetToActivationCompletedState();
-		}
-		public override void Activate(){return;}
-		public override void ActivateInstantly(){
-			this.ExpireProcess();
+		public override void Activate(bool instantly){
+			if(instantly)
+				thisEngine.ExpireCurrentProcess();
 		}
 	}
 	public interface IUIEActivationCompletedState: IUIEActivationState{}
 	public class UIEActivationCompletedState: AbsUIEActivationState, IUIEActivationCompletedState{
-		public UIEActivationCompletedState(IUIEActivationStateEngine engine, IUIElement uiElement):base(engine, uiElement){}
+		public UIEActivationCompletedState(IUIEActivationStateEngine engine):base(engine){}
 		public override void OnEnter(){
-			base.OnEnter();
-			thisUIElement.OnActivationComplete();
+			thisEngine.CallUIElementOnActivationComplete();
 		}
-		public override void Activate(){return;}
-		public override void ActivateInstantly(){return;}
+		public override void Activate(bool instantly){
+			return;
+		}
 	}
-	public interface IUIEDeactivatingState: IUIEActivationState, IWaitAndExpireProcessState{}
-	public abstract class AbsUIEDeactivatingState: AbsUIEActivationProcessState, IUIEDeactivatingState{
-		public AbsUIEDeactivatingState(IUIEActivationStateEngine engine, IUIElement uiElement, IUISystemProcessFactory processFactory): base(engine, uiElement, processFactory){}
+	public interface IUIEDeactivatingState: IUIEActivationState{}
+	public class UIEDeactivatingState: AbsUIEActivationState, IUIEDeactivatingState{
+		public UIEDeactivatingState(IUIEActivationStateEngine engine): base(engine){}
 		public override void OnEnter(){
-			base.OnEnter();
-			thisUIElement.DeactivateImple();
+			thisEngine.StartNewDeactivateProcess();
 		}
-		public override void OnProcessExpire(){
-			thisEngine.SetToDeactivationCompletedState();
-		}
-		public override void Deactivate(){return;}
-		public override void DeactivateInstantly(){
-			this.ExpireProcess();
+		public override void Deactivate(bool instantly){
+			if(instantly)
+				thisEngine.ExpireCurrentProcess();
 		}
 	}
 	public interface IUIEDeactivationCompletedState: IUIEActivationState{}
 	public class UIEDeactivationCompletedState: AbsUIEActivationState, IUIEDeactivationCompletedState{
-		public UIEDeactivationCompletedState(IUIEActivationStateEngine engine, IUIElement uiElement): base(engine, uiElement){}
+		public UIEDeactivationCompletedState(IUIEActivationStateEngine engine): base(engine){}
 		public override void OnEnter(){
-			base.OnEnter();
-			thisUIElement.OnDeactivationComplete();
+			thisEngine.CallUIElementOnDeactivationComplete();
 		}
-		public override void Deactivate(){return;}
-		public override void DeactivateInstantly(){return;}
+		public override void Deactivate(bool instantly){
+			return;
+		}
 	}
 
 }

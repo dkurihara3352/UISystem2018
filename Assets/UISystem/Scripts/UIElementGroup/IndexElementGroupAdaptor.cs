@@ -53,7 +53,8 @@ namespace UISystem{
 				thisDomainActivationData.processFactory,
 				thisDomainActivationData.uiElementFactory,
 				this,
-				image
+				image,
+				activationMode
 			);
 			return new GenericUIElementGroup(arg);
 		}

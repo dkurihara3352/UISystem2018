@@ -122,7 +122,8 @@ public class GenericSingleElementScrollerTest{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			image
+			image,
+			ActivationMode.None
 		);
 
 		return new TestGenericSingleElementScroller(arg);

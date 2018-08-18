@@ -27,16 +27,16 @@ namespace UISystem{
 			thisRootUIElement.CallOnUIReferenceSetRecursively();
 		}
 		public void ActivateRootUIElement(){
-			thisRootUIElement.InitiateActivation();
+			thisRootUIElement.InitiateActivation(false);
 		}
 		public void DeactivateRootUIElement(){
-			thisRootUIElement.DeactivateRecursively();
+			thisRootUIElement.DeactivateRecursively(false);
 		}
 		public void ActivateRootUIElementInstantly(){
-			thisRootUIElement.InitiateInstantActivation();
+			thisRootUIElement.InitiateActivation(true);
 		}
 		public void DeactivateRootUIElementInstantly(){
-			thisRootUIElement.DeactivateInstantlyRecursively();
+			thisRootUIElement.DeactivateRecursively(true);
 		}
 	}
 }

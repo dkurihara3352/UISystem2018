@@ -120,7 +120,25 @@ namespace UISystem.PickUpUISystem{
 		IPanelTransactionStateEngine panelTransactionStateEngine{get;}
 	}
 	public class EquipToolPanelConstArg: UIElementConstArg ,IEquipToolPanelConstArg{
-		public EquipToolPanelConstArg(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IEquipToolUIEFactory equipToolUIEFactory, IUIAdaptor uia, IUIImage image, IEquipTool eqpTool, IEquippableIITAManager eqpIITAM,IPanelTransactionStateEngine engine): base(uim, pickUpSystemProcessFactory, equipToolUIEFactory, uia, image){
+		public EquipToolPanelConstArg(
+			IUIManager uim, 
+			IPickUpSystemProcessFactory pickUpSystemProcessFactory, 
+			IEquipToolUIEFactory equipToolUIEFactory, 
+			IUIAdaptor uia, 
+			IUIImage image, 
+
+
+			IEquipTool eqpTool, 
+			IEquippableIITAManager eqpIITAM, 
+			IPanelTransactionStateEngine engine
+		):base(
+			uim, 
+			pickUpSystemProcessFactory, 
+			equipToolUIEFactory, 
+			uia, 
+			image,
+			ActivationMode.None
+		){
 			thisEqpIITAM = eqpIITAM;
 			thisPanelTransactionStateEngine = engine;
 			thisEquipTool = eqpTool;

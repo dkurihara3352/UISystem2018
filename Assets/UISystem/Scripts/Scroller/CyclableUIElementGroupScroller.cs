@@ -111,7 +111,8 @@ namespace UISystem{
 			IUISystemProcessFactory processFactory, 
 			IUIElementFactory uieFactory, 
 			IUIElementGroupScrollerAdaptor uia, 
-			IUIImage image
+			IUIImage image,
+			ActivationMode activationMode
 		): base(
 			initiallyCursoredElementIndex, 
 			cursorSize, 
@@ -131,7 +132,8 @@ namespace UISystem{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			image
+			image,
+			activationMode
 		){
 			thisIsCycleEnabled = isCycleEnabled;
 		}

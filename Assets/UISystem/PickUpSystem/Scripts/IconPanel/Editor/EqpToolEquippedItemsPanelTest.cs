@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture, Category("PickUpSystem")]
+[TestFixture, Category("PickUpSystem"), Ignore]
 public class EqpToolEquippedItemsPanelTest: EquipToolPanelTest{
 	[Test]
 	public void EvaluateHoverability_PickedTempIsBowOrWear_CallsEngineBecomeHoverable(){

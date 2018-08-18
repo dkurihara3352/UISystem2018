@@ -264,7 +264,26 @@ namespace UISystem.PickUpUISystem{
 		List<IItemIcon> iis{get;}
 	}
 	public class IconGroupConstArg: PickUpSystemUIEConstArg, IIconGroupConstArg{
-		public IconGroupConstArg(IUIManager uim, IPickUpSystemProcessFactory pickUpSystemProcessFactory, IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, IPickUpSystemUIA pickUpSyatemUIA, IUIImage image, IUITool tool, IItemIconTransactionManager iiTAM, int minSize, int maxSize, IHoverPadsManager hoverPadsManager, List<IItemIcon> iis): base(uim, pickUpSystemProcessFactory, pickUpSystemUIElementFactory, image, pickUpSyatemUIA){
+		public IconGroupConstArg(
+			IUIManager uim, 
+			IPickUpSystemProcessFactory pickUpSystemProcessFactory, 
+			IPickUpSystemUIElementFactory pickUpSystemUIElementFactory, 
+			IPickUpSystemUIA pickUpSyatemUIA, 
+			IUIImage image, 
+			IUITool tool, 
+			IItemIconTransactionManager iiTAM, 
+			int minSize, 
+			int maxSize, 
+			IHoverPadsManager hoverPadsManager, 
+			List<IItemIcon> iis
+		): base(
+			uim, 
+			pickUpSystemProcessFactory, 
+			pickUpSystemUIElementFactory, 
+			image, 
+			pickUpSyatemUIA,
+			ActivationMode.None
+		){
 			thisIITAM = iiTAM;
 			thisMinSize = minSize;
 			thisMaxSize = maxSize;

@@ -72,7 +72,8 @@ namespace UISystem{
 			processFactory,
 			uieFactory,
 			uia,
-			uiImage
+			uiImage,
+			ActivationMode.None
 		){
 			thisTargetUIAdaptor = targetUIAdaptor;
 			thisTargetColor = targetColor;

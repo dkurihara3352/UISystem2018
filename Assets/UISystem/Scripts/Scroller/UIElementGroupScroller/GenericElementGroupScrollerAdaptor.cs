@@ -31,7 +31,8 @@ namespace UISystem{
 				thisDomainActivationData.processFactory, 
 				thisDomainActivationData.uiElementFactory, 
 				this, 
-				image
+				image,
+				activationMode
 			);
 			return new UIElementGroupScroller(arg);
 		}

@@ -87,13 +87,15 @@ public class UIElementGroupTest {
 		return arg;
 	}
 
-	public class TestUIElementGroup: AbsUIElementGroup<IUIElement>, INonActivatorUIElement{
+	public class TestUIElementGroup: AbsUIElementGroup<IUIElement>{
 		public TestUIElementGroup(IUIElementGroupConstArg arg): base(arg){
 
 		}
-		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
-			IUIEActivationStateEngine engine = new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
-			return engine;
+		protected override IScroller FindProximateParentScroller(){
+			IScroller parentScroller = Substitute.For<IScroller>();
+			IScroller nullScroller = null;
+			parentScroller.GetProximateParentScroller().Returns(nullScroller);
+			return parentScroller;
 		}
 		public void SetElements(List<IUIElement> elements){
 			thisGroupElements = elements;
@@ -129,7 +131,22 @@ public class UIElementGroupTest {
 		}
 	}
 	public TestUIElementGroup CreateTestUIElementGroupWithConstraints(int columnCountConstraint, int rowCountConstraint){
-		IUIElementGroupConstArg arg = new UIElementGroupConstArg(columnCountConstraint, rowCountConstraint, true, true, true, Vector2.zero, Vector2.zero, Substitute.For<IUIManager>(), Substitute.For<IUISystemProcessFactory>(), Substitute.For<IUIElementFactory>(), Substitute.For<IUIElementGroupAdaptor>(), Substitute.For<IUIImage>());
+		IUIElementGroupConstArg arg = new UIElementGroupConstArg(
+			columnCountConstraint, 
+			rowCountConstraint, 
+			true, 
+			true, 
+			true, 
+			Vector2.zero, 
+			Vector2.zero, 
+
+			Substitute.For<IUIManager>(), 
+			Substitute.For<IUISystemProcessFactory>(), 
+			Substitute.For<IUIElementFactory>(), 
+			Substitute.For<IUIElementGroupAdaptor>(), 
+			Substitute.For<IUIImage>(),
+			ActivationMode.None
+		);
 		return new TestUIElementGroup(arg);
 	}
 }

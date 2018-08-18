@@ -19,16 +19,14 @@ namespace UISystem{
 		void ResetDrag();
 		void ClearTouchPositionCache();
 		Vector2 GetVelocity();
-		// IScroller GetProximateParentScroller();
 		void PauseRunningMotorProcessRecursivelyUp();
 		void CheckAndPerformDynamicBoundarySnapOnAxis(float deltaPosOnAxis, float velocity, int dimension);
-		// void CheckAndPerformStaticBoundarySnapFrom(IScroller scrollerToStartCheck);
 		void CheckAndPerformStaticBoundarySnap();
 	}
 	public enum ScrollerAxis{
 		Horizontal, Vertical, Both
 	}
-	public abstract class AbsScroller : AbsUIElement, IScroller{
+	public abstract class AbsScroller : UIElement, IScroller{
 		public AbsScroller(IScrollerConstArg arg): base(arg){
 			thisScrollerAxis = arg.scrollerAxis;
 			thisRelativeCursorPosition = MakeSureRelativeCursorPosIsClampedZeroToOne(arg.relativeCursorPosition);
@@ -639,13 +637,15 @@ namespace UISystem{
 			IUISystemProcessFactory processFactory, 
 			IUIElementFactory uieFactory, 
 			IScrollerAdaptor uia, 
-			IUIImage uiImage
+			IUIImage uiImage,
+			ActivationMode activationMode
 		): base(
 			uim, 
 			processFactory, 
 			uieFactory, 
 			uia, 
-			uiImage
+			uiImage,
+			activationMode
 		){
 			thisScrollerAxis = scrollerAxis;
 			thisRelativeCursorPos = relativeCursorPosition;

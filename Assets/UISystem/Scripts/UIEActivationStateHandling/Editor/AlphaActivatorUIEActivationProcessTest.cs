@@ -13,8 +13,10 @@ public class AlphaActivatorUIEActivationProcessTest{
     public void GetLatestInitialValueDifference_Various(float currentGroupAlpha, bool doesActivate, float expectedValueDifference){
         ITestAlphaActivatorUIEActivationProcessConstArg arg;
         TestAlphaActivatorUIEActivationProcess process = CreateTestAlphaActivatorUIEActivationProcess(out arg, 0f, doesActivate);
-        IAlphaActivatorUIElement activatorUIE = arg.alphaActivatorUIE;
-        activatorUIE.GetNormalizedGroupAlphaForActivation().Returns(currentGroupAlpha);
+        IUIAdaptor uia = Substitute.For<IUIAdaptor>();
+        arg.uiElement.GetUIAdaptor().Returns(uia);
+
+        uia.GetGroupAlpha().Returns(currentGroupAlpha);
 
         float actual = process.TestGetLatestInitialValueDifference();
 
@@ -37,7 +39,19 @@ public class AlphaActivatorUIEActivationProcessTest{
         };
     }
     public class TestAlphaActivatorUIEActivationProcess: AlphaActivatorUIEActivationProcess{
-        public TestAlphaActivatorUIEActivationProcess(IProcessManager processManager, float expireT, bool doesActivate, IUIEActivationProcessState state, IAlphaActivatorUIElement alphaActivatorUIElement): base(processManager, expireT, doesActivate, state, alphaActivatorUIElement){}
+        public TestAlphaActivatorUIEActivationProcess(
+            IProcessManager processManager, 
+            float expireT, 
+            IUIEActivationStateEngine engine,
+            IUIElement uiElement,
+            bool doesActivate
+        ): base(
+            processManager, 
+            expireT, 
+            engine,
+            uiElement,
+            doesActivate
+        ){}
         
         public float TestGetLatestInitialValueDifference(){
             return this.GetLatestInitialValueDifference();
@@ -47,17 +61,23 @@ public class AlphaActivatorUIEActivationProcessTest{
         ITestAlphaActivatorUIEActivationProcessConstArg thisArg = Substitute.For<ITestAlphaActivatorUIEActivationProcessConstArg>();
         thisArg.processManager.Returns(Substitute.For<IProcessManager>());
         thisArg.expireT.Returns(expireT);
+        thisArg.engine.Returns(Substitute.For<IUIEActivationStateEngine>());
+        thisArg.uiElement.Returns(Substitute.For<IUIElement>());
         thisArg.doesActivate.Returns(doesActivate);
-        thisArg.state.Returns(Substitute.For<IUIEActivationProcessState>());
-        thisArg.alphaActivatorUIE.Returns(Substitute.For<IAlphaActivatorUIElement>());
         arg = thisArg;
-        return new TestAlphaActivatorUIEActivationProcess(thisArg.processManager, thisArg.expireT, thisArg.doesActivate, thisArg.state, thisArg.alphaActivatorUIE);
+        return new TestAlphaActivatorUIEActivationProcess(
+            thisArg.processManager, 
+            thisArg.expireT, 
+            thisArg.engine,
+            thisArg.uiElement,
+            thisArg.doesActivate
+        );
     }
     public interface ITestAlphaActivatorUIEActivationProcessConstArg{
         IProcessManager processManager{get;}
         float expireT{get;}
+        IUIEActivationStateEngine engine{get;}
+        IUIElement uiElement{get;}
         bool doesActivate{get;}
-        IUIEActivationProcessState state{get;}
-        IAlphaActivatorUIElement alphaActivatorUIE{get;}
     }
 }

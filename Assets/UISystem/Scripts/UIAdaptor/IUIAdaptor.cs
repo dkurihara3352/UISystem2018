@@ -23,5 +23,8 @@ namespace UISystem{
 		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
 		IUIAActivationData GetDomainActivationData();
+		void SetUpCanvasGroupComponent();
+		float GetGroupAlpha();
+		void SetGroupAlpha(float alpha);
 	}
 }

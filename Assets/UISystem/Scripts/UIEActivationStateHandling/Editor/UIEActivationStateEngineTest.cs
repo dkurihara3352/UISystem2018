@@ -45,24 +45,24 @@ public class UIEActivationStateEngineTest {
 		};
 	}
 	/* Test Classes */
-	public class TestUIEActivationStateEngine: AbsUIEActivationStateEngine{
-		public TestUIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement): base(processFactory, uiElement){
-
-		}
-		protected override IUIEActivatingState CreateUIEActivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			return Substitute.For<IUIEActivatingState>();
-		}
-		protected override IUIEDeactivatingState CreateUIEDeactivatingState(IUISystemProcessFactory processFactory, IUIElement uiElement){
-			return Substitute.For<IUIEDeactivatingState>();
-		}
+	public class TestUIEActivationStateEngine: UIEActivationStateEngine{
+		public TestUIEActivationStateEngine(
+			IUISystemProcessFactory processFactory, 
+			IUIElement uiElement,
+			ActivationMode activationMode
+		): base(
+			processFactory, 
+			uiElement,
+			activationMode
+		){}
 		public IUIEActivationState GetCurState(){
 			return thisCurState;
 		}		
 	}
 	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngine(){
 		IUISystemProcessFactory processFactory = Substitute.For<IUISystemProcessFactory>();
-		IUIElement uiElement = Substitute.For<IUIElement>();
-		return new TestUIEActivationStateEngine(processFactory, uiElement);
+		IUIElement uiElement = Substitute.For<IUIElement>();		
+		return new TestUIEActivationStateEngine(processFactory, uiElement, ActivationMode.None);
 	}
 	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngineWithState(System.Type stateType){
 		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();

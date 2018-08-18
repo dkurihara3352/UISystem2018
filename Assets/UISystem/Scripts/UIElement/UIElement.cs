@@ -14,14 +14,10 @@ namespace UISystem{
 		string GetName();
 		/* Activation */
 		void CallOnUIReferenceSetRecursively();
-		void InitiateActivation();
-		void ActivateSelf();
-		void ActivateRecursively();
-		void InitiateInstantActivation();
-		void ActivateSelfInstantly();
-		void ActivateInstantlyRecursively();
-		void DeactivateRecursively();
-		void DeactivateInstantlyRecursively();
+		void InitiateActivation(bool instantly);
+		void ActivateSelf(bool instantly);
+		void ActivateRecursively(bool instantly);
+		void DeactivateRecursively(bool instantly);
 		void ActivateImple();
 		void DeactivateImple();
 		void OnActivationComplete();
@@ -49,15 +45,24 @@ namespace UISystem{
 		void TurnTo(Color color);
 		void Flash(Color color);
 	}
-	public abstract class AbsUIElement: IUIElement{
-		public AbsUIElement(IUIElementConstArg arg){
+	public class UIElement: IUIElement{
+		public UIElement(IUIElementConstArg arg){
 			thisUIM = arg.uim;
 			thisProcessFactory = arg.processFactory;
 			thisUIElementFactory = arg.uiElementFactory;
 			thisUIA = arg.uia;
 			thisImage = arg.image;
-			thisSelectabilityEngine = new SelectabilityStateEngine(thisImage, thisUIM);
-			thisUIEActivationStateEngine = CreateUIEActivationStateEngine();
+			thisSelectabilityEngine = new SelectabilityStateEngine(
+				thisImage, 
+				thisUIM
+			);
+			if(arg.activationMode == ActivationMode.Alpha)
+				thisUIA.SetUpCanvasGroupComponent();
+			thisUIEActivationStateEngine = new UIEActivationStateEngine(
+				thisProcessFactory, 
+				this,
+				arg.activationMode
+			);
 			thisProximateParentScroller = FindProximateParentScroller();
 		}
 		protected readonly IUIManager thisUIM;
@@ -101,40 +106,22 @@ namespace UISystem{
 			protected virtual void OnUIReferenceSet(){
 				return;
 			}
-			protected abstract IUIEActivationStateEngine CreateUIEActivationStateEngine();
 			protected readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
-			public void InitiateActivation(){
+			public void InitiateActivation(bool instantly){
 				EvaluateScrollerFocusRecursively();
-				ActivateRecursively();
+				ActivateRecursively(instantly);
 			}
-			public void ActivateSelf(){
-				thisUIEActivationStateEngine.Activate();
+			public void ActivateSelf(bool instantly){
+				thisUIEActivationStateEngine.Activate(instantly);
 			}
-			public virtual void ActivateRecursively(){
-				ActivateSelf();
-				ActivateAllChildren();
+			public virtual void ActivateRecursively(bool instantly){
+				ActivateSelf(instantly);
+				ActivateAllChildren(instantly);
 			}
-			protected void ActivateAllChildren(){
+			protected void ActivateAllChildren(bool instantly){
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
-						childUIE.ActivateRecursively(); 
-				}
-			}
-			public void InitiateInstantActivation(){
-				EvaluateScrollerFocusRecursively();
-				ActivateInstantlyRecursively();
-			}
-			public void ActivateSelfInstantly(){
-				thisUIEActivationStateEngine.ActivateInstantly();
-			}
-			public virtual void ActivateInstantlyRecursively(){
-				ActivateSelfInstantly();
-				ActivateAllChildrenInstantly();
-			}
-			protected void ActivateAllChildrenInstantly(){
-				foreach(IUIElement childUIE in this.GetChildUIEs()){
-					if(childUIE != null)
-						childUIE.ActivateInstantlyRecursively(); 
+						childUIE.ActivateRecursively(instantly); 
 				}
 			}
 			public void ActivateImple(){
@@ -142,18 +129,12 @@ namespace UISystem{
 				OnUIActivate();
 			}
 			protected virtual void OnUIActivate(){}
-			public virtual void DeactivateRecursively(){
-				thisUIEActivationStateEngine.Deactivate();
+			public virtual void DeactivateRecursively(bool instantly){
+				thisUIEActivationStateEngine.Deactivate(instantly);
 				foreach(IUIElement childUIE in this.GetChildUIEs()){
 					if(childUIE != null)
-						childUIE.DeactivateRecursively();
+						childUIE.DeactivateRecursively(instantly);
 				}
-			}
-			public void DeactivateInstantlyRecursively(){
-				thisUIEActivationStateEngine.DeactivateInstantly();
-				foreach(IUIElement child in GetChildUIEs())
-					if(child != null)
-						child.DeactivateInstantlyRecursively();
 			}
 			bool IsActivationComplete(){
 				return thisUIEActivationStateEngine.IsActivationComplete();
@@ -478,14 +459,24 @@ namespace UISystem{
 		IUIElementFactory uiElementFactory{get;}
 		IUIAdaptor uia{get;}
 		IUIImage image{get;}
+		ActivationMode activationMode{get;}
 	}
 	public class UIElementConstArg: IUIElementConstArg{
-		public UIElementConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory, IUIAdaptor uia, IUIImage image){
+		public UIElementConstArg(
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uiElementFactory, 
+			IUIAdaptor uia, 
+			IUIImage image,
+			ActivationMode activationMode
+
+		){
 			thisUIM = uim;
 			thisProcessFactory = processFactory;
 			thisUIElementFactory = uiElementFactory;
 			thisUIA = uia;
 			thisImage = image;
+			thisActivationMode = activationMode;
 		}
 		readonly IUIManager thisUIM;
 		public IUIManager uim{get{return thisUIM;}}
@@ -500,5 +491,7 @@ namespace UISystem{
 		protected Vector2 ClampVector2ZeroToOne(Vector2 source){
 			return new Vector2(Mathf.Clamp01(source.x), Mathf.Clamp01(source.y));			
 		}
+		readonly ActivationMode thisActivationMode;
+		public ActivationMode activationMode{get{return thisActivationMode;}}
 	}
 }

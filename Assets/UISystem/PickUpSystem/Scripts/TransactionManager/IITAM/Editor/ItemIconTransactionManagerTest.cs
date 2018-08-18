@@ -7,7 +7,7 @@ using NSubstitute;
 using UISystem;
 using UISystem.PickUpUISystem;
 
-[TestFixture, Category("PickUpSystem")]
+[TestFixture, Category("PickUpSystem"), Ignore]
 public class ItemIconTransactionManagerTest {
 	[Test]
 	public void Construction_CallsStateEngineSetIITAMThis(){

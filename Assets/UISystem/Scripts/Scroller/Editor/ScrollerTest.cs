@@ -810,22 +810,7 @@ public class ScrollerTest{
 				},
 			};
 		}
-	/* Release */
-		[Test]
-		public void OnReleaseImple_ResetsDrag(){
-			ITestScrollerConstArg arg = CreateMockConstArg();
-			arg.scrollerAxis.Returns(ScrollerAxis.Both);
-			TestScroller scroller = new TestScroller(arg);
-			scroller.SetUpCursorTransform();
-			scroller.SetUpScrollerElement();
-			Vector2 dragDelta = new Vector2(1f, 0f);
-			scroller.OnBeginDragImple_Test(CreateCustomEventDataFromDelta(dragDelta));
-			Assert.That(scroller.thisShouldProcessDrag_Test, Is.True);
-
-			scroller.OnReleaseImple_Test();
-
-			AssertResetDragIsCalled(scroller);
-		}
+	/*  */
 		void AssertResetDragIsCalled(TestScroller scroller){
 			Assert.That(scroller.thisShouldProcessDrag_Test, Is.False);
 			Assert.That(scroller.thisTouchPosition_Test, Is.EqualTo(new Vector2(10000f, 10000f)));
@@ -870,7 +855,7 @@ public class ScrollerTest{
 
 
 
-	public class TestScroller: AbsScroller, INonActivatorUIElement{
+	public class TestScroller: AbsScroller{
 		public TestScroller(ITestScrollerConstArg arg): base(arg){
 			thisTestCursorLength = arg.cursorLength;
 		}
@@ -885,9 +870,6 @@ public class ScrollerTest{
 			return parentScroller;
 		}
 		protected override bool[] thisShouldApplyRubberBand{get{return new bool[]{true, true};}}
-		protected override IUIEActivationStateEngine CreateUIEActivationStateEngine(){
-			return new NonActivatorUIEActivationStateEngine(thisProcessFactory, this);
-		}
 		public void SetTopmostScrollerInMotion(IScroller scroller){
 			thisTopmostScrollerInMotion = scroller;
 		}
@@ -980,7 +962,8 @@ public class ScrollerTest{
 			IUISystemProcessFactory processFactory, 
 			IUIElementFactory uieFactory, 
 			IScrollerAdaptor uia, 
-			IUIImage uiImage
+			IUIImage uiImage,
+			ActivationMode activationMode
 		): base(
 			scrollerAxis, 
 			relativeCursorPosition, 
@@ -992,7 +975,8 @@ public class ScrollerTest{
 			processFactory, 
 			uieFactory, 
 			uia, 
-			uiImage
+			uiImage,
+			activationMode
 		){
 			thisCursorLength = cursorLength;
 		}

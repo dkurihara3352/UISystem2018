@@ -15,7 +15,14 @@ namespace UISystem{
 			thisImageDarkenedDarkness = typedData.imageDarkenedDarkness;
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IUIElementConstArg arg = new UIElementConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image);
+			IUIElementConstArg arg = new UIElementConstArg(
+				thisDomainActivationData.uim, 
+				thisDomainActivationData.processFactory, 
+				thisDomainActivationData.uiElementFactory, 
+				this, 
+				image, 
+				ActivationMode.None
+			);
 			GenericUIElement uie = new GenericUIElement(arg);
 			return uie;
 		}

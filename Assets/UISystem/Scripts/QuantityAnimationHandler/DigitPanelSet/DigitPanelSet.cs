@@ -9,7 +9,7 @@ namespace UISystem{
 		void UpdateNumberOnPanel(int num);
 		void Blank();
 	}
-	public class DigitPanelSet: AbsNonActivatorUIElement, IDigitPanelSet{
+	public class DigitPanelSet: UIElement, IDigitPanelSet{
 		public DigitPanelSet(IDigitPanelSetConstArg arg): base(arg){
 			/*  Create and set digit panels here
 			*/
@@ -79,7 +79,23 @@ namespace UISystem{
 		Vector2 padding{get;}
 	}
 	public class DigitPanelSetConstArg: UIElementConstArg, IDigitPanelSetConstArg{
-		public DigitPanelSetConstArg(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory ,IUIAdaptor uia, IUIImage image, int digitPlace, Vector2 panelDim, Vector2 padding): base(uim, processFactory, uiElementFactory, uia, image){
+		public DigitPanelSetConstArg(
+			IUIManager uim, 
+			IUISystemProcessFactory processFactory, 
+			IUIElementFactory uiElementFactory ,IUIAdaptor uia, 
+			IUIImage image, 
+
+			int digitPlace, 
+			Vector2 panelDim, 
+			Vector2 padding
+		): base(
+			uim, 
+			processFactory, 
+			uiElementFactory, 
+			uia, 
+			image,
+			ActivationMode.None
+		){
 			thisDigitPlace = digitPlace;
 		}
 		readonly int thisDigitPlace;
