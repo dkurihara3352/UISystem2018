@@ -26,6 +26,9 @@ namespace UISystem{
 		/*  */
 		void RegisterPopUp();
 		void UnregisterPopUp();
+		/*  */
+		bool IsHidden();
+		bool IsShown();
 	}
 	public class PopUpStateEngine :AbsSwitchableStateEngine<IPopUpState>, IPopUpStateEngine, ISwitchableStateEngine<IPopUpState> {
 		/*  start popUpManager's disablingOthers process when entered 			HidingState, if set so
@@ -63,6 +66,8 @@ namespace UISystem{
 		public void SwitchToShowingState(){
 			TrySwitchState(thisShowingState);
 		}
+		/*  */
+
 		/* Process */
 		IPopUpProcess thisRunningProcess;
 		public void ExpireCurrentProcess(){
@@ -115,6 +120,14 @@ namespace UISystem{
 		}
 		public void Show(bool instantly){
 			thisCurState.Show(instantly);
+		}
+		public bool IsHidden(){
+			return thisCurState == thisHiddenState ||
+				thisCurState == thisHidingState;
+		}
+		public bool IsShown(){
+			return thisCurState == thisShownState ||
+				thisCurState == thisShowingState;
 		}
 		/*  */
 		public void RegisterPopUp(){

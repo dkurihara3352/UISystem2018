@@ -75,7 +75,6 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\Editor\ScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ElementCursorOffsetInPixelCalculator\Editor\ElementCursorOffsetInPixelCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ElementIsScrolledToIncreaseCursorOffsetCalculator\Editor\ElementIsScrolledToIncreaseCursorOffsetCalculatorTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Scroller\ProximateParentScrollerCalculator\Editor\ProximateParentScrollerCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\InertialScrollProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementMotorProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\Editor\ScrollerElementSnapProcessTest.cs" />
@@ -87,6 +86,7 @@
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\UIEActivationStateEngineTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\ProximateParentTypedUIECalculator\Editor\ProximateParentTypedUIECalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\GroupElementAtPositionInGroupSpaceCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\GroupElementsArrayCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Editor\UIElementGroupArrayIndexCalculatorTest.cs" />

@@ -10,92 +10,86 @@ using UISystem;
 public class UIEActivationStateEngineTest {
 	[Test]
 	public void CurState_Initially_IsDeactivationCompletedState(){
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();
-		
-		IUIEActivationState actualState = engine.GetCurState();
+		ITestUIEActivationStateEngineConstArg arg = CreateMockConstArg();
+		TestUIEActivationStateEngine engine = new TestUIEActivationStateEngine(arg);
 
-		Assert.That(actualState is IUIEDeactivationCompletedState, Is.True);
+		Assert.That(engine.IsInDeactivationCompletedState_Test(), Is.True);
 	}
-	[Test][TestCaseSource(typeof(IsActivationComplete_TestCase), "cases")]
-	public void IsActivationComplete_WhenCurStateIsActivationIsComplete_ReturnsTrue(System.Type stateType, bool expected){
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngineWithState(stateType);
+	[Test]
+	public void StartNewActivationProcess_ActivationModeIsNone_SwtchesProcessProperly(){
+		ITestUIEActivationStateEngineConstArg arg = CreateMockConstArg();
+		arg.activationMode.Returns(ActivationMode.None);
+		TestUIEActivationStateEngine engine = new TestUIEActivationStateEngine(arg);
 
-		Assert.That(engine.IsActivationComplete(), Is.EqualTo(expected));
-	}
-	public class IsActivationComplete_TestCase{
-		public static object[] cases = {
-			new object[]{typeof(IUIEActivatingState), false},
-			new object[]{typeof(IUIEActivationCompletedState), true},
-			new object[]{typeof(IUIEDeactivatingState), false},
-			new object[]{typeof(IUIEDeactivationCompletedState), false},
-		};
-	}
-	[Test][TestCaseSource(typeof(IsActivated_TestCase), "cases")]
-	public void IsActivated_WhenCurStateIsActivatingOrActivationCompleted_ReturnsTrue(System.Type stateType, bool expected){
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngineWithState(stateType);
+		IUISystemProcessFactory procFactory = arg.processFactory;
+		INonActivatorUIEActivationProcess process = Substitute.For<INonActivatorUIEActivationProcess>();
+		procFactory.CreateNonActivatorUIEActivationProcess(engine, true).Returns(process);
+		IUIEActivationProcess prevProcess = Substitute.For<IUIEActivationProcess>();
+		prevProcess.IsRunning().Returns(true);
+		engine.SetRunningProcess(prevProcess);
 
-		Assert.That(engine.IsActivated(), Is.EqualTo(expected));
+		engine.StartNewActivateProcess();
+
+		prevProcess.Received(1).Stop();
+		process.Received(1).Run();
+		Assert.That(engine.GetCurRunningProcess_Test(), Is.SameAs(process));
 	}
-	public class IsActivated_TestCase{
-		public static object[] cases = {
-			new object[]{typeof(IUIEActivatingState), true},
-			new object[]{typeof(IUIEActivationCompletedState), true},
-			new object[]{typeof(IUIEDeactivatingState), false},
-			new object[]{typeof(IUIEDeactivationCompletedState), false},
-		};
+	[Test]
+	public void StartNewActivationProcess_ActivationModeIsAlpha_SwtchesProcessProperly(){
+		ITestUIEActivationStateEngineConstArg arg = CreateMockConstArg();
+		arg.activationMode.Returns(ActivationMode.Alpha);
+		TestUIEActivationStateEngine engine = new TestUIEActivationStateEngine(arg);
+
+		IUISystemProcessFactory procFactory = arg.processFactory;
+		IAlphaActivatorUIEActivationProcess process = Substitute.For<IAlphaActivatorUIEActivationProcess>();
+		procFactory.CreateAlphaActivatorUIEActivationProcess(arg.uiElement, engine, true).Returns(process);
+		IUIEActivationProcess prevProcess = Substitute.For<IUIEActivationProcess>();
+		prevProcess.IsRunning().Returns(true);
+		engine.SetRunningProcess(prevProcess);
+
+		engine.StartNewActivateProcess();
+
+		prevProcess.Received(1).Stop();
+		process.Received(1).Run();
+		Assert.That(engine.GetCurRunningProcess_Test(), Is.SameAs(process));
 	}
+
+
 	/* Test Classes */
 	public class TestUIEActivationStateEngine: UIEActivationStateEngine{
 		public TestUIEActivationStateEngine(
-			IUISystemProcessFactory processFactory, 
-			IUIElement uiElement,
-			ActivationMode activationMode
+			ITestUIEActivationStateEngineConstArg arg
 		): base(
-			processFactory, 
-			uiElement,
-			activationMode
+			arg.processFactory, 
+			arg.uiElement,
+			arg.activationMode
 		){}
 		public IUIEActivationState GetCurState(){
 			return thisCurState;
-		}		
+		}
+		public bool IsInDeactivationCompletedState_Test(){
+			return thisCurState == thisDeactivationCompletedState;
+		}
+		public void SetToActivationCompletedState_Test(){
+			thisCurState = thisActivationCompletedState;
+		}
+		public IUIEActivationProcess GetCurRunningProcess_Test(){
+			return thisRunningProcess;
+		}
+		public void SetRunningProcess(IUIEActivationProcess process){
+			thisRunningProcess = process;
+		}
 	}
-	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngine(){
-		IUISystemProcessFactory processFactory = Substitute.For<IUISystemProcessFactory>();
-		IUIElement uiElement = Substitute.For<IUIElement>();		
-		return new TestUIEActivationStateEngine(processFactory, uiElement, ActivationMode.None);
+	public interface ITestUIEActivationStateEngineConstArg{
+		IUISystemProcessFactory processFactory{get;}
+		IUIElement uiElement{get;}
+		ActivationMode activationMode{get;}
 	}
-	public TestUIEActivationStateEngine CreateTestUIEActivationStateEngineWithState(System.Type stateType){
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngine();
-		if(stateType == typeof(IUIEActivatingState))
-			engine.SetToActivatingState();
-		else if(stateType == typeof(IUIEActivationCompletedState))
-			engine.SetToActivationCompletedState();
-		else if(stateType == typeof(IUIEDeactivatingState))
-			engine.SetToDeactivatingState();
-		else if(stateType == typeof(IUIEDeactivationCompletedState))
-			engine.SetToDeactivationCompletedState();
-		else
-			throw new System.InvalidOperationException("T must be of any of four IUIEActivationState");
-		return engine;
-	}
-	[Test][TestCaseSource(typeof(MetaTest_CreateTestUIEActivationStateEngineWithState_WorksFine_TestCase), "cases")]
-	public void MetaTest_CreateTestUIEActivationStateEngineWithState_WorksFine(System.Type stateType){
-		TestUIEActivationStateEngine engine = CreateTestUIEActivationStateEngineWithState(stateType);
-		if(stateType == typeof(IUIEActivatingState))
-			Assert.That(engine.GetCurState() is IUIEActivatingState, Is.True);
-		else if(stateType == typeof(IUIEActivationCompletedState))
-			Assert.That(engine.GetCurState() is IUIEActivationCompletedState, Is.True);
-		else if(stateType == typeof(IUIEDeactivatingState))
-			Assert.That(engine.GetCurState() is IUIEDeactivatingState, Is.True);
-		else if(stateType == typeof(IUIEDeactivationCompletedState))
-			Assert.That(engine.GetCurState() is IUIEDeactivationCompletedState, Is.True);
-	}
-	public class MetaTest_CreateTestUIEActivationStateEngineWithState_WorksFine_TestCase{
-		public static object[] cases = {
-			new object[]{typeof(IUIEActivatingState)},
-			new object[]{typeof(IUIEActivationCompletedState)},
-			new object[]{typeof(IUIEDeactivatingState)},
-			new object[]{typeof(IUIEDeactivationCompletedState)}
-		};
+	public ITestUIEActivationStateEngineConstArg CreateMockConstArg(){
+		ITestUIEActivationStateEngineConstArg arg = Substitute.For<ITestUIEActivationStateEngineConstArg>();
+		arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
+		arg.uiElement.Returns(Substitute.For<IUIElement>());
+		arg.activationMode.Returns(ActivationMode.None);
+		return arg;
 	}
 }

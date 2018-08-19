@@ -141,7 +141,6 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\ElementIsScrolledToIncreaseCursorOffsetCalculator\ElementIsScrolledToIncreaseCursorOffsetCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\GenericSingleElementScroller\GenericSingleElementScrollerAdaptor.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Scroller\ProximateParentScrollerCalculator\ProximateParentScrollerCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\Scroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\ScrollerElementMotorProcess\InertialScrollProcess.cs" />
@@ -172,6 +171,7 @@
      <Compile Include="Assets\UISystem\Scripts\UIElement\GenericAlphaActivatorUIElement\GenericAlphaActivatorUIElementAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElementAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElement\ProximateParentTypedUIECalculator\ProximateParentTypedUIECalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ResizableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\TestUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />

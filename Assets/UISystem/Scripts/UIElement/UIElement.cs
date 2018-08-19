@@ -34,6 +34,7 @@ namespace UISystem{
 		IScroller GetTopmostScrollerInMotion();
 
 		/* Scroller */
+		T FindProximateParentTypedUIElement<T>() where T: class, IUIElement;
 		void CheckAndPerformStaticBoundarySnapFrom(IUIElement uieToStartCheck);
 		IScroller GetProximateParentScroller();
 		void EvaluateScrollerFocusRecursively();
@@ -41,6 +42,9 @@ namespace UISystem{
 		void BecomeDefocuesedInScrollerSelf();
 		void BecomeFocusedInScrollerRecursively();
 		void BecomeDefocusedInScrollerRecursively();
+		/* PopUp */
+		void PopUpDisableRecursivelyDownTo(IPopUp disablingPopUp);
+		void ReversePopUpDisableRecursively();
 		/* Debug */
 		void TurnTo(Color color);
 		void Flash(Color color);
@@ -266,7 +270,10 @@ namespace UISystem{
 				return thisProximateParentScroller;
 			}
 			protected virtual IScroller FindProximateParentScroller(){
-				IProximateParentScrollerCalculator calculator = new ProximateParentScrollerCalculator(this);
+				return FindProximateParentTypedUIElement<IScroller>();
+			}
+			public virtual T FindProximateParentTypedUIElement<T>() where T: class, IUIElement{
+				IProximateParentTypedUIECalculator<T> calculator = new ProximateParentTypedUIECalculator<T>(this);
 				return calculator.Calculate();
 			}
 			void ClearTopMostScroller(){
@@ -438,6 +445,35 @@ namespace UISystem{
 				foreach(IUIElement child in GetChildUIEs())
 					child.BecomeDefocusedInScrollerRecursively();
 			}
+		/* PopUp */
+		bool thisWasSelectableAtPopUpDisable;
+		bool thisInputWasEnabledAtPopUpDisable;
+		public void PopUpDisableRecursivelyDownTo(IPopUp disablingPopUp){
+			if(this.IsActivated()){
+				if(this == disablingPopUp)
+					return;
+				else{
+					thisWasSelectableAtPopUpDisable = this.IsSelectable();
+					thisInputWasEnabledAtPopUpDisable = thisIsEnabledInput;
+					BecomeUnselectable();
+					DisableInput();
+					foreach(IUIElement child in thisChildUIEs)
+						if(child != null)
+							child.PopUpDisableRecursivelyDownTo(disablingPopUp);
+				}
+			}
+		}
+		public void ReversePopUpDisableRecursively(){
+			if(this.IsActivated()){
+				if(thisWasSelectableAtPopUpDisable)
+					BecomeSelectable();
+				if(thisInputWasEnabledAtPopUpDisable)
+					EnableInput();
+				foreach(IUIElement child in thisChildUIEs)
+					if(child != null)
+						child.ReversePopUpDisableRecursively();
+			}
+		}
 		/*  */
 		public void TurnTo(Color color){
 			GetUIImage().TurnTo(color);

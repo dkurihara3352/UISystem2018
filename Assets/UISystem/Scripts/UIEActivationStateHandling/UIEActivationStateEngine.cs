@@ -28,7 +28,11 @@ namespace UISystem{
 		Alpha
 	}
 	public class UIEActivationStateEngine: AbsSwitchableStateEngine<IUIEActivationState>, IUIEActivationStateEngine{
-		public UIEActivationStateEngine(IUISystemProcessFactory processFactory, IUIElement uiElement, ActivationMode activationMode){
+		public UIEActivationStateEngine(
+			IUISystemProcessFactory processFactory, 
+			IUIElement uiElement, 
+			ActivationMode activationMode
+		){
 			thisProcessFactory = processFactory;
 			thisUIElement = uiElement;
 			thisActivationMode = activationMode;
@@ -39,10 +43,10 @@ namespace UISystem{
 			
 			SetToDeactivationCompletedState();
 		}
-		readonly IUIEActivatingState thisActivatingState;
-		readonly IUIEActivationCompletedState thisActivationCompletedState;
-		readonly IUIEDeactivatingState thisDeactivatingState;
-		readonly IUIEDeactivationCompletedState thisDeactivationCompletedState;
+		readonly protected IUIEActivatingState thisActivatingState;
+		readonly protected IUIEActivationCompletedState thisActivationCompletedState;
+		readonly protected IUIEDeactivatingState thisDeactivatingState;
+		readonly protected IUIEDeactivationCompletedState thisDeactivationCompletedState;
 		readonly IUIEActivationState[] thisStates;
 		readonly IUISystemProcessFactory thisProcessFactory;
 		readonly IUIElement thisUIElement;
@@ -83,7 +87,7 @@ namespace UISystem{
 		}
 		void StartNewActivationProcess(bool activates){
 			IUIEActivationProcess newProcess = CreateNewProcess(activates);
-			if(thisRunningProcess != null || thisRunningProcess.IsRunning())
+			if(thisRunningProcess != null && thisRunningProcess.IsRunning())
 				thisRunningProcess.Stop();
 			thisRunningProcess = newProcess;
 			newProcess.Run();
@@ -92,7 +96,7 @@ namespace UISystem{
 			if(thisRunningProcess != null)
 				thisRunningProcess.Expire();
 		}
-		IUIEActivationProcess thisRunningProcess;
+		protected IUIEActivationProcess thisRunningProcess;
 		IUIEActivationProcess CreateNewProcess(bool activates){
 			IUIEActivationProcess newProcess;
 			switch(thisActivationMode){
