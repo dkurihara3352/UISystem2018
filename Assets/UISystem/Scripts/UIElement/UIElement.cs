@@ -73,6 +73,11 @@ namespace UISystem{
 		public IUIManager GetUIM(){
 			return thisUIM;
 		}
+		IPopUpManager thisPopUpManager{
+			get{
+				return thisUIM.GetPopUpManager();
+			}
+		}
 		protected readonly IUIAdaptor thisUIA;
 		public IUIAdaptor GetUIAdaptor(){
 			return thisUIA;
@@ -110,7 +115,7 @@ namespace UISystem{
 			protected virtual void OnUIReferenceSet(){
 				return;
 			}
-			protected readonly IUIEActivationStateEngine thisUIEActivationStateEngine;
+			protected IUIEActivationStateEngine thisUIEActivationStateEngine;
 			public void InitiateActivation(bool instantly){
 				EvaluateScrollerFocusRecursively();
 				ActivateRecursively(instantly);
@@ -179,7 +184,7 @@ namespace UISystem{
 				return thisSelectabilityEngine.IsSelected();
 			}
 		/* UIInput */
-			bool thisIsEnabledInput = true;
+			protected bool thisIsEnabledInput = true;
 			/* Touch */
 			public void OnTouch(int touchCount){
 				if(this.IsActivated() && thisIsEnabledInput){
@@ -230,12 +235,18 @@ namespace UISystem{
 			}
 			/* tap */
 			public void OnTap(int tapCount){
-				if(this.IsActivated() && thisIsEnabledInput){
-					CheckAndPerformStaticBoundarySnapFrom(this);
-					OnTapImple(tapCount);
+				if(this.IsActivated()){
+					if(thisIsDisabledForPopUp)
+						thisPopUpManager.HideActivePopUp();
+					else{
+						if(thisIsEnabledInput){
+							CheckAndPerformStaticBoundarySnapFrom(this);
+							OnTapImple(tapCount);
+						}
+						else
+							PassOnTapUpward(tapCount);
+					}
 				}
-				else
-					PassOnTapUpward(tapCount);
 			}
 			protected virtual void OnTapImple(int tapCount){
 				PassOnTapUpward(tapCount);
@@ -446,29 +457,37 @@ namespace UISystem{
 					child.BecomeDefocusedInScrollerRecursively();
 			}
 		/* PopUp */
+		protected bool thisIsDisabledForPopUp = false;
 		bool thisWasSelectableAtPopUpDisable;
 		bool thisInputWasEnabledAtPopUpDisable;
+		void DisableForPopUp(){
+			thisIsDisabledForPopUp = true;
+			thisWasSelectableAtPopUpDisable = this.IsSelectable();
+			thisInputWasEnabledAtPopUpDisable = thisIsEnabledInput;
+			BecomeUnselectable();
+			DisableInput();
+		}
 		public void PopUpDisableRecursivelyDownTo(IPopUp disablingPopUp){
 			if(this.IsActivated()){
 				if(this == disablingPopUp)
 					return;
 				else{
-					thisWasSelectableAtPopUpDisable = this.IsSelectable();
-					thisInputWasEnabledAtPopUpDisable = thisIsEnabledInput;
-					BecomeUnselectable();
-					DisableInput();
+					DisableForPopUp();
 					foreach(IUIElement child in thisChildUIEs)
 						if(child != null)
 							child.PopUpDisableRecursivelyDownTo(disablingPopUp);
 				}
 			}
 		}
+		void ReverseDisableForPopUp(){
+			thisIsDisabledForPopUp = false;
+			if(thisWasSelectableAtPopUpDisable)
+				BecomeSelectable();
+			if(thisInputWasEnabledAtPopUpDisable)
+				EnableInput();
+		}
 		public void ReversePopUpDisableRecursively(){
 			if(this.IsActivated()){
-				if(thisWasSelectableAtPopUpDisable)
-					BecomeSelectable();
-				if(thisInputWasEnabledAtPopUpDisable)
-					EnableInput();
 				foreach(IUIElement child in thisChildUIEs)
 					if(child != null)
 						child.ReversePopUpDisableRecursively();

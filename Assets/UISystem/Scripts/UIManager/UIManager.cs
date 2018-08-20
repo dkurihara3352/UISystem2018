@@ -19,13 +19,23 @@ namespace UISystem{
 		void SetInputHandlingScroller(IScroller scroller, UIManager.InputName inputName);
 		IScroller GetInputHandlingScroller();
 		string GetEventName();
+		IPopUpManager GetPopUpManager();
+		void SetRootUIElement(IUIElement rootUIElement);
 	}
 	public class UIManager: IUIManager {
 		public UIManager(RectTransform uieReserveTrans, bool showsInputability){
 			thisUIEReserveTrans = uieReserveTrans;
 			thisShowsInputability = showsInputability;
+			thisPopUpManager = new PopUpManager();
+		}
+		IUIElement thisRootUIElement;
+		public void SetRootUIElement(IUIElement rootUIElement){
+			thisRootUIElement = rootUIElement;
+			thisPopUpManager.SetRootUIElement(rootUIElement);
 		}
 		Vector2 thisDragWorldPosition;
+		IPopUpManager thisPopUpManager;
+		public IPopUpManager GetPopUpManager(){return thisPopUpManager;}
 		public void SetDragWorldPosition(Vector2 dragPos){
 			thisDragWorldPosition = dragPos;
 		}

@@ -6,23 +6,34 @@ namespace UISystem{
 	public interface IPopUpManager{
 		void RegisterPopUp(IPopUp popUpToRegister);
 		void UnregisterPopUp(IPopUp popUpToUnregister);
+		void HideActivePopUp();
+		void SetRootUIElement(IUIElement uiElement);
 	}
 	public class PopUpManager : IPopUpManager {
-		IUIElement thisRoolUIElement;
+		IUIElement thisRootUIElement;
+		public void SetRootUIElement(IUIElement rootUIElement){
+			thisRootUIElement = rootUIElement;
+		}
 
 		public void RegisterPopUp(IPopUp popUpToRegister){
 			popUpToRegister.ShowHiddenProximateParentPopUpRecursively();
 			DisableOthers(popUpToRegister);
 			SetActivePopUp(popUpToRegister);
 		}
-		IPopUp thisActivePopUp;
-		void SetActivePopUp(IPopUp popUp){
+		protected IPopUp thisActivePopUp;
+		protected void SetActivePopUp(IPopUp popUp){
 			thisActivePopUp = popUp;
+		}
+		public void HideActivePopUp(){
+			if(thisActivePopUp != null)
+				thisActivePopUp.Hide(false);
 		}
 		void DisableOthers(IPopUp disablingPopUp){
 			if(thisActivePopUp == null){
-				thisRoolUIElement.PopUpDisableRecursivelyDownTo(disablingPopUp);
+				thisRootUIElement.PopUpDisableRecursivelyDownTo(disablingPopUp);
 			}else{
+				if(disablingPopUp.IsAncestorOf(thisActivePopUp))
+					return;
 				thisActivePopUp.PopUpDisableRecursivelyDownTo(disablingPopUp);
 			}
 		}
@@ -31,19 +42,12 @@ namespace UISystem{
 			ReverseDisableOthers(popUpToUnregister);
 		}
 		void ReverseDisableOthers(IPopUp enablingPopUp){
-			/*  if got some other parent above, 
-					popupEnable recursively down all the way from it
-				if not
-					popUpEnable recursively all the way down from root
-						enabling/ disabling should also be performed upon hidden/ hiding popUps
-				all parents popups if any should already be open by now
-			*/
 			IPopUp parentPopUp = enablingPopUp.GetProximateParentPopUp();
 			if(parentPopUp != null){
 				parentPopUp.ReversePopUpDisableRecursively();
 				RegisterPopUp(parentPopUp);
 			}else{
-				thisRoolUIElement.ReversePopUpDisableRecursively();
+				thisRootUIElement.ReversePopUpDisableRecursively();
 				ClearActivePopUp();
 			}
 		}

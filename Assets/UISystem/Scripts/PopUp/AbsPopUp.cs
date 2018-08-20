@@ -16,6 +16,7 @@ namespace UISystem{
 		void RegisterProximateChildPopUp(IPopUp childPopUp);
 		bool IsHidden();
 		bool IsShown();
+		bool IsAncestorOf(IPopUp other);
 	}
 	public enum PopUpMode{
 		Alpha,
@@ -39,7 +40,7 @@ namespace UISystem{
 			)
 				this.GetUIAdaptor().SetUpCanvasGroupComponent();
 
-			thisProximateParentPopUp = FindProximateParentTypedUIElement<IPopUp>();
+			thisProximateParentPopUp = FindProximateParentPopUp();
 
 			if(thisProximateParentPopUp != null)
 				thisProximateParentPopUp.RegisterProximateChildPopUp(this);
@@ -68,6 +69,9 @@ namespace UISystem{
 		public virtual void OnHideBegin(){}
 		public virtual void OnShowComplete(){}
 		public virtual void OnHideComplete(){}
+		protected virtual IPopUp FindProximateParentPopUp(){
+			return FindProximateParentTypedUIElement<IPopUp>();
+		}
 		IPopUp thisProximateParentPopUp;
 		public IPopUp GetProximateParentPopUp(){
 			return thisProximateParentPopUp;
@@ -90,6 +94,16 @@ namespace UISystem{
 					childPopUp.Hide(false);
 					childPopUp.HideShownChildPopUpsRecursively();
 				}
+			}
+		}
+		public bool IsAncestorOf(IPopUp other){
+			IPopUp popUpToExamine = other.GetProximateParentPopUp();
+			while(true){
+				if(popUpToExamine == null)
+					return false;
+				if(popUpToExamine == this)
+					return true;
+				popUpToExamine = popUpToExamine.GetProximateParentPopUp();
 			}
 		}
 	}

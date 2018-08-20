@@ -17,6 +17,8 @@ namespace UISystem{
 			IUIElementFactory uiElementFactory = new UIElementFactory(uiManager);
 			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, processFactory, uiElementFactory);
 			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
+			IUIElement rootUIElement = rootUIAdaptor.GetUIElement();
+			uiManager.SetRootUIElement(rootUIElement);
 		}
 	}	
 }
