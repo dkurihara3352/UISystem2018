@@ -95,6 +95,12 @@ namespace UISystem.PickUpUISystem{
 		public void AbortRunningTravelProcess(){
 			thisRunningTravelProcess.UnregisterTravellingUIE(this);
 		}
+		/* ProcessEventHandler */
+		public void OnProcessUpdate(float deltaT){return;}
+		public void OnProcessExpire(DKUtility.IProcess expiringProcess){
+			if(expiringProcess is ITravelProcess)
+				this.SetRunningTravelProcess(null);
+		}
 	}
 	public interface IPickableUIEConstArg: IUIElementConstArg{
 		IDragImageImplementor dragImageImplementor{get;}

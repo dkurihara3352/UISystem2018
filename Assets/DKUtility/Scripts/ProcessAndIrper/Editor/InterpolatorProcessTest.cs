@@ -9,9 +9,9 @@ using DKUtility;
 [TestFixture][Category("DKUtility")]
 public class InterpolatorProcessTest{
     [Test]
-    public void Run_ValueDifferenceIsBigEnough_CallsIrperInterpolateWithZero(){
-        IProcessManager processManager = Substitute.For<IProcessManager>();
-        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, 1f, .1f, .5f, false, null);
+    public void Run_CallsIrperInterpolateWithZero(){
+        IInterpolatorProcesssConstArg arg = CreateMockArg();
+        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(arg);
 
         testProcess.Run();
 
@@ -19,14 +19,15 @@ public class InterpolatorProcessTest{
         irper.Received(1).Interpolate(0f);
     }
     [Test][TestCaseSource(typeof(UpdateProcess_TestCases), "cases")]
-    public void UpdateProcess_ValueDiffIsBigEnough_CallsIrperInterpolate(float expireT){
-        IProcessManager processManager = Substitute.For<IProcessManager>();
-        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(processManager, ProcessConstraint.expireTime, expireT, .1f, .5f, false, null);
+    public void UpdateProcess_CallsIrperInterpolate(float expireT){
+        IInterpolatorProcesssConstArg arg = CreateMockArg();
+        TestInterpolatorProcess testProcess = new TestInterpolatorProcess(arg);
 
         testProcess.Run();
         IInterpolator irper = testProcess.GetInterpolator();
         irper.Received(1).Interpolate(0f);
 
+        IProcessManager processManager = arg.processManager;
         const float deltaT = .1f;
         for(float f = deltaT; f < expireT; f += deltaT){
             float elapsedT = f;
@@ -52,8 +53,11 @@ public class InterpolatorProcessTest{
         };
     }
     public class TestInterpolatorProcess: AbsInterpolatorProcess<IInterpolator>{
-        public TestInterpolatorProcess(IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float diffThreshold, float normalizedValueDiff, bool useSpringT, IWaitAndExpireProcessState state): base(processManager, processConstraint, constraintValue, diffThreshold, useSpringT, state){
-            thisLatestInitialValueDifference = normalizedValueDiff;
+        public TestInterpolatorProcess(
+            IInterpolatorProcesssConstArg arg
+        ): base(
+            arg    
+        ){
         }
         protected override IInterpolator InstantiateInterpolatorWithValues(){
             IInterpolator irper = Substitute.For<IInterpolator>();
@@ -62,9 +66,14 @@ public class InterpolatorProcessTest{
         public IInterpolator GetInterpolator(){
             return thisInterpolator;
         }
-        protected override float GetLatestInitialValueDifference(){
-            return thisLatestInitialValueDifference;
-        }
-        readonly float thisLatestInitialValueDifference;
+        protected override float GetLatestInitialValueDifference(){return 0f;}
+    }
+    public IInterpolatorProcesssConstArg CreateMockArg(){
+        IInterpolatorProcesssConstArg arg = Substitute.For<IInterpolatorProcesssConstArg>();
+        arg.processManager.Returns(Substitute.For<IProcessManager>());
+        arg.processConstraint.Returns(ProcessConstraint.ExpireTime);
+        arg.constraintValue.Returns(1f);
+        arg.useSpringT.Returns(false);
+        return arg;
     }
 }

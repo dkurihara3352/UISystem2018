@@ -105,10 +105,14 @@ namespace UISystem.PickUpUISystem{
 			}
 		}
 	}
-	public interface IDisemptifyingState: IItemIconNonEmptyState, IWaitAndExpireProcessState{
+	public interface IDisemptifyingState: IItemIconNonEmptyState{
 	}
 	public class DisemptifyingState: AbsItemIconNonEmptyState, IDisemptifyingState{
-		public DisemptifyingState(IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
+		public DisemptifyingState(
+			IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory
+		): base(
+			stateEngine
+		){
 			thisProcessFactory = pickUpSystemProcessFactory;
 		}
 		protected override void CheckRemoval(bool removesEmpty){
@@ -123,17 +127,14 @@ namespace UISystem.PickUpUISystem{
 		IItemIconDisemptifyProcess thisProcess;
 		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
-			thisProcess = thisProcessFactory.CreateItemIconDisemptifyProcess(this, thisItemIconImage);
+			thisProcess = thisProcessFactory.CreateItemIconDisemptifyProcess(
+				thisItemIconImage, 
+				thisStateEngine
+			);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
 			StopAndClearProcess();
-		}
-		public void OnProcessExpire(){
-			thisStateEngine.SetToWaitingForEmptifyState();
-		}
-		public void OnProcessUpdate(float deltaT){
-			return;
 		}
 		public void ExpireProcess(){
 			StopAndClearProcess();
@@ -186,11 +187,15 @@ namespace UISystem.PickUpUISystem{
 			throw new System.InvalidOperationException("this is empty and cannot init image");
 		}
 	}
-	public interface IEmptifyingState: IItemIconEmptyState, IWaitAndExpireProcessState{
+	public interface IEmptifyingState: IItemIconEmptyState{
 		void ToggleRemoval(bool removesEmpty);
 	}
 	public class EmptifyingState: AbsItemIconEmptyState, IEmptifyingState{
-		public EmptifyingState(IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
+		public EmptifyingState(
+			IItemIconEmptinessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory
+		): base(
+			stateEngine
+		){
 			thisProcessFactory = pickUpSystemProcessFactory;
 		}
 		IItemIconEmptifyProcess thisProcess;
@@ -200,21 +205,16 @@ namespace UISystem.PickUpUISystem{
 			thisRemovesEmpty = removesEmpty;
 		}
 		public override void OnEnter(){
-			thisProcess = thisProcessFactory.CreateItemIconEmptifyProcess(this, thisItemIconImage, thisItemIcon);
+			thisProcess = thisProcessFactory.CreateItemIconEmptifyProcess(
+				thisItemIconImage, 
+				thisStateEngine,
+				thisItemIcon,
+				thisRemovesEmpty
+			);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
 			StopAndClearProcess();
-		}
-		public void OnProcessUpdate(float deltaT){
-			return;
-		}
-		public void OnProcessExpire(){
-			if(thisRemovesEmpty){
-				IIconGroup ig = thisItemIcon.GetIconGroup();
-				ig.RemoveIIAndMutate(thisItemIcon);
-			}
-			thisStateEngine.SetToWaitingForDisemptifyState();
 		}
 		public void ExpireProcess(){
 			StopAndClearProcess();

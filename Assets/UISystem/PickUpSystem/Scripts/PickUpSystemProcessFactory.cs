@@ -5,30 +5,96 @@ using DKUtility;
 
 namespace UISystem.PickUpUISystem{
 	public interface IPickUpSystemProcessFactory: IUISystemProcessFactory{
- 		IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient);
-		IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage uiImage);
-		IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage uiImage, IItemIcon itemIcon);
-		IVisualPickednessProcess CreateVisualPickednessProcess(IChangingVisualPickednessState state, IPickableUIImage pickableUIImage, float sourcePickedness, float targetPickedness);
+ 		IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(
+			 ITravelableUIE travelableUIE, 
+			 IPickUpManager pum, 
+			 float dragThreshold, 
+			 float smoothCoefficient
+		);
+		IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(
+			IItemIconImage uiImage,
+			IItemIconEmptinessStateEngine engine
+		);
+		IItemIconEmptifyProcess CreateItemIconEmptifyProcess(
+			IItemIconImage itemIconImage, 
+			IItemIconEmptinessStateEngine engine,
+			IItemIcon itemIcon,
+			bool removesEmpty
+		);
+		IVisualPickednessProcess CreateVisualPickednessProcess(
+			IPickableUIImage pickableUIImage, 
+			float targetPickedness,
+			IVisualPickednessStateEngine engine,
+			bool becomePicked
+		);
 	}
 	public class PickUpSystemProcessFactory: UISystemProcessFactory, IPickUpSystemProcessFactory{
 		public PickUpSystemProcessFactory(IProcessManager processManager, IUIManager uim): base(processManager, uim){}
 		public IImageSmoothFollowDragPositionProcess CreateImageSmoothFollowDragPositionProcess(ITravelableUIE travelableUIE, IPickUpManager pum, float dragThreshold, float smoothCoefficient){
-			ImageSmoothFollowDragPositionProcess process = new ImageSmoothFollowDragPositionProcess(travelableUIE, pum, dragThreshold, smoothCoefficient, thisProcessManager);
+			IImageSmoothFollowDragPositionProcessConstArg arg = new ImageSmoothFollowDragPositionProcessConstArg(
+				thisProcessManager, 
+				travelableUIE,
+				pum,
+				dragThreshold,
+				smoothCoefficient
+			);
+			ImageSmoothFollowDragPositionProcess process = new ImageSmoothFollowDragPositionProcess(arg);
 			return process;
 		}
-		public IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(IDisemptifyingState disemptifyingState, IItemIconImage itemIconImage){
+		public IItemIconDisemptifyProcess CreateItemIconDisemptifyProcess(
+			IItemIconImage itemIconImage,
+			IItemIconEmptinessStateEngine engine
+		){
 			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
-			IItemIconDisemptifyProcess process = new ItemIconDisemptifyProcess(thisProcessManager, expireT, itemIconImage, disemptifyingState);
+			IItemIconEmptificationProcessConstArg arg = new ItemIconEmptificationProcessConstArg(
+				thisProcessManager,
+				expireT,
+				itemIconImage,
+				engine
+			);
+			IItemIconDisemptifyProcess process = new ItemIconDisemptifyProcess(arg);
 			return process;
 		}
-		public IItemIconEmptifyProcess CreateItemIconEmptifyProcess(IEmptifyingState emptifyingState, IItemIconImage itemIconImage, IItemIcon itemIcon){
+		public IItemIconEmptifyProcess CreateItemIconEmptifyProcess(
+			IItemIconImage itemIconImage, 
+			IItemIconEmptinessStateEngine engine,
+			IItemIcon itemIcon,
+			bool removesEmpty
+		){
 			float expireT = thisProcessManager.GetImageEmptificationExpireTime();
-			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(thisProcessManager, expireT, itemIconImage, emptifyingState);
+			IItemIconEmptifyProcessConstArg arg = new ItemIconEmptifyProcessConstArg(
+				thisProcessManager,
+				expireT,
+				itemIconImage,
+				engine,
+				itemIcon,
+				removesEmpty
+			);
+			IItemIconEmptifyProcess process = new ItemIconEmptifyProcess(arg);
 			return process;
 		}
-		public IVisualPickednessProcess CreateVisualPickednessProcess(IChangingVisualPickednessState state, IPickableUIImage image, float sourcePickedness, float targetPickedness){
+		public IVisualPickednessProcess CreateVisualPickednessProcess(
+			IPickableUIImage image, 
+			float targetPickedness,
+			IVisualPickednessStateEngine engine,
+			bool becomePicked
+		){
 			float expireT = thisProcessManager.GetVisualPickednessProcessExpireTime();
-			IVisualPickednessProcess process = new VisualPickednessProcess(thisProcessManager, expireT, image, targetPickedness, state);
+			IVisualPickednessProcessConstArg arg = new VisualPickednessProcessConstArg(
+				thisProcessManager,
+				ProcessConstraint.ExpireTime,
+				expireT,
+				false,
+
+				image,
+				targetPickedness,
+				engine
+			);
+			IVisualPickednessProcess process;
+			if(becomePicked)
+				process = new BecomeVisuallyPickedProcess(arg);
+			else	
+				process = new BecomeVisuallyUnpickedrocess(arg);
 			return process;
 		}
 	}

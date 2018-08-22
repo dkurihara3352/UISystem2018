@@ -11,7 +11,7 @@ using DKUtility;
 public class AlphaActivatorUIEActivationProcessTest{
     [Test][TestCaseSource(typeof(GetLatestInitialValueDifference_TestCase), "cases")]
     public void GetLatestInitialValueDifference_Various(float currentGroupAlpha, bool doesActivate, float expectedValueDifference){
-        ITestAlphaActivatorUIEActivationProcessConstArg arg = CreateMockConstArg();
+        IAlphaActivatorUIEActivationProcessConstArg arg = CreateMockConstArg();
         arg.doesActivate.Returns(doesActivate);
         IUIAdaptor uia = Substitute.For<IUIAdaptor>();
         uia.GetGroupAlpha().Returns(currentGroupAlpha);
@@ -41,30 +41,22 @@ public class AlphaActivatorUIEActivationProcessTest{
     }
     public class TestAlphaActivatorUIEActivationProcess: AlphaActivatorUIEActivationProcess{
         public TestAlphaActivatorUIEActivationProcess(
-            ITestAlphaActivatorUIEActivationProcessConstArg arg
+            IAlphaActivatorUIEActivationProcessConstArg arg
         ): base(
-            arg.processManager, 
-            arg.expireT, 
-            arg.engine,
-            arg.uiElement,
-            arg.doesActivate
+            arg
         ){}
         
         public float GetLatestInitialValueDifference_Test(){
             return this.GetLatestInitialValueDifference();
         }
     }
-    public interface ITestAlphaActivatorUIEActivationProcessConstArg{
-        IProcessManager processManager{get;}
-        float expireT{get;}
-        IUIEActivationStateEngine engine{get;}
-        IUIElement uiElement{get;}
-        bool doesActivate{get;}
-    }
-    public ITestAlphaActivatorUIEActivationProcessConstArg CreateMockConstArg(){
-        ITestAlphaActivatorUIEActivationProcessConstArg arg = Substitute.For<ITestAlphaActivatorUIEActivationProcessConstArg>();
+    public IAlphaActivatorUIEActivationProcessConstArg CreateMockConstArg(){
+        IAlphaActivatorUIEActivationProcessConstArg arg = Substitute.For<IAlphaActivatorUIEActivationProcessConstArg>();
         arg.processManager.Returns(Substitute.For<IProcessManager>());
-        arg.expireT.Returns(1f);
+        arg.processConstraint.Returns(ProcessConstraint.ExpireTime);
+        arg.constraintValue.Returns(1f);
+        arg.useSpringT.Returns(false);
+
         arg.engine.Returns(Substitute.For<IUIEActivationStateEngine>());
         arg.uiElement.Returns(Substitute.For<IUIElement>());
         arg.doesActivate.Returns(true);

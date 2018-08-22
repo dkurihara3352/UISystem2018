@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace UISystem{
 	public interface IGenericAlphaActivatorUIElementAdaptor: IUIAdaptor{}
-	[RequireComponent(typeof(CanvasGroup))]
+
 	public class GenericAlphaActivatorUIElementAdaptor : UIAdaptor, IGenericAlphaActivatorUIElementAdaptor {
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementConstArg arg = new UIElementConstArg(

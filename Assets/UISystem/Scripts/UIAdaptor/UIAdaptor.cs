@@ -50,10 +50,17 @@ namespace UISystem{
 
 			}
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
+				
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				IUIImage uiImage = CreateUIImage();
 				thisUIElement = CreateUIElement(uiImage);
-				thisInputStateEngine = new UIAdaptorInputStateEngine(passedData.uim, this, thisDomainActivationData.processFactory);
+
+				IUIAdaptorInputStateEngineConstArg arg = new UIAdaptorInputStateEngineConstArg(
+					passedData.uim, 
+					this, 
+					thisDomainActivationData.processFactory
+				);
+				thisInputStateEngine = new UIAdaptorInputStateEngine(arg);
 
 				this.enabled = true;
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);

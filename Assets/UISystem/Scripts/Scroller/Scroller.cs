@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DKUtility.CurveUtility;
+using DKUtility;
 namespace UISystem{
 	public interface IScroller: IUIElement{
 		void SwitchRunningElementMotorProcess(IScrollerElementMotorProcess process, int dimension);

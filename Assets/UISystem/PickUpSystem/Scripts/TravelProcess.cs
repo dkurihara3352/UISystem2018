@@ -9,21 +9,13 @@ namespace UISystem.PickUpUISystem{
 		void UnregisterTravellingUIE(ITravelableUIE travellingUIE);
 	}
 	public abstract class AbsSingleTravellerTravelProcess: AbsProcess, ITravelProcess{
-		public AbsSingleTravellerTravelProcess(ITravelableUIE travelableUIE, IProcessManager procMan): base(procMan){
-			thisTravellingUIE = travelableUIE;
+		public AbsSingleTravellerTravelProcess(ITravelProcessConstArg arg): base(arg){
+			thisTravellingUIE = arg.travelableUIE;
 		}
 		protected ITravelableUIE thisTravellingUIE;
 		public override void Run(){
 			base.Run();
 			thisTravellingUIE.SetRunningTravelProcess(this);
-		}
-		public override void Stop(){
-			base.Stop();
-			RemoveRefToThisInTravellingUIE();
-		}
-		public override void Expire(){
-			base.Expire();
-			RemoveRefToThisInTravellingUIE();
 		}
 		void RemoveRefToThisInTravellingUIE(){
 			if(thisTravellingUIE != null){
@@ -56,7 +48,25 @@ namespace UISystem.PickUpUISystem{
 				}
 			}
 		}
+		protected override void ExpireImple(){
+			base.ExpireImple();
+			if(thisTravellingUIE.GetRunningTravelProcess() == this)
+				thisTravellingUIE.SetRunningTravelProcess(null);
+		}
 	}
-	// public abstract class AbsMutipleTravellersTravelProcess: ITravelProcess{
-	// }
+	public interface ITravelProcessConstArg: IProcessConstArg{
+		ITravelableUIE travelableUIE{get;}
+	}
+	public class TravelProcessConstArg: ProcessConstArg, ITravelProcessConstArg{
+		public TravelProcessConstArg(
+			IProcessManager processManager,
+			ITravelableUIE travelableUIE
+		): base(
+			processManager
+		){
+			thisTravelableUIE = travelableUIE;
+		}
+		readonly ITravelableUIE thisTravelableUIE;
+		public ITravelableUIE travelableUIE{get{return thisTravelableUIE;}}
+	}
 }

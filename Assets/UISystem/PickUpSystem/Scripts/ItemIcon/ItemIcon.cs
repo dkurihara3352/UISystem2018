@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using DKUtility;
 namespace UISystem.PickUpUISystem{
 	public interface IItemIcon: IPickableUIE, IPickUpReceiver, IEmptinessStateHandler, IPickabilityStateHandler, IUIItemHandler, ITransferabilityHandler, IGhostificationStateHandler{
 		void SetUpAsPickedII();
@@ -241,7 +241,6 @@ namespace UISystem.PickUpUISystem{
 			public void RemoveAndMutate(){
 				thisIG.RemoveIIAndMutate(this);
 			}
-		/*  */
 	}
 	public interface IItemIconConstArg: IPickableUIEConstArg{
 		IItemIconTransactionManager iiTAM{get;}

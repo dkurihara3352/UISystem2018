@@ -8,52 +8,23 @@ namespace UISystem{
 	public interface IScrollerElementSnapProcess: IScrollerElementMotorProcess{}
 	public class ScrollerElementSnapProcess: AbsScrollerElementMotorProcess, IScrollerElementSnapProcess{
 		public ScrollerElementSnapProcess(
-			float targetElementLocalPositionOnAxis, 
-			float initialVelOnAxis, 
-			IScroller scroller, 
-			IUIElement scrollerElement, 
-			int dimension, 
-			float diffThreshold, 
-			float stopVelocity, 
-			IProcessManager processManager
+			IScrollerElementSnapProcessConstArg arg
 		): base(
-			scroller, 
-			dimension, 
-			processManager
+			arg
 		){
+			IUIElement scrollerElement = arg.scrollerElement;
+			int dimension = arg.dimension;
+			float targetElementLocalPositionOnAxis = arg.targetElementLocalPositionOnAxis;
+			float initialVelOnAxis = arg.initialVelocityOnAxis;
 
 			float initialElementLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisTargetElementLocalPositionOnAxis = targetElementLocalPositionOnAxis;
 
-			thisDiffThreshold = MakeSureDiffThresholdIsInRange(diffThreshold);
-			ExpireIfValueDifferenceIsSmallEnough(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, thisDiffThreshold);
-
-			float springCoefficient = processManager.GetScrollerElementSnapSpringCoefficient();
+			float springCoefficient = thisProcessManager.GetScrollerElementSnapSpringCoefficient();
 			thisSpringCalculator = new RealTimeCriticallyDampedSpringCalculator(initialElementLocalPosOnAxis, targetElementLocalPositionOnAxis, initialVelOnAxis, springCoefficient);
 			
 			prevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
 			thisInitVel = initialVelOnAxis;
-		}
-		void ExpireIfValueDifferenceIsSmallEnough(float initValue, float termValue, float diffThreshold){
-			if(Mathf.Abs(initValue - termValue) <= diffThreshold){
-				Expire();
-				return;
-			}
-		}
-		protected float MakeSureDiffThresholdIsInRange(float source){
-			if(source <= 0f)
-				throw new System.InvalidOperationException("source threshold must be greater than 0");
-			else{
-				if(source < thisMinDiffThreshold)
-					return thisMinDiffThreshold;
-				else
-					return source;
-			}
-		}
-		protected float MakeSureThresholdIsGreaterThanZero(float source){
-			if(source <= 0f)
-				throw new System.InvalidOperationException("source threshold must be greater than 0");
-			else return source;
 		}
 		readonly float thisTargetElementLocalPositionOnAxis;
 		readonly IRealTimeCriticallyDampedSpringCalculator thisSpringCalculator;
@@ -89,10 +60,42 @@ namespace UISystem{
 			float diff = prevLocalPosOnAxis - thisTargetElementLocalPositionOnAxis;
 			return Mathf.Abs(diff) <= thisDiffThreshold;
 		}
-		public override void Expire(){
+		protected override void ExpireImple(){
+			base.ExpireImple();
 			thisScroller.SetScrollerElementLocalPosOnAxis(thisTargetElementLocalPositionOnAxis, thisDimension);
 			thisScroller.UpdateVelocity(0f, thisDimension);
-			base.Expire();
 		}
-	}	
+	}
+	public interface IScrollerElementSnapProcessConstArg: IScrollerElementMotorProcessConstArg{
+		float targetElementLocalPositionOnAxis{get;}
+		float initialVelocityOnAxis{get;}
+		float stopVelocity{get;}
+	}
+	public class ScrollerElementSnapProcessConstArg: ScrollerElementMotorProcessConstArg, IScrollerElementSnapProcessConstArg{
+		public ScrollerElementSnapProcessConstArg(
+			IProcessManager processManager,
+			IUIElement scrollerElement,
+			IScroller scroller,
+			int dimension,
+
+			float targetElementLocalPositionOnAxis,
+			float initialVelocityOnAxis,
+			float stopVelocity
+		): base(
+			processManager,
+			scroller,
+			scrollerElement,
+			dimension
+		){
+			thisTargetElementLocalPositionOnAxis = targetElementLocalPositionOnAxis;
+			thisInitialVelocityOnAxis = initialVelocityOnAxis;
+			thisStopVelocity = stopVelocity;
+		}
+		readonly float thisTargetElementLocalPositionOnAxis;
+		public float targetElementLocalPositionOnAxis{get{return thisTargetElementLocalPositionOnAxis;}}
+		readonly float thisInitialVelocityOnAxis;
+		public float initialVelocityOnAxis{get{return thisInitialVelocityOnAxis;}}
+		readonly float thisStopVelocity;
+		public float stopVelocity{get{return thisStopVelocity;}}
+	}
 }

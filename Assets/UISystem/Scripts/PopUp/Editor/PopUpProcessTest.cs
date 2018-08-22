@@ -15,7 +15,7 @@ public class PopUpProcessTest {
         bool hides, 
         float expected
     ){
-        ITestAlphaPopUpProcessConstArg arg = CreateMockArg();
+        IAlphaPopUpProcessConstArg arg = CreateMockArg();
             arg.hides.Returns(hides);
             IUIAdaptor uia = Substitute.For<IUIAdaptor>();
                 uia.GetGroupAlpha().Returns(curGroupAlpha);
@@ -74,7 +74,7 @@ public class PopUpProcessTest {
     }
     [Test]
     public void Expire_Hides_CallsEngineSwitchToHiddenState(){
-        ITestAlphaPopUpProcessConstArg arg = CreateMockArg();
+        IAlphaPopUpProcessConstArg arg = CreateMockArg();
         IUIAdaptor uia = Substitute.For<IUIAdaptor>();
             uia.GetGroupAlpha().Returns(1f);//required not to early break
         arg.popUp.GetUIAdaptor().Returns(uia);
@@ -84,11 +84,11 @@ public class PopUpProcessTest {
 
         process.Expire();
 
-        arg.popUpStateEngine.Received(1).SwitchToHiddenState();
+        arg.engine.Received(1).SwitchToHiddenState();
     }
     [Test]
     public void Expire_NotHides_CallsEngineSwitchToShownState(){
-        ITestAlphaPopUpProcessConstArg arg = CreateMockArg();
+        IAlphaPopUpProcessConstArg arg = CreateMockArg();
         IUIAdaptor uia = Substitute.For<IUIAdaptor>();
             uia.GetGroupAlpha().Returns(0f);//required not to early break
         arg.popUp.GetUIAdaptor().Returns(uia);
@@ -98,36 +98,27 @@ public class PopUpProcessTest {
 
         process.Expire();
 
-        arg.popUpStateEngine.Received(1).SwitchToShownState();
+        arg.engine.Received(1).SwitchToShownState();
     }
 
     public class TestAlphaPopUpProcess: AlphaPopUpProcess{
         public TestAlphaPopUpProcess(
-            ITestAlphaPopUpProcessConstArg arg
+            IAlphaPopUpProcessConstArg arg
         ): base(
-            arg.processManager,
-            arg.expireTime,
-            arg.popUp,
-            arg.popUpStateEngine,
-            arg.hides
+            arg
         ){}
         public float GetLatestInitialValueDifference_Test(){
             return this.GetLatestInitialValueDifference();
         }
     }
-    public interface ITestAlphaPopUpProcessConstArg{
-        IProcessManager processManager{get;}
-        float expireTime{get;}
-        IPopUp popUp{get;}
-        IPopUpStateEngine popUpStateEngine{get;}
-        bool hides{get;}
-    }
-    public ITestAlphaPopUpProcessConstArg CreateMockArg(){
-        ITestAlphaPopUpProcessConstArg arg = Substitute.For<ITestAlphaPopUpProcessConstArg>();
+    
+    public IAlphaPopUpProcessConstArg CreateMockArg(){
+        IAlphaPopUpProcessConstArg arg = Substitute.For<IAlphaPopUpProcessConstArg>();
         arg.processManager.Returns(Substitute.For<IProcessManager>());
-        arg.expireTime.Returns(1f);
+        arg.processConstraint.Returns(ProcessConstraint.ExpireTime);
+        arg.constraintValue.Returns(1f);
         arg.popUp.Returns(Substitute.For<IPopUp>());
-        arg.popUpStateEngine.Returns(Substitute.For<IPopUpStateEngine>());
+        arg.engine.Returns(Substitute.For<IPopUpStateEngine>());
         arg.hides.Returns(false);
         return arg;
     }

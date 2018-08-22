@@ -19,13 +19,11 @@ namespace DKUtility{
 				newList.Add(process);
 				thisRunningProcesses = newList;
 			}
-				// thisRunningProcesses.Add(process);
 		}
 		public void RemoveRunningProcess(IProcess process){
 			List<IProcess> newList = new List<IProcess>(thisRunningProcesses);
 			newList.Remove(process);
 			thisRunningProcesses = newList;
-			// thisRunningProcesses.Remove(process);
 		}
 		public void UpdateAllRegisteredProcesses(float deltaTime){
 			foreach(IProcess process in thisRunningProcesses){
@@ -87,6 +85,15 @@ namespace DKUtility{
 		public float alhpaPopUpExpireTime;
 		public float GetAlphaPopUpExpireTime(){
 			return alhpaPopUpExpireTime;
+		}
+		/*  */
+		public float uiaWaitForTapProcesExpireTime;
+		public float GetUIAWaitForTapProcessExpireTime(){
+			return uiaWaitForTapProcesExpireTime;
+		}
+		public float uiaWaitForNextTouchProcessExpireTime;
+		public float GetUIAWaitForNextTouchProcessExpireTime(){
+			return uiaWaitForNextTouchProcessExpireTime;
 		}
 	}
 }

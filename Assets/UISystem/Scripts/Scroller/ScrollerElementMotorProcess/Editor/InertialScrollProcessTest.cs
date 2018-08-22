@@ -11,7 +11,7 @@ using DKUtility;
 public class InertialScrollProcessTest {
     [Test, TestCaseSource(typeof(Construction_DecelerationNotGreaterThanZero_TestCase), "cases")]
     public void Construction_DecelerationNotGreaterThanZero_ThrowsException(float deceleration){
-        ITestInertialScrollProcessConstArg arg = CreateMockConstArg();
+        IInertialScrollProcessConstArg arg = CreateMockConstArg();
         arg.deceleration.Returns(deceleration);
         
         Assert.Throws(
@@ -29,7 +29,7 @@ public class InertialScrollProcessTest {
     }
     [Test, TestCaseSource(typeof(Construction_DecelAxisCompMultiplierLessThanZero_TestCase), "cases")]
     public void Construction_DecelAxisCompMultiplierLessThanZero_ThrowsException(float decelAxisCompMultiplier){
-        ITestInertialScrollProcessConstArg arg = CreateMockConstArg();
+        IInertialScrollProcessConstArg arg = CreateMockConstArg();
         arg.decelerationAxisComponentMultiplier.Returns(decelAxisCompMultiplier);
         
         Assert.Throws(
@@ -46,10 +46,10 @@ public class InertialScrollProcessTest {
         };
     }
     [Test, TestCaseSource(typeof(Construction_MultiplierNotLessThanZero_SetsExpireTime_TestCase), "cases")]
-    public void Construction_MultiplierNotLessThanZero_SetsExpireTime(float initialDeltaPosOnAxis, float deceleration, float decelerationAxisComponentMultiplier, float expected){
-        ITestInertialScrollProcessConstArg arg = CreateMockConstArg();
+    public void Construction_MultiplierNotLessThanZero_SetsExpireTime(float initialVelocity, float deceleration, float decelerationAxisComponentMultiplier, float expected){
+        IInertialScrollProcessConstArg arg = CreateMockConstArg();
         arg.deceleration.Returns(deceleration);
-        arg.initialDeltaPosOnAxis.Returns(initialDeltaPosOnAxis);
+        arg.initialVelocity.Returns(initialVelocity);
         arg.decelerationAxisComponentMultiplier.Returns(decelerationAxisComponentMultiplier);
         TestInertialScrollProcess process = new TestInertialScrollProcess(arg);
 
@@ -67,9 +67,9 @@ public class InertialScrollProcessTest {
     }
     [Test, TestCaseSource(typeof(UpadateProcess_Demo_TestCase), "cases"), Ignore]
     public void UpadateProcess_Demo(float initDeltaPosOnAxis, float deceleration, int dimension, Vector2 elementInitLocalPos){
-        ITestInertialScrollProcessConstArg arg = CreateMockConstArg();
+        IInertialScrollProcessConstArg arg = CreateMockConstArg();
         arg.processManager.GetInertialScrollDeceleration().Returns(deceleration);
-        arg.initialDeltaPosOnAxis.Returns(initDeltaPosOnAxis);
+        arg.initialVelocity.Returns(initDeltaPosOnAxis);
         arg.dimension.Returns(dimension);
         IUIElement scrollerElement = Substitute.For<IUIElement>();
         scrollerElement.GetLocalPosition().Returns(elementInitLocalPos);
@@ -103,31 +103,22 @@ public class InertialScrollProcessTest {
 
 
     public class TestInertialScrollProcess: InertialScrollProcess{
-        public TestInertialScrollProcess(ITestInertialScrollProcessConstArg arg): base(arg.initialDeltaPosOnAxis, arg.deceleration, arg.decelerationAxisComponentMultiplier, arg.scroller, arg.scrollerElement, arg.dimension, arg.processManager){}
+        public TestInertialScrollProcess(IInertialScrollProcessConstArg arg): base(arg){}
         public float thisDeceleration_Test{get{return thisDeceleration;}}
         public float thisExpireTime_Test{get{return thisExpireTime;}}
         public float thisElapsedTime_Test{get{return thisElapsedTime;}}
         public float thisPrevVelocity_Test{get{return thisPrevVelocity;}}
     }
-    public interface ITestInertialScrollProcessConstArg{
-        float initialDeltaPosOnAxis{get;}
-        float deceleration{get;}
-        float decelerationAxisComponentMultiplier{get;}
-        IScroller scroller{get;}
-        IUIElement scrollerElement{get;}
-        int dimension{get;}
-        IProcessManager processManager{get;}
-    }
-    public ITestInertialScrollProcessConstArg CreateMockConstArg(){
-        ITestInertialScrollProcessConstArg arg = Substitute.For<ITestInertialScrollProcessConstArg>();
-        arg.initialDeltaPosOnAxis.Returns(0f);
-        arg.deceleration.Returns(.1f);
-        arg.decelerationAxisComponentMultiplier.Returns(.5f);
+    public IInertialScrollProcessConstArg CreateMockConstArg(){
+        IInertialScrollProcessConstArg arg = Substitute.For<IInertialScrollProcessConstArg>();
+        arg.processManager.Returns(Substitute.For<IProcessManager>());
         arg.scroller.Returns(Substitute.For<IScroller>());
         arg.scrollerElement.Returns(Substitute.For<IUIElement>());
         arg.dimension.Returns(0);
-        IProcessManager processManager = Substitute.For<IProcessManager>();
-        arg.processManager.Returns(processManager);
+
+        arg.initialVelocity.Returns(0f);
+        arg.deceleration.Returns(.1f);
+        arg.decelerationAxisComponentMultiplier.Returns(.5f);
 
         return arg;
     }

@@ -7,29 +7,20 @@ namespace UISystem{
 	public interface IImageColorTurnProcess: IProcess{}
 	public class GenericImageColorTurnProcess : AbsInterpolatorProcess<IImageColorInterpolator>, IImageColorTurnProcess {
 		public GenericImageColorTurnProcess(
-			IProcessManager processManager,
-			float expireTime,
-			IUIImage uiImage, 
-			Color targetColor,
-			bool flash
+			IImageColorTurnProcessConstArg arg
 		):base(
-			processManager,
-			ProcessConstraint.expireTime,
-			expireTime,
-			0.05f,
-			false,
-			null
+			arg
 		){
-			thisUIImage = uiImage;
-			thisTargetColor = targetColor;
-			thisFlash = flash;
+			thisUIImage = arg.uiImage;
+			thisTargetColor = arg.targetColor;
+			thisFlashes = arg.flashes;
 		}
 		readonly IUIImage thisUIImage;
 		readonly Color thisTargetColor;
-		readonly bool thisFlash;
+		readonly bool thisFlashes;
 		protected override float GetLatestInitialValueDifference(){return 1f;}
 		protected override IImageColorInterpolator InstantiateInterpolatorWithValues(){
-			if(!thisFlash)
+			if(!thisFlashes)
 				return new ImageColorInterpolator(thisUIImage, thisTargetColor);
 			else
 				return new ImageColorFlashInterpolator(thisUIImage, thisTargetColor);
@@ -72,6 +63,39 @@ namespace UISystem{
 			thisUIImage.SetColor(newColor);
 		}
 		public override void Terminate(){}
+	}
+
+
+
+	public interface IImageColorTurnProcessConstArg: IInterpolatorProcesssConstArg{
+		IUIImage uiImage{get;}
+		Color targetColor{get;}
+		bool flashes{get;}
+	}
+	public class ImageColorTurnProcessConstArg: InterpolatorProcessConstArg, IImageColorTurnProcessConstArg{
+		public ImageColorTurnProcessConstArg(
+			IProcessManager processManager,
+			float expireTime,
+
+			IUIImage uiImage,
+			Color targetColor,
+			bool flashes
+		): base(
+			processManager,
+			ProcessConstraint.ExpireTime,
+			expireTime,
+			false
+		){
+			thisUIImage = uiImage;
+			thisTargetColor = targetColor;
+			thisFlashes = flashes;
+		}
+		readonly IUIImage thisUIImage;
+		public IUIImage uiImage{get{return thisUIImage;}}
+		readonly Color thisTargetColor;
+		public Color targetColor{get{return thisTargetColor;}}
+		readonly bool thisFlashes;
+		public bool flashes{get{return thisFlashes;}}
 	}
 }
 

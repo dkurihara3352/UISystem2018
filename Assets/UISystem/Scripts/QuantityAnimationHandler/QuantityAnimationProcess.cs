@@ -7,9 +7,13 @@ namespace UISystem{
 	public interface IQuantityAnimationProcess: IProcess{
 	}
 	public abstract class AbsQuantityAnimationProcess<T>: AbsInterpolatorProcess<T>, IQuantityAnimationProcess where T: class, IQuantityAnimationInterpolator{
-		public AbsQuantityAnimationProcess(int targetQuantity, IQuantityRoller quantityRoller, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, float differenceThreshold, bool useSpringT): base(processManager, expireTimeConstraint, expireTime, differenceThreshold, useSpringT, null){
-			thisTargetQuantity = targetQuantity;
-			thisQuantityRoller = quantityRoller;
+		public AbsQuantityAnimationProcess(
+			IQuantityAnimationProcessConstArg arg
+		): base(
+			arg
+		){
+			thisTargetQuantity = arg.targetQuantity;
+			thisQuantityRoller = arg.quantityRoller;
 		}
 		protected readonly int thisTargetQuantity;
 		protected readonly IQuantityRoller thisQuantityRoller;
@@ -18,8 +22,11 @@ namespace UISystem{
 		}
 	}
 	public class IncrementalQuantityAnimationProcess: AbsQuantityAnimationProcess<IIncrementalQuantityAnimationInterpolator>, IIncrementalQuantityAnimationProcess{
-		public IncrementalQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity, IProcessManager processManager, ProcessConstraint expireTimeConstraint, float expireTime, float differenceThreshold, bool useSpringT): base(targetQuantity, quantityRoller, processManager, expireTimeConstraint, expireTime, differenceThreshold, useSpringT){
-		}
+		public IncrementalQuantityAnimationProcess(
+			IQuantityAnimationProcessConstArg arg
+		): base(
+			arg
+		){}
 		protected override IIncrementalQuantityAnimationInterpolator InstantiateInterpolatorWithValues(){
 			return new IncrementalQuantityAnimationInterpolator(thisTargetQuantity, thisQuantityRoller);
 		}
@@ -27,10 +34,40 @@ namespace UISystem{
 	public interface IOneshotQuantityAnimationProcess: IQuantityAnimationProcess{
 	}
 	public class OneshotQuantityAnimationProcess: AbsQuantityAnimationProcess<IOneshotQuantityAnimationInterpolator>, IOneshotQuantityAnimationProcess{
-		public OneshotQuantityAnimationProcess(IQuantityRoller quantityRoller, int targetQuantity, IProcessManager processManager, ProcessConstraint processConstraint, float constraintValue, float diffThreshold, bool useSpringT): base(targetQuantity, quantityRoller, processManager, processConstraint, constraintValue, diffThreshold, useSpringT){
-		}
+		public OneshotQuantityAnimationProcess(
+			IQuantityAnimationProcessConstArg arg
+		): base(
+			arg
+		){}
 		protected override IOneshotQuantityAnimationInterpolator InstantiateInterpolatorWithValues(){
 			return null;
 		}
+	}
+	public interface IQuantityAnimationProcessConstArg: IInterpolatorProcesssConstArg{
+		int targetQuantity{get;}
+		IQuantityRoller quantityRoller{get;}
+	}
+	public class QuantityAnimationProcessConstArg: InterpolatorProcessConstArg, IQuantityAnimationProcessConstArg{
+		public QuantityAnimationProcessConstArg(
+			IProcessManager processManager,
+			ProcessConstraint processConstraint,
+			float expireTime,
+			bool useSpringT,
+			
+			int targetQuantity,
+			IQuantityRoller quantityRoller
+		): base(
+			processManager,
+			processConstraint,
+			expireTime,
+			true
+		){
+			thisTargetQuantity = targetQuantity;
+			thisQuantityRoller = quantityRoller;
+		}
+		readonly int thisTargetQuantity;
+		public int targetQuantity{get{return thisTargetQuantity;}}
+		readonly IQuantityRoller thisQuantityRoller;
+		public IQuantityRoller quantityRoller{get{return thisQuantityRoller;}}
 	}
 }

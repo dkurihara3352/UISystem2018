@@ -22,5 +22,8 @@ namespace DKUtility{
 		float GetImageColorTurnProcessExpireTime();
 		float GetImageFlashTime();
 		float GetAlphaPopUpExpireTime();
+		/* UIA Input Process */
+		float GetUIAWaitForTapProcessExpireTime();
+		float GetUIAWaitForNextTouchProcessExpireTime();
 	}	
 }

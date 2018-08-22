@@ -37,7 +37,7 @@ namespace UISystem.PickUpUISystem{
 			throw new System.InvalidOperationException("this is alreadly unpicked");
 		}
 	}
-	public interface IChangingVisualPickednessState: IVisualPickednessState, IWaitAndExpireProcessState{}
+	public interface IChangingVisualPickednessState: IVisualPickednessState{}
 	public interface IBecomingVisuallyPickedUpState: IChangingVisualPickednessState{}
 	public class BecomingVisuallyPickedUpState: AbsVisualPickednessState, IBecomingVisuallyPickedUpState{
 		public BecomingVisuallyPickedUpState(IVisualPickednessStateEngine stateEngine, IPickUpSystemProcessFactory pickUpSystemProcessFactory): base(stateEngine){
@@ -46,8 +46,12 @@ namespace UISystem.PickUpUISystem{
 		IVisualPickednessProcess thisProcess;
 		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
-			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
-			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, 1f);
+			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(
+				thisPickableUIImage, 
+				1f,
+				thisStateEngine,
+				true
+			);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
@@ -55,10 +59,6 @@ namespace UISystem.PickUpUISystem{
 		}
 		public void ExpireProcess(){
 			StopAndClearProcess();
-		}
-		public void OnProcessUpdate(float deltaT){return;}
-		public void OnProcessExpire(){
-			thisStateEngine.SetToVisuallyPickedUpState();
 		}
 		public override void BecomeVisuallyPickedUp(){
 			throw new System.InvalidOperationException("this is already being becomeing visually picked up");
@@ -99,7 +99,12 @@ namespace UISystem.PickUpUISystem{
 		readonly IPickUpSystemProcessFactory thisProcessFactory;
 		public override void OnEnter(){
 			float sourcePickedness = thisPickableUIImage.GetVisualPickedness();
-			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(this, thisPickableUIImage, sourcePickedness, 0f);
+			thisProcess = thisProcessFactory.CreateVisualPickednessProcess(
+				thisPickableUIImage, 
+				0f,
+				thisStateEngine,
+				false
+			);
 			thisProcess.Run();
 		}
 		public override void OnExit(){
@@ -107,10 +112,6 @@ namespace UISystem.PickUpUISystem{
 		}
 		public void ExpireProcess(){
 			StopAndClearProcess();
-		}
-		public void OnProcessUpdate(float deltaT){return;}
-		public void OnProcessExpire(){
-			thisStateEngine.SetToVisuallyUnpickedState();
 		}
 		public override void BecomeVisuallyPickedUp(){
 			thisStateEngine.SetToBecomingVisuallyPickedUpState();

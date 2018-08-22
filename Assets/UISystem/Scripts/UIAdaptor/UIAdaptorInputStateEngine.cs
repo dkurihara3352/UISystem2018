@@ -29,19 +29,48 @@ namespace UISystem{
 		string GetName();
 	}
 	public class UIAdaptorInputStateEngine: AbsSwitchableStateEngine<IUIAdaptorInputState> ,IUIAdaptorInputStateEngine{
-		public UIAdaptorInputStateEngine(IUIManager uim, IUIAdaptor uia, IUISystemProcessFactory procFac){
+		public UIAdaptorInputStateEngine(
+			IUIAdaptorInputStateEngineConstArg arg
+		){
+			IUIAdaptor uia = arg.uiAdaptor;
 			thisUIE = uia.GetUIElement();
-			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(this);
-			thisWaitingForTapState = new WaitingForTapState(procFac, this, uim, velocityStackSize);
-			thisWaitingForReleaseState = new WaitingForReleaseState(procFac, this, uim, velocityStackSize);
-			thisWaitingForNextTouchState = new WaitingForNextTouchState(procFac, this);
+			IUISystemProcessFactory procFac = arg.processFactory;
+			IUIManager uim = arg.uiManager;
+
+			IUIAdaptorInputStateConstArg pointerUpInputStateArg = new UIAdaptorInputStateConstArg(
+				this
+			);
+			thisWaitingForFirstTouchState = new WaitingForFirstTouchState(
+				pointerUpInputStateArg
+			);
+
+			IPointerDownInputProcessStateConstArg pointerDownProcessStateArg = new PointerDownInputProcessStateConstArg(
+				this,
+				uim,
+				thisVelocityStackSize,
+				procFac
+			);
+			thisWaitingForTapState = new WaitingForTapState(
+				pointerDownProcessStateArg
+			);
+			thisWaitingForReleaseState = new WaitingForReleaseState(
+				pointerDownProcessStateArg
+			);
+
+			IPointerUpInputProcessStateConstArg pointerUpInputProcessStateArg = new PointerUpInputProcessStateConstArg(
+				this,
+				procFac
+			);
+			thisWaitingForNextTouchState = new WaitingForNextTouchState(
+				pointerUpInputProcessStateArg
+			);
 			SetWithInitState();
 			ResetTouchCounter();
 		}
 		public string GetName(){
 			return thisUIE.GetName();
 		}
-		const int velocityStackSize = 3;
+		const int thisVelocityStackSize = 3;
 		readonly IUIElement thisUIE;
 		void SetWithInitState(){
 			this.WaitForFirstTouch();
@@ -58,11 +87,9 @@ namespace UISystem{
 		}
 		public void TouchUIE(){
 			thisUIE.OnTouch(GetTouchCount());
-			// thisUIE.CheckAndStopScrollerMotorProcessOnParentScrollers();
 		}
 		public void TapUIE(){
 			thisUIE.OnTap(GetTouchCount());
-			// thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public float GetTapExpireT(){
 			return 0.5f;
@@ -75,7 +102,6 @@ namespace UISystem{
 		}
 		public void ReleaseUIE(){
 			thisUIE.OnRelease();
-			// thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public void DelayedReleaseUIE(){
 			thisUIE.OnDelayedRelease();
@@ -91,7 +117,6 @@ namespace UISystem{
 		}
 		public void SwipeUIE(ICustomEventData eventData){
 			thisUIE.OnSwipe(eventData);
-			// thisUIE.CheckAndPerformStaticBoundarySnapCheckOnParentScrollers();
 		}
 		public float GetSwipeVelocityThreshold(){
 			return thisSwipeVelocityThreshold;
@@ -133,5 +158,27 @@ namespace UISystem{
 			public void WaitForNextTouch(){
 				TrySwitchState(thisWaitingForNextTouchState);
 			}
+	}
+	public interface IUIAdaptorInputStateEngineConstArg{
+		IUIManager uiManager{get;}
+		IUIAdaptor uiAdaptor{get;}
+		IUISystemProcessFactory processFactory{get;}
+	}
+	public class UIAdaptorInputStateEngineConstArg: IUIAdaptorInputStateEngineConstArg{
+		public UIAdaptorInputStateEngineConstArg(
+			IUIManager uiManager,
+			IUIAdaptor uiAdaptor,
+			IUISystemProcessFactory processFactory
+		){
+			thisUIManager = uiManager;
+			thisUIAdaptor = uiAdaptor;
+			thisProcessFactory = processFactory;
+		}
+		readonly IUIManager thisUIManager;
+		public IUIManager uiManager{get{return thisUIManager;}}
+		readonly IUIAdaptor thisUIAdaptor;
+		public IUIAdaptor uiAdaptor{get{return thisUIAdaptor;}}
+		readonly IUISystemProcessFactory thisProcessFactory;
+		public IUISystemProcessFactory processFactory{get{return thisProcessFactory;}}
 	}
 }

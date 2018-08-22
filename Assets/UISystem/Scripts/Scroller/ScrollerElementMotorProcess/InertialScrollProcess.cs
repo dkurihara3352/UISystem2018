@@ -6,11 +6,15 @@ using DKUtility;
 namespace UISystem{
 	public interface IInertialScrollProcess: IScrollerElementMotorProcess{}
 	public class InertialScrollProcess: AbsScrollerElementMotorProcess, IInertialScrollProcess{
-		public InertialScrollProcess(float initialVelocity, float deceleration, float decelerationAxisComponentMultiplier, IScroller scroller, IUIElement scrollerElement, int dimension, IProcessManager processManager): base(scroller, dimension, processManager){
-			thisInitialVelocity = initialVelocity;
+		public InertialScrollProcess(
+			IInertialScrollProcessConstArg arg
+		): base(
+			arg
+		){
+			thisInitialVelocity = arg.initialVelocity;
 			thisPrevVelocity = thisInitialVelocity;
-			thisPrevLocalPosOnAxis = scrollerElement.GetLocalPosition()[dimension];
-			thisDeceleration = MakeSureDecelerationIsGreaterThanZero(deceleration) * MakeSureDecelAxisCompMultiplierIsNotLessThanZero(decelerationAxisComponentMultiplier);
+			thisPrevLocalPosOnAxis = thisScrollerElement.GetLocalPosition()[thisDimension];
+			thisDeceleration = MakeSureDecelerationIsGreaterThanZero(arg.deceleration) * MakeSureDecelAxisCompMultiplierIsNotLessThanZero(arg.decelerationAxisComponentMultiplier);
 			if(thisDeceleration == 0f || thisInitialVelocity == 0f)
 				thisExpireTime = 0f;
 			else
@@ -54,10 +58,42 @@ namespace UISystem{
 			if(thisElapsedTime >= thisExpireTime)
 				Expire();
 		}
-		public override void Expire(){
-			base.Expire();
+		protected override void ExpireImple(){
+			base.ExpireImple();
 			thisScroller.UpdateVelocity(0f, thisDimension);
 		}
+	}
+	public interface IInertialScrollProcessConstArg: IScrollerElementMotorProcessConstArg{
+		float initialVelocity{get;}
+		float deceleration{get;}
+		float decelerationAxisComponentMultiplier{get;}
+	}
+	public class InertialScrollProcessConstArg: ScrollerElementMotorProcessConstArg, IInertialScrollProcessConstArg{
+		public InertialScrollProcessConstArg(
+			IProcessManager processManager,
+			IScroller scroller,
+			IUIElement scrollerElement,
+			int dimension,
+
+			float initialVelocity,
+			float deceleration,
+			float decelerationAxisComponentMultiplier
+		): base(
+			processManager,
+			scroller,
+			scrollerElement,
+			dimension
+		){
+			thisInitialVelocity = initialVelocity;
+			thisDeceleration = deceleration;
+			thisDecelerationAxisComponentMultiplier = decelerationAxisComponentMultiplier;
+		}
+		readonly float thisInitialVelocity;
+		public float initialVelocity{get{return thisInitialVelocity;}}
+		readonly float thisDeceleration;
+		public float deceleration{get{return thisDeceleration;}}
+		readonly float thisDecelerationAxisComponentMultiplier;
+		public float decelerationAxisComponentMultiplier{get{return thisDecelerationAxisComponentMultiplier;}}
 	}
 }
 

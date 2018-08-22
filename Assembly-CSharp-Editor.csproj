@@ -51,7 +51,6 @@
      <Compile Include="Assets\DKUtility\Scripts\Editor\CalculatorTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\ConstrainedProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\InterpolatorProcessTest.cs" />
-     <Compile Include="Assets\DKUtility\Scripts\ProcessAndIrper\Editor\WaitAndExpireProcessTest.cs" />
      <Compile Include="Assets\DKUtility\Scripts\SwitchableState\Editor\SwitchableStateTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\EquipToolIconGroupTest.cs" />
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\IconGroup\Editor\IconGroupTest\IconGroupTest.cs" />
@@ -85,8 +84,9 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\SwipeNextTargetGroupElementArrayIndexCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\UIElementGroupScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateEngineTest.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\Editor\UIAdaptorInputStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerDownInputStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerUpInputProcessStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerUpInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\AlphaActivatorUIEActivationProcessTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\Editor\UIEActivationStateEngineTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\Editor\UIElementTest.cs" />
