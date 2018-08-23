@@ -84,6 +84,7 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\SwipeNextTargetGroupElementArrayIndexCalculatorTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Editor\UIElementGroupScrollerTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\Editor\SelectabilityStateTest.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerDownInputProcessStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerDownInputStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerUpInputProcessStateTest.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIAdaptor\UIAdaptorInputState\Editor\AbsPointerUpInputStateTest.cs" />

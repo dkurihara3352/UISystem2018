@@ -73,7 +73,7 @@ namespace UISystem{
 			Vector2 velocity = GetAverageVelocity();
 			eventData.SetVelocity(velocity);
 
-			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
+			if(VelocityIsOverSwipeThreshold(eventData.velocity))
 				thisEngine.SwipeUIE(eventData);
 			else
 				thisEngine.TapUIE();
@@ -124,7 +124,7 @@ namespace UISystem{
 			Vector2 velocity = GetAverageVelocity();
 			eventData.SetVelocity(velocity);
 
-			if(VelocityIsOverSwipeVelocityThreshold(eventData.velocity))
+			if(VelocityIsOverSwipeThreshold(eventData.velocity))
 				thisEngine.SwipeUIE(eventData);
 			else
 				thisEngine.ReleaseUIE();

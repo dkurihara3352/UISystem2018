@@ -22,7 +22,7 @@ namespace UISystem{
 		public override void OnPointerDown(ICustomEventData eventData){
 			throw new System.InvalidOperationException("OnPointerDown should not be called while pointer is already held down");
 		}
-		protected bool VelocityIsOverSwipeVelocityThreshold(Vector2 velocity){
+		protected bool VelocityIsOverSwipeThreshold(Vector2 velocity){
 			float velocityThreshold = thisEngine.GetSwipeVelocityThreshold();
 			if(velocity.sqrMagnitude >= velocityThreshold * velocityThreshold)
 				return true;
@@ -53,7 +53,7 @@ namespace UISystem{
 			}
 			thisVelocityStack = newStack;
 		}
-		Vector2[] thisVelocityStack;
+		protected Vector2[] thisVelocityStack;
 		protected Vector2 GetAverageVelocity(){
 			int stackSize = thisVelocityStack.Length;
 			Vector2 sum = Vector2.zero;
@@ -112,8 +112,9 @@ namespace UISystem{
 		}
 		protected abstract T CreateProcess();
 		public virtual void ExpireProcess(){
-			if(thisProcess.IsRunning())
-				thisProcess.Expire();
+			if(thisProcess != null)
+				if(thisProcess.IsRunning())
+					thisProcess.Expire();
 		}
 	}
 	public interface IPointerDownInputProcessStateConstArg: IPointerDownInputStateConstArg{
