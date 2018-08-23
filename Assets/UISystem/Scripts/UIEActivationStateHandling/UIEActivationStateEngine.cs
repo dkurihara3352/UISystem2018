@@ -101,10 +101,10 @@ namespace UISystem{
 			IUIEActivationProcess newProcess;
 			switch(thisActivationMode){
 				case ActivationMode.None: 
-					newProcess = thisProcessFactory.CreateNonActivatorUIEActivationProcess(this, true);
+					newProcess = thisProcessFactory.CreateNonActivatorUIEActivationProcess(this, activates);
 					break;
 				case ActivationMode.Alpha:
-					newProcess = thisProcessFactory.CreateAlphaActivatorUIEActivationProcess(thisUIElement, this, true);
+					newProcess = thisProcessFactory.CreateAlphaActivatorUIEActivationProcess(thisUIElement, this, activates);
 					break;
 				default: 
 					newProcess = null;

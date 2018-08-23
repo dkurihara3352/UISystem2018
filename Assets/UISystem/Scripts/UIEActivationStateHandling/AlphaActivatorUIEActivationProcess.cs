@@ -22,10 +22,13 @@ namespace UISystem{
 		readonly bool thisDoesActivate;
 		readonly IUIAdaptor thisUIAdaptor;
 		protected override float GetLatestInitialValueDifference(){
+			/*  not called anyway
+			 */
 			float currentGroupAlpha = thisUIAdaptor.GetGroupAlpha();
 			currentGroupAlpha = MakeGroupAlphaValueInRange(currentGroupAlpha);
 			float targetGroupAlpha = thisDoesActivate? 1f: 0f;
-			return targetGroupAlpha - currentGroupAlpha;
+			float valueDifference = targetGroupAlpha - currentGroupAlpha;
+			return valueDifference;
 		}
 		float MakeGroupAlphaValueInRange(float source){
 			if(source < 0f)

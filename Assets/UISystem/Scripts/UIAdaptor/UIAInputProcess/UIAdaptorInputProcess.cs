@@ -8,6 +8,7 @@ namespace UISystem{
 	public abstract class AbsUIAdaptorInputProcess : AbsConstrainedProcess, IUIAdaptorInputProcess{
 
 		public AbsUIAdaptorInputProcess(IUIAdaptorInputProcessConstArg arg): base(arg){
+		
 			thisState = arg.state;
 			thisEngine = arg.engine;
 		}
@@ -24,6 +25,7 @@ namespace UISystem{
 			IProcessManager processManager,
 			ProcessConstraint processConstraint,
 			float expireT,
+
 			IUIAdaptorInputState state,
 			IUIAdaptorInputStateEngine engine
 		): base(
@@ -32,6 +34,7 @@ namespace UISystem{
 			expireT
 		){
 			thisState = state;
+			thisEngine = engine;
 		}
 		readonly IUIAdaptorInputState thisState;
 		public IUIAdaptorInputState state{get{return thisState;}}

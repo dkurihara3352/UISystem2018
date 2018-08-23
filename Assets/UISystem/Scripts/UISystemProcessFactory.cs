@@ -97,7 +97,7 @@ namespace UISystem{
 			IUIAdaptorInputProcessConstArg arg = new UIADaptorInputProcessConstArg(
 				thisProcessManager,
 				ProcessConstraint.none,
-				0f,
+				1f,
 				state,
 				engine
 			);
@@ -109,7 +109,7 @@ namespace UISystem{
 		){
 			IUIAdaptorInputProcessConstArg arg = new UIADaptorInputProcessConstArg(
 				thisProcessManager,
-				ProcessConstraint.RateOfChange,
+				ProcessConstraint.ExpireTime,
 				thisProcessManager.GetUIAWaitForNextTouchProcessExpireTime(),
 				state,
 				engine

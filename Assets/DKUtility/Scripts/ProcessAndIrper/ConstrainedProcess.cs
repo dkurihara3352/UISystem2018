@@ -24,7 +24,7 @@ namespace DKUtility{
 				throw new System.InvalidOperationException("Override GetLatesetInitialValueDifference if the process constraint is rate of change");
 			return 0f;
 		}
-		protected override void RunImple(){
+		protected override void RunImple(){			
 			CalcAndSetConstraintValues();
 		}
 		void CalcAndSetConstraintValues(){
@@ -73,6 +73,7 @@ namespace DKUtility{
 			processManager
 		){
 			thisProcessConstraint = processConstraint;
+			thisConstraintValue = constraintValue;
 		}
 		readonly ProcessConstraint thisProcessConstraint;
 		public ProcessConstraint processConstraint{get{return thisProcessConstraint;}}

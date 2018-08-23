@@ -18,7 +18,8 @@ namespace UISystem{
 			float newAlpha = Mathf.Lerp(thisInitialGroupAlpha, thisTargetGroupAlpha, t);
 			thisUIAdaptor.SetGroupAlpha(newAlpha);
 		}
-		public void Terminate(){}
+		public void Terminate(){
+		}
 	}
 }
 
