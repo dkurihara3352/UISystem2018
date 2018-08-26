@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIAActivationData{
+	public interface IUIElementBaseConstData{
 		IUIManager uim{get;}
 		IUISystemProcessFactory processFactory{get;}
 		IUIElementFactory uiElementFactory{get;}
 	}
-	public abstract class AbsUIAActivationData: IUIAActivationData{
+	public abstract class AbsUIAActivationData: IUIElementBaseConstData{
 		public AbsUIAActivationData(IUIManager uim, IUISystemProcessFactory processFactory, IUIElementFactory uiElementFactory){
 			thisUIM = uim;
 			thisProcessFactory = processFactory;

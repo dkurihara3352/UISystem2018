@@ -25,10 +25,11 @@ public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 			);
 			return new GenericSingleElementScroller(arg);
 		}
-		public override void GetReadyForActivation(IUIAActivationData passedData){
+		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
 			base.GetReadyForActivation(passedData);
-			IScroller scroller = (IScroller)GetUIElement();
-			scroller.SetUpScrollerElement();
+			/* To SetUpUIEReference */
+				IScroller scroller = (IScroller)GetUIElement();
+				scroller.SetUpScrollerElement();
 		}
 	}
 }

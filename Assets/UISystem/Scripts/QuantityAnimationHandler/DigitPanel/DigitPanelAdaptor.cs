@@ -19,7 +19,7 @@ namespace UISystem{
 			}else
 				throw new System.ArgumentException("data must be of type IDigitPanelAdaptorInitializationData");
 		}
-		public override void GetReadyForActivation(IUIAActivationData passedData){
+		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
 			base.GetReadyForActivation(passedData);
 			thisText = this.GetComponent<Text>();
 		}

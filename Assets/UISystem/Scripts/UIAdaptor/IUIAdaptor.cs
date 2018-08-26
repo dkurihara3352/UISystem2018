@@ -17,13 +17,13 @@ namespace UISystem{
 	}
 
 	public interface IUIAdaptor: IMBAdaptor {
-		void GetReadyForActivation(IUIAActivationData passedData);
+		void GetReadyForActivation(IUIElementBaseConstData passedData);
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
 		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
-		IUIAActivationData GetDomainActivationData();
+		IUIElementBaseConstData GetDomainActivationData();
 		void SetUpCanvasGroupComponent();
 		float GetGroupAlpha();
 		void SetGroupAlpha(float alpha);

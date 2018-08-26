@@ -26,17 +26,33 @@ namespace UISystem{
 		public Vector2 GetPadding(){return padding;}
 		public bool[] usesFixedPadding = new bool[2]{true, true};
 		
-		public override void GetReadyForActivation(IUIAActivationData passedData){
+		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
 			base.GetReadyForActivation(passedData);
-			testUIElementFactory = new TestUIElementFactory(thisUIM, font, fontSize, imageColor, imageDefaultDarkness, imageDarkenedDarkness);
-			List<IUIElement> groupElements = CreateUIEs();
-			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
-			uieGroup.SetUpElements(groupElements);
+			/* To SetUpUIEReference */
+				testUIElementFactory = new TestUIElementFactory(
+					thisUIM, 
+					font, 
+					fontSize, 
+					imageColor, 
+					imageDefaultDarkness, 
+					imageDarkenedDarkness
+				);
+				List<IUIElement> groupElements = CreateUIEs();
+				IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
+				uieGroup.SetUpElements(groupElements);
 		}
 		List<IUIElement> CreateUIEs(){
+			/* to SetUpUIEReference */
 			List<IUIElement> result = new List<IUIElement>();
 			for(int i = 0; i < groupElementCount; i ++){
-				result.Add(testUIElementFactory.CreateUIElementWithIndexText(i, groupElementLength, thisDomainActivationData.processFactory));
+				result.Add(
+					testUIElementFactory.CreateUIElementWithIndexText(
+						i, 
+						groupElementLength, 
+						thisDomainActivationData.processFactory
+					
+					)
+				);
 			}
 			return result;
 		}

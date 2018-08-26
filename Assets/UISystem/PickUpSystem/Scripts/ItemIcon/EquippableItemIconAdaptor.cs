@@ -16,7 +16,7 @@ namespace UISystem.PickUpUISystem{
 			}
 		}
 		IEquippableUIItem thisEqpItem;
-		public override void GetReadyForActivation(IUIAActivationData passedArg){
+		public override void GetReadyForActivation(IUIElementBaseConstData passedArg){
 			if(passedArg is IEquipToolActivationData){
 				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
 				thisEqpIITAM = eqpToolUIAArg.eqpIITAM;

@@ -24,7 +24,7 @@ namespace UISystem{
 			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor, thisImageDefaultDarkness, thisImageDarkenedDarkness);
 			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(sizeDelta, initData);
 			IndexElementAdaptor uia = this.CreateInstatiableUIA<IndexElementAdaptor>(instData);
-			IUIAActivationData activationData = new RootUIAActivationData(thisUIM, processFactory, this);
+			IUIElementBaseConstData activationData = new RootUIAActivationData(thisUIM, processFactory, this);
 			uia.GetReadyForActivation(activationData);
 			return uia.GetUIElement();
 		}

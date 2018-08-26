@@ -25,7 +25,21 @@ namespace UISystem{
 			thisTopToBottom = arg.topToBottom;
 			thisLeftToRight = arg.leftToRight;
 			thisRowToColumn = OverrideRowToColumnAccordingToConstraint(arg.rowToColumn);
-			thisArrayIndexCalculator = new UIElementGroupArrayIndexCalculator(thisTopToBottom, thisLeftToRight, thisRowToColumn);
+			thisArrayIndexCalculator = new UIElementGroupArrayIndexCalculator(
+				thisTopToBottom, 
+				thisLeftToRight, 
+				thisRowToColumn
+			);
+			/*  These below may be implemented in subclasses...
+					Those that create new uies from uia
+						requires explicit setting of rect dimensions
+					otherwise, such cases as setting scene objects as elements
+						maynot require dimension, just refer to actual objects
+						or, may require fitting them in a specified dimension
+				Do these in SetUpUIElReference
+				
+				in any case, make sure to call SetUpGroupElements
+			*/
 			thisElementLength = arg.elementLength;
 			thisPadding = arg.padding;
 			thisUsesFixedPadding = arg.usesFixedPadding;
@@ -111,11 +125,13 @@ namespace UISystem{
 			CheckAndSetUpScrollerElementOnParentScroller();
 		}
 		/*  */
-		/*  */
 			void MakeSureElementsCountIsValid(int count){
 				if(thisIsConstrainedByBothAxis)
 					if(count > thisMaxElementCount)
-						throw new System.InvalidOperationException("elements count exceeds maximum allowed count. try either decrease the elements count or release one of the array constraints");
+						throw new System.InvalidOperationException(
+							"elements count exceeds maximum allowed count. \b" + 
+							"try either decrease the elements count or release one of the array constraints"
+						);
 			}
 			List<T> CreateTypedList(List<IUIElement> source){
 				List<T> result = new List<T>();

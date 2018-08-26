@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem.PickUpUISystem{
-	public interface IPickUpSystemUIAActivationData: IUIAActivationData{
+	public interface IPickUpSystemUIAActivationData: IUIElementBaseConstData{
 		IPickUpManager pickUpManager{get;}
 		IPickUpSystemProcessFactory pickUpSystemProcessFactory{get;}
 		IPickUpSystemUIElementFactory pickUpSystemUIElementFactory{get;}

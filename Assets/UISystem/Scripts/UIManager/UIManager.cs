@@ -14,25 +14,64 @@ namespace UISystem{
 		void RegisterTouchID(int touchID);
 		bool ShowsInputability();
 		bool ShowsNormal();
-		IScroller GetLatestScrollerInMotion();
-		void SetLatestScrollerInMotion(IScroller scroller);
 		void SetInputHandlingScroller(IScroller scroller, UIManager.InputName inputName);
 		IScroller GetInputHandlingScroller();
 		string GetEventName();
 		IPopUpManager GetPopUpManager();
-		void SetRootUIElement(IUIElement rootUIElement);
+		void GetReadyForUISystemActivation();
+		void ActivateUISystem(bool instantly);
 	}
 	public class UIManager: IUIManager {
-		public UIManager(RectTransform uieReserveTrans, bool showsInputability){
+		public UIManager(
+			IProcessManager processManager,
+			IUIAdaptor rootUIAdaptor,
+			RectTransform uieReserveTrans, 
+			bool showsInputability
+		){
+			thisProcessManager = processManager;
+			thisRootUIAdaptor = rootUIAdaptor;
 			thisUIEReserveTrans = uieReserveTrans;
 			thisShowsInputability = showsInputability;
-			thisPopUpManager = new PopUpManager();
+		}
+		readonly IUIAdaptor thisRootUIAdaptor;
+		public void GetReadyForUISystemActivation(){
+			IProcessFactory processFactory = CreateProcessFactory(
+				thisProcessManager
+			);
+			IUIElementFactory uiElementFactory = new UIElementFactory(this);
+
+			IUIElementBaseConstData rootUIEBaseConstData = CreateRootUIEBaseConstData(
+				processFactory,
+				uiElementFactory
+			);
+			thisRootUIAdaptor.CreateAndSetUIElementRecursively(rootUIEBaseConstData);
+			thisRootUIElement = rootUIAdaptor.GetUIElement();
+			thisRootUIElement.UpdateUIEHierarchyRecursively();
+			thisPopUpManager = new PopUpManager(thisRootUIElement);
+			thisRootUIElement.SetUpUIElementReferenceRecursively();
+			thisRootUIElement.CompleteUIEReferenceSetUp();
+		}
+		public void ActivateUISystem(bool instantly){
+			thisRootUIElement.InitiateActivation(instantly);
+		}
+		readonly IProcessManager thisProcessManager;
+		protected virtual IProcessFactory CreateProcessFactory(IProcessManager processManager){
+			return new UISystemProcessFactory(
+				processManager, 
+				this
+			);
+		}
+		protected virtual IUIElementBaseConstData CreateRootUIEBaseConstData(
+			IProcessFactory processFactory,
+			IUIElementFactory uiElementFactory
+		){
+			return new RootUIAActivationData(
+				this,
+				(IUISystemProcessFactory)processFactory,
+				uiElementFactory
+			);
 		}
 		IUIElement thisRootUIElement;
-		public void SetRootUIElement(IUIElement rootUIElement){
-			thisRootUIElement = rootUIElement;
-			thisPopUpManager.SetRootUIElement(rootUIElement);
-		}
 		Vector2 thisDragWorldPosition;
 		IPopUpManager thisPopUpManager;
 		public IPopUpManager GetPopUpManager(){return thisPopUpManager;}
@@ -44,6 +83,9 @@ namespace UISystem{
 		public RectTransform GetUIElementReserveTrans(){
 			return thisUIEReserveTrans;
 		}
+
+
+		/* Touch management */
 		const int noFingerID = -10;
 		int thisRegisteredID = -10;
 		public int registeredID{get{return thisRegisteredID;}}
@@ -56,20 +98,16 @@ namespace UISystem{
 		public void RegisterTouchID(int touchID){
 			thisRegisteredID = touchID;
 		}
+		/*  */
+
+
+		/* Debug */
 		readonly bool thisShowsInputability;
 		public bool ShowsInputability(){
 			return thisShowsInputability;
 		}
 		public bool ShowsNormal(){
 			return !ShowsInputability();
-		}
-
-		IScroller thisLatestScrollerInMotion;
-		public void SetLatestScrollerInMotion(IScroller scroller){
-			thisLatestScrollerInMotion = scroller;
-		}
-		public IScroller GetLatestScrollerInMotion(){
-			return thisLatestScrollerInMotion;
 		}
 		public void SetInputHandlingScroller(IScroller scroller, InputName inputName){
 			thisInputHandlingScroller = scroller;

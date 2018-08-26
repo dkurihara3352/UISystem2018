@@ -179,12 +179,10 @@
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationState.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\EquippableUIE.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElement\GenericAlphaActivatorUIElement\GenericAlphaActivatorUIElementAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElementAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ProximateParentTypedUIECalculator\ProximateParentTypedUIECalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ResizableUIE.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElement\TestUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\TestUIElementFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\UIEFactory.cs" />

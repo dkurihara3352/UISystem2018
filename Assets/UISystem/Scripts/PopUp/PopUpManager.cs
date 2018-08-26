@@ -7,14 +7,13 @@ namespace UISystem{
 		void RegisterPopUp(IPopUp popUpToRegister);
 		void UnregisterPopUp(IPopUp popUpToUnregister);
 		void CheckAndHideActivePopUp();
-		void SetRootUIElement(IUIElement uiElement);
 		bool ActivePopUpHidesOnTappingOthers();
 	}
 	public class PopUpManager : IPopUpManager {
-		IUIElement thisRootUIElement;
-		public void SetRootUIElement(IUIElement rootUIElement){
+		public PopUpManager(IUIElement rootUIElement){
 			thisRootUIElement = rootUIElement;
 		}
+		readonly IUIElement thisRootUIElement;
 
 		public void RegisterPopUp(IPopUp popUpToRegister){
 			popUpToRegister.ShowHiddenProximateParentPopUpRecursively();

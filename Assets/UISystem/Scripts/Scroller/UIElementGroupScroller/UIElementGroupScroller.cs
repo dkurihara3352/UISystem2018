@@ -11,13 +11,22 @@ namespace UISystem{
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisCursorSize = MakeCursorSizeAtLeastOne(arg.cursorSize);
+			/*  elementLength and padding are depending on ScrollerElement,
+				gotta wait until later when 
+					either of...
+						SetUpUIEReference or
+						OnUIEReferenceSetUpComplete
+						or, maybe not at all in callbacks
+							gotta wait explicit set calls down from scroller element
+			*/
 			thisGroupElementLength = arg.groupElementLength;
 			thisPadding = arg.padding;
 			thisInitiallyCursoredGroupElementIndex = arg.initiallyCursoredGroupElementIndex;
+			/*  these below are fine
+			 */
 			thisStartSearchSpeed = MakeSureStartSearchSpeedIsGreaterThanZero(arg.startSearchSpeed);
 			thisSwipeToSnapNext = arg.swipeToSnapNext;
 			thisActivatesCursoredElementsOnly = arg.activatesCursoredElementsOnly;
-			// SetUpCursorTransform();
 		}
 		/* Activation */
 			readonly bool thisActivatesCursoredElementsOnly;

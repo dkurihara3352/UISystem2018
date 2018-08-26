@@ -5,33 +5,22 @@ using DKUtility;
 
 namespace UISystem{
 	public class UIManagerAdaptor: MonoBehaviour{
-		IUIManager uiManager;
+		IUIManager thisUIManager;
+		public IUIManager GetUIManager(){
+			return thisUIManager;
+		}
 		public ProcessManager processManager;
 		public UIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public RectTransform uieReserveTrans;
 		public bool showsInputability;
 
 		public void Awake(){
-			uiManager = new UIManager(
-				uieReserveTrans, 
+			thisUIManager = new UIManager(
+				processManager,
+				rootUIAdaptor,
+				uieReserveTrans,
 				showsInputability
 			);
-			IUISystemProcessFactory processFactory = new UISystemProcessFactory(
-				processManager, 
-				uiManager
-			);
-			IUIElementFactory uiElementFactory = new UIElementFactory(
-				uiManager
-			);
-
-			IUIAActivationData rootUIAActivationData = new RootUIAActivationData(
-				uiManager, 
-				processFactory, 
-				uiElementFactory
-			);
-			rootUIAdaptor.GetReadyForActivation(rootUIAActivationData);
-			IUIElement rootUIElement = rootUIAdaptor.GetUIElement();
-			uiManager.SetRootUIElement(rootUIElement);
 		}
 	}	
 }

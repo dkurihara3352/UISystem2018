@@ -372,41 +372,11 @@ namespace UISystem{
 		/* Release */
 			protected override void OnReleaseImple(){
 				thisUIM.SetInputHandlingScroller(this, UIManager.InputName.Release);
-				// CheckAndPerformStaticBoundarySnapFrom(this);
 			}
 		/* Tap */
 			protected override void OnTapImple(int tapCount){
 				thisUIM.SetInputHandlingScroller(this, UIManager.InputName.Tap);
-				// CheckAndPerformStaticBoundarySnapFrom(this);
 			}
-		/* SnapCheck */
-			// public void CheckAndPerformStaticBoundarySnapFrom(IScroller scrollerToStartCheck){
-			// 	ClearTopMostScroller();
-			// 	IScroller scrollerToExamine = scrollerToStartCheck;
-			// 	while(true){
-			// 		if(scrollerToExamine == null)
-			// 			break;
-			// 		scrollerToExamine.ResetDrag();
-			// 		scrollerToExamine.CheckAndPerformStaticBoundarySnap();
-			// 		scrollerToExamine = scrollerToExamine.GetProximateParentScroller();
-			// 	}
-			// }
-			// void ClearTopMostScroller(){
-			// 	ClearAllParentScrollerVelocity();
-			// 	if(thisTopmostScrollerInMotion != null)
-			// 		thisTopmostScrollerInMotion.EnableScrollInputRecursively();
-			// }
-			// void ClearAllParentScrollerVelocity(){
-			// 	IScroller scrollerToExamine = this;
-			// 	while(true){
-			// 		if(scrollerToExamine == null)
-			// 			break;
-			// 		for(int i = 0; i < 2; i ++){
-			// 			scrollerToExamine.UpdateVelocity(0f, i);
-			// 		}
-			// 		scrollerToExamine = scrollerToExamine.GetProximateParentScroller();
-			// 	}
-			// }
 		/* Swipe */
 			protected override void OnSwipeImple(ICustomEventData eventData){
 				if(thisShouldProcessDrag){
@@ -522,14 +492,6 @@ namespace UISystem{
 				newProcess.Run();
 			}
 		/* Scroller Hieracrchy */
-			// readonly protected IScroller thisProximateParentScroller;
-			// public IScroller GetProximateParentScroller(){
-			// 	return thisProximateParentScroller;
-			// }
-			// protected virtual IScroller FindProximateParentScroller(){
-			// 	IProximateParentScrollerCalculator calculator = new ProximateParentScrollerCalculator(this);
-			// 	return calculator.Calculate();
-			// }
 			public override void DisableScrollInputRecursively(IScroller disablingScroller){
 				if(this == disablingScroller){// initiating
 					if(thisUIM.ShowsInputability())
@@ -597,9 +559,6 @@ namespace UISystem{
 
 			protected override void OnTouchImple(int touchCount){
 				thisUIM.SetInputHandlingScroller(this, UIManager.InputName.Touch);
-				// PauseRunningMotorProcessRecursivelyUp();
-				/*  called in uielement
-				*/
 			}
 			public void PauseRunningMotorProcessRecursivelyUp(){
 				PauseAllRunningElementMotorProcess();

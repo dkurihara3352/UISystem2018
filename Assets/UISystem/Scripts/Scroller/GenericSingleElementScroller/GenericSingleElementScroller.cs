@@ -7,7 +7,6 @@ namespace UISystem{
 	public class GenericSingleElementScroller: AbsScroller, IGenericSingleElementScroller{
 		public GenericSingleElementScroller(IGenericSingleElementScrollerConstArg arg): base(arg){
 			thisRelativeCursorLength = MakeRelativeCursorLengthInRange(arg.relativeCursorLength);
-			// SetUpCursorTransform();
 		}
 		Vector2 MakeRelativeCursorLengthInRange(Vector2 source){
 			Vector2 newSizeV2 = new Vector2(source.x, source.y);
@@ -54,6 +53,7 @@ namespace UISystem{
 			IGenericSingleElementScrollerAdaptor uia, 
 			IUIImage image,
 			ActivationMode activationMode
+			
 		):base(
 			scrollerAxis, 
 			relativeCursorPosition, 

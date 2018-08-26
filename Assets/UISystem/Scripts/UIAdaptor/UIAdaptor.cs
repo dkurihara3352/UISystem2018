@@ -9,11 +9,11 @@ namespace UISystem{
 		public bool resizeRelativeToScreenSize = false;
 		public Vector2 sizeRelativeToScreenLength = Vector2.one;
 		protected override void Awake(){
-			SetUpRectSize();
+			AdjustRect();
 
 			this.enabled = false;
 		}
-		void SetUpRectSize(){
+		void AdjustRect(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
 			AdjustPivot(rectTrans);
 			AdjustAnchor(rectTrans);
@@ -79,7 +79,7 @@ namespace UISystem{
 			public void SetGroupAlpha(float alpha){
 				thisCanvasGroup.alpha = alpha;
 			}
-			public virtual void GetReadyForActivation(IUIAActivationData passedData){
+			public virtual void GetReadyForActivation(IUIElementBaseConstData passedData){
 				
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
 				IUIImage uiImage = CreateUIImage();
@@ -95,13 +95,13 @@ namespace UISystem{
 				this.enabled = true;
 				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
 			}
-			protected IUIAActivationData thisDomainActivationData;
+			protected IUIElementBaseConstData thisDomainActivationData;
 			protected IUIManager thisUIM{get{return thisDomainActivationData.uim;}}
-			public IUIAActivationData GetDomainActivationData(){
+			public IUIElementBaseConstData GetDomainActivationData(){
 				return thisDomainActivationData;
 			}
-			IUIAActivationData CheckAndCreateDomainActivationData(IUIAActivationData passedData){
-				IUIAActivationData result = null;
+			IUIElementBaseConstData CheckAndCreateDomainActivationData(IUIElementBaseConstData passedData){
+				IUIElementBaseConstData result = null;
 				if(this is IUIDomainManager){
 					result = ((IUIDomainManager)this).CreateDomainActivationData(passedData);
 				}else{
@@ -109,7 +109,7 @@ namespace UISystem{
 				}
 				return result;
 			}
-			void GetAllChildUIAsReadyForActivation(List<IUIAdaptor> childUIAs, IUIAActivationData passedData){
+			void GetAllChildUIAsReadyForActivation(List<IUIAdaptor> childUIAs, IUIElementBaseConstData passedData){
 				foreach(IUIAdaptor childUIA in childUIAs)
 					childUIA.GetReadyForActivation(passedData);
 			}

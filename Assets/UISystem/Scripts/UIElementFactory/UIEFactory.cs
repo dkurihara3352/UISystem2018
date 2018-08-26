@@ -42,7 +42,7 @@ namespace UISystem{
 			DigitPanelSetAdaptor digitPanelSetAdaptor = CreateInstatiableUIA<DigitPanelSetAdaptor>(instData);
 			IUIAdaptor quantityRollerAdaptor = quantityRoller.GetUIAdaptor();
 			digitPanelSetAdaptor.SetParentUIA(quantityRollerAdaptor, true);
-			IUIAActivationData activationData = quantityRollerAdaptor.GetDomainActivationData();
+			IUIElementBaseConstData activationData = quantityRollerAdaptor.GetDomainActivationData();
 			digitPanelSetAdaptor.GetReadyForActivation(activationData);
 			IDigitPanelSet digitPanelSet = (IDigitPanelSet)digitPanelSetAdaptor.GetUIElement();
 			return digitPanelSet;
@@ -53,7 +53,7 @@ namespace UISystem{
 			DigitPanelAdaptor digitPanelAdaptor = CreateInstatiableUIA<DigitPanelAdaptor>(instData);
 			IUIAdaptor parentUIA = parentDigitPanelSet.GetUIAdaptor();
 			digitPanelAdaptor.SetParentUIA(parentUIA, true);
-			IUIAActivationData activationData = parentUIA.GetDomainActivationData();
+			IUIElementBaseConstData activationData = parentUIA.GetDomainActivationData();
 			digitPanelAdaptor.GetReadyForActivation(activationData);
 			IDigitPanel digitPanel = (IDigitPanel)digitPanelAdaptor.GetUIElement();
 			return digitPanel;

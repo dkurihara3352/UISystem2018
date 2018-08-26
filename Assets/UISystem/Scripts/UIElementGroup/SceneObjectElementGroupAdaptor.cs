@@ -60,12 +60,13 @@ namespace UISystem{
 			else
 				return Screen.height;
 		}
-		public override void GetReadyForActivation(IUIAActivationData passedData){
+		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
 			base.GetReadyForActivation(passedData);
-			List<IUIElement> childSceneObjectUIEs = GetChildUIEs();
-			MakeSureAllChildrenHaveReferenceLength(childSceneObjectUIEs);
-			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
-			uieGroup.SetUpElements(childSceneObjectUIEs);
+			/* To SetUpUIEReference */
+				List<IUIElement> childSceneObjectUIEs = GetChildUIEs();
+				MakeSureAllChildrenHaveReferenceLength(childSceneObjectUIEs);
+				IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
+				uieGroup.SetUpElements(childSceneObjectUIEs);
 		}
 		void MakeSureAllChildrenHaveReferenceLength(List<IUIElement> childSceneObjectUIEs){
 			foreach(IUIElement childUIE in childSceneObjectUIEs){

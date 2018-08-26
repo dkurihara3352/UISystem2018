@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
+	/*  this class is never used???
+	*/
 	public interface IGenericElementGroupScrollerAdaptor: IUIElementGroupScrollerAdaptor{}
 	public class GenericElementGroupScrollerAdaptor : AbsScrollerAdaptor<IUIElementGroupScroller>, IGenericElementGroupScrollerAdaptor{
 		public int initiallyCursoredElementIndex;
@@ -11,6 +13,9 @@ namespace UISystem{
 		public bool swipeToSnapNext;
 		public bool activatesCursoredElementsOnly;
 		protected override IUIElement CreateUIElement(IUIImage image){
+			/*  Accessing uieGroup should be done in SetUpReference,
+				so should the setup of elementLength and padding
+			*/
 			IUIElementGroupAdaptor uieGroupAdaptor = GetChildUIElementGroupAdaptor();
 			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
 				initiallyCursoredElementIndex, 

@@ -17,7 +17,7 @@ namespace UISystem.PickUpUISystem{
 		protected override IEquipToolUIE GetPickUpContextUIE(){
 			return (IEquipToolUIE)GetUIElement();
 		}
-		public override IUIAActivationData CreateDomainActivationData(IUIAActivationData passedData){
+		public override IUIElementBaseConstData CreateDomainActivationData(IUIElementBaseConstData passedData){
 			/*  Instantiate and set up
 					IITAM
 					Tool

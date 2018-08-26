@@ -39,13 +39,13 @@ public class GUIManager : MonoBehaviour {
 			if(topLeftIsEnabled){
 				GUI.Label(topLeftSubRect_0, "Activation");
 				if(GUI.Button(topLeftSubRect_1, "GetReadyForA"))
-					testUIManagerAdaptor.GetRootUIAReadyForActivation();
+					thisUIM.GetReadyForUISystemActivation();
 				if(GUI.Button(topLeftSubRect_2, "Activate"))
-					testUIManagerAdaptor.ActivateRootUIElement();
+					thisUIM.ActivateUISystem(false);
 				if(GUI.Button(topLeftSubRect_3, "Deactivate"))
 					testUIManagerAdaptor.DeactivateRootUIElement();
 				if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
-					testUIManagerAdaptor.ActivateRootUIElementInstantly();
+					thisUIM.ActivateUISystem(true);
 				if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
 					testUIManagerAdaptor.DeactivateRootUIElementInstantly();
 				if(GUI.Button(topLeftSubRect_6, "TogglePopUp"))
@@ -63,8 +63,8 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 	public TestUIManagerAdaptor testUIManagerAdaptor;
-	IUIManager uim{
-		get{return testUIManagerAdaptor.uiManager;}
+	IUIManager thisUIM{
+		get{return testUIManagerAdaptor.GetUIManager();}
 	}
 	protected Rect CreateGUIRect(Vector2 normalizedPosition, Vector2 normalizedSize){
 		MakeSureValuesAreInRange(normalizedPosition);
@@ -107,9 +107,8 @@ public class GUIManager : MonoBehaviour {
 		return result;
 	}
 	string GetHandlingScrollerVelocityString(){
-		IUIManager uim = testUIManagerAdaptor.uiManager;
-		if(uim != null){
-			IScroller scrollerInMotion = uim.GetInputHandlingScroller();
+		if(thisUIM != null){
+			IScroller scrollerInMotion = thisUIM.GetInputHandlingScroller();
 			if(scrollerInMotion != null){
 				Vector2 velocity = scrollerInMotion.GetVelocity();
 				return velocity.magnitude.ToString();
@@ -121,9 +120,8 @@ public class GUIManager : MonoBehaviour {
 		}
 	}
 	string GetScrollerProximateParentScrollerString(){
-		IUIManager uim = testUIManagerAdaptor.uiManager;
-		if(uim != null){
-			IScroller scrollerInMotion = uim.GetInputHandlingScroller();
+		if(thisUIM != null){
+			IScroller scrollerInMotion = thisUIM.GetInputHandlingScroller();
 			if(scrollerInMotion != null){
 				IScroller proximateParentScroller = scrollerInMotion.GetProximateParentScroller();
 				string result = "par: ";
@@ -148,7 +146,7 @@ public class GUIManager : MonoBehaviour {
 	Rect topRightSub_5;
 	string GetInputHandlingScrollerString(){
 		string result = "InputHandling: \n";
-		IScroller scroller = uim.GetInputHandlingScroller();
+		IScroller scroller = thisUIM.GetInputHandlingScroller();
 		if(scroller == null)
 			return result += "null";
 		else
@@ -157,12 +155,12 @@ public class GUIManager : MonoBehaviour {
 	}
 	string GetEventHandledString(){
 		string result = "Event: \n";
-		return result += uim.GetEventName();
+		return result += thisUIM.GetEventName();
 		
 	}
 	string GetTopMostScrollerInMotionString(){
 		string result = "TopMost: \n";
-		IScroller handlingScroller = uim.GetInputHandlingScroller();
+		IScroller handlingScroller = thisUIM.GetInputHandlingScroller();
 		if(handlingScroller == null)
 			result += "no handling scroller";
 		else{

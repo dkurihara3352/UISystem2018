@@ -67,6 +67,7 @@ namespace UISystem{
 				this,
 				arg.activationMode
 			);
+			/* move this to SetUpUIEReference */
 			thisProximateParentScroller = FindProximateParentScroller();
 		}
 		protected readonly IUIManager thisUIM;
