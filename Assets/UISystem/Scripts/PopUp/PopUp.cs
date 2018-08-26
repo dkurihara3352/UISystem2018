@@ -39,6 +39,7 @@ namespace UISystem{
 				arg.activationMode != ActivationMode.Alpha
 			)
 				this.GetUIAdaptor().SetUpCanvasGroupComponent();
+			((IPopUpAdaptor)GetUIAdaptor()).ToggleRaycastBlock(false);
 
 			thisProximateParentPopUp = FindProximateParentPopUp();
 
@@ -112,6 +113,42 @@ namespace UISystem{
 		bool disablesOthers{get;}
 		bool hidesOnTappingOthers{get;}
 		PopUpMode popUpMode{get;}
+	}
+	public class PopUpConstArg: UIElementConstArg, IPopUpConstArg{
+		public PopUpConstArg(
+			IUIManager uim,
+			IUISystemProcessFactory processFactory,
+			IUIElementFactory uiElementFactory,
+			IPopUpAdaptor popUpAdaptor,
+			IUIImage image,
+			ActivationMode activationMode,
+
+			IPopUpManager popUpManager,
+			bool disablesOthers,
+			bool hidesOnTappingOthers,
+			PopUpMode popUpMode
+		): base(
+			uim,
+			processFactory,
+			uiElementFactory,
+			popUpAdaptor,
+			image,
+			activationMode
+		){
+			thisPopUpManager = popUpManager;
+			thisDisablesOthers = disablesOthers;
+			thisHidesOnTappingOthers = hidesOnTappingOthers;
+			thisPopUpMode = popUpMode;
+		}
+		readonly IPopUpManager thisPopUpManager;
+		public IPopUpManager popUpManager{get{return thisPopUpManager;}}
+		readonly bool thisDisablesOthers;
+		public bool disablesOthers{get{return thisDisablesOthers;}}
+		readonly bool thisHidesOnTappingOthers;
+		public bool hidesOnTappingOthers{get{return thisHidesOnTappingOthers;}}
+		readonly PopUpMode thisPopUpMode;
+		public PopUpMode popUpMode{get{return thisPopUpMode;}}
+
 	}
 
 }

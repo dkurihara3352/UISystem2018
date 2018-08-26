@@ -48,6 +48,8 @@ public class GUIManager : MonoBehaviour {
 					testUIManagerAdaptor.ActivateRootUIElementInstantly();
 				if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
 					testUIManagerAdaptor.DeactivateRootUIElementInstantly();
+				if(GUI.Button(topLeftSubRect_6, "TogglePopUp"))
+					testUIManagerAdaptor.TogglePopUp();
 			}
 			if(topRightIsEnabled){
 				GUI.Label(topRightSub_0, GetInputHandlingScrollerString());

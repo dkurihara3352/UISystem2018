@@ -15,9 +15,46 @@ namespace UISystem{
 		}
 		void SetUpRectSize(){
 			RectTransform rectTrans = transform.GetComponent<RectTransform>();
-			rectTrans.pivot = new Vector2(0f, 0f);
-			rectTrans.anchorMin = new Vector2(0f, 0f);
-			rectTrans.anchorMax = new Vector2(0f, 0f);
+			AdjustPivot(rectTrans);
+			AdjustAnchor(rectTrans);
+			AdjustSize(rectTrans);
+		}
+		void AdjustPivot(RectTransform rectTransform){
+			Vector2 targetPivot = Vector2.zero;
+			Vector2 currentPivot = rectTransform.pivot;
+			Vector2 pivotOffset = new Vector2(
+				targetPivot.x - currentPivot.x,
+				targetPivot.y - currentPivot.y
+			);
+			Vector2 localPosAdjutment = new Vector2(
+				rectTransform.sizeDelta.x * pivotOffset.x,
+				rectTransform.sizeDelta.y * pivotOffset.y
+			);
+			rectTransform.pivot = targetPivot;
+			rectTransform.anchoredPosition = new Vector2(
+				rectTransform.anchoredPosition.x + localPosAdjutment.x,
+				rectTransform.anchoredPosition.y + localPosAdjutment.y
+			);
+		}
+		void AdjustAnchor(RectTransform rectTrans){
+			Vector2 targetAnchor = Vector2.zero;
+			Vector2 currentAnchor = rectTrans.anchorMin;
+			Vector2 anchorDiff = targetAnchor - currentAnchor;
+			Vector2 parentRectLength = ((RectTransform)rectTrans.parent).sizeDelta;
+			Vector2 anchorDisplacement = new Vector2(
+				parentRectLength.x * anchorDiff.x,
+				parentRectLength.y * anchorDiff.y
+			);
+
+			rectTrans.anchorMin = targetAnchor;
+			rectTrans.anchorMax = targetAnchor;
+
+			rectTrans.anchoredPosition = new Vector2(
+				rectTrans.anchoredPosition.x - anchorDisplacement.x,
+				rectTrans.anchoredPosition.y - anchorDisplacement.y
+			);
+		}	
+		void AdjustSize(RectTransform rectTrans){
 			if(resizeRelativeToScreenSize){
 				Vector2 newSize = new Vector2();
 				Vector2 screenRect = new Vector2(Screen.width, Screen.height);
@@ -37,18 +74,18 @@ namespace UISystem{
 			}
 			CanvasGroup thisCanvasGroup;
 			public float GetGroupAlpha(){
-				CheckForValidActivationMode();
+				// CheckForValidActivationMode();
 				return thisCanvasGroup.alpha;
 			}
 			public void SetGroupAlpha(float alpha){
-				CheckForValidActivationMode();
+				// CheckForValidActivationMode();
 				thisCanvasGroup.alpha = alpha;
 			}
-			void CheckForValidActivationMode(){
-				if(activationMode != ActivationMode.Alpha)
-					throw new System.InvalidOperationException("ActivationMode must be set to Alpha before accessing group alpha");
+			// void CheckForValidActivationMode(){
+			// 	if(activationMode != ActivationMode.Alpha)
+			// 		throw new System.InvalidOperationException("ActivationMode must be set to Alpha before accessing group alpha");
 
-			}
+			// }
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);

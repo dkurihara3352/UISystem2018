@@ -23,6 +23,7 @@ namespace UISystem{
 		public PopUpHiddenState(IPopUpStateEngine engine): base(engine){}
 		public override void OnEnter(){
 			thisEngine.CallPopUpOnHideComplete();
+			thisEngine.TogglePopUpInteractability(false);
 		}
 		public override void Hide(bool instantly){
 			return;
@@ -41,6 +42,7 @@ namespace UISystem{
 			thisEngine.StartNewHideProcess();
 			thisEngine.CallPopUpOnHideBegin();
 			thisEngine.UnregisterPopUp();
+			thisEngine.TogglePopUpInteractability(false);
 		}
 		public override void Hide(bool instantly){
 			if(instantly)
@@ -58,6 +60,7 @@ namespace UISystem{
 		public PopUpShownState(IPopUpStateEngine engine): base(engine){}
 		public override void OnEnter(){
 			thisEngine.CallPopUpOnShowComplete();
+			thisEngine.TogglePopUpInteractability(true);
 		}
 		public override void Hide(bool instantly){
 			thisEngine.SwitchToHidingState();
@@ -76,6 +79,7 @@ namespace UISystem{
 			thisEngine.StartNewShowProcess();
 			thisEngine.CallPopUpOnShowBegin();
 			thisEngine.RegisterPopUp();
+			thisEngine.TogglePopUpInteractability(true);
 		}
 		public override void Hide(bool instantly){
 			thisEngine.SwitchToHidingState();

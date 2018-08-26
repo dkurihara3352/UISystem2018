@@ -29,10 +29,9 @@ namespace UISystem{
 		/*  */
 		bool IsHidden();
 		bool IsShown();
+		void TogglePopUpInteractability(bool interactable);
 	}
 	public class PopUpStateEngine :AbsSwitchableStateEngine<IPopUpState>, IPopUpStateEngine, ISwitchableStateEngine<IPopUpState> {
-		/*  start popUpManager's disablingOthers process when entered 			HidingState, if set so
-		*/
 
 		public PopUpStateEngine(IPopUpStateEngineConstArg arg){
 			thisProcessFactory = arg.processFactory;
@@ -43,6 +42,9 @@ namespace UISystem{
 			thisHidingState = new PopUpHidingState(this);
 			thisShownState = new PopUpShownState(this);
 			thisShowingState = new PopUpShowingState(this);
+			
+			// Hide(true);
+			thisCurState = thisHiddenState;
 		}
 		readonly IUISystemProcessFactory thisProcessFactory;
 		readonly IPopUp thisPopUp;
@@ -95,10 +97,12 @@ namespace UISystem{
 		}
 		public void StartNewHideProcess(){
 			IPopUpProcess newPorcess = CreatePopUpProcess(true);
+			newPorcess.Run();
 			SetRunningProcess(newPorcess);
 		}
 		public void StartNewShowProcess(){
 			IPopUpProcess newProcess = CreatePopUpProcess(false);
+			newProcess.Run();
 			SetRunningProcess(newProcess);
 		}
 		/*  */
@@ -135,6 +139,10 @@ namespace UISystem{
 		}
 		public void UnregisterPopUp(){
 			thisPopUpManager.UnregisterPopUp(thisPopUp);
+		}
+		/*  */
+		public void TogglePopUpInteractability(bool interactable){
+			((IPopUpAdaptor)thisPopUp.GetUIAdaptor()).ToggleRaycastBlock(interactable);
 		}
 	}
 	public interface IPopUpStateEngineConstArg{

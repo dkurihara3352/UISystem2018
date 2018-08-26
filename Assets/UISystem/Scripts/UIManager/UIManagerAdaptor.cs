@@ -12,11 +12,24 @@ namespace UISystem{
 		public bool showsInputability;
 
 		public void Awake(){
-			uiManager = new UIManager(uieReserveTrans, showsInputability);
-			IUISystemProcessFactory processFactory = new UISystemProcessFactory(processManager, uiManager);
-			IUIElementFactory uiElementFactory = new UIElementFactory(uiManager);
-			IUIAActivationData rootUIAActivationArg = new RootUIAActivationData(uiManager, processFactory, uiElementFactory);
-			rootUIAdaptor.GetReadyForActivation(rootUIAActivationArg);
+			uiManager = new UIManager(
+				uieReserveTrans, 
+				showsInputability
+			);
+			IUISystemProcessFactory processFactory = new UISystemProcessFactory(
+				processManager, 
+				uiManager
+			);
+			IUIElementFactory uiElementFactory = new UIElementFactory(
+				uiManager
+			);
+
+			IUIAActivationData rootUIAActivationData = new RootUIAActivationData(
+				uiManager, 
+				processFactory, 
+				uiElementFactory
+			);
+			rootUIAdaptor.GetReadyForActivation(rootUIAActivationData);
 			IUIElement rootUIElement = rootUIAdaptor.GetUIElement();
 			uiManager.SetRootUIElement(rootUIElement);
 		}

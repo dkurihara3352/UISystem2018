@@ -33,7 +33,7 @@ namespace DKUtility{
 			StopImple();
 		}
 		protected virtual void StopImple(){}
-		public void Expire(){
+		public virtual void Expire(){
 			this.Stop();
 			ExpireImple();
 		}

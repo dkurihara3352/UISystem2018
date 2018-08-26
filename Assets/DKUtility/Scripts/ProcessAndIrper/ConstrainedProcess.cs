@@ -18,7 +18,7 @@ namespace DKUtility{
 			thisConstraintValue = arg.constraintValue;
 		}
 		readonly ProcessConstraint thisProcessConstraint;
-		readonly float thisConstraintValue;
+		readonly protected float thisConstraintValue;
 		protected virtual float GetLatestInitialValueDifference(){
 			if(thisProcessConstraint == ProcessConstraint.RateOfChange)
 				throw new System.InvalidOperationException("Override GetLatesetInitialValueDifference if the process constraint is rate of change");

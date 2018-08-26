@@ -487,6 +487,7 @@ namespace UISystem{
 				EnableInput();
 		}
 		public void ReversePopUpDisableRecursively(){
+			ReverseDisableForPopUp();
 			if(this.IsActivated()){
 				foreach(IUIElement child in thisChildUIEs)
 					if(child != null)

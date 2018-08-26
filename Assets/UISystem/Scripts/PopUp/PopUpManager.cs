@@ -43,6 +43,7 @@ namespace UISystem{
 		}
 		void ReverseDisableOthers(IPopUp enablingPopUp){
 			IPopUp parentPopUp = enablingPopUp.GetProximateParentPopUp();
+
 			if(parentPopUp != null){
 				parentPopUp.ReversePopUpDisableRecursively();
 				RegisterPopUp(parentPopUp);

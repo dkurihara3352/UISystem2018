@@ -34,6 +34,11 @@ namespace DKUtility{
 			float t = thisUseSpringT? GetSpringT(thisNormalizedT): thisNormalizedT;
 			thisInterpolator.Interpolate(t);
 		}
+		public override void Expire(){
+			this.Stop();
+			thisInterpolator.Interpolate(1f);
+			ExpireImple();
+		}
 	}
 	public interface IInterpolatorProcesssConstArg: IConstrainedProcessConstArg{
 		bool useSpringT{get;}

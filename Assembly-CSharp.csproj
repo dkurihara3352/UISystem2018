@@ -121,9 +121,12 @@
      <Compile Include="Assets\UISystem\PickUpSystem\Scripts\TravelableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\Button\ColorChangeButton.cs" />
      <Compile Include="Assets\UISystem\Scripts\Button\ColorChangeButtonAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Button\PopUpButton.cs" />
+     <Compile Include="Assets\UISystem\Scripts\Button\PopUpButtonAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\Item.cs" />
      <Compile Include="Assets\UISystem\Scripts\Item\ItemTemplate.cs" />
-     <Compile Include="Assets\UISystem\Scripts\PopUp\AbsPopUp.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PopUp\PopUp.cs" />
+     <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpManager.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpProcess.cs" />
      <Compile Include="Assets\UISystem\Scripts\PopUp\PopUpState.cs" />

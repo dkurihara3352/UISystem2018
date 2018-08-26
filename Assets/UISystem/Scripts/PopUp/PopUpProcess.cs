@@ -28,6 +28,8 @@ namespace UISystem{
 			}
 		}
 		protected override float GetLatestInitialValueDifference(){
+			/*  never gets called
+			*/
 			float curAlpha = thisPopUpAdaptor.GetGroupAlpha();
 			return targetAlpha - curAlpha;
 		}
