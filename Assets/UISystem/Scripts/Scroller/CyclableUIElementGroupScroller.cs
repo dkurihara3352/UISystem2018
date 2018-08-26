@@ -50,7 +50,7 @@ namespace UISystem{
 			return elementsCountOnAxis >= minimumRequiredElementsCountToCycleOnAxis;
 		}
 		int GetElementsCountOnAxis(int dimension){
-			return thisUIElementGroup.GetGroupElementsArraySize(dimension);
+			return thisUIElementGroup.GetArraySize(dimension);
 		}
 		int GetMinimumRequiredElementsCountToCycle(int dimension){
 			float perfectlyFitLength = (thisRectLength[dimension] - thisPadding[dimension])/ (thisGroupElementLength[dimension] + thisPadding[dimension]);
@@ -62,15 +62,6 @@ namespace UISystem{
 				perfectlyContainableElementsCount += 2;
 			return perfectlyContainableElementsCount;
 		}
-		// protected override void DisplaceScrollerElement(Vector2 deltaP){
-		// 	base.DisplaceScrollerElement(deltaP);
-		// 	/* already translated to new local pos */
-		// 	for(int i = 0; i < 2; i ++)
-		// 		if(this.IsCyclable(i)){
-		// 			if(this.ShouldCycleThisFrame(i))
-		// 				Cycle();
-		// 	}
-		// }
 		protected override void DisplaceScrollerElement(Vector2 dragDeltaSinceTouch){
 			base.DisplaceScrollerElement(dragDeltaSinceTouch);
 			for(int i = 0; i < 2; i ++)

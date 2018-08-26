@@ -6,8 +6,9 @@ namespace UISystem{
 	public interface IPopUpManager{
 		void RegisterPopUp(IPopUp popUpToRegister);
 		void UnregisterPopUp(IPopUp popUpToUnregister);
-		void HideActivePopUp();
+		void CheckAndHideActivePopUp();
 		void SetRootUIElement(IUIElement uiElement);
+		bool ActivePopUpHidesOnTappingOthers();
 	}
 	public class PopUpManager : IPopUpManager {
 		IUIElement thisRootUIElement;
@@ -24,7 +25,16 @@ namespace UISystem{
 		protected void SetActivePopUp(IPopUp popUp){
 			thisActivePopUp = popUp;
 		}
-		public void HideActivePopUp(){
+		public bool ActivePopUpHidesOnTappingOthers(){
+			return thisActivePopUp.HidesOnTappingOthers();
+		}
+		public void CheckAndHideActivePopUp(){
+			if(thisActivePopUp!= null){
+				if(thisActivePopUp.HidesOnTappingOthers())
+					thisActivePopUp.Hide(false);
+			}
+		}
+		void HideActivePopUp(){
 			if(thisActivePopUp != null)
 				thisActivePopUp.Hide(false);
 		}

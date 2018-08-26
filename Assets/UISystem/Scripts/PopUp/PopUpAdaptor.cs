@@ -7,7 +7,6 @@ namespace UISystem{
 		void ToggleRaycastBlock(bool interactable);
 	}
 	public class PopUpAdaptor : UIAdaptor, IPopUpAdaptor{
-		public bool disablesOthers;
 		public bool hidesOnTappingOthers;
 		public PopUpMode popUpMode;
 		protected override IUIElement CreateUIElement(IUIImage image){
@@ -20,7 +19,6 @@ namespace UISystem{
 				activationMode,
 
 				thisDomainActivationData.uim.GetPopUpManager(),
-				disablesOthers,
 				hidesOnTappingOthers,
 				popUpMode
 			);

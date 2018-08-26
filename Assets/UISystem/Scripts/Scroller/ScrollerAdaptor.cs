@@ -11,14 +11,14 @@ namespace UISystem{
 		public Vector2 relativeCursorPosition;
 		public Vector2 rubberBandLimitMultiplier;
 		public bool isEnabledInertia;
-		public float newScrollSpeedThreshold = 200f;
+		public float locksInputAboveThisVelocity = 200f;
 		public void ShowCursorRectInGUI(Rect cursorRect){
 			thisCursorRect = cursorRect;
 			cursorRectIsReady = true;
 		}
 		Rect thisCursorRect;
 		bool cursorRectIsReady = false;
-		public void OnDrawGizmos(){
+		public void OnDrawGizmosSelected(){
 			if(cursorRectIsReady){
 				Gizmos.color = Color.red;
 				float planeZ = -1f;

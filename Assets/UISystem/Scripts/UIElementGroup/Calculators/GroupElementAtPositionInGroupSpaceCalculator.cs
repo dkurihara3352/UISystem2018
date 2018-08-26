@@ -18,8 +18,9 @@ namespace UISystem{
 		readonly Vector2 thisPadding;
 		readonly Vector2 thisGroupRectLength;
 		public IUIElement Calculate(Vector2 positionInGroupSpace){
-			if(PositionIsOutOfThisRectBouds(positionInGroupSpace))
+			if(PositionIsOutOfThisRectBouds(positionInGroupSpace)){
 				return null;
+			}
 			else{
 				int[] arrayIndex = new int[2];
 				for(int i = 0; i < 2; i ++){
@@ -29,17 +30,19 @@ namespace UISystem{
 						if(positionInGroupSpace[i] > thisPadding[i]){
 							int quotient = Mathf.FloorToInt(positionInGroupSpace[i]/ elementLengthPlusPadding) -1;
 							arrayIndex[i] = quotient;
-						}else
+						}else{
 							return null;
+						}
 					}else{
 						if(modulo >= thisPadding[i]){
 							int quotient = Mathf.FloorToInt(positionInGroupSpace[i] / elementLengthPlusPadding);
 							arrayIndex[i] = quotient;
-						}else
+						}else{
 							return null;
+						}
 					}
 				}
-				IUIElement elementAtIndex = thisElementsArray[arrayIndex[0], arrayIndex[1]];
+				IUIElement elementAtIndex = thisElementsArray[arrayIndex[0], arrayIndex[1]];		
 				return elementAtIndex;
 			}
 		}

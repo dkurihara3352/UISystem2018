@@ -19,13 +19,11 @@ namespace UISystem{
 		public Vector2 GetGroupElementLength(){
 			return groupElementLength;
 		}
-		public Vector2 padding{
-			get{
-				return new Vector2((Screen.width - groupElementLength.x) * .5f, (Screen.height - groupElementLength.y) * .5f);
-			}
-		}
+		public Vector2 padding;
 		public Vector2 GetPadding(){return padding;}
+		public bool[] usesFixedPadding = new bool[2]{true, true};
 		protected override IUIElement CreateUIElement(IUIImage image){
+			Vector2 thisPadding = CheckAndAdjustPadding();
 			IUIElementGroupConstArg arg = new UIElementGroupConstArg(
 				columnCountConstraint,
 				rowCountConstraint,
@@ -33,7 +31,8 @@ namespace UISystem{
 				leftToRight,
 				rowToColumn,
 				groupElementLength,
-				padding,
+				thisPadding,
+				usesFixedPadding,
 
 				thisDomainActivationData.uim,
 				thisDomainActivationData.processFactory,
@@ -44,6 +43,22 @@ namespace UISystem{
 			);
 			IGenericUIElementGroup uie = new GenericUIElementGroup(arg);
 			return uie;
+		}
+		Vector2 CheckAndAdjustPadding(){
+			Vector2 result = padding;
+			if(this.resizeRelativeToScreenSize){				
+				for(int i = 0; i < 2; i ++){
+					float totalPaddingLength = GetScreenLength(i) - groupElementLength[i];
+					result[i] = totalPaddingLength / 2f;
+				}
+			}
+			return result;
+		}
+		float GetScreenLength(int dimension){
+			if(dimension == 0)
+				return Screen.width;
+			else
+				return Screen.height;
 		}
 		public override void GetReadyForActivation(IUIAActivationData passedData){
 			base.GetReadyForActivation(passedData);

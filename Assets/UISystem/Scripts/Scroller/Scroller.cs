@@ -34,7 +34,6 @@ namespace UISystem{
 			thisRubberBandLimitMultiplier = MakeRubberBandLimitMultiplierInRange(arg.rubberBandLimitMultiplier);
 			thisIsEnabledInertia = arg.isEnabledInertia;
 			thisNewScrollSpeedThreshold = arg.newScrollSpeedThreshold;
-			// thisProximateParentScroller = FindProximateParentScroller();
 
 			CacheThisRect();
 			MakeSureRectIsSet(thisRect);
@@ -145,10 +144,11 @@ namespace UISystem{
 				*/
 				SetTheOnlyChildAsScrollerElement();
 				CacheScrollerElementRect();
-				OnScrollerElementReferenceSetUp();
-				InitializeScrollerElementForActivation();
+				SetUpCursorTransform();
+				OnRectsSetUpComplete();
+				PlaceScrollerElementAtInitialCursorValue();
 			}
-			protected virtual void OnScrollerElementReferenceSetUp(){
+			protected virtual void OnRectsSetUpComplete(){
 				thisElementCursorOffsetInPixelCalculator = new ElementCursorOffsetInPixelCalculator(
 					this,
 					thisCursorLength,
@@ -174,7 +174,7 @@ namespace UISystem{
 				thisScrollerElementRect = scrollerElementAdaptor.GetRect();
 				thisScrollerElementLength = new Vector2(thisScrollerElementRect.width, thisScrollerElementRect.height);
 			}
-			protected virtual void InitializeScrollerElementForActivation(){
+			protected void PlaceScrollerElementAtInitialCursorValue(){
 				Vector2 initialCursorValue = GetInitialNormalizedCursoredPosition();
 				PlaceScrollerElement(initialCursorValue);
 			}

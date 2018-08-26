@@ -9,9 +9,17 @@ using UISystem;
 public class SwipeNextTargetGroupElementArrayIndexCalculatorTest{
 
 	[Test, TestCaseSource(typeof(Calculate_TestCase), "cases")]
-    public void Calculate_Various(int[] arraySize, int[] cursorSize, ScrollerAxis scrollerAxis, Vector2 velocity, int[] currentElementUnderCursorArrayIndex, int[] expectedArrayIndex){
+    public void Calculate_Various(
+        int[] arraySize, 
+        int[] cursorSize, 
+        ScrollerAxis scrollerAxis, 
+        Vector2 velocity, 
+        int[] currentElementUnderCursorArrayIndex, 
+        int[] expectedArrayIndex
+    ){
         IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
-        uieGroup.GetArraySize().Returns(arraySize);
+        for(int i = 0; i < 2; i ++)
+            uieGroup.GetArraySize(i).Returns(arraySize[i]);
         ISwipeNextTargetGroupElementArrayIndexCalculator calculator = new SwipeNextTargetGroupElementArrayIndexCalculator(uieGroup, cursorSize, scrollerAxis);
 
         int[] actual = calculator.Calculate(velocity, currentElementUnderCursorArrayIndex);

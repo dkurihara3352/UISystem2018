@@ -14,7 +14,7 @@ public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 				rubberBandLimitMultiplier, 
 				relativeCursorPosition, 
 				isEnabledInertia, 
-				newScrollSpeedThreshold,
+				locksInputAboveThisVelocity,
 				
 				thisDomainActivationData.uim, 
 				thisDomainActivationData.processFactory, 

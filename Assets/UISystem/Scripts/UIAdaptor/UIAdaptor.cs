@@ -7,7 +7,7 @@ namespace UISystem{
 	[RequireComponent(typeof(RectTransform))]
 	public class UIAdaptor: UIBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler{
 		public bool resizeRelativeToScreenSize = false;
-		public Vector2 sizeRelativeToReferenceRect = Vector2.one;
+		public Vector2 sizeRelativeToScreenLength = Vector2.one;
 		protected override void Awake(){
 			SetUpRectSize();
 
@@ -59,7 +59,7 @@ namespace UISystem{
 				Vector2 newSize = new Vector2();
 				Vector2 screenRect = new Vector2(Screen.width, Screen.height);
 				for(int i = 0; i < 2; i ++){
-					float newLength = screenRect[i] * sizeRelativeToReferenceRect[i];
+					float newLength = screenRect[i] * sizeRelativeToScreenLength[i];
 					newSize[i] = newLength;
 				}
 				rectTrans.sizeDelta = newSize;
@@ -74,18 +74,11 @@ namespace UISystem{
 			}
 			CanvasGroup thisCanvasGroup;
 			public float GetGroupAlpha(){
-				// CheckForValidActivationMode();
 				return thisCanvasGroup.alpha;
 			}
 			public void SetGroupAlpha(float alpha){
-				// CheckForValidActivationMode();
 				thisCanvasGroup.alpha = alpha;
 			}
-			// void CheckForValidActivationMode(){
-			// 	if(activationMode != ActivationMode.Alpha)
-			// 		throw new System.InvalidOperationException("ActivationMode must be set to Alpha before accessing group alpha");
-
-			// }
 			public virtual void GetReadyForActivation(IUIAActivationData passedData){
 				
 				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
@@ -128,8 +121,9 @@ namespace UISystem{
 					throw new System.InvalidOperationException("image transform must have RectTransform component");
 				imageRectTrans.pivot = new Vector2(0f, 0f);
 				imageRectTrans.anchorMin = new Vector2(0f, 0f);
-				imageRectTrans.anchorMax = new Vector2(0f, 0f);
-				imageRectTrans.sizeDelta = this.GetRect().size;
+				imageRectTrans.anchorMax = new Vector2(1f, 1f);
+				// imageRectTrans.sizeDelta = this.GetRect().size;
+				imageRectTrans.sizeDelta = Vector2.one;
 				imageRectTrans.anchoredPosition = Vector3.zero;
 				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainActivationData.processFactory);
 				return uiImage;
@@ -167,6 +161,14 @@ namespace UISystem{
 					graphicRT.anchoredPosition = Vector2.zero;
 					graphicRT.sizeDelta = newSize;
 				}
+			}
+			public void SetRectLengthOnAxis(float length, int dimension){
+				RectTransform rectTrans = (RectTransform)this.transform;
+				Vector2 sourceSize = rectTrans.sizeDelta;
+				if(dimension == 0)
+					rectTrans.sizeDelta = new Vector2(length, sourceSize.y);
+				else
+					rectTrans.sizeDelta = new Vector2(sourceSize.x, length);
 			}
 			protected RectTransform[] GetChildRectTransformsWithGraphicComponent(){
 				List<RectTransform> result = new List<RectTransform>();

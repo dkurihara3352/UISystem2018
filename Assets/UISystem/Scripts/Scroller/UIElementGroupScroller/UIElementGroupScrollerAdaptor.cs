@@ -26,7 +26,7 @@ namespace UISystem{
 				rubberBandLimitMultiplier, 
 				isEnabledInertia, 
 				swipeToSnapNext, 
-				newScrollSpeedThreshold,
+				locksInputAboveThisVelocity,
 				
 				thisDomainActivationData.uim, 
 				thisDomainActivationData.processFactory, 

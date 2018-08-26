@@ -9,7 +9,7 @@ namespace UISystem{
 		void OnHideComplete();
 		void OnShowComplete();
 
-		bool DisablesOtherElements();
+		bool HidesOnTappingOthers();
 		void ShowHiddenProximateParentPopUpRecursively();
 		void HideShownChildPopUpsRecursively();
 		IPopUp GetProximateParentPopUp();
@@ -24,7 +24,6 @@ namespace UISystem{
 	public class PopUp : UIElement, IPopUp {
 		public PopUp(IPopUpConstArg arg): base(arg){
 			thisPopUpManager = arg.popUpManager;
-			thisDisablesOthers = arg.disablesOthers;
 			thisHidesOnTappingOthers = arg.hidesOnTappingOthers;
 
 			IPopUpStateEngineConstArg popUpStateEngineConstArg = new PopUpStateEngineConstArg(
@@ -48,9 +47,8 @@ namespace UISystem{
 			thisProximateChildPopUps = new List<IPopUp>();
 		}
 		readonly IPopUpManager thisPopUpManager;
-		readonly bool thisDisablesOthers;
-		public bool DisablesOtherElements(){
-			return thisDisablesOthers;
+		public bool HidesOnTappingOthers(){
+			return thisHidesOnTappingOthers;
 		}
 		readonly bool thisHidesOnTappingOthers;
 		protected readonly IPopUpStateEngine thisStateEngine;
@@ -107,10 +105,13 @@ namespace UISystem{
 				popUpToExamine = popUpToExamine.GetProximateParentPopUp();
 			}
 		}
+		protected override void OnTapImple(int tapCount){
+			CheckAndPerformStaticBoundarySnapFrom(this);
+			return;
+		}
 	}
 	public interface IPopUpConstArg: IUIElementConstArg{
 		IPopUpManager popUpManager{get;}
-		bool disablesOthers{get;}
 		bool hidesOnTappingOthers{get;}
 		PopUpMode popUpMode{get;}
 	}
@@ -124,7 +125,6 @@ namespace UISystem{
 			ActivationMode activationMode,
 
 			IPopUpManager popUpManager,
-			bool disablesOthers,
 			bool hidesOnTappingOthers,
 			PopUpMode popUpMode
 		): base(
@@ -136,14 +136,11 @@ namespace UISystem{
 			activationMode
 		){
 			thisPopUpManager = popUpManager;
-			thisDisablesOthers = disablesOthers;
 			thisHidesOnTappingOthers = hidesOnTappingOthers;
 			thisPopUpMode = popUpMode;
 		}
 		readonly IPopUpManager thisPopUpManager;
 		public IPopUpManager popUpManager{get{return thisPopUpManager;}}
-		readonly bool thisDisablesOthers;
-		public bool disablesOthers{get{return thisDisablesOthers;}}
 		readonly bool thisHidesOnTappingOthers;
 		public bool hidesOnTappingOthers{get{return thisHidesOnTappingOthers;}}
 		readonly PopUpMode thisPopUpMode;

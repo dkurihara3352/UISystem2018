@@ -7,6 +7,7 @@ namespace UISystem{
 		Transform GetTransform();
 		Rect GetRect();
 		void SetRectLength(float width, float height);
+		void SetRectLengthOnAxis(float length, int dimension);
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
 		Vector2 GetWorldPosition();

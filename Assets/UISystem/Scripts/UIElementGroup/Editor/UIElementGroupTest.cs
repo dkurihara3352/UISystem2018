@@ -10,8 +10,17 @@ using DKUtility;
 [TestFixture, Category("UISystem")]
 public class UIElementGroupTest {
 	[Test, TestCaseSource(typeof(CalcNumberOfColumnsToCreate_TestCase), "cases")]
-	public void CalcNumberOfColumnsToCreate_Various(int columnCountConstraint, int rowCountConstraint, int elementsCount, int expected){
-		TestUIElementGroup uieGroup = CreateTestUIElementGroupWithConstraints(columnCountConstraint, rowCountConstraint);
+	public void CalcNumberOfColumnsToCreate_Various(
+		int columnCountConstraint, 
+		int rowCountConstraint, 
+		int elementsCount, 
+		int expected
+	){
+		IUIElementGroupConstArg arg = CreateMockConstArg();
+		arg.columnCountConstraint.Returns(columnCountConstraint);
+		arg.rowCountConstraint.Returns(rowCountConstraint);
+		TestUIElementGroup uieGroup = new TestUIElementGroup(arg);
+
 		List<IUIElement> elements = CreateUIElements(elementsCount);
 		uieGroup.SetElements(elements);
 
@@ -40,8 +49,17 @@ public class UIElementGroupTest {
 		};
 	}
 	[Test, TestCaseSource(typeof(CalcNumberOfRowsToCreate_TestCase), "cases")]
-	public void CalcNumberOfRowsToCreate_Various(int columnCountConstraint, int rowCountConstraint, int elementsCount, int expected){
-		TestUIElementGroup uieGroup = CreateTestUIElementGroupWithConstraints(columnCountConstraint, rowCountConstraint);
+	public void CalcNumberOfRowsToCreate_Various(
+		int columnCountConstraint, 
+		int rowCountConstraint, 
+		int elementsCount, 
+		int expected
+	){
+		IUIElementGroupConstArg arg = CreateMockConstArg();
+		arg.columnCountConstraint.Returns(columnCountConstraint);
+		arg.rowCountConstraint.Returns(rowCountConstraint);
+		TestUIElementGroup uieGroup = new TestUIElementGroup(arg);
+
 		List<IUIElement> elements = CreateUIElements(elementsCount);
 		uieGroup.SetElements(elements);
 
@@ -79,6 +97,7 @@ public class UIElementGroupTest {
 		arg.rowToColumn.Returns(true);
 		arg.elementLength.Returns(new Vector2(100f, 50f));
 		arg.padding.Returns(new Vector2(10f, 10f));
+		arg.usesFixedPadding.Returns(new bool[2]{true, true});
 		arg.uim.Returns(Substitute.For<IUIManager>());
 		arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
 		arg.uiElementFactory.Returns(Substitute.For<IUIElementFactory>());
@@ -120,8 +139,8 @@ public class UIElementGroupTest {
 		public int CalcRowIndex_Test(int n, int numOfColumns, int numOfRows){
 			return this.CalcRowIndex(n, numOfColumns, numOfRows);
 		}
-		public int GetElementsArraySize_Test(int dimension){
-			return this.GetGroupElementsArraySize(dimension);
+		public int GetArraySize_Test(int dimension){
+			return this.GetArraySize(dimension);
 		}
 		public void ResizeToFitElements_Test(){
 			this.ResizeToFitElements();
@@ -130,23 +149,5 @@ public class UIElementGroupTest {
 			this.PlaceElements();
 		}
 	}
-	public TestUIElementGroup CreateTestUIElementGroupWithConstraints(int columnCountConstraint, int rowCountConstraint){
-		IUIElementGroupConstArg arg = new UIElementGroupConstArg(
-			columnCountConstraint, 
-			rowCountConstraint, 
-			true, 
-			true, 
-			true, 
-			Vector2.zero, 
-			Vector2.zero, 
 
-			Substitute.For<IUIManager>(), 
-			Substitute.For<IUISystemProcessFactory>(), 
-			Substitute.For<IUIElementFactory>(), 
-			Substitute.For<IUIElementGroupAdaptor>(), 
-			Substitute.For<IUIImage>(),
-			ActivationMode.None
-		);
-		return new TestUIElementGroup(arg);
-	}
 }

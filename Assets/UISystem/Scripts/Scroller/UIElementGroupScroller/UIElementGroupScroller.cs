@@ -6,6 +6,7 @@ namespace UISystem{
 	public interface IUIElementGroupScroller: IScroller{
 		IUIElement[] GetCursoredElements();
 		int GetGroupElementIndex(IUIElement groupElement);
+		void UpdateGroupElementLengthAndPadding(Vector2 groupElementLength, Vector2 padding);
 	}
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
@@ -16,7 +17,7 @@ namespace UISystem{
 			thisStartSearchSpeed = MakeSureStartSearchSpeedIsGreaterThanZero(arg.startSearchSpeed);
 			thisSwipeToSnapNext = arg.swipeToSnapNext;
 			thisActivatesCursoredElementsOnly = arg.activatesCursoredElementsOnly;
-			SetUpCursorTransform();
+			// SetUpCursorTransform();
 		}
 		/* Activation */
 			readonly bool thisActivatesCursoredElementsOnly;
@@ -55,8 +56,8 @@ namespace UISystem{
 				return source;
 			}
 			protected readonly int[] thisCursorSize;
-			protected readonly Vector2 thisPadding;
-			protected readonly Vector2 thisGroupElementLength;
+			protected Vector2 thisPadding;
+			protected Vector2 thisGroupElementLength;
 			protected IUIElementGroup thisUIElementGroup{
 				get{
 					return (IUIElementGroup)thisScrollerElement;
@@ -85,12 +86,28 @@ namespace UISystem{
 				base.SetScrollerElementLocalPosOnAxis(localPosOnAxis, dimension);
 				EvaluateCursoredGroupElements();
 			}
-			protected override void OnScrollerElementReferenceSetUp(){
-				base.OnScrollerElementReferenceSetUp();
-				thisCorrectedCursoredElementIndexCalculator = new CorrectedCursoredElementIndexCalculator(thisUIElementGroup, thisCursorSize);
-				thisElementGroupOffsetCalculator = new ElementGroupOffsetCalculator(thisUIElementGroup, thisGroupElementLength, thisPadding, thisCursorLocalPosition);
+			protected override void OnRectsSetUpComplete(){
+				base.OnRectsSetUpComplete();
+				thisCorrectedCursoredElementIndexCalculator = new CorrectedCursoredElementIndexCalculator(
+					thisUIElementGroup, 
+					thisCursorSize
+				);
+				thisElementGroupOffsetCalculator = new ElementGroupOffsetCalculator(
+					thisUIElementGroup, 
+					thisGroupElementLength, 
+					thisPadding, 
+					thisCursorLocalPosition
+				);
 				if(thisSwipeToSnapNext)
-					thisSwipeNextTargetGroupElementArrayIndexCalculator = new SwipeNextTargetGroupElementArrayIndexCalculator(thisUIElementGroup, thisCursorSize, thisScrollerAxis);
+					thisSwipeNextTargetGroupElementArrayIndexCalculator = new SwipeNextTargetGroupElementArrayIndexCalculator(
+						thisUIElementGroup, 
+						thisCursorSize, 
+						thisScrollerAxis
+					);
+			}
+			public void UpdateGroupElementLengthAndPadding(Vector2 groupElementLength, Vector2 padding){
+				thisGroupElementLength = groupElementLength;
+				thisPadding = padding;
 			}
 		/* Initially Cursored Element */
 			readonly int thisInitiallyCursoredGroupElementIndex;
@@ -185,7 +202,8 @@ namespace UISystem{
 							}
 						foreach(IUIElement uie in groupElementsToFocus)
 							if(uie != null){
-								uie.BecomeFocusedInScrollerRecursively();
+								// uie.BecomeFocusedInScrollerRecursively();
+								uie.EvaluateScrollerFocusRecursively();
 								if(thisActivatesCursoredElementsOnly )
 									uie.InitiateActivation(false);
 							}
@@ -242,9 +260,16 @@ namespace UISystem{
 				Vector2 cursorReferencePoint = thisCursorLocalPosition + thisPadding + (thisGroupElementLength * .5f);
 
 				Vector2 cursorRefPInElementGroupSpace = cursorReferencePoint - thisUIElementGroup.GetLocalPosition();
+				
 				IUIElement leastCursoredElement = thisUIElementGroup.GetGroupElementAtPositionInGroupSpace(cursorRefPInElementGroupSpace);
 
 				return leastCursoredElement;
+			}
+			string GetGroupElementIndexString(IUIElement element){
+				if(element == null)
+					return "null";
+				else
+					return GetGroupElementIndex(element).ToString();
 			}
 			int[,] CalcCursoredGroupElementArrayIndexRange(IUIElement cursoredElement){
 
@@ -350,6 +375,18 @@ namespace UISystem{
 				foreach(IUIElement noncursoredUIE in thisNoncursoredElements)
 					if(noncursoredUIE != null)
 						noncursoredUIE.BecomeDefocusedInScrollerRecursively();
+			}
+			string GetCursoredElementsIndexString(){
+				string result = "";
+				if(thisCursoredElements == null){
+					return "cursored elements null";
+				}else{
+					foreach(IUIElement element in thisCursoredElements){
+						int index = thisUIElementGroup.GetGroupElementIndex(element);
+						result += index.ToString() + ", ";
+					}
+				}
+				return result;
 			}
 			public override void BecomeFocusedInScrollerRecursively(){
 				BecomeFocusedInScrollerSelf();

@@ -136,7 +136,6 @@ public class PopUpTest{
 	public IPopUpConstArg CreateMockArg(){
 		IPopUpConstArg arg = Substitute.For<IPopUpConstArg>();
 		arg.popUpManager.Returns(Substitute.For<IPopUpManager>());
-		arg.disablesOthers.Returns(true);
 		arg.hidesOnTappingOthers.Returns(true);
 		arg.popUpMode.Returns(PopUpMode.Alpha);
 

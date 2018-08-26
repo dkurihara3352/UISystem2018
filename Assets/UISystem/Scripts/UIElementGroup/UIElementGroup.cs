@@ -7,8 +7,7 @@ namespace UISystem{
 	public interface IUIElementGroup: IUIElement{
 		int GetSize();
 		List<IUIElement> GetGroupElements();
-		int GetGroupElementsArraySize(int dimension);
-		int[] GetArraySize();
+		int GetArraySize(int dimension);
 		IUIElement GetGroupElement(int index);
 		int GetGroupElementIndex(IUIElement groupElement);
 		IUIElement GetGroupElement(int columnIndex, int rowIndex);
@@ -29,6 +28,7 @@ namespace UISystem{
 			thisArrayIndexCalculator = new UIElementGroupArrayIndexCalculator(thisTopToBottom, thisLeftToRight, thisRowToColumn);
 			thisElementLength = arg.elementLength;
 			thisPadding = arg.padding;
+			thisUsesFixedPadding = arg.usesFixedPadding;
 		}
 		void MakeSureConstraintIsProperlySet(){
 			if(thisRowCountConstraint == 0 && thisColumnCountConstraint == 0)
@@ -73,108 +73,163 @@ namespace UISystem{
 		readonly bool thisLeftToRight;
 		readonly bool thisRowToColumn;
 		readonly Vector2 thisElementLength;
-		readonly Vector2 thisPadding;
+		readonly bool[] thisUsesFixedPadding;
+		Vector2 thisPadding;
+		void SetPadding(float padding, int dimension){
+			thisPadding[dimension] = padding;
+		}
 		int thisMaxElementCount = 0;/* used only when both axis are constrained */
 		void CheckAndSetMaxElementsCount(){
 			if(thisColumnCountConstraint != 0 && thisRowCountConstraint != 0)
 				thisMaxElementCount = thisColumnCountConstraint * thisRowCountConstraint;
 		}
+		/* Accessing elements */
+			protected T[,] thisElementsArray;
+			public IUIElement GetGroupElement(int columnIndex, int rowIndex){
+				return thisElementsArray[columnIndex, rowIndex];
+			}
+			public int GetArraySize(int dimension){
+				return thisElementsArray.GetLength(dimension);
+			}
+			public int[] GetGroupElementArrayIndex(IUIElement element){
+				return thisGroupElementsArrayCalculator.GetGroupElementArrayIndex(element);
+			}
+		/*  */
 		public void SetUpElements(List<IUIElement> elements){
-			CheckIfElementsCountIsValid(elements.Count);
+			/*  called at the end of GetReadyForActivation
+			*/
+			MakeSureElementsCountIsValid(elements.Count);
 			thisGroupElements = CreateTypedList(elements);
 			ChildrenAllElements(elements);
-			int numOfColumns = CalcNumberOfColumnsToCreate();
-			int numOfRows = CalcNumberOfRowsToCreate();
-			thisElementsArray = CreateElements2DArray(numOfColumns, numOfRows);
-			this.ResizeToFitElements();
-			thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(thisElementsArray, thisElementLength, thisPadding, thisUIA.GetRect().size);
-			thisGroupElementsArrayCalculator = new GroupElementsArrayCalculator(thisElementsArray);
+			SetUpElementsArray(elements);
+			
+			CheckRectSizeAndPadding();
+
+			SetElementsDependentCalculators();
+			
 			PlaceElements();
 			CheckAndSetUpScrollerElementOnParentScroller();
 		}
-		void CheckAndSetUpScrollerElementOnParentScroller(){
-			IUIElement parentUIE = GetParentUIE();
-			if(parentUIE != null)
-				if(parentUIE is IScroller)
-					((IScroller)parentUIE).SetUpScrollerElement();
-		}
-		List<T> CreateTypedList(List<IUIElement> source){
-			List<T> result = new List<T>();
-			foreach(IUIElement uie in source){
-				result.Add((T)uie);
+		/*  */
+		/*  */
+			void MakeSureElementsCountIsValid(int count){
+				if(thisIsConstrainedByBothAxis)
+					if(count > thisMaxElementCount)
+						throw new System.InvalidOperationException("elements count exceeds maximum allowed count. try either decrease the elements count or release one of the array constraints");
 			}
-			return result;
-		}
-		void ChildrenAllElements(List<IUIElement> elements){
-			foreach(IUIElement uie in elements)
-				uie.SetParentUIE(this, true);
-		}
-		void CheckIfElementsCountIsValid(int count){
-			if(thisIsConstrainedByBothAxis)
-				if(count > thisMaxElementCount)
-					throw new System.InvalidOperationException("elements count exceeds maximum allowed count. try either decrease the elements count or release one of the array constraints");
-		}
-		protected T[,] thisElementsArray;
-		public IUIElement GetGroupElement(int columnIndex, int rowIndex){
-			return thisElementsArray[columnIndex, rowIndex];
-		}
-		protected T[ , ] CreateElements2DArray(int numOfColumns, int numOfRows){
-			T[ , ] array = new T[ numOfColumns, numOfRows];
-			foreach(T element in thisGroupElements){
-				int elementIndex = thisGroupElements.IndexOf(element);
-				int columnIndex = CalcColumnIndex(elementIndex, numOfColumns, numOfRows);
-				int rowIndex = CalcRowIndex(elementIndex, numOfColumns, numOfRows);
-				array[columnIndex, rowIndex] = element;
+			List<T> CreateTypedList(List<IUIElement> source){
+				List<T> result = new List<T>();
+				foreach(IUIElement uie in source){
+					result.Add((T)uie);
+				}
+				return result;
 			}
-			return array;
-		}
-		protected int CalcNumberOfColumnsToCreate(){
-			if(thisColumnCountConstraint != 0)
-				return thisColumnCountConstraint;
-			else{
-				int quotient = thisGroupElements.Count / thisRowCountConstraint;
-				int modulo = thisGroupElements.Count % thisRowCountConstraint;
-				return modulo > 0? quotient + 1 : quotient;
+			void ChildrenAllElements(List<IUIElement> elements){
+				foreach(IUIElement uie in elements)
+					uie.SetParentUIE(this, true);
 			}
-		}
-		protected int CalcNumberOfRowsToCreate(){
-			if(thisRowCountConstraint != 0)
-				return thisRowCountConstraint;
-			else{
-				int quotient = thisGroupElements.Count / thisColumnCountConstraint;
-				int modulo = thisGroupElements.Count % thisColumnCountConstraint;
-				return modulo > 0? quotient + 1 : quotient;
+		/* Setting up array */
+			void SetUpElementsArray(List<IUIElement> elements){
+				int numOfColumns = CalcNumberOfColumnsToCreate();
+				int numOfRows = CalcNumberOfRowsToCreate();
+				thisElementsArray = CreateElements2DArray(numOfColumns, numOfRows);
 			}
-		}
-		UIElementGroupArrayIndexCalculator thisArrayIndexCalculator;
-		protected int CalcColumnIndex(int n, int numOfColumns, int numOfRows){
-			return thisArrayIndexCalculator.CalcColumnIndex(n, numOfColumns, numOfRows);
-		}
-		protected int CalcRowIndex(int n, int numOfColumns, int numOfRows){
-			return thisArrayIndexCalculator.CalcRowIndex(n, numOfColumns, numOfRows);
-		}
+			protected int CalcNumberOfColumnsToCreate(){
+				if(thisColumnCountConstraint != 0)
+					return thisColumnCountConstraint;
+				else{
+					int quotient = thisGroupElements.Count / thisRowCountConstraint;
+					int modulo = thisGroupElements.Count % thisRowCountConstraint;
+					return modulo > 0? quotient + 1 : quotient;
+				}
+			}
+			protected int CalcNumberOfRowsToCreate(){
+				if(thisRowCountConstraint != 0)
+					return thisRowCountConstraint;
+				else{
+					int quotient = thisGroupElements.Count / thisColumnCountConstraint;
+					int modulo = thisGroupElements.Count % thisColumnCountConstraint;
+					return modulo > 0? quotient + 1 : quotient;
+				}
+			}
+			protected T[ , ] CreateElements2DArray(int numOfColumns, int numOfRows){
+				T[ , ] array = new T[ numOfColumns, numOfRows];
+				foreach(T element in thisGroupElements){
+					int elementIndex = thisGroupElements.IndexOf(element);
+					int columnIndex = CalcColumnIndex(elementIndex, numOfColumns, numOfRows);
+					int rowIndex = CalcRowIndex(elementIndex, numOfColumns, numOfRows);
+					array[columnIndex, rowIndex] = element;
+				}
+				return array;
+			}
+			UIElementGroupArrayIndexCalculator thisArrayIndexCalculator;
+			protected int CalcColumnIndex(int n, int numOfColumns, int numOfRows){
+				return thisArrayIndexCalculator.CalcColumnIndex(n, numOfColumns, numOfRows);
+			}
+			protected int CalcRowIndex(int n, int numOfColumns, int numOfRows){
+				return thisArrayIndexCalculator.CalcRowIndex(n, numOfColumns, numOfRows);
+			}
+		/*  */
+		/* RectSize and padding calc */
+			void CheckRectSizeAndPadding(){
+				for(int i = 0; i < 2; i ++){
+					if(thisUsesFixedPadding[i])
+						this.ResizeToFitElements(i);
+					else{
+						MakeSureElementsFitAlongRectLength(i);
+						int elementsCount = GetArraySize(i);
+						float rectLength;
+						if(thisParentUIE != null && 
+							thisParentUIE is IUIElementGroupScroller
+						){
+							IUIAdaptor parentUIA = thisParentUIE.GetUIAdaptor();
+							rectLength = parentUIA.GetRect().size[i];
+						}else{
+							rectLength = thisUIA.GetRect().size[i];
+						}
+						int totalElementsCountInRect = Mathf.FloorToInt(rectLength / thisElementLength[i]);
+						float totalPaddingLength = rectLength % thisElementLength[i];
+						float newPadding = totalPaddingLength/ (totalElementsCountInRect + 1);
+						SetPadding(newPadding, i);
 
-		
-		public int GetGroupElementsArraySize(int dimension){
-			return thisElementsArray.GetLength(dimension);
-		}
-		public int[] GetArraySize(){
-			int[] result = new int[2];
-			result[0] = thisElementsArray.GetLength(0);
-			result[1] = thisElementsArray.GetLength(1);
-			return result;
-		}
-		protected void ResizeToFitElements(){
-			int columnCount = thisElementsArray.GetLength(0);
-			int rowCount = thisElementsArray.GetLength(1);
-			float targetWidth = columnCount * (thisElementLength.x + thisPadding.x) + thisPadding.x;
-			float targetHeight = rowCount * (thisElementLength.y + thisPadding.y) + thisPadding.y;
-			IUIAdaptor uia = GetUIAdaptor();
-			uia.SetRectLength(targetWidth, targetHeight);
-		}
-		public int[] GetGroupElementArrayIndex(IUIElement element){
-			return thisGroupElementsArrayCalculator.GetGroupElementArrayIndex(element);
-		}
+						float newRectLength = (thisElementLength[i] + thisPadding[i]) * elementsCount + thisPadding[i];
+						thisUIA.SetRectLengthOnAxis(newRectLength, i);
+					}
+				}
+			}
+			protected void ResizeToFitElements(){
+				int columnCount = GetArraySize(0);
+				int rowCount = GetArraySize(1);
+				float targetWidth = columnCount * (thisElementLength.x + thisPadding.x) + thisPadding.x;
+				float targetHeight = rowCount * (thisElementLength.y + thisPadding.y) + thisPadding.y;
+				IUIAdaptor uia = GetUIAdaptor();
+				uia.SetRectLength(targetWidth, targetHeight);
+			}
+			protected void ResizeToFitElements(int dimension){
+				int elementsCount = GetArraySize(dimension);
+				float targetLength = elementsCount * (thisElementLength[dimension] + thisPadding[dimension]) + thisPadding[dimension];
+				GetUIAdaptor().SetRectLengthOnAxis(targetLength, dimension);
+			}
+			void MakeSureElementsFitAlongRectLength(int dimension){
+				int elementsCount = GetArraySize(dimension);
+				float totalElementsLengthOnAxis = thisElementLength[dimension] * elementsCount;
+				float thisRectLength = GetUIAdaptor().GetRect().size[dimension];
+				if(thisRectLength < totalElementsLengthOnAxis)
+					throw new System.InvalidOperationException("elements cannot fit the group rect, too many or too wide");
+			}
+		/* calculators */
+			void SetElementsDependentCalculators(){
+				thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(
+					thisElementsArray, 
+					thisElementLength, 
+					thisPadding, 
+					thisUIA.GetRect().size
+				);
+				thisGroupElementsArrayCalculator = new GroupElementsArrayCalculator(
+					thisElementsArray
+				);
+			}
+		/*  */
 		protected void PlaceElements(){
 			foreach(T element in thisGroupElements){
 				int[] arrayIndex = GetGroupElementArrayIndex(element);
@@ -184,6 +239,16 @@ namespace UISystem{
 				element.SetLocalPosition(newLocalPos);
 			}
 		}
+		void CheckAndSetUpScrollerElementOnParentScroller(){
+			IUIElement parentUIE = GetParentUIE();
+			if(parentUIE != null)
+				if(parentUIE is IUIElementGroupScroller){
+					IUIElementGroupScroller parentScroller = ((IUIElementGroupScroller)parentUIE);
+					parentScroller.UpdateGroupElementLengthAndPadding(thisElementLength, thisPadding);
+					parentScroller.SetUpScrollerElement();
+				}
+		}
+		/*  */
 		IGroupElementsArrayCalculator thisGroupElementsArrayCalculator;
 		public IUIElement[] GetGroupElementsWithinIndexRange(int minColumnIndex, int minRowIndex, int maxColumnIndex, int maxRowIndex){
 			return thisGroupElementsArrayCalculator.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
@@ -205,6 +270,7 @@ namespace UISystem{
 		bool rowToColumn{get;}
 		Vector2 elementLength{get;}
 		Vector2 padding{get;}
+		bool[] usesFixedPadding{get;}
 	}
 	public class UIElementGroupConstArg: UIElementConstArg ,IUIElementGroupConstArg{
 		public UIElementGroupConstArg(
@@ -215,6 +281,7 @@ namespace UISystem{
 			bool rowToColumn, 
 			Vector2 elementLength, 
 			Vector2 padding, 
+			bool[] usesFixedPadding,
 
 			IUIManager uim, 
 			IUISystemProcessFactory processFactory, 
@@ -237,6 +304,7 @@ namespace UISystem{
 			thisRowToColumn = rowToColumn;
 			thisElementLength = elementLength;
 			thisPadding = padding;
+			thisUsesFixedPadding = usesFixedPadding;
 		}
 		readonly int thisColumnCountConstraint;
 		public int columnCountConstraint{get{return thisColumnCountConstraint;}}
@@ -252,6 +320,8 @@ namespace UISystem{
 		public Vector2 elementLength{get{return thisElementLength;}}
 		readonly Vector2 thisPadding;
 		public Vector2 padding{get{return thisPadding;}}
+		readonly bool[] thisUsesFixedPadding;
+		public bool[] usesFixedPadding{get{return thisUsesFixedPadding;}}
 	}
 	public interface IUIElementGroupAdaptor: IUIAdaptor{
 		Vector2 GetGroupElementLength();

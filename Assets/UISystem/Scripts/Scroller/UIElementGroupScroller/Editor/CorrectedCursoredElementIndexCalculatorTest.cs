@@ -22,8 +22,8 @@ public class CorrectedCursoredElementIndexCalculatorTest {
 
 		IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
 		uieGroup.GetGroupElement(sourceIndex).Returns(sourceElement);
-		uieGroup.GetGroupElementsArraySize(0).Returns(arraySize[0]);
-		uieGroup.GetGroupElementsArraySize(1).Returns(arraySize[1]);
+		uieGroup.GetArraySize(0).Returns(arraySize[0]);
+		uieGroup.GetArraySize(1).Returns(arraySize[1]);
 		uieGroup.GetGroupElementArrayIndex(sourceElement).Returns(sourceElementArrayIndex);
 		IUIElement expectedMock = Substitute.For<IUIElement>();
 		uieGroup.GetGroupElement(expectedArrayIndex[0], expectedArrayIndex[1]).Returns(expectedMock);

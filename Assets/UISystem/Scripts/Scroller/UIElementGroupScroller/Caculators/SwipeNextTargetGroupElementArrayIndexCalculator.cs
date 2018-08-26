@@ -49,7 +49,7 @@ namespace UISystem{
 			if(source < 0)
 				return 0;
 			else{
-				int allowedMaxArrayIndex = thisUIElementGroup.GetArraySize()[dimension] - thisCursorSize[dimension];
+				int allowedMaxArrayIndex = thisUIElementGroup.GetArraySize(dimension) - thisCursorSize[dimension];
 				if(source > allowedMaxArrayIndex)
 					return allowedMaxArrayIndex;
 			}

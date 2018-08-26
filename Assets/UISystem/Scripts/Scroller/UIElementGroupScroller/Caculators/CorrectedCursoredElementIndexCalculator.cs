@@ -17,8 +17,8 @@ namespace UISystem{
 			
 			IUIElement sourceElement = thisUIElementGroup.GetGroupElement(sourceIndex);
 
-			int columnCount = thisUIElementGroup.GetGroupElementsArraySize(0);
-			int rowCount = thisUIElementGroup.GetGroupElementsArraySize(1);
+			int columnCount = thisUIElementGroup.GetArraySize(0);
+			int rowCount = thisUIElementGroup.GetArraySize(1);
 			int[] arraySize = new int[]{columnCount, rowCount};
 			int[] arrayIndex = thisUIElementGroup.GetGroupElementArrayIndex(sourceElement);
 

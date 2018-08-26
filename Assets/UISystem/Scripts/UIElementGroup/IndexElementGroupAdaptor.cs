@@ -24,6 +24,7 @@ namespace UISystem{
 		public Vector2 GetGroupElementLength(){return groupElementLength;}
 		public Vector2 padding;
 		public Vector2 GetPadding(){return padding;}
+		public bool[] usesFixedPadding = new bool[2]{true, true};
 		
 		public override void GetReadyForActivation(IUIAActivationData passedData){
 			base.GetReadyForActivation(passedData);
@@ -48,6 +49,7 @@ namespace UISystem{
 				rowToColumn,
 				groupElementLength,
 				padding,
+				usesFixedPadding,
 
 				thisDomainActivationData.uim,
 				thisDomainActivationData.processFactory,

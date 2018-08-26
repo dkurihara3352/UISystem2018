@@ -20,7 +20,7 @@ public class UIElementTest {
 		testUIE.OnTap(1);
 
 
-		popUpManager.Received(1).HideActivePopUp();
+		popUpManager.Received(1).CheckAndHideActivePopUp();
 	}
 	[Test]
 	public void OnTap_IsActivated_IsNotDisabledForPopUp_IsEnabledInput_CallsParentScrollerInSequence(){

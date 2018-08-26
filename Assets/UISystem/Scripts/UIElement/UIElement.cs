@@ -39,7 +39,7 @@ namespace UISystem{
 		IScroller GetProximateParentScroller();
 		void EvaluateScrollerFocusRecursively();
 		void BecomeFocusedInScrollerSelf();
-		void BecomeDefocuesedInScrollerSelf();
+		void BecomeDefocusedInScrollerSelf();
 		void BecomeFocusedInScrollerRecursively();
 		void BecomeDefocusedInScrollerRecursively();
 		/* PopUp */
@@ -152,7 +152,7 @@ namespace UISystem{
 				return thisUIEActivationStateEngine.IsActivated();
 			}
 			public void DeactivateImple(){
-				this.BecomeDefocuesedInScrollerSelf();
+				this.BecomeDefocusedInScrollerSelf();
 				OnUIDeactivate();
 			}
 			protected virtual void OnUIDeactivate(){}
@@ -237,7 +237,7 @@ namespace UISystem{
 			public void OnTap(int tapCount){
 				if(this.IsActivated()){
 					if(thisIsDisabledForPopUp)
-						thisPopUpManager.HideActivePopUp();
+						thisPopUpManager.CheckAndHideActivePopUp();
 					else{
 						if(thisIsEnabledInput){
 							CheckAndPerformStaticBoundarySnapFrom(this);
@@ -440,19 +440,19 @@ namespace UISystem{
 						childUIE.EvaluateScrollerFocusRecursively();
 			}
 			protected bool thisIsFocusedInScroller = false;
-			public void BecomeFocusedInScrollerSelf(){
+			public virtual void BecomeFocusedInScrollerSelf(){
 				thisIsFocusedInScroller = true;
 			}
-			public void BecomeDefocuesedInScrollerSelf(){
+			public virtual void BecomeDefocusedInScrollerSelf(){
 				thisIsFocusedInScroller = false;
 			}
 			public virtual void BecomeFocusedInScrollerRecursively(){
-				thisIsFocusedInScroller = true;
+				BecomeDefocusedInScrollerSelf();
 				foreach(IUIElement child in GetChildUIEs())
 					child.BecomeFocusedInScrollerRecursively();
 			}
 			public virtual void BecomeDefocusedInScrollerRecursively(){
-				thisIsFocusedInScroller = false;
+				BecomeDefocusedInScrollerSelf();
 				foreach(IUIElement child in GetChildUIEs())
 					child.BecomeDefocusedInScrollerRecursively();
 			}
