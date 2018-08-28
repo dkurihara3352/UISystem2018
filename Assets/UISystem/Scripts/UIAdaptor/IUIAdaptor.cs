@@ -6,24 +6,25 @@ namespace UISystem{
 	public interface IMBAdaptor{
 		Transform GetTransform();
 		Rect GetRect();
-		void SetRectLength(float width, float height);
 		void SetRectLengthOnAxis(float length, int dimension);
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
-		Vector2 GetWorldPosition();
-		void SetWorldPosition(Vector2 worldPos);
-		Vector2 GetPositionInThisSpace(Vector2 worldPos);
 		string GetName();
 	}
 
 	public interface IUIAdaptor: IMBAdaptor {
-		void GetReadyForActivation(IUIElementBaseConstData passedData);
+		void UpdateUIAdaptorHiearchyRecursively();
+		void InitializeUIAdaptorRecursively(IUIAdaptorBaseInitializationData initData);
+		void CreateAndSetUIElementRecursively();
+		void SetUpUIElementReferenceRecursively();
+		void CompleteUIElementReferenceSetUpRecursively();
+
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();
 		void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays);
 		List<IUIElement> GetAllOffspringUIEs();
 		List<IUIElement> GetChildUIEs();
-		IUIElementBaseConstData GetDomainActivationData();
+		IUIAdaptorBaseInitializationData GetDomainInitializationData();
 		void SetUpCanvasGroupComponent();
 		float GetGroupAlpha();
 		void SetGroupAlpha(float alpha);

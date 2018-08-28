@@ -12,12 +12,12 @@ namespace UISystem.PickUpUISystem{
 			public DKUtility.IProcessManager processManager;
 		/*  */
 		IEquipToolActivationData eqpUIAActivationData{
-			get{return this.thisDomainActivationData as IEquipToolActivationData;}
+			get{return this.thisDomainInitializationData as IEquipToolActivationData;}
 		}
 		protected override IEquipToolUIE GetPickUpContextUIE(){
 			return (IEquipToolUIE)GetUIElement();
 		}
-		public override IUIElementBaseConstData CreateDomainActivationData(IUIElementBaseConstData passedData){
+		public override IUIAdaptorBaseInitializationData CreateDomainActivationData(IUIAdaptorBaseInitializationData passedData){
 			/*  Instantiate and set up
 					IITAM
 					Tool
@@ -39,9 +39,9 @@ namespace UISystem.PickUpUISystem{
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementConstArg arg = new UIElementConstArg(
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image,
 				ActivationMode.Alpha

@@ -32,9 +32,9 @@ namespace UISystem{
 				swipeToSnapNext, 
 				locksInputAboveThisVelocity,
 
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image,
 				activationMode

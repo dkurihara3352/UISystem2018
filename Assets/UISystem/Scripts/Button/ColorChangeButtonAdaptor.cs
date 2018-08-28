@@ -11,9 +11,9 @@ namespace UISystem{
 		public UnityEngine.UI.Text targetText;
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IColorChangeButtonConstArg arg = new ColorChangeButtonConstArg(
-				thisDomainActivationData.uim,
-				thisDomainActivationData.processFactory,
-				thisDomainActivationData.uiElementFactory,
+				thisDomainInitializationData.uim,
+				thisDomainInitializationData.processFactory,
+				thisDomainInitializationData.uiElementFactory,
 				this,
 				image,
 				targetUIElementAdaptor,

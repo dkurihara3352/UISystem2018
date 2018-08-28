@@ -6,7 +6,7 @@ namespace UISystem{
 	public interface IUIElementGroupScroller: IScroller{
 		IUIElement[] GetCursoredElements();
 		int GetGroupElementIndex(IUIElement groupElement);
-		void UpdateGroupElementLengthAndPadding(Vector2 groupElementLength, Vector2 padding);
+		void UpdateGroupElementLengthAndPadding();
 	}
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
@@ -15,12 +15,12 @@ namespace UISystem{
 				gotta wait until later when 
 					either of...
 						SetUpUIEReference or
-						OnUIEReferenceSetUpComplete
+						OnUIEReferenceSetUpComplete // maybe here
 						or, maybe not at all in callbacks
 							gotta wait explicit set calls down from scroller element
 			*/
-			thisGroupElementLength = arg.groupElementLength;
-			thisPadding = arg.padding;
+			// thisGroupElementLength = arg.groupElementLength;
+			// thisPadding = arg.padding;
 			thisInitiallyCursoredGroupElementIndex = arg.initiallyCursoredGroupElementIndex;
 			/*  these below are fine
 			 */
@@ -114,9 +114,9 @@ namespace UISystem{
 						thisScrollerAxis
 					);
 			}
-			public void UpdateGroupElementLengthAndPadding(Vector2 groupElementLength, Vector2 padding){
-				thisGroupElementLength = groupElementLength;
-				thisPadding = padding;
+			public void UpdateGroupElementLengthAndPadding(){
+				thisGroupElementLength = thisUIElementGroup.GetGroupElementLength();
+				thisPadding = thisUIElementGroup.GetPadding();
 			}
 		/* Initially Cursored Element */
 			readonly int thisInitiallyCursoredGroupElementIndex;
@@ -211,10 +211,9 @@ namespace UISystem{
 							}
 						foreach(IUIElement uie in groupElementsToFocus)
 							if(uie != null){
-								// uie.BecomeFocusedInScrollerRecursively();
 								uie.EvaluateScrollerFocusRecursively();
 								if(thisActivatesCursoredElementsOnly )
-									uie.InitiateActivation(false);
+									uie.ActivateRecursively(false);
 							}
 						thisCursoredElements = newCursoredElements;
 						thisNoncursoredElements = CalcNoncurosredElements();

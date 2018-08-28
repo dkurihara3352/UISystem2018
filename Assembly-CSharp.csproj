@@ -186,11 +186,17 @@
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\TestUIElementFactory.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementFactory\UIEFactory.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\AbsUIElementGroupAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Calculators\GroupElementAtPositionInGroupSpaceCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Calculators\GroupElementsArrayCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\Calculators\UIElementGroupArrayIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\GenericUIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\IndexElementGroupAdaptor.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\RectCalculation\FixedElementLengthConstraint.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\RectCalculation\FixedGroupLengthConstraint.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\RectCalculation\FixedRectConstraintValue.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\RectCalculation\RectCalculationData.cs" />
+     <Compile Include="Assets\UISystem\Scripts\UIElementGroup\RectCalculation\RectConstraint.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\SceneObjectElementGroupAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElementGroup\UIElementGroup.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIImage\ImageColorTurnRedProcess.cs" />

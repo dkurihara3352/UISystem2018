@@ -29,16 +29,19 @@ namespace UISystem{
 	}
 	public abstract class AbsScroller : UIElement, IScroller{
 		public AbsScroller(IScrollerConstArg arg): base(arg){
+			/* good here */
 			thisScrollerAxis = arg.scrollerAxis;
 			thisRelativeCursorPosition = MakeSureRelativeCursorPosIsClampedZeroToOne(arg.relativeCursorPosition);
 			thisRubberBandLimitMultiplier = MakeRubberBandLimitMultiplierInRange(arg.rubberBandLimitMultiplier);
 			thisIsEnabledInertia = arg.isEnabledInertia;
 			thisNewScrollSpeedThreshold = arg.newScrollSpeedThreshold;
 
-			CacheThisRect();
+			/* good here */
+			SetUpScrollerRect();
 			MakeSureRectIsSet(thisRect);
 			SetUpRubberBandCalculators();
 			
+			/* non dependent */
 			thisRunningScrollerMotorProcess = new IScrollerElementMotorProcess[2];
 			thisElementIsScrolledToIncreaseCursorOffsetCalculator = new ElementIsScrolledToIncreaseCursorOffsetCalculator(this);
 		}
@@ -63,12 +66,13 @@ namespace UISystem{
 				return result;
 			}
 			protected readonly ScrollerAxis thisScrollerAxis;
+
 		/* ScrollerRect */
 			protected Rect thisRect;
 			protected Vector2 thisRectMin;
 			protected Vector2 thisRectMax;
 			protected Vector2 thisRectLength;
-			void CacheThisRect(){
+			void SetUpScrollerRect(){
 				thisRect = thisUIA.GetRect();
 				thisRectLength = new Vector2(thisRect.width, thisRect.height);
 				thisRectMin = new Vector2(thisRect.x, thisRect.y);
@@ -101,9 +105,6 @@ namespace UISystem{
 			}
 		/* Cursor Transform */
 			public void SetUpCursorTransform(){
-				/*  Called in the end of subclasses's constructor, 
-					after what it needs to calculate cursor transform is all set
-				*/
 				thisCursorLength = CalcCursorLength();
 				ClampCursorLengthToThisRect();
 				thisCursorLocalPosition = CalcCursorLocalPos();
@@ -140,10 +141,8 @@ namespace UISystem{
 
 		/* ScrollerElement */
 			public void SetUpScrollerElement(){
-				/*  called at the end of GetReadyForActivation, just before Activate
-				*/
 				SetTheOnlyChildAsScrollerElement();
-				CacheScrollerElementRect();
+				SetUpScrollerElementRect();
 				SetUpCursorTransform();
 				OnRectsSetUpComplete();
 				PlaceScrollerElementAtInitialCursorValue();
@@ -169,7 +168,7 @@ namespace UISystem{
 			}
 			protected Rect thisScrollerElementRect;
 			protected Vector2 thisScrollerElementLength;
-			void CacheScrollerElementRect(){
+			void SetUpScrollerElementRect(){
 				IUIAdaptor scrollerElementAdaptor = thisScrollerElement.GetUIAdaptor();
 				thisScrollerElementRect = scrollerElementAdaptor.GetRect();
 				thisScrollerElementLength = new Vector2(thisScrollerElementRect.width, thisScrollerElementRect.height);

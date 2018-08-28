@@ -31,7 +31,7 @@ namespace UISystem{
 		public Vector2 thisPadding;
 		public Vector2 thisRollerNormalizedPos;
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IQuantityRollerConstArg arg = new QuantityRollerConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisMaxQuantity, thisPanelDim, thisPadding, thisRollerNormalizedPos);
+			IQuantityRollerConstArg arg = new QuantityRollerConstArg(thisDomainInitializationData.uim, thisDomainInitializationData.processFactory, thisDomainInitializationData.uiElementFactory, this, image, thisMaxQuantity, thisPanelDim, thisPadding, thisRollerNormalizedPos);
 			QuantityRoller quantityRoller = new QuantityRoller(arg);
 			return quantityRoller;
 		}

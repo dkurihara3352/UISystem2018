@@ -20,39 +20,51 @@ namespace UISystem{
 		IPopUpManager GetPopUpManager();
 		void GetReadyForUISystemActivation();
 		void ActivateUISystem(bool instantly);
+		float GetUIImageDarknedDarkness();
+		float GetUIImageDefaultDarkness();
 	}
 	public class UIManager: IUIManager {
 		public UIManager(
 			IProcessManager processManager,
 			IUIAdaptor rootUIAdaptor,
 			RectTransform uieReserveTrans, 
-			bool showsInputability
+			bool showsInputability,
+
+			float imageDarkenedDarkness,
+			float imageDefaultDarkness
 		){
 			thisProcessManager = processManager;
 			thisRootUIAdaptor = rootUIAdaptor;
 			thisUIEReserveTrans = uieReserveTrans;
 			thisShowsInputability = showsInputability;
+
+			thisImageDarknedDarkness = imageDarkenedDarkness;
+			thisImageDefaultDarkness = imageDefaultDarkness;
 		}
 		readonly IUIAdaptor thisRootUIAdaptor;
 		public void GetReadyForUISystemActivation(){
+
 			IProcessFactory processFactory = CreateProcessFactory(
 				thisProcessManager
 			);
 			IUIElementFactory uiElementFactory = new UIElementFactory(this);
 
-			IUIElementBaseConstData rootUIEBaseConstData = CreateRootUIEBaseConstData(
+			IUIAdaptorBaseInitializationData rootUIAdaptorBaseInitializationData = CreateRootUIEBaseConstData(
 				processFactory,
 				uiElementFactory
 			);
-			thisRootUIAdaptor.CreateAndSetUIElementRecursively(rootUIEBaseConstData);
-			thisRootUIElement = rootUIAdaptor.GetUIElement();
-			thisRootUIElement.UpdateUIEHierarchyRecursively();
+			thisRootUIAdaptor.UpdateUIAdaptorHiearchyRecursively();
+			thisRootUIAdaptor.InitializeUIAdaptorRecursively(rootUIAdaptorBaseInitializationData);
+			thisRootUIAdaptor.CreateAndSetUIElementRecursively();
+			thisRootUIAdaptor.SetUpUIElementReferenceRecursively();
+			thisRootUIAdaptor.CompleteUIElementReferenceSetUpRecursively();
+
+			thisRootUIElement.EvaluateScrollerFocusRecursively();/* ? */
+			thisRootUIElement = thisRootUIAdaptor.GetUIElement();
 			thisPopUpManager = new PopUpManager(thisRootUIElement);
-			thisRootUIElement.SetUpUIElementReferenceRecursively();
-			thisRootUIElement.CompleteUIEReferenceSetUp();
 		}
 		public void ActivateUISystem(bool instantly){
-			thisRootUIElement.InitiateActivation(instantly);
+			thisRootUIElement.ActivateRecursively(instantly);
 		}
 		readonly IProcessManager thisProcessManager;
 		protected virtual IProcessFactory CreateProcessFactory(IProcessManager processManager){
@@ -61,7 +73,7 @@ namespace UISystem{
 				this
 			);
 		}
-		protected virtual IUIElementBaseConstData CreateRootUIEBaseConstData(
+		protected virtual IUIAdaptorBaseInitializationData CreateRootUIEBaseConstData(
 			IProcessFactory processFactory,
 			IUIElementFactory uiElementFactory
 		){
@@ -99,6 +111,14 @@ namespace UISystem{
 			thisRegisteredID = touchID;
 		}
 		/*  */
+		readonly float thisImageDarknedDarkness;
+		public float GetUIImageDarknedDarkness(){
+			return thisImageDarknedDarkness;
+		}
+		readonly float thisImageDefaultDarkness;
+		public float GetUIImageDefaultDarkness(){
+			return thisImageDefaultDarkness;
+		}
 
 
 		/* Debug */

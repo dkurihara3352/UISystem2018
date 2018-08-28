@@ -6,9 +6,9 @@ namespace UISystem{
 	public class GenericUIElementAdaptor: UIAdaptor{
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementConstArg arg = new UIElementConstArg(
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image,
 				ActivationMode.None

@@ -20,12 +20,32 @@ namespace UISystem{
 		readonly int thisFontSize;
 		readonly float thisImageDefaultDarkness;
 		readonly float thisImageDarkenedDarkness;
-		public IUIElement CreateUIElementWithIndexText(int index, Vector2 sizeDelta, IUISystemProcessFactory processFactory){
-			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData(index, thisFont, thisFontSize, thisImageColor, thisImageDefaultDarkness, thisImageDarkenedDarkness);
-			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(sizeDelta, initData);
+		public IUIElement CreateUIElementWithIndexText(
+			int index, 
+			Vector2 sizeDelta, 
+			IUISystemProcessFactory processFactory
+		){
+			IIndexElementAdaptorInitializationData initData = new IndexElementAdaptorInitializationData
+			(
+				index, 
+				thisFont, 
+				thisFontSize, 
+				thisImageColor, 
+				thisImageDefaultDarkness, 
+				thisImageDarkenedDarkness
+			);
+			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(
+				sizeDelta, 
+				initData
+			);
 			IndexElementAdaptor uia = this.CreateInstatiableUIA<IndexElementAdaptor>(instData);
-			IUIElementBaseConstData activationData = new RootUIAActivationData(thisUIM, processFactory, this);
-			uia.GetReadyForActivation(activationData);
+			IUIAdaptorBaseInitializationData baseInitializationData = new RootUIAActivationData
+			(
+				thisUIM, 
+				processFactory, 
+				this
+			);
+			uia.GetReadyForActivation(baseInitializationData);
 			return uia.GetUIElement();
 		}
 	}

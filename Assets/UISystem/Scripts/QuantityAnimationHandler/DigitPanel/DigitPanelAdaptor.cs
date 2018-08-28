@@ -19,7 +19,7 @@ namespace UISystem{
 			}else
 				throw new System.ArgumentException("data must be of type IDigitPanelAdaptorInitializationData");
 		}
-		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
+		public override void GetReadyForActivation(IUIAdaptorBaseInitializationData passedData){
 			base.GetReadyForActivation(passedData);
 			thisText = this.GetComponent<Text>();
 		}
@@ -31,7 +31,7 @@ namespace UISystem{
 				thisText.text = number.ToString();
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IDigitPanelConstArg arg = new DigitPanelConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisPanelDim, thisLocalPosY);
+			IDigitPanelConstArg arg = new DigitPanelConstArg(thisDomainInitializationData.uim, thisDomainInitializationData.processFactory, thisDomainInitializationData.uiElementFactory, this, image, thisPanelDim, thisLocalPosY);
 			return new DigitPanel(arg);
 		}
 	}

@@ -12,6 +12,12 @@ namespace UISystem{
 		public float startSearchSpeed;
 		public bool swipeToSnapNext;
 		public bool activatesCursoredElementsOnly;
+		protected override void CompleteUIElementReferenceSetUp(){
+			IUIElementGroupScroller scroller = (IUIElementGroupScroller)GetUIElement();
+			scroller.UpdateGroupElementLengthAndPadding();
+			scroller.SetUpScrollerElement();
+			base.CompleteUIElementReferenceSetUp();
+		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
 				initiallyCursoredElementIndex, 
@@ -28,9 +34,9 @@ namespace UISystem{
 				swipeToSnapNext, 
 				locksInputAboveThisVelocity,
 				
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image,
 				activationMode

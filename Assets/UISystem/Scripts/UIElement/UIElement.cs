@@ -13,8 +13,6 @@ namespace UISystem{
 		IUIImage GetUIImage();
 		string GetName();
 		/* Activation */
-		void CallOnUIReferenceSetRecursively();
-		void InitiateActivation(bool instantly);
 		void ActivateSelf(bool instantly);
 		void ActivateRecursively(bool instantly);
 		void DeactivateRecursively(bool instantly);
@@ -105,22 +103,19 @@ namespace UISystem{
 			get{return thisUIA.GetName();}
 		}
 		public string GetName(){return thisName;}
+		public void SetLocalPosition(Vector2 localPos){
+			thisUIA.SetLocalPosition(localPos);
+		}
+		public Vector2 GetLocalPosition(){
+			return thisUIA.GetLocalPosition();
+		}
+		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
+			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
+		}
+
+
 		/* Activation */
-			public void CallOnUIReferenceSetRecursively(){
-				OnUIReferenceSet();
-				foreach(IUIElement child in thisChildUIEs){
-					if(child != null)
-						child.CallOnUIReferenceSetRecursively();
-				}
-			}
-			protected virtual void OnUIReferenceSet(){
-				return;
-			}
 			protected IUIEActivationStateEngine thisUIEActivationStateEngine;
-			public void InitiateActivation(bool instantly){
-				EvaluateScrollerFocusRecursively();
-				ActivateRecursively(instantly);
-			}
 			public void ActivateSelf(bool instantly){
 				thisUIEActivationStateEngine.Activate(instantly);
 			}
@@ -184,6 +179,9 @@ namespace UISystem{
 			public bool IsSelected(){
 				return thisSelectabilityEngine.IsSelected();
 			}
+
+
+
 		/* UIInput */
 			protected bool thisIsEnabledInput = true;
 			/* Touch */
@@ -373,19 +371,10 @@ namespace UISystem{
 				if(thisParentUIE != null)
 					thisParentUIE.OnSwipe(eventData);
 			}
-		/*  */
-		public Vector2 GetPositionInThisSpace(Vector2 worldPos){
-			return thisUIA.GetPositionInThisSpace(worldPos);
-		}
-		public void SetLocalPosition(Vector2 localPos){
-			thisUIA.SetLocalPosition(localPos);
-		}
-		public Vector2 GetLocalPosition(){
-			return thisUIA.GetLocalPosition();
-		}
-		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
-			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
-		}
+
+
+
+		
 		/*  */
 		public void EnableInput(){
 			thisIsEnabledInput = true;
@@ -433,6 +422,9 @@ namespace UISystem{
 			foreach(IUIElement child in thisChildUIEs)
 				child.CheckForScrollInputEnable();
 		}
+
+
+
 		/* Scrolller */
 			public virtual void EvaluateScrollerFocusRecursively(){
 				this.BecomeFocusedInScrollerSelf();

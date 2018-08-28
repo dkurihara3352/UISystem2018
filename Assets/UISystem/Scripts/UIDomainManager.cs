@@ -4,6 +4,6 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IUIDomainManager{
-		IUIElementBaseConstData CreateDomainActivationData(IUIElementBaseConstData passedData);
+		IUIAdaptorBaseInitializationData CreateDomainActivationData(IUIAdaptorBaseInitializationData passedData);
 	}
 }

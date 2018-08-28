@@ -15,6 +15,8 @@ namespace UISystem{
 		IUIElement thisTargetUIElement;
 		readonly Text thisTargetText;
 		protected override void OnUIReferenceSet(){
+			/* To SetUpUIEReference
+			 */
 			base.OnUIReferenceSet();
 			thisTargetUIElement = thisTargetUIAdaptor.GetUIElement();
 		}

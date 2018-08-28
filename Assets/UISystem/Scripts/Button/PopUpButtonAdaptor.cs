@@ -8,9 +8,9 @@ namespace UISystem{
 		public PopUpAdaptor targetPopUpAdaptor;
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IPopUpButtonConstArg arg = new PopUpButtonConstArg(
-				thisDomainActivationData.uim,
-				thisDomainActivationData.processFactory,
-				thisDomainActivationData.uiElementFactory,
+				thisDomainInitializationData.uim,
+				thisDomainInitializationData.processFactory,
+				thisDomainInitializationData.uiElementFactory,
 				this,
 				image,
 				activationMode,

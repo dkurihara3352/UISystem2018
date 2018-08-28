@@ -26,20 +26,18 @@ namespace UISystem{
 		public Vector2 GetPadding(){return padding;}
 		public bool[] usesFixedPadding = new bool[2]{true, true};
 		
-		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
-			base.GetReadyForActivation(passedData);
-			/* To SetUpUIEReference */
-				testUIElementFactory = new TestUIElementFactory(
-					thisUIM, 
-					font, 
-					fontSize, 
-					imageColor, 
-					imageDefaultDarkness, 
-					imageDarkenedDarkness
-				);
-				List<IUIElement> groupElements = CreateUIEs();
-				IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
-				uieGroup.SetUpElements(groupElements);
+		protected override void SetUpUIElementReference(){
+			testUIElementFactory = new TestUIElementFactory(
+				thisUIManager, 
+				font, 
+				fontSize, 
+				imageColor, 
+				imageDefaultDarkness, 
+				imageDarkenedDarkness
+			);
+			List<IUIElement> groupElements = CreateUIEs();
+			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
+			uieGroup.SetUpElements(groupElements);
 		}
 		List<IUIElement> CreateUIEs(){
 			/* to SetUpUIEReference */
@@ -49,7 +47,7 @@ namespace UISystem{
 					testUIElementFactory.CreateUIElementWithIndexText(
 						i, 
 						groupElementLength, 
-						thisDomainActivationData.processFactory
+						thisDomainInitializationData.processFactory
 					
 					)
 				);
@@ -67,9 +65,9 @@ namespace UISystem{
 				padding,
 				usesFixedPadding,
 
-				thisDomainActivationData.uim,
-				thisDomainActivationData.processFactory,
-				thisDomainActivationData.uiElementFactory,
+				thisDomainInitializationData.uim,
+				thisDomainInitializationData.processFactory,
+				thisDomainInitializationData.uiElementFactory,
 				this,
 				image,
 				activationMode

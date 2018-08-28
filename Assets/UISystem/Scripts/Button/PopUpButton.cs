@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPopUpButton: IUIElement{
+		void SetTargetPopUp(IPopUp popUp);
 	}
 	public class PopUpButton : UIElement {
 		public PopUpButton(
@@ -15,10 +16,18 @@ namespace UISystem{
 		}
 		readonly IPopUpAdaptor thisTargetPopUpAdaptor;
 		IPopUp thisTargetPopUp = null;
-		protected override void OnUIReferenceSet(){
-			base.OnUIReferenceSet();
-			thisTargetPopUp = (IPopUp)thisTargetPopUpAdaptor.GetUIElement();
+		public void SetTargetPopUp(IPopUp popUp){
+			/* called from uia.SetUpUIEReference */
+			thisTargetPopUp = popUp;
 		}
+		// protected override void SetUpUIEReference(){
+		// 	thisTargetPopUp = (IPopUp)thisTargetPopUpAdaptor.GetUIElement();
+		// }
+		// protected override void OnUIReferenceSet(){
+		// 	/* To SetUpUIEReference */
+		// 	base.OnUIReferenceSet();
+		// 	thisTargetPopUp = (IPopUp)thisTargetPopUpAdaptor.GetUIElement();
+		// }
 
 		protected override void OnTapImple(int tapCount){
 			ToggePopUp();

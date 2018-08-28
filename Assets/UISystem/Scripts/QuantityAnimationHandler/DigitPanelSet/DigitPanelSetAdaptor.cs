@@ -19,7 +19,7 @@ namespace UISystem{
 		Vector2 thisPanelDim;
 		Vector2 thisPadding;
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IDigitPanelSetConstArg arg = new DigitPanelSetConstArg(thisDomainActivationData.uim, thisDomainActivationData.processFactory, thisDomainActivationData.uiElementFactory, this, image, thisDigitPlace, thisPanelDim, thisPadding);
+			IDigitPanelSetConstArg arg = new DigitPanelSetConstArg(thisDomainInitializationData.uim, thisDomainInitializationData.processFactory, thisDomainInitializationData.uiElementFactory, this, image, thisDigitPlace, thisPanelDim, thisPadding);
 			DigitPanelSet digitPanelSet = new DigitPanelSet(arg);
 			return digitPanelSet;
 		}

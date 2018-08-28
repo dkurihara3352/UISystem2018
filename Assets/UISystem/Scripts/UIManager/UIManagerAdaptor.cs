@@ -13,13 +13,17 @@ namespace UISystem{
 		public UIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public RectTransform uieReserveTrans;
 		public bool showsInputability;
+		public float uiImageDarkenedDarkness;
+		public float uiImageDefaultDarkness;
 
 		public void Awake(){
 			thisUIManager = new UIManager(
 				processManager,
 				rootUIAdaptor,
 				uieReserveTrans,
-				showsInputability
+				showsInputability,
+				uiImageDarkenedDarkness,
+				uiImageDefaultDarkness
 			);
 		}
 	}	

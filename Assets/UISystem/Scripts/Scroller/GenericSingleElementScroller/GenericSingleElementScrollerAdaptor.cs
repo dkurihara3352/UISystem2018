@@ -16,16 +16,16 @@ public interface IGenericSingleElementScrollerAdaptor: IScrollerAdaptor{
 				isEnabledInertia, 
 				locksInputAboveThisVelocity,
 				
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image,
 				activationMode
 			);
 			return new GenericSingleElementScroller(arg);
 		}
-		public override void GetReadyForActivation(IUIElementBaseConstData passedData){
+		public override void GetReadyForActivation(IUIAdaptorBaseInitializationData passedData){
 			base.GetReadyForActivation(passedData);
 			/* To SetUpUIEReference */
 				IScroller scroller = (IScroller)GetUIElement();

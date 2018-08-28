@@ -33,13 +33,11 @@ namespace UISystem{
 				arg.popUpMode
 			);
 			thisStateEngine = new PopUpStateEngine(popUpStateEngineConstArg);
-			if(
-				arg.popUpMode == PopUpMode.Alpha && 
-				arg.activationMode != ActivationMode.Alpha
-			)
+			if(arg.popUpMode == PopUpMode.Alpha)
 				this.GetUIAdaptor().SetUpCanvasGroupComponent();
 			((IPopUpAdaptor)GetUIAdaptor()).ToggleRaycastBlock(false);
 
+			/* there must be moved to setup ref */
 			thisProximateParentPopUp = FindProximateParentPopUp();
 
 			if(thisProximateParentPopUp != null)
@@ -127,6 +125,7 @@ namespace UISystem{
 			IPopUpManager popUpManager,
 			bool hidesOnTappingOthers,
 			PopUpMode popUpMode
+			
 		): base(
 			uim,
 			processFactory,

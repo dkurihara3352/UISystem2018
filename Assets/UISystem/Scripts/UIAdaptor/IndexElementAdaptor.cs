@@ -16,9 +16,9 @@ namespace UISystem{
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementConstArg arg = new UIElementConstArg(
-				thisDomainActivationData.uim, 
-				thisDomainActivationData.processFactory, 
-				thisDomainActivationData.uiElementFactory, 
+				thisDomainInitializationData.uim, 
+				thisDomainInitializationData.processFactory, 
+				thisDomainInitializationData.uiElementFactory, 
 				this, 
 				image, 
 				ActivationMode.None
@@ -35,7 +35,7 @@ namespace UISystem{
 			RectTransform imageRT = CreateChildWithImageComponent(out image);
 			Text text;
 			RectTransform textRT = CreateChildWithTextComponent(out text);
-			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainActivationData.processFactory);
+			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainInitializationData.processFactory);
 			return uiImage;
 		}
 		RectTransform CreateChildWithImageComponent(out Image image){
@@ -90,7 +90,14 @@ namespace UISystem{
 		float imageDarkenedDarkness{get;}
 	}
 	public struct IndexElementAdaptorInitializationData: IIndexElementAdaptorInitializationData{
-		public IndexElementAdaptorInitializationData(int index, Font font, int fontSize, Color imageColor, float imageDefaultDarkness, float imageDarkenedDarkness){
+		public IndexElementAdaptorInitializationData(
+			int index, 
+			Font font, 
+			int fontSize, 
+			Color imageColor, 
+			float imageDefaultDarkness, 
+			float imageDarkenedDarkness
+		){
 			thisIndex = index;
 			thisFont = font;
 			thisImageColor = imageColor;
@@ -114,7 +121,10 @@ namespace UISystem{
 	public interface IIndexElementAdaptorInstantiationData: IInstantiableUIAdaptorInstantiationData{
 	}
 	public struct IndexElementAdaptorInstantiationData: IIndexElementAdaptorInstantiationData{
-		public IndexElementAdaptorInstantiationData(Vector2 sizeDelta, IIndexElementAdaptorInitializationData initData){
+		public IndexElementAdaptorInstantiationData(
+			Vector2 sizeDelta, 
+			IIndexElementAdaptorInitializationData initData
+		){
 			thisSizeDelta = sizeDelta;
 			thisInitData = initData;
 		}

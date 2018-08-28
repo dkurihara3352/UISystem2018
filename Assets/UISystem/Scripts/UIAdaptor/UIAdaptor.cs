@@ -6,11 +6,11 @@ using UnityEngine.UI;
 namespace UISystem{
 	[RequireComponent(typeof(RectTransform))]
 	public class UIAdaptor: UIBehaviour, IUIAdaptor, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler{
+		/* take these sizes away to subclass */
 		public bool resizeRelativeToScreenSize = false;
 		public Vector2 sizeRelativeToScreenLength = Vector2.one;
 		protected override void Awake(){
 			AdjustRect();
-
 			this.enabled = false;
 		}
 		void AdjustRect(){
@@ -66,42 +66,49 @@ namespace UISystem{
 			}
 		}
 		/*  Activation and init */
-			public ActivationMode activationMode;
-			public void SetUpCanvasGroupComponent(){
-				CanvasGroup canvasGroup = this.gameObject.AddComponent<CanvasGroup>();
-				canvasGroup.alpha = 0f;
-				thisCanvasGroup = canvasGroup;
+		/* Setting up UIA Hierarchy */
+			public void UpdateUIAdaptorHiearchyRecursively(){
+				UpdateUIAdaptorHiearchy();
+				foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors){
+					childUIAdaptor.UpdateUIAdaptorHiearchyRecursively();
+				}
 			}
-			CanvasGroup thisCanvasGroup;
-			public float GetGroupAlpha(){
-				return thisCanvasGroup.alpha;
+			void UpdateUIAdaptorHiearchy(){
+				thisParentUIAdaptor = CalcParentUIAdaptor();
+				thisChildUIAdaptors = CalcChildUIAdaptors();
 			}
-			public void SetGroupAlpha(float alpha){
-				thisCanvasGroup.alpha = alpha;
+			IUIAdaptor thisParentUIAdaptor;
+			IUIAdaptor CalcParentUIAdaptor(){
+				Transform parent = this.transform.parent;
+				if(parent != null){
+					IUIAdaptor parentUIAdaptor = parent.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
+					return parentUIAdaptor;
+				}
+				return null;
 			}
-			public virtual void GetReadyForActivation(IUIElementBaseConstData passedData){
-				
-				thisDomainActivationData = CheckAndCreateDomainActivationData(passedData);
-				IUIImage uiImage = CreateUIImage();
-				thisUIElement = CreateUIElement(uiImage);
-
-				IUIAdaptorInputStateEngineConstArg arg = new UIAdaptorInputStateEngineConstArg(
-					passedData.uim, 
-					this, 
-					thisDomainActivationData.processFactory
-				);
-				thisInputStateEngine = new UIAdaptorInputStateEngine(arg);
-
-				this.enabled = true;
-				GetAllChildUIAsReadyForActivation(this.GetAllChildUIAs(), thisDomainActivationData);
+			List<IUIAdaptor> thisChildUIAdaptors;
+			List<IUIAdaptor> CalcChildUIAdaptors(){
+				List<IUIAdaptor> result = new List<IUIAdaptor>();
+				for(int i = 0; i < transform.childCount; i ++){
+					Transform child = transform.GetChild(i);
+					IUIAdaptor childUIA = child.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
+					if(childUIA != null)
+						result.Add(childUIA);
+				}
+				return result;
 			}
-			protected IUIElementBaseConstData thisDomainActivationData;
-			protected IUIManager thisUIM{get{return thisDomainActivationData.uim;}}
-			public IUIElementBaseConstData GetDomainActivationData(){
-				return thisDomainActivationData;
+		/* Initializing UIA */
+			public void InitializeUIAdaptorRecursively(IUIAdaptorBaseInitializationData initData){
+				thisDomainInitializationData = CheckAndCreateDomainInitializationData(initData);
+				Initialize();
+				foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
+					InitializeUIAdaptorRecursively(thisDomainInitializationData);
+				}
 			}
-			IUIElementBaseConstData CheckAndCreateDomainActivationData(IUIElementBaseConstData passedData){
-				IUIElementBaseConstData result = null;
+			IUIAdaptorBaseInitializationData CheckAndCreateDomainInitializationData(
+				IUIAdaptorBaseInitializationData passedData
+			){
+				IUIAdaptorBaseInitializationData result = null;
 				if(this is IUIDomainManager){
 					result = ((IUIDomainManager)this).CreateDomainActivationData(passedData);
 				}else{
@@ -109,9 +116,63 @@ namespace UISystem{
 				}
 				return result;
 			}
-			void GetAllChildUIAsReadyForActivation(List<IUIAdaptor> childUIAs, IUIElementBaseConstData passedData){
-				foreach(IUIAdaptor childUIA in childUIAs)
-					childUIA.GetReadyForActivation(passedData);
+			public IUIAdaptorBaseInitializationData GetDomainInitializationData(){
+				return thisDomainInitializationData;
+			}
+			protected IUIAdaptorBaseInitializationData thisDomainInitializationData;
+			protected IUIManager thisUIManager{get{return thisDomainInitializationData.uim;}}
+			protected IUISystemProcessFactory thisProcessFactory{get{return thisDomainInitializationData.processFactory;}}
+			void Initialize(){
+				IUIAdaptorInputStateEngineConstArg arg = new UIAdaptorInputStateEngineConstArg(
+					thisUIManager,
+					this, 
+					thisProcessFactory
+				);
+				thisInputStateEngine = new UIAdaptorInputStateEngine(arg);
+
+				this.enabled = true;
+				thisImageDarkenedDarkness = thisUIManager.GetUIImageDarknedDarkness();
+				thisImageDefaultDarkness = thisUIManager.GetUIImageDefaultDarkness();
+			}
+		/* CreateAndSetUIElement */
+			public void CreateAndSetUIElementRecursively(){
+				CreateAndSetUIElement();
+				foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
+					childUIA.CreateAndSetUIElementRecursively();
+			}
+			void CreateAndSetUIElement(){
+				IUIImage image = CreateUIImage();
+				thisUIElement = CreateUIElement(image);
+			}
+			protected virtual IUIElement CreateUIElement(IUIImage image){
+				return null;
+			}
+			IUIElement thisUIElement;
+			public IUIElement GetUIElement(){
+				return thisUIElement;
+			}
+			public IUIElement GetParentUIE(){
+				return thisParentUIAdaptor.GetUIElement();
+			}
+			public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
+				IUIAdaptor newParentUIA = newParentUIE.GetUIAdaptor();
+				Transform parentTransform = newParentUIA.GetTransform();
+				this.transform.SetParent(parentTransform, worldPositionStays);
+				newParentUIA.UpdateUIAdaptorHiearchyRecursively();
+			}
+			public List<IUIElement> GetChildUIEs(){
+				List<IUIElement> result = new List<IUIElement>();
+				foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
+					result.Add(childUIA.GetUIElement());
+				}
+				return result;
+			}
+			public List<IUIElement> GetAllOffspringUIEs(){
+				List<IUIElement> result = new List<IUIElement>();
+				foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
+					result.AddRange(childUIA.GetAllOffspringUIEs());
+				}
+				return result;
 			}
 			protected virtual IUIImage CreateUIImage(){
 				Image image;
@@ -122,10 +183,9 @@ namespace UISystem{
 				imageRectTrans.pivot = new Vector2(0f, 0f);
 				imageRectTrans.anchorMin = new Vector2(0f, 0f);
 				imageRectTrans.anchorMax = new Vector2(1f, 1f);
-				// imageRectTrans.sizeDelta = this.GetRect().size;
 				imageRectTrans.sizeDelta = Vector2.one;
 				imageRectTrans.anchoredPosition = Vector3.zero;
-				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainActivationData.processFactory);
+				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainInitializationData.processFactory);
 				return uiImage;
 			}
 			protected Transform GetChildWithImage(out Image image){
@@ -141,26 +201,43 @@ namespace UISystem{
 			}
 			public float thisImageDefaultDarkness = .8f;
 			public float thisImageDarkenedDarkness = .5f;
+		/* Setting up UIE reference */
+			public void SetUpUIElementReferenceRecursively(){
+				SetUpUIElementReference();
+				foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
+					childUIA.SetUpUIElementReferenceRecursively();
+			}
+		/* Completing UIE reference */
+			public void CompleteUIElementReferenceSetUpRecursively(){
+				CompleteUIElementReferenceSetUp();
+				foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors)
+					childUIAdaptor.CompleteUIElementReferenceSetUpRecursively();
+			}
+			protected virtual void CompleteUIElementReferenceSetUp(){
+			}
+		/* Activation */
+			protected virtual void SetUpUIElementReference(){}
+			public ActivationMode activationMode;
+			public void SetUpCanvasGroupComponent(){
+				if(thisCanvasGroup == null){
+					CanvasGroup canvasGroup = this.gameObject.AddComponent<CanvasGroup>();
+					canvasGroup.alpha = 0f;
+					thisCanvasGroup = canvasGroup;
+				}
+			}
+			CanvasGroup thisCanvasGroup = null;
+			public float GetGroupAlpha(){
+				return thisCanvasGroup.alpha;
+			}
+			public void SetGroupAlpha(float alpha){
+				thisCanvasGroup.alpha = alpha;
+			}
 		/* MB adaptor */
 			public Transform GetTransform(){
 				return this.transform;
 			}
 			public Rect GetRect(){
 				return ((RectTransform)this.GetComponent<RectTransform>()).rect;
-			}
-			public void SetRectLength(float width, float height){
-				RectTransform rectTrans = (RectTransform)this.GetComponent<RectTransform>();
-				Vector2 newSize = new Vector2(width, height);
-				rectTrans.sizeDelta = newSize;
-				RectTransform[] childGraphicRTArray = GetChildRectTransformsWithGraphicComponent();
-				foreach(RectTransform graphicRT in childGraphicRTArray)
-				if(graphicRT != null){
-					graphicRT.pivot = Vector2.zero;
-					graphicRT.anchorMin = Vector2.zero;
-					graphicRT.anchorMax = Vector2.zero;
-					graphicRT.anchoredPosition = Vector2.zero;
-					graphicRT.sizeDelta = newSize;
-				}
 			}
 			public void SetRectLengthOnAxis(float length, int dimension){
 				RectTransform rectTrans = (RectTransform)this.transform;
@@ -180,22 +257,11 @@ namespace UISystem{
 				}
 				return result.ToArray();
 			}
-
-			public Vector2 GetWorldPosition(){
-				return new Vector2(this.transform.position.x, this.transform.position.y);
-			}
-			public void SetWorldPosition(Vector2 worldPos){
-				this.transform.position = new Vector3(worldPos.x, worldPos.y, 0f);
-			}
 			public Vector2 GetLocalPosition(){
 				return new Vector2(this.transform.localPosition.x, this.transform.localPosition.y);
 			}
 			public void SetLocalPosition(Vector2 pos){
 				this.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
-			}
-			public Vector2 GetPositionInThisSpace(Vector2 worldPos){
-				Vector3 resultV3 = this.transform.InverseTransformPoint(new Vector3(worldPos.x, worldPos.y, 0f));
-				return new Vector2(resultV3.x, resultV3.y);
 			}
 			public void SetParentUIA(IUIAdaptor parentUIA, bool worldPositionStays){
 				this.transform.SetParent(parentUIA.GetTransform(), worldPositionStays);
@@ -203,58 +269,13 @@ namespace UISystem{
 			public string GetName(){
 				return this.transform.gameObject.name;
 			}
-		/*  Hierarchy stuff */
-			protected virtual IUIElement CreateUIElement(IUIImage image){
-				return null;
-			}
-			IUIElement thisUIElement;
-			public IUIElement GetUIElement(){
-				return thisUIElement;
-			}
-			public IUIElement GetParentUIE(){
-				Transform parentTrans = transform.parent;
-				IUIAdaptor parentUIA = parentTrans.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
-				if(parentUIA != null)
-					return parentUIA.GetUIElement();
-				else
-					return null;//must be top
-			}
-			public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
-				IUIAdaptor newParentUIA = newParentUIE.GetUIAdaptor();
-				Transform parentTransform = newParentUIA.GetTransform();
-				this.transform.SetParent(parentTransform, worldPositionStays);
-			}
-			public List<IUIElement> GetChildUIEs(){
-				List<IUIElement> result = new List<IUIElement>();
-				foreach(IUIAdaptor childUIA in this.GetAllChildUIAs()){
-					result.Add(childUIA.GetUIElement());
-				}
-				return result;
-			}
-			List<IUIAdaptor> GetAllChildUIAs(){
-				List<IUIAdaptor> result = new List<IUIAdaptor>();
-				for(int i = 0; i < transform.childCount; i ++){
-					Transform child = transform.GetChild(i);
-					IUIAdaptor childUIA = child.GetComponent(typeof(IUIAdaptor)) as IUIAdaptor;
-					if(childUIA != null)
-						result.Add(childUIA);
-				}
-				return result;
-			}
-			public List<IUIElement> GetAllOffspringUIEs(){
-				List<IUIElement> result = new List<IUIElement>();
-				foreach(IUIAdaptor childUIA in this.GetAllChildUIAs()){
-					result.AddRange(childUIA.GetAllOffspringUIEs());
-				}
-				return result;
-			}
 		/* Event System Imple */
 			IUIAdaptorInputStateEngine thisInputStateEngine;
 			bool PointerIDMatchesTheRegistered(int pointerId){
-				return thisUIM.registeredID == pointerId;
+				return thisUIManager.registeredID == pointerId;
 			}
 			public virtual void OnPointerEnter(PointerEventData eventData){
-				if(thisUIM.TouchIDIsRegistered()){
+				if(thisUIManager.TouchIDIsRegistered()){
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerEnter(customEventData);
@@ -262,7 +283,7 @@ namespace UISystem{
 				}
 			}
 			public void OnPointerExit(PointerEventData eventData){
-				if(thisUIM.TouchIDIsRegistered()){
+				if(thisUIManager.TouchIDIsRegistered()){
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerExit(customEventData);
@@ -270,24 +291,23 @@ namespace UISystem{
 				}
 			}
 			public void OnPointerDown(PointerEventData eventData){
-				if(!thisUIM.TouchIDIsRegistered()){
-					thisUIM.RegisterTouchID(eventData.pointerId);
+				if(!thisUIManager.TouchIDIsRegistered()){
+					thisUIManager.RegisterTouchID(eventData.pointerId);
 					ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 					thisInputStateEngine.OnPointerDown(customEventData);
 				}
 			}
 			public void OnPointerUp(PointerEventData eventData){
-				if(thisUIM.TouchIDIsRegistered()){
+				if(thisUIManager.TouchIDIsRegistered()){
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnPointerUp(customEventData);
-						thisUIM.UnregisterTouchID();
+						thisUIManager.UnregisterTouchID();
 					}
 				}
 			}
-			/* OnEndDrag is needed too? */
 			public void OnBeginDrag(PointerEventData eventData){
-				if(thisUIM.TouchIDIsRegistered()){
+				if(thisUIManager.TouchIDIsRegistered()){
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnBeginDrag(customEventData);
@@ -295,7 +315,7 @@ namespace UISystem{
 				}
 			}
 			public void OnDrag(PointerEventData eventData){
-				if(thisUIM.TouchIDIsRegistered()){
+				if(thisUIManager.TouchIDIsRegistered()){
 					if(PointerIDMatchesTheRegistered(eventData.pointerId)){
 						ICustomEventData customEventData = new CustomEventData(eventData, Time.deltaTime);
 						thisInputStateEngine.OnDrag(customEventData);

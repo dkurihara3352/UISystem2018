@@ -11,14 +11,14 @@ namespace UISystem{
 		public PopUpMode popUpMode;
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IPopUpConstArg arg = new PopUpConstArg(
-				thisDomainActivationData.uim,
-				thisDomainActivationData.processFactory,
-				thisDomainActivationData.uiElementFactory,
+				thisDomainInitializationData.uim,
+				thisDomainInitializationData.processFactory,
+				thisDomainInitializationData.uiElementFactory,
 				this,
 				image,
 				activationMode,
 
-				thisDomainActivationData.uim.GetPopUpManager(),
+				thisDomainInitializationData.uim.GetPopUpManager(),
 				hidesOnTappingOthers,
 				popUpMode
 			);

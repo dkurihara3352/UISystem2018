@@ -16,7 +16,7 @@ namespace UISystem.PickUpUISystem{
 			}
 		}
 		IEquippableUIItem thisEqpItem;
-		public override void GetReadyForActivation(IUIElementBaseConstData passedArg){
+		public override void GetReadyForActivation(IUIAdaptorBaseInitializationData passedArg){
 			if(passedArg is IEquipToolActivationData){
 				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
 				thisEqpIITAM = eqpToolUIAArg.eqpIITAM;
@@ -39,7 +39,7 @@ namespace UISystem.PickUpUISystem{
 			return itemIconImage;
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IEquipToolActivationData data = (IEquipToolActivationData)thisDomainActivationData;
+			IEquipToolActivationData data = (IEquipToolActivationData)thisDomainInitializationData;
 			IDragImageImplementorConstArg dragImageImplementorConstArg = new DragImageImplementorConstArg(1f, 1f, data.pickUpSystemProcessFactory, data.pickUpManager);
 			IDragImageImplementor dragImageImplementor = new DragImageImplementor(dragImageImplementorConstArg);
 			IVisualPickednessStateEngine visualPickednessStateEngine = new VisualPickednessStateEngine(data.pickUpSystemProcessFactory);

@@ -8,7 +8,7 @@ namespace UISystem.PickUpUISystem{
 	}
 	public abstract class AbsItemIconUIAdaptor<T>: UIAdaptor, IItemIconUIAdaptor where T: IItemIcon{
 		IPickUpSystemUIAActivationData thisPickUpSystemDomainActivationData{
-			get{return (IPickUpSystemUIAActivationData)thisDomainActivationData;}
+			get{return (IPickUpSystemUIAActivationData)thisDomainInitializationData;}
 		}
 		public void SetUIItem(IUIItem item){
 			thisItem = item;

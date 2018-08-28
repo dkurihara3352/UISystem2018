@@ -11,7 +11,10 @@ namespace UISystem{
 		void SetVelocity(Vector2 velocity);
 	}
 	public struct CustomEventData: ICustomEventData{
-		public CustomEventData(PointerEventData sourceData, float deltaTime){
+		public CustomEventData(
+			PointerEventData sourceData, 
+			float deltaTime
+		){
 			/* do some conversion here */
 			thisDeltaP = sourceData.delta;
 			thisPosition = sourceData.position;
@@ -21,7 +24,11 @@ namespace UISystem{
 			else
 				thisVelocity = sourceVel;
 		}
-		public CustomEventData(Vector2 position, Vector2 deltaP, float deltaTime){
+		public CustomEventData(
+			Vector2 position, 
+			Vector2 deltaP, 
+			float deltaTime
+		){
 			thisPosition = position;
 			thisDeltaP = deltaP;
 			Vector2 sourceVel = thisDeltaP/ deltaTime;

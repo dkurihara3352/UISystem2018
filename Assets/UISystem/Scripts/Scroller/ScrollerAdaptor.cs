@@ -18,6 +18,16 @@ namespace UISystem{
 		}
 		Rect thisCursorRect;
 		bool cursorRectIsReady = false;
+		IScroller thisScroller{
+			get{
+				return (IScroller)GetUIElement();
+			}
+		}
+
+		protected override void CompleteUIElementReferenceSetUp(){
+			// thisScroller.UpdateGroupElementLengthAndPadding(thisElementLength, thisPadding); this is done is subclass
+			thisScroller.SetUpScrollerElement();
+		}
 		public void OnDrawGizmosSelected(){
 			if(cursorRectIsReady){
 				Gizmos.color = Color.red;
