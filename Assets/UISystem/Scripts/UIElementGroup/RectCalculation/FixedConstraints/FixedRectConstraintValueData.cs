@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IFixedRectConstraintValue{
+	public interface IFixedRectConstraintValueData{
 		Vector2 GetValue();
 	}
-	public struct ConstantFixedRectConstraintValue: IFixedRectConstraintValue{
-		public ConstantFixedRectConstraintValue(Vector2 constantValue){
+	public struct ConstantFixedRectConstraintValueData: IFixedRectConstraintValueData{
+		public ConstantFixedRectConstraintValueData(Vector2 constantValue){
 			thisConstantValue = constantValue;
 		}
 		readonly Vector2 thisConstantValue;
 		public Vector2 GetValue(){return thisConstantValue;}
 	}
-	public struct ReferenceFixedRectConstraintValue: IFixedRectConstraintValue{
-		public ReferenceFixedRectConstraintValue(
+	public struct ReferenceFixedRectConstraintValueData: IFixedRectConstraintValueData{
+		public ReferenceFixedRectConstraintValueData(
 			Vector2 referenceRectLength, Vector2 relativeLength
 		){
 			thisReferenceRectLength = referenceRectLength;

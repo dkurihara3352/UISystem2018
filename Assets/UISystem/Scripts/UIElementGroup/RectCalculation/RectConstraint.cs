@@ -4,118 +4,121 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IRectConstraint{
-		void SetColumnAndRowCount(int numOfColumns, int numOfRows);
+		void SetRectCalculationData(IRectCalculationData data);
 		Vector2 CalcElementLengthFromFixedGroupLength();
 		Vector2 CalcPaddingFromFixedGroupLength();
 		Vector2 CalcGroupLengthFromFixedElementLength();
 		Vector2 CalcPaddingFromFixedElementLength();
+		Vector2 CalcGroupLengthFromFixedPadding();
+		Vector2 CalcElementLengthFromFixedPadding();
 	}
-	public interface IFixedRectConstraint: IRectConstraint{
-		Vector2 GetValue();
-		void CalculateRects(
-			IRectConstraint otherConstraint
-		);
-		Vector2 GetGroupLength();
-		Vector2 GetElementLength();
-		Vector2 GetPadding();
-	}
+	public abstract class AbsRectConstraint: IRectConstraint{
 
+		public void SetRectCalculationData(IRectCalculationData data){
+			thisRectCalculationData = data;
+		}
+		protected abstract Vector2 thisValue{get;}
+		protected Vector2 thisInverseValue{
+			get{
+				return GetInverseVector(thisValue);
+			}
+		}
+		protected Vector2 GetInverseVector(Vector2 source){
+			return new Vector2(
+				1f/ source.x,
+				1f/ source.y
+			);
+		}
+		protected IRectCalculationData thisRectCalculationData;
+		protected Vector2 thisGroupLength{
+			get{
+				return thisRectCalculationData.groupLength;
+			}
+		}
+		protected Vector2 thisElementLength{
+			get{
+				return thisRectCalculationData.elementLength;
+			}
+		}
+		protected Vector2 thisPadding{
+			get{
+				return thisRectCalculationData.padding;
+			}
+		}
 
-
-	public abstract class AbsFixedRectConstraint: IFixedRectConstraint{
-		public AbsFixedRectConstraint(
-			IFixedRectConstraintValue value
-		){
-			thisConstraintValue = value;
-		}
-		protected readonly IFixedRectConstraintValue thisConstraintValue;
-		public Vector2 GetValue(){
-			return thisConstraintValue.GetValue();
-		}
-		public abstract void CalculateRects(
-			IRectConstraint otherConstraint
-		);
-		public Vector2 GetGroupLength(){
-			return thisGroupLength;
-		}
-		protected Vector2 thisGroupLength;
-		public Vector2 GetElementLength(){
-			return thisElementLength;
-		}
-		protected Vector2 thisElementLength;
-		public Vector2 GetPadding(){
-			return thisPadding;
-		}
-		protected Vector2 thisPadding;
-
-		protected int thisNumOfColumns;
-		protected int thisNumOfRows;
-		public void SetColumnAndRowCount(
-			int numOfColumns,
-			int numOfRows
-		){
-			thisNumOfColumns = numOfColumns;
-			thisNumOfRows = numOfRows;
-		}
 		public abstract Vector2 CalcElementLengthFromFixedGroupLength();
 		public abstract Vector2 CalcPaddingFromFixedGroupLength();
 		public abstract Vector2 CalcGroupLengthFromFixedElementLength();
 		public abstract Vector2 CalcPaddingFromFixedElementLength();
+		public abstract Vector2 CalcGroupLengthFromFixedPadding();
+		public abstract Vector2 CalcElementLengthFromFixedPadding();
 		protected Vector2 CalcPaddingFromGroupAndElementLength(){
-			Vector2 parcelLength = CalcParcelLengthFromFixedGroupLength();
-			MakeSureElementLengthIsNotGreaterThanParcelLength(parcelLength);
+			int[] gridCounts = GetGridCounts();
+			Vector2 numerator = new Vector2(
+				thisGroupLength.x - (thisElementLength.x * gridCounts[0]),
+				thisGroupLength.y - (thisElementLength.y * gridCounts[1])
+			);
+			int[] denominator = new int[]{
+				gridCounts[0] + 1,
+				gridCounts[1] + 1
+			};
 			return new Vector2(
-				(parcelLength.x - thisElementLength.x) / 2f,
-				(parcelLength.y - thisElementLength.y) / 2f
+				numerator.x/ denominator[0],
+				numerator.y/ denominator[1]
 			);
 		}
-		void MakeSureElementLengthIsNotGreaterThanParcelLength(Vector2 parcelLength){
-			for(int i = 0; i < 2; i ++)
-				if(thisElementLength[i] > parcelLength[i])
-					throw new System.InvalidOperationException(
-						"Element length is exceeding parcel. Make sure it is set small enough to fit"
-					);
-		}
-		Vector2 CalcParcelLengthFromFixedGroupLength(){
+		protected Vector2 CalcElementLengthFromFixedGroupLengthAndPadding(){
+			Vector2 totalPadding = CalcTotalPadding();
+			int[] gridCounts = GetGridCounts();
+			Vector2 numerator = new Vector2(
+				thisGroupLength.x - totalPadding.x,
+				thisGroupLength.y - totalPadding.y
+			);
 			return new Vector2(
-						thisGroupLength.x/ thisNumOfColumns,
-						thisGroupLength.y/ thisNumOfRows
+				numerator.x/ gridCounts[0],
+				numerator.y/ gridCounts[1]
+			);
+		}
+		protected int[] GetGridCounts(){
+			return new int[]{
+				thisRectCalculationData.GetColumnCount(),
+				thisRectCalculationData.GetRowCount()
+			};
+		}
+		protected Vector2 CalcGroupLengthFromFixedElementLengthAndPadding(){
+			Vector2 parcelLength = new Vector2(
+				thisElementLength.x + thisPadding.x,
+				thisElementLength.y + thisPadding.y
+			);
+			int[] gridCounts = GetGridCounts();
+
+			return new Vector2(
+				parcelLength.x * gridCounts[0],
+				parcelLength.y * gridCounts[1]
+			);
+		}
+		void MakeSureLengthIsNotGreaterThanParcelLength(Vector2 length, Vector2 parcelLength){
+			for(int i = 0; i < 2; i ++)
+				if(length[i] > parcelLength[i])
+					throw new System.InvalidOperationException(
+						"length is exceeding parcel. Make sure it is set small enough to fit"
 					);
 		}
-		// protected Vector2 CalcElementLengthFromGroupLengthAndPadding(){
-
-		// }
-		// protected Vector2 CalcRelativeRect(
-		// 	Vector2 referenceRect,
-		// 	Vector2 multiplier,
-		// 	bool invert
-		// ){
-
-		// }
-		// protected abstract Vector2 GetParcelLength(
-		// 	int numOfColumns,
-		// 	int numOfRows
-		// ){
-
-		// }
-	}
-	public interface IRatioRectConstraint: IRectConstraint{
-		RatioRectConstraintType constraintType{get;}
-		Vector2 GetValue();
-	}
-	public struct RatioRectConstraint: IRatioRectConstraint{
-		public RatioRectConstraint(
-			RatioRectConstraintType type,
-			Vector2 value
+		protected Vector2 CalcRelativeRectLength(
+			Vector2 referenceLength,
+			Vector2 multipllier
 		){
-			thisType = type;
-			thisValue = value;
+			return new Vector2(
+				referenceLength.x * multipllier.x,
+				referenceLength.y * multipllier.y
+			);
 		}
-		readonly RatioRectConstraintType thisType;
-		public RatioRectConstraintType constraintType{
-			get{return thisType;}
+		protected Vector2 CalcTotalPadding(){
+			int[] gridCounts = GetGridCounts();
+			return new Vector2(
+				thisPadding.x * (gridCounts[0] + 1),
+				thisPadding.y * (gridCounts[1] + 1)
+			);
 		}
-		readonly Vector2 thisValue;
-		public Vector2 GetValue(){return thisValue;}
 	}
 }

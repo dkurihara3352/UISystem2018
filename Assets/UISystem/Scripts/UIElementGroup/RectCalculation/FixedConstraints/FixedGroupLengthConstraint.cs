@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IFixedGroupLengthConstraint: IFixedRectConstraint{}
+	public interface IFixedGroupLengthConstraint: IRectConstraint{}
 	public class FixedGroupLengthConstraint: AbsFixedRectConstraint, IFixedGroupLengthConstraint{
 		public FixedGroupLengthConstraint(
-			IFixedRectConstraintValue value
+			IFixedRectConstraintValueData valueData
 		): base(
-			value
+			valueData
 		){}
 		public override void CalculateRects(
 			IRectConstraint otherConstraint
 		){
-			thisGroupLength = thisConstraintValue.GetValue();
-			thisElementLength = otherConstraint.CalcElementLengthFromFixedGroupLength();
-			thisPadding = otherConstraint.CalcPaddingFromFixedGroupLength();
+			thisRectCalculationData.SetGroupLength(
+				thisValue
+			);
+
+			thisRectCalculationData.SetElementLength(
+				otherConstraint.CalcElementLengthFromFixedGroupLength()
+			);
+
+			thisRectCalculationData.SetPadding(
+				otherConstraint.CalcPaddingFromFixedGroupLength()
+			);
 		}
+
 		public override Vector2 CalcElementLengthFromFixedGroupLength(){
 			throw new System.InvalidOperationException(
 				"Both constraints cannot be fixed group length constraint"
@@ -28,10 +37,22 @@ namespace UISystem{
 			);
 		}
 		public override Vector2 CalcGroupLengthFromFixedElementLength(){
-			return thisConstraintValue.GetValue();
+			return thisValue;
 		}
 		public override Vector2 CalcPaddingFromFixedElementLength(){
+			thisRectCalculationData.SetGroupLength(
+				thisValue
+			);
 			return CalcPaddingFromGroupAndElementLength();
+		}
+		public override Vector2 CalcGroupLengthFromFixedPadding(){
+			return thisValue;
+		}
+		public override Vector2 CalcElementLengthFromFixedPadding(){
+			thisRectCalculationData.SetGroupLength(
+				thisValue
+			);
+			return CalcElementLengthFromFixedGroupLengthAndPadding();
 		}
 	}
 }

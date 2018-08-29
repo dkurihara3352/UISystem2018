@@ -130,17 +130,17 @@ namespace UISystem{
 		){
 			IRectConstraint rectConstraint;
 			if(fixedConstraintType != FixedRectConstraintType.None){
-				IFixedRectConstraintValue fixedConstraintValue;
+				IFixedRectConstraintValueData fixedConstraintValue;
 				if(firstFixedConstraintValueType == FixedRectValueType.ConstantValue)
-					fixedConstraintValue = new ConstantFixedRectConstraintValue(
+					fixedConstraintValue = new ConstantFixedRectConstraintValueData(
 						constraintValue
 					);
 				else
-					fixedConstraintValue = new ReferenceFixedRectConstraintValue(
+					fixedConstraintValue = new ReferenceFixedRectConstraintValueData(
 						referenceRect.sizeDelta,
 						constraintValue
 					);
-				rectConstraint = new FixedRectConstraint(
+				rectConstraint = new AbsFixedRectConstraint(
 					fixedConstraintType,
 					fixedConstraintValue
 				);
