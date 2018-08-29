@@ -86,8 +86,6 @@ namespace UISystem{
 			bool[] isCycleEnabled, 
 			int initiallyCursoredElementIndex, 
 			int[] cursorSize, 
-			Vector2 elementLength, 
-			Vector2 padding, 
 			float startSearchSpeed,
 			bool activatesCursoredElementsOnly,
 
@@ -107,8 +105,6 @@ namespace UISystem{
 		): base(
 			initiallyCursoredElementIndex, 
 			cursorSize, 
-			elementLength, 
-			padding, 
 			startSearchSpeed,
 			activatesCursoredElementsOnly,
 

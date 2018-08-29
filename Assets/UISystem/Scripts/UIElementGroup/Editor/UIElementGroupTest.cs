@@ -95,9 +95,6 @@ public class UIElementGroupTest {
 		arg.topToBottom.Returns(true);
 		arg.leftToRight.Returns(true);
 		arg.rowToColumn.Returns(true);
-		arg.elementLength.Returns(new Vector2(100f, 50f));
-		arg.padding.Returns(new Vector2(10f, 10f));
-		arg.usesFixedPadding.Returns(new bool[2]{true, true});
 		arg.uim.Returns(Substitute.For<IUIManager>());
 		arg.processFactory.Returns(Substitute.For<IUISystemProcessFactory>());
 		arg.uiElementFactory.Returns(Substitute.For<IUIElementFactory>());
@@ -141,9 +138,6 @@ public class UIElementGroupTest {
 		}
 		public int GetArraySize_Test(int dimension){
 			return this.GetArraySize(dimension);
-		}
-		public void ResizeToFitElements_Test(){
-			this.ResizeToFitElements();
 		}
 		public void PlaceElements_Test(){
 			this.PlaceElements();

@@ -20,6 +20,7 @@ namespace UISystem{
 		IPopUpManager GetPopUpManager();
 		void GetReadyForUISystemActivation();
 		void ActivateUISystem(bool instantly);
+		void DeactivateUISystem(bool instantly);
 		float GetUIImageDarknedDarkness();
 		float GetUIImageDefaultDarkness();
 	}
@@ -53,18 +54,19 @@ namespace UISystem{
 				processFactory,
 				uiElementFactory
 			);
-			thisRootUIAdaptor.UpdateUIAdaptorHiearchyRecursively();
-			thisRootUIAdaptor.InitializeUIAdaptorRecursively(rootUIAdaptorBaseInitializationData);
-			thisRootUIAdaptor.CreateAndSetUIElementRecursively();
-			thisRootUIAdaptor.SetUpUIElementReferenceRecursively();
-			thisRootUIAdaptor.CompleteUIElementReferenceSetUpRecursively();
+			thisRootUIAdaptor.GetReadyForActivation(
+				rootUIAdaptorBaseInitializationData,
+				recursively: true
+			);
 
-			thisRootUIElement.EvaluateScrollerFocusRecursively();/* ? */
 			thisRootUIElement = thisRootUIAdaptor.GetUIElement();
 			thisPopUpManager = new PopUpManager(thisRootUIElement);
 		}
 		public void ActivateUISystem(bool instantly){
 			thisRootUIElement.ActivateRecursively(instantly);
+		}
+		public void DeactivateUISystem(bool instantly){
+			thisRootUIElement.DeactivateRecursively(instantly);
 		}
 		readonly IProcessManager thisProcessManager;
 		protected virtual IProcessFactory CreateProcessFactory(IProcessManager processManager){

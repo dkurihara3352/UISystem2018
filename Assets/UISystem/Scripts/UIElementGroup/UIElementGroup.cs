@@ -167,6 +167,24 @@ namespace UISystem{
 				return thisArrayIndexCalculator.CalcRowIndex(n, numOfColumns, numOfRows);
 			}
 		/* Setting up rects */
+			/*  * Note *
+				Three variable that affects the rects
+					ElementGroupRectLength
+					GroupElementLength
+					PaddingLength
+				two of these three must be somehow constrained to solve for each values
+					Fixed GroupLength
+					Fixed ElementLength
+					Fixed PaddingLength
+					Ratio of
+						GroupToElement
+						GropuToPadding
+						ElementToPadding
+
+					Fixed is either of
+						constant value
+						proportional to reference
+			*/
 			public void SetUpRects(IRectCalculationData rectCalculationData){
 				thisRectCalculationData = rectCalculationData;
 				thisRectCalculationData.SetColumnAndRowCount(
@@ -177,27 +195,27 @@ namespace UISystem{
 				SetRectsDependentCalculators();
 			}
 			IRectCalculationData thisRectCalculationData;
-		/*  */
-		/* RectSize and padding calc */
-		/*  Three variable that affects the rects
-				ElementGroupRectLength
-				GroupElementLength
-				PaddingLength
-			two of these three must be somehow constrained to solve for each values
-				Fixed GroupLength
-				Fixed ElementLength
-				Fixed PaddingLength
-				Ratio of
-					GroupToElement
-					GropuToPadding
-					ElementToPadding
-
-				Fixed is either of
-					constant value
-					proportional to reference
-				
-		*/
-	
+			void CalculateAndSetRects(IRectCalculationData data){
+				data.CalculateRects();
+				SetUpGroupLength(data.groupLength);
+				SetUpElementLength(data.elementLength);
+				SetUpPadding(data.padding);
+			}
+			protected virtual void SetRectsDependentCalculators(){}
+			protected void SetUpGroupLength(Vector2 groupLength){
+				thisGroupLength = groupLength;
+				thisUIA.SetRectLength(groupLength);
+			}
+			protected void SetUpElementLength(Vector2 elementLength){
+				thisElementLength = elementLength;
+				foreach(IUIElement element in thisGroupElements){
+					IUIAdaptor elementUIA = element.GetUIAdaptor();
+					elementUIA.SetRectLength(elementLength);
+				}
+			}
+			protected void SetUpPadding(Vector2 padding){
+				thisPadding = padding;
+			}
 			Vector2 thisGroupLength;
 			Vector2 thisElementLength;
 			public Vector2 GetGroupElementLength(){
@@ -206,18 +224,6 @@ namespace UISystem{
 			Vector2 thisPadding;
 			public Vector2 GetPadding(){
 				return thisPadding;
-			}
-			protected void ResizeToFitElements(int dimension){
-				int elementsCount = GetArraySize(dimension);
-				float targetLength = elementsCount * (thisElementLength[dimension] + thisPadding[dimension]) + thisPadding[dimension];
-				GetUIAdaptor().SetRectLengthOnAxis(targetLength, dimension);
-			}
-			void MakeSureElementsFitAlongRectLength(int dimension){
-				int elementsCount = GetArraySize(dimension);
-				float totalElementsLengthOnAxis = thisElementLength[dimension] * elementsCount;
-				float thisRectLength = GetUIAdaptor().GetRect().size[dimension];
-				if(thisRectLength < totalElementsLengthOnAxis)
-					throw new System.InvalidOperationException("elements cannot fit the group rect, too many or too wide");
 			}
 		/* calculators */
 			void SetElementsDependentCalculators(){

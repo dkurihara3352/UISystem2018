@@ -103,41 +103,6 @@ namespace UISystem{
 				}
 				return result;
 			}
-		/* Cursor Transform */
-			public void SetUpCursorTransform(){
-				thisCursorLength = CalcCursorLength();
-				ClampCursorLengthToThisRect();
-				thisCursorLocalPosition = CalcCursorLocalPos();
-
-				Rect cursorRect = new Rect(thisCursorLocalPosition, thisCursorLength);
-				((IScrollerAdaptor)thisUIA).ShowCursorRectInGUI(cursorRect);
-			}
-			protected Vector2 thisCursorLength;
-			readonly protected Vector2 thisRelativeCursorPosition;
-			protected Vector2 thisCursorLocalPosition;
-			protected abstract Vector2 CalcCursorLength();
-			void ClampCursorLengthToThisRect(){
-				for(int i = 0; i < 2; i ++){
-					if(thisCursorLength[i] > thisRectLength[i])
-						thisCursorLength[i] = thisRectLength[i];
-				}
-			}
-			protected virtual Vector2 CalcCursorLocalPos(){
-				Vector2 result = new Vector2();
-				for(int i = 0; i < 2; i ++){
-					float scrollerRectLength = thisRectLength[i];
-					float cursorLength = thisCursorLength[i];
-					float diffL = scrollerRectLength - cursorLength;
-
-					float localPos;
-					if(thisRelativeCursorPosition[i] == 0f) 
-						localPos = 0f;
-					else
-						localPos = thisRelativeCursorPosition[i] * diffL;
-					result[i] = localPos;
-				}
-				return result;
-			}
 
 		/* ScrollerElement */
 			public void SetUpScrollerElement(){
@@ -173,6 +138,42 @@ namespace UISystem{
 				thisScrollerElementRect = scrollerElementAdaptor.GetRect();
 				thisScrollerElementLength = new Vector2(thisScrollerElementRect.width, thisScrollerElementRect.height);
 			}
+			/* Cursor Transform */
+			public void SetUpCursorTransform(){
+				thisCursorLength = CalcCursorLength();
+				ClampCursorLengthToThisRect();
+				thisCursorLocalPosition = CalcCursorLocalPos();
+
+				Rect cursorRect = new Rect(thisCursorLocalPosition, thisCursorLength);
+				((IScrollerAdaptor)thisUIA).ShowCursorRectInGUI(cursorRect);
+			}
+			protected Vector2 thisCursorLength;
+			readonly protected Vector2 thisRelativeCursorPosition;
+			protected Vector2 thisCursorLocalPosition;
+			protected abstract Vector2 CalcCursorLength();
+			void ClampCursorLengthToThisRect(){
+				for(int i = 0; i < 2; i ++){
+					if(thisCursorLength[i] > thisRectLength[i])
+						thisCursorLength[i] = thisRectLength[i];
+				}
+			}
+			protected virtual Vector2 CalcCursorLocalPos(){
+				Vector2 result = new Vector2();
+				for(int i = 0; i < 2; i ++){
+					float scrollerRectLength = thisRectLength[i];
+					float cursorLength = thisCursorLength[i];
+					float diffL = scrollerRectLength - cursorLength;
+
+					float localPos;
+					if(thisRelativeCursorPosition[i] == 0f) 
+						localPos = 0f;
+					else
+						localPos = thisRelativeCursorPosition[i] * diffL;
+					result[i] = localPos;
+				}
+				return result;
+			}
+			/*  */
 			protected void PlaceScrollerElementAtInitialCursorValue(){
 				Vector2 initialCursorValue = GetInitialNormalizedCursoredPosition();
 				PlaceScrollerElement(initialCursorValue);

@@ -66,20 +66,4 @@ namespace UISystem{
 		}
 		public Vector2 padding{get{return thisPadding;}}
 	}
-	public enum FixedRectConstraintType{
-		None,
-		FixedGroupRectLength,
-		FixedGroupElementLength,
-		FixedPadding
-	}
-	public enum FixedRectValueType{
-		ConstantValue,
-		ReferenceRect
-	}
-	public enum RatioRectConstraintType{
-		None,
-		GroupToElement,
-		ElementToPadding,
-		GroupToPadding
-	}	
 }

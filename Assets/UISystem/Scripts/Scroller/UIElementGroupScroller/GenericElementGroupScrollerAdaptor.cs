@@ -20,8 +20,6 @@ namespace UISystem{
 			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
 				initiallyCursoredElementIndex, 
 				cursorSize, 
-				uieGroupAdaptor.GetGroupElementLength(), 
-				uieGroupAdaptor.GetPadding(), 
 				startSearchSpeed, 
 				activatesCursoredElementsOnly, 
 

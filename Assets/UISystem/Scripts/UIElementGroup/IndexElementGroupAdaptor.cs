@@ -26,7 +26,7 @@ namespace UISystem{
 		public Vector2 GetPadding(){return padding;}
 		public bool[] usesFixedPadding = new bool[2]{true, true};
 		
-		protected override void SetUpUIElementReference(){
+		protected override void SetUpUIElementReferenceImple(){
 			testUIElementFactory = new TestUIElementFactory(
 				thisUIManager, 
 				font, 
@@ -61,9 +61,6 @@ namespace UISystem{
 				topToBottom,
 				leftToRight,
 				rowToColumn,
-				groupElementLength,
-				padding,
-				usesFixedPadding,
 
 				thisDomainInitializationData.uim,
 				thisDomainInitializationData.processFactory,

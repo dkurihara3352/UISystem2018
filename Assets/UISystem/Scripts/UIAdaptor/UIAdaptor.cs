@@ -66,14 +66,31 @@ namespace UISystem{
 			}
 		}
 		/*  Activation and init */
+		public void GetReadyForActivation(
+			IUIAdaptorBaseInitializationData data,
+			bool recursively
+		){
+			UpdateUIAdaptorHiearchy(recursively);
+			InitializeUIAdaptor(data, recursively);
+			CreateAndSetUIElement(recursively);
+			SetUpUIElementReference(recursively);
+			CompleteUIElementReferenceSetUp(recursively);
+
+			thisUIElement.EvaluateScrollerFocusRecursively();
+		}
 		/* Setting up UIA Hierarchy */
-			public void UpdateUIAdaptorHiearchyRecursively(){
-				UpdateUIAdaptorHiearchy();
-				foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors){
-					childUIAdaptor.UpdateUIAdaptorHiearchyRecursively();
+			public void UpdateUIAdaptorHiearchy(bool recursively){
+				UpdateUIAdaptorHiearchyImple();
+				if(recursively)
+					foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors){
+						childUIAdaptor.UpdateUIAdaptorHiearchy(true);
+					}
+				else{
+					IUIAdaptor parentUIA = thisParentUIAdaptor;
+					parentUIA.UpdateUIAdaptorHiearchy(false);
 				}
 			}
-			void UpdateUIAdaptorHiearchy(){
+			void UpdateUIAdaptorHiearchyImple(){
 				thisParentUIAdaptor = CalcParentUIAdaptor();
 				thisChildUIAdaptors = CalcChildUIAdaptors();
 			}
@@ -98,12 +115,19 @@ namespace UISystem{
 				return result;
 			}
 		/* Initializing UIA */
-			public void InitializeUIAdaptorRecursively(IUIAdaptorBaseInitializationData initData){
+			public void InitializeUIAdaptor(
+				IUIAdaptorBaseInitializationData initData,
+				bool recursively
+			){
 				thisDomainInitializationData = CheckAndCreateDomainInitializationData(initData);
 				Initialize();
-				foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
-					InitializeUIAdaptorRecursively(thisDomainInitializationData);
-				}
+				if(recursively)
+					foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
+						InitializeUIAdaptor(
+							thisDomainInitializationData,
+							true
+						);
+					}
 			}
 			IUIAdaptorBaseInitializationData CheckAndCreateDomainInitializationData(
 				IUIAdaptorBaseInitializationData passedData
@@ -135,10 +159,13 @@ namespace UISystem{
 				thisImageDefaultDarkness = thisUIManager.GetUIImageDefaultDarkness();
 			}
 		/* CreateAndSetUIElement */
-			public void CreateAndSetUIElementRecursively(){
+			public void CreateAndSetUIElement(
+				bool recursively
+			){
 				CreateAndSetUIElement();
-				foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
-					childUIA.CreateAndSetUIElementRecursively();
+				if(recursively)
+					foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
+						childUIA.CreateAndSetUIElement(true);
 			}
 			void CreateAndSetUIElement(){
 				IUIImage image = CreateUIImage();
@@ -158,7 +185,8 @@ namespace UISystem{
 				IUIAdaptor newParentUIA = newParentUIE.GetUIAdaptor();
 				Transform parentTransform = newParentUIA.GetTransform();
 				this.transform.SetParent(parentTransform, worldPositionStays);
-				newParentUIA.UpdateUIAdaptorHiearchyRecursively();
+
+				newParentUIA.UpdateUIAdaptorHiearchy(true);
 			}
 			public List<IUIElement> GetChildUIEs(){
 				List<IUIElement> result = new List<IUIElement>();
@@ -202,21 +230,23 @@ namespace UISystem{
 			public float thisImageDefaultDarkness = .8f;
 			public float thisImageDarkenedDarkness = .5f;
 		/* Setting up UIE reference */
-			public void SetUpUIElementReferenceRecursively(){
-				SetUpUIElementReference();
-				foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
-					childUIA.SetUpUIElementReferenceRecursively();
+			public void SetUpUIElementReference(bool recursively){
+				SetUpUIElementReferenceImple();
+				if(recursively)
+					foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
+						childUIA.SetUpUIElementReference(true);
 			}
+			protected virtual void SetUpUIElementReferenceImple(){}
 		/* Completing UIE reference */
-			public void CompleteUIElementReferenceSetUpRecursively(){
-				CompleteUIElementReferenceSetUp();
-				foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors)
-					childUIAdaptor.CompleteUIElementReferenceSetUpRecursively();
+			public void CompleteUIElementReferenceSetUp(bool recursively){
+				CompleteUIElementReferenceSetUpImple();
+				if(recursively)
+					foreach(IUIAdaptor childUIAdaptor in thisChildUIAdaptors)
+						childUIAdaptor.CompleteUIElementReferenceSetUp(true);
 			}
-			protected virtual void CompleteUIElementReferenceSetUp(){
+			protected virtual void CompleteUIElementReferenceSetUpImple(){
 			}
 		/* Activation */
-			protected virtual void SetUpUIElementReference(){}
 			public ActivationMode activationMode;
 			public void SetUpCanvasGroupComponent(){
 				if(thisCanvasGroup == null){
@@ -246,6 +276,10 @@ namespace UISystem{
 					rectTrans.sizeDelta = new Vector2(length, sourceSize.y);
 				else
 					rectTrans.sizeDelta = new Vector2(sourceSize.x, length);
+			}
+			public void SetRectLength(Vector2 length){
+				RectTransform rt = (RectTransform)this.transform;
+				rt.sizeDelta = length;
 			}
 			protected RectTransform[] GetChildRectTransformsWithGraphicComponent(){
 				List<RectTransform> result = new List<RectTransform>();

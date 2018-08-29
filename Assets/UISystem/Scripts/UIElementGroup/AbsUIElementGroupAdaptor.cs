@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElementGroupAdaptor{
+	public interface IUIElementGroupAdaptor: IUIAdaptor{
 	}
 	public abstract class AbsUIElementGroupAdaptor: UIAdaptor, IUIElementGroupAdaptor{
 		public int columnCountConstraint;
@@ -13,50 +13,40 @@ namespace UISystem{
 		public bool rowToColumn;
 		
 		/* Rect Calculation fields */
-			public FixedRectConstraintType firstFixedConstraintType;
+			public RectConstraintType firstConstraintType;
 			public FixedRectValueType firstFixedConstraintValueType;
 			public RectTransform firstFixedConstraintReferenceRect;
-			public RatioRectConstraintType firstRatioConstraintType;
 			public Vector2 firstConstraintValue; 
 
-			public FixedRectConstraintType secondFixedConstraintType;
+			public RectConstraintType secondConstraintType;
 			public FixedRectValueType secondFixedConstraintValueType;
 			public RectTransform secondFixedConstraintReferenceRect;
-			public RatioRectConstraintType secondRatioConstraintType;
 			public Vector2 secondConstraintValue; 
 		/*  */
 		protected override void Awake(){
 			base.Awake();
 			MakeSureEachConstraintsAreProperlySet(
-				firstFixedConstraintType,
+				firstConstraintType,
 				firstFixedConstraintValueType,
-				firstFixedConstraintReferenceRect,
-				firstRatioConstraintType
+				firstFixedConstraintReferenceRect
 			);
 			MakeSureEachConstraintsAreProperlySet(
-				secondFixedConstraintType,
+				secondConstraintType,
 				secondFixedConstraintValueType,
-				secondFixedConstraintReferenceRect,
-				secondRatioConstraintType
+				secondFixedConstraintReferenceRect
 			);
 			MakeSureCombinationOfConstraintsIsValid();
 		}
 		void MakeSureEachConstraintsAreProperlySet(
-			FixedRectConstraintType fixedRectConstraintType,
+			RectConstraintType constraintType,
 			FixedRectValueType fixedRectConstraintValueType,
-			RectTransform referenceRect,
-			RatioRectConstraintType ratioRectConstraintType
+			RectTransform referenceRect
 		){
-			if(fixedRectConstraintType == FixedRectConstraintType.None){
-				if(ratioRectConstraintType == RatioRectConstraintType.None)
-					throw new System.InvalidOperationException(
-						"Constraint should be either of Fixed or Ratio"
-					);
-			}else{
-				if(ratioRectConstraintType != RatioRectConstraintType.None)
-					throw new System.InvalidOperationException(
-						"Constraint cannot be both Fixed and Ratio at the same time"
-					);
+			if(
+				constraintType == RectConstraintType.FixedGroupLength ||
+				constraintType == RectConstraintType.FixedElementLength ||
+				constraintType == RectConstraintType.FixedPadding 
+			){
 				if(fixedRectConstraintValueType == FixedRectValueType.ReferenceRect)
 					if(referenceRect == null)
 						throw new System.InvalidOperationException(
@@ -67,6 +57,38 @@ namespace UISystem{
 		void MakeSureCombinationOfConstraintsIsValid(){
 			MakeSureConstraintsDoNotShareSameFixedConstraintType();
 			MakeSureBothAreNotSetToRatioConstraint();
+		}
+		void MakeSureConstraintsDoNotShareSameFixedConstraintType(){
+			bool shared = false;
+			if(firstConstraintType == RectConstraintType.FixedGroupLength)
+				if(secondConstraintType == RectConstraintType.FixedGroupLength)
+					shared = true;
+			if(firstConstraintType == RectConstraintType.FixedElementLength)
+				if(secondConstraintType == RectConstraintType.FixedElementLength)
+					shared = true;
+			if(firstConstraintType == RectConstraintType.FixedPadding)
+				if(secondConstraintType == RectConstraintType.FixedPadding)
+					shared = true;
+			if(shared)
+				throw new System.InvalidOperationException(
+					"same fixedConstraintType is set on both first and second constraint"
+				);
+		}
+		void MakeSureBothAreNotSetToRatioConstraint(){
+			if(
+				firstConstraintType == RectConstraintType.GroupToElementRatio ||
+				firstConstraintType == RectConstraintType.ElementToPaddingRatio ||
+				firstConstraintType == RectConstraintType.GroupToPaddingRatio 
+			){
+				if(
+					secondConstraintType == RectConstraintType.GroupToElementRatio ||
+					secondConstraintType == RectConstraintType.ElementToPaddingRatio ||
+					secondConstraintType == RectConstraintType.GroupToPaddingRatio 
+				)
+					throw new System.InvalidOperationException(
+						"at least one of constraints must be set to fixedRectConstraint"
+					);
+			}
 		}
 
 		protected override IUIElement CreateUIElement(IUIImage image){
@@ -89,7 +111,7 @@ namespace UISystem{
 			IGenericUIElementGroup uie = new GenericUIElementGroup(arg);
 			return uie;
 		}
-		protected override void SetUpUIElementReference(){
+		protected override void SetUpUIElementReferenceImple(){
 			List<IUIElement> groupElements = GetGroupElements();
 			IRectCalculationData rectCalculationData = CreateRectCalculationData(groupElements);
 
@@ -102,15 +124,13 @@ namespace UISystem{
 		protected abstract List<IUIElement> GetGroupElements();
 		IRectCalculationData CreateRectCalculationData(List<IUIElement> groupElements){
 			IRectConstraint firstConstraint = CreateRectConstraint(
-				firstFixedConstraintType,
+				firstConstraintType,
 				firstFixedConstraintReferenceRect,
-				firstRatioConstraintType,
 				firstConstraintValue
 			);
 			IRectConstraint secondConstraint = CreateRectConstraint(
-				secondFixedConstraintType,
+				secondConstraintType,
 				secondFixedConstraintReferenceRect,
-				secondRatioConstraintType,
 				secondConstraintValue
 			);
 			IRectCalculationData data = new RectCalculationData(
@@ -123,13 +143,12 @@ namespace UISystem{
 			return data;		
 		}
 		IRectConstraint CreateRectConstraint(
-			FixedRectConstraintType fixedConstraintType,
+			RectConstraintType constraintType,
 			RectTransform referenceRect,
-			RatioRectConstraintType ratioConstraintType,
 			Vector2 constraintValue
 		){
 			IRectConstraint rectConstraint;
-			if(fixedConstraintType != FixedRectConstraintType.None){
+			if(ConstraintIsFixedType(constraintType)){
 				IFixedRectConstraintValueData fixedConstraintValue;
 				if(firstFixedConstraintValueType == FixedRectValueType.ConstantValue)
 					fixedConstraintValue = new ConstantFixedRectConstraintValueData(
@@ -140,17 +159,71 @@ namespace UISystem{
 						referenceRect.sizeDelta,
 						constraintValue
 					);
-				rectConstraint = new AbsFixedRectConstraint(
-					fixedConstraintType,
-					fixedConstraintValue
-				);
+				switch(constraintType){
+					case RectConstraintType.FixedGroupLength:
+						rectConstraint = new FixedGroupLengthConstraint(
+							fixedConstraintValue
+						);
+						break;
+					case RectConstraintType.FixedElementLength:
+						rectConstraint = new FixedElementLengthConstraint(
+							fixedConstraintValue
+						);
+						break;
+					case RectConstraintType.FixedPadding:
+						rectConstraint = new FixedPaddingConstraint(
+							fixedConstraintValue
+						);
+						break;
+					default: 
+						throw new System.InvalidOperationException(
+							"fixed constraint must be one of the three"
+						);
+				}
 			}else{// first constraint is ratio
-				rectConstraint = new RatioRectConstraint(
-					ratioConstraintType,
-					constraintValue
-				);
+				switch(constraintType){
+					case RectConstraintType.GroupToElementRatio: 
+						rectConstraint = new GroupToElementRatioRectConstraint(
+							constraintValue
+						);
+						break;
+					case RectConstraintType.ElementToPaddingRatio: 
+						rectConstraint = new ElementToPaddingRatioRectConstraint(
+							constraintValue
+						);
+						break;
+					case RectConstraintType.GroupToPaddingRatio: 
+						rectConstraint = new GroupToPaddingRatioRectConstraint(
+							constraintValue
+						);
+						break;
+					default:
+						throw new System.InvalidOperationException(
+							"ratio constraint must be one of three"
+						);
+				}
 			}
 			return rectConstraint;
+		}
+		public enum RectConstraintType{
+			FixedGroupLength,
+			FixedElementLength,
+			FixedPadding,
+
+			GroupToElementRatio,
+			ElementToPaddingRatio,
+			GroupToPaddingRatio
+		}
+		bool ConstraintIsFixedType(RectConstraintType type){
+			return 
+			type == RectConstraintType.FixedGroupLength ||
+			type == RectConstraintType.FixedElementLength ||
+			type == RectConstraintType.FixedPadding
+			;
+		}
+		public enum FixedRectValueType{
+			ConstantValue,
+			ReferenceRect
 		}
 	}
 }

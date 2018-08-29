@@ -6,18 +6,34 @@ namespace UISystem{
 	public interface IMBAdaptor{
 		Transform GetTransform();
 		Rect GetRect();
-		void SetRectLengthOnAxis(float length, int dimension);
+		void SetRectLengthOnAxis(float lengthOnAxis, int dimension);
+		void SetRectLength(Vector2 length);
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);
 		string GetName();
 	}
 
 	public interface IUIAdaptor: IMBAdaptor {
-		void UpdateUIAdaptorHiearchyRecursively();
-		void InitializeUIAdaptorRecursively(IUIAdaptorBaseInitializationData initData);
-		void CreateAndSetUIElementRecursively();
-		void SetUpUIElementReferenceRecursively();
-		void CompleteUIElementReferenceSetUpRecursively();
+		void GetReadyForActivation(
+			IUIAdaptorBaseInitializationData data, 
+			bool recursively
+		);
+		void UpdateUIAdaptorHiearchy(
+			bool recursively
+		);
+		void InitializeUIAdaptor(
+			IUIAdaptorBaseInitializationData initData,
+			bool recursively
+		);
+		void CreateAndSetUIElement(
+			bool recursively
+		);
+		void SetUpUIElementReference(
+			bool recursively
+		);
+		void CompleteUIElementReferenceSetUp(
+			bool recursively
+		);
 
 		IUIElement GetUIElement();
 		IUIElement GetParentUIE();

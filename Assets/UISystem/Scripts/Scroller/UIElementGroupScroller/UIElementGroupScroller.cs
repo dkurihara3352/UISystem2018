@@ -11,19 +11,7 @@ namespace UISystem{
 	public class UIElementGroupScroller : AbsScroller, IUIElementGroupScroller{
 		public UIElementGroupScroller(IUIElementGroupScrollerConstArg arg): base(arg){
 			thisCursorSize = MakeCursorSizeAtLeastOne(arg.cursorSize);
-			/*  elementLength and padding are depending on ScrollerElement,
-				gotta wait until later when 
-					either of...
-						SetUpUIEReference or
-						OnUIEReferenceSetUpComplete // maybe here
-						or, maybe not at all in callbacks
-							gotta wait explicit set calls down from scroller element
-			*/
-			// thisGroupElementLength = arg.groupElementLength;
-			// thisPadding = arg.padding;
 			thisInitiallyCursoredGroupElementIndex = arg.initiallyCursoredGroupElementIndex;
-			/*  these below are fine
-			 */
 			thisStartSearchSpeed = MakeSureStartSearchSpeedIsGreaterThanZero(arg.startSearchSpeed);
 			thisSwipeToSnapNext = arg.swipeToSnapNext;
 			thisActivatesCursoredElementsOnly = arg.activatesCursoredElementsOnly;
@@ -409,8 +397,6 @@ namespace UISystem{
 	
 	public interface IUIElementGroupScrollerConstArg: IScrollerConstArg{
 		int[] cursorSize{get;}
-		Vector2 groupElementLength{get;}
-		Vector2 padding{get;}
 		int initiallyCursoredGroupElementIndex{get;}
 		float startSearchSpeed{get;}
 		bool swipeToSnapNext{get;}
@@ -420,8 +406,6 @@ namespace UISystem{
 		public UIElementGroupScrollerConstArg(
 			int initiallyCursoredElementIndex, 
 			int[] cursorSize, 
-			Vector2 uiElementLength, 
-			Vector2 padding, 
 			float startSearchSpeed, 
 			bool activatesCursoredElementsOnly,
 
@@ -453,8 +437,6 @@ namespace UISystem{
 			activationMode
 		){
 			thisCursorSize = cursorSize;
-			thisElementDimension = uiElementLength;
-			thisPadding = padding;
 			thisInitiallyCursoredElementIndex = initiallyCursoredElementIndex;
 			thisStartSearchSpeed = startSearchSpeed;
 			thisSwipeToSnapNext = swipeToSnapNext;
@@ -462,10 +444,6 @@ namespace UISystem{
 		}
 		readonly int[] thisCursorSize;
 		public int[] cursorSize{get{return thisCursorSize;}}
-		readonly Vector2 thisElementDimension;
-		public Vector2 groupElementLength{get{return thisElementDimension;}}
-		readonly Vector2 thisPadding;
-		public Vector2 padding{get{return thisPadding;}}
 		readonly int thisInitiallyCursoredElementIndex;
 		public int initiallyCursoredGroupElementIndex{get{return thisInitiallyCursoredElementIndex;}}
 		readonly float thisStartSearchSpeed;

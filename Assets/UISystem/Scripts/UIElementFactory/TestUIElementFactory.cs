@@ -45,7 +45,7 @@ namespace UISystem{
 				processFactory, 
 				this
 			);
-			uia.GetReadyForActivation(baseInitializationData);
+			uia.GetReadyForActivation(baseInitializationData, false);
 			return uia.GetUIElement();
 		}
 	}

@@ -9,6 +9,10 @@ namespace UISystem{
 	}
 	[RequireComponent(typeof(Text))]
 	public class DigitPanelAdaptor: AbsResizableRectUIAdaptor<IDigitPanel>, IDigitPanelAdaptor{
+		protected override void Awake(){
+			base.Awake();
+			thisText = this.GetComponent<Text>();
+		}
 		public Vector2 thisPanelDim;
 		public float thisLocalPosY;
 		public void SetInitializationFields(IUIAInitializationData data){
@@ -18,10 +22,6 @@ namespace UISystem{
 				thisLocalPosY = dpaData.localPosY;
 			}else
 				throw new System.ArgumentException("data must be of type IDigitPanelAdaptorInitializationData");
-		}
-		public override void GetReadyForActivation(IUIAdaptorBaseInitializationData passedData){
-			base.GetReadyForActivation(passedData);
-			thisText = this.GetComponent<Text>();
 		}
 		public Text thisText;
 		public void SetImageNumber(int number){

@@ -7,23 +7,19 @@ namespace UISystem{
 	public class UIElementGroupScrollerAdaptor: AbsScrollerAdaptor<IUIElementGroupScroller>, IUIElementGroupScrollerAdaptor{
 		public int initiallyCursoredElementIndex;
 		public int[] cursorSize;
-		public Vector2 groupElementLength;
-		public Vector2 padding;
 		public float startSearchSpeed;
 		public bool swipeToSnapNext;
 		public bool activatesCursoredElementsOnly;
-		protected override void CompleteUIElementReferenceSetUp(){
+		protected override void CompleteUIElementReferenceSetUpImple(){
 			IUIElementGroupScroller scroller = (IUIElementGroupScroller)GetUIElement();
 			scroller.UpdateGroupElementLengthAndPadding();
 			scroller.SetUpScrollerElement();
-			base.CompleteUIElementReferenceSetUp();
+			base.CompleteUIElementReferenceSetUpImple();
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementGroupScrollerConstArg arg = new UIElementGroupScrollerConstArg(
 				initiallyCursoredElementIndex, 
 				cursorSize, 
-				groupElementLength, 
-				padding, 
 				startSearchSpeed, 
 				activatesCursoredElementsOnly,
 

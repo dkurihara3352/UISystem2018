@@ -43,11 +43,11 @@ public class GUIManager : MonoBehaviour {
 				if(GUI.Button(topLeftSubRect_2, "Activate"))
 					thisUIM.ActivateUISystem(false);
 				if(GUI.Button(topLeftSubRect_3, "Deactivate"))
-					testUIManagerAdaptor.DeactivateRootUIElement();
+					thisUIM.DeactivateUISystem(false);
 				if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
 					thisUIM.ActivateUISystem(true);
 				if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
-					testUIManagerAdaptor.DeactivateRootUIElementInstantly();
+					thisUIM.DeactivateUISystem(true);
 				if(GUI.Button(topLeftSubRect_6, "TogglePopUp"))
 					testUIManagerAdaptor.TogglePopUp();
 			}

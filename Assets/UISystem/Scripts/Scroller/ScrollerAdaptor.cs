@@ -24,7 +24,7 @@ namespace UISystem{
 			}
 		}
 
-		protected override void CompleteUIElementReferenceSetUp(){
+		protected override void CompleteUIElementReferenceSetUpImple(){
 			// thisScroller.UpdateGroupElementLengthAndPadding(thisElementLength, thisPadding); this is done is subclass
 			thisScroller.SetUpScrollerElement();
 		}

@@ -49,95 +49,6 @@ public class UIElementGroupScrollerTest {
             new object[]{-10f},
         };
     }
-    [Test, TestCaseSource(typeof(ThisCursorLength_ReturnsCalculatedValue_TestCase), "cases")]
-    public void ThisCursorLength_CursorLengthUndersizedToScrollerLength_ReturnsCalculatedValue(int[] cursorSize, Vector2 uiElementLength, Vector2 padding, Vector2 expected){
-
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-
-        Vector2 relativeCursorPosition = new Vector2(.5f, .5f);
-        float uiElementGroupLengthX = (cursorSize[0] * 2) * (uiElementLength[0] + padding[0]) + padding[0];
-        float uiElementGroupLengthY = (cursorSize[1] * 2) * (uiElementLength[1] + padding[1]) + padding[1];
-        Rect uiElementGroupRect = new Rect(Vector2.zero, new Vector2(uiElementGroupLengthX, uiElementGroupLengthY));
-        Rect scrollerRect = new Rect(Vector2.zero, uiElementGroupRect.size * 1.2f);
-        arg.relativeCursorPosition.Returns(relativeCursorPosition);
-        arg.uia.GetRect().Returns(scrollerRect);
-        arg.groupElementLength.Returns(uiElementLength);
-        arg.padding.Returns(padding);
-        arg.cursorSize.Returns(cursorSize);
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        scroller.SetUpScrollerElement();
-
-        Vector2 actual = scroller.thisCursorLength_Test;
-
-        Assert.That(actual, Is.EqualTo(expected));
-    }
-    [Test, TestCaseSource(typeof(ThisCursorLength_ReturnsCalculatedValue_TestCase), "cases")]
-    public void ThisCursorLength_CursorLengthOversizedToScrollerLength_ThrowsException(
-        int[] cursorSize, 
-        Vector2 uiElementLength, 
-        Vector2 padding, 
-        Vector2 expected
-    ){
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        Vector2 relativeCursorPosition = new Vector2(.5f, .5f);
-        float uiElementGroupLengthX = (cursorSize[0] * 2) * (uiElementLength[0] + padding[0]) + padding[0];
-        float uiElementGroupLengthY = (cursorSize[1] * 2) * (uiElementLength[1] + padding[1]) + padding[1];
-        Rect uiElementGroupRect = new Rect(Vector2.zero, new Vector2(uiElementGroupLengthX, uiElementGroupLengthY));
-        Rect scrollerRect = new Rect(Vector2.zero, new Vector2(119f, 69f));
-        arg.groupElementLength.Returns(uiElementLength);
-        arg.padding.Returns(padding);
-        arg.cursorSize.Returns(cursorSize);
-        arg.relativeCursorPosition.Returns(relativeCursorPosition);
-        arg.uia.GetRect().Returns(scrollerRect);
-        // TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        
-        Assert.Throws(
-            Is.TypeOf(typeof(System.InvalidOperationException)).And.Message.EqualTo("cursorLength cannot exceed this rect length. provide lesser cursor size"), 
-            () => {
-                // scroller.ActivateImple();
-                new TestUIElementGroupScroller(arg);
-            }
-        );
-
-    }
-    public class ThisCursorLength_ReturnsCalculatedValue_TestCase{
-        public static object[] cases = {
-            new object[]{new int[]{1, 1}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 70f)},
-            new object[]{new int[]{2, 2}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(230f, 130f)},
-            new object[]{new int[]{1, 3}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(120f, 190f)},
-            new object[]{new int[]{5, 5}, new Vector2(100f, 50f), new Vector2(10f, 10f), new Vector2(560f, 310f)},
-        };
-    }
-    [Test, TestCaseSource(typeof(GetUIElementNormalizedCursoredPositionOnAxis_TestCase), "cases")]
-    public void GetUIElementNormalizedCursoredPositionOnAxis_Various(Vector2 elementLength, Vector2 padding, int[] arraySize, Vector2 elementLocalPos, Vector2 expected){
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        arg.groupElementLength.Returns(elementLength);
-        arg.padding.Returns(padding);
-        IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
-            IUIElementGroupScrollerAdaptor uieGroupAdaptor = Substitute.For<IUIElementGroupScrollerAdaptor>();
-                float uieGroupRectLengthX = (elementLength.x + padding.x) * arraySize[0] + padding.x;
-                float uieGroupRectLengthY = (elementLength.y + padding.y) * arraySize[1] + padding.y;
-                Vector2 uieGroupRectLength = new Vector2(uieGroupRectLengthX, uieGroupRectLengthY);
-                Rect uieGroupRect = new Rect(Vector2.zero, uieGroupRectLength);
-            uieGroupAdaptor.GetRect().Returns(uieGroupRect);
-        uieGroup.GetUIAdaptor().Returns(uieGroupAdaptor);
-        uieGroup.GetGroupElementArrayIndex(Arg.Any<IUIElement>()).Returns(new int[]{0, 0});
-        List<IUIElement> children = new List<IUIElement>(new IUIElement[]{uieGroup});
-        arg.uia.GetChildUIEs().Returns(children);
-        IUIElement element = Substitute.For<IUIElement>();
-        arg.cursorSize.Returns(new int[]{1, 1});
-        arg.relativeCursorPosition.Returns(Vector2.zero);
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        element.GetLocalPosition().Returns(elementLocalPos);
-        // scroller.ActivateImple();
-        scroller.SetUpScrollerElement();
-
-        for(int i = 0; i < 2; i ++){
-            float actual = scroller.GetNormalizedCursoredPositionFromGroupElementToCursor_Test(element, i);
-            
-            Assert.That(actual, Is.EqualTo(expected[i]));
-        }
-    }
     public class GetUIElementNormalizedCursoredPositionOnAxis_TestCase{
         public static object[] cases = {
             new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(10f, 10f), new Vector2(0f, 0f)},
@@ -147,59 +58,7 @@ public class UIElementGroupScrollerTest {
             new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(65f, 40f), new Vector2(.5f, .5f)},
         };
     }
-    [Test, TestCaseSource(typeof(GetGroupElementOffset_TestCase), "cases")]
-    public void GetGroupElementOffset_Various(Vector2 elementLength, Vector2 padding, int[] arraySize, Vector2 uieGroupLocalPos, Vector2 expected){
-        IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
-        arg.groupElementLength.Returns(elementLength);
-        arg.padding.Returns(padding);
-        IUIElementGroup uieGroup = Substitute.For<IUIElementGroup>();
-            IUIElementGroupScrollerAdaptor uieGroupAdaptor = Substitute.For<IUIElementGroupScrollerAdaptor>();
-                float uieGroupRectLengthX = (elementLength.x + padding.x) * arraySize[0] + padding.x;
-                float uieGroupRectLengthY = (elementLength.y + padding.y) * arraySize[1] + padding.y;
-                Vector2 uieGroupRectLength = new Vector2(uieGroupRectLengthX, uieGroupRectLengthY);
-                Rect uieGroupRect = new Rect(Vector2.zero, uieGroupRectLength);
-            uieGroupAdaptor.GetRect().Returns(uieGroupRect);
-        uieGroup.GetUIAdaptor().Returns(uieGroupAdaptor);
-        uieGroup.GetLocalPosition().Returns(uieGroupLocalPos);
-        uieGroup.GetGroupElementArrayIndex(Arg.Any<IUIElement>()).Returns(new int[]{0, 0});
-        List<IUIElement> children = new List<IUIElement>(new IUIElement[]{uieGroup});
-        arg.uia.GetChildUIEs().Returns(children);
-        arg.cursorSize.Returns(new int[]{1, 1});
-        arg.relativeCursorPosition.Returns(Vector2.zero);
-        TestUIElementGroupScroller scroller = new TestUIElementGroupScroller(arg);
-        IUIElement mock = Substitute.For<IUIElement>();
-        uieGroup.GetGroupElement(Arg.Any<int>(), Arg.Any<int>()).Returns(mock);
-        uieGroup.GetGroupElementIndex(mock).Returns(arg.initiallyCursoredGroupElementIndex);
-        scroller.SetUpScrollerElement();
 
-        for(int i = 0; i < 2; i ++){
-            float actual = scroller.GetElementGroupOffset_Test(i);
-            
-            Assert.That(actual, Is.EqualTo(expected[i]));
-        }
-    }
-    public class GetGroupElementOffset_TestCase{
-        public static object[] cases = {
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, 0f), new Vector2(0f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(-27.5f, 0f), new Vector2(.25f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(-55f, 0f), new Vector2(.5f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(-82.5f, 0f), new Vector2(.75f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(-110f, 0f), new Vector2(0f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(27.5f, 0f), new Vector2(.75f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(55f, 0f), new Vector2(.5f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(82.5f, 0f), new Vector2(.25f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(110f, 0f), new Vector2(0f, 0f)},
-            
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, -15f), new Vector2(0f, .25f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, -30f), new Vector2(0f, .5f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, -45f), new Vector2(0f, .75f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, -60f), new Vector2(0f, 0f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, 15f), new Vector2(0f, .75f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, 30f), new Vector2(0f, .5f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, 45f), new Vector2(0f, .25f)},
-            new object[]{new Vector2(100f, 50f), new Vector2(10f, 10f), new int[]{2, 2}, new Vector2(0f, 60f), new Vector2(0f, 0f)},
-        };
-    }
     [Test, TestCaseSource(typeof(SortOutCursoredElements_TestCase), "cases")]
     public void SortOutCursoredElements_Various(int[] currentCursoredElementsIndex, int[] newCursoredElementsIndex, int[] expectedElementsToDefocusIndex, int[] expectedElementsToFocusIndex){
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg();
@@ -271,8 +130,6 @@ public class UIElementGroupScrollerTest {
     public IUIElementGroupScrollerConstArg CreateMockConstArg(
         int initiallyCursoredElementIndex,
         int[] cursorSize,
-        Vector2 groupElementLength,
-        Vector2 padding,
         Vector2 relativeCursorPosition,
         ScrollerAxis scrollerAxis,
         Vector2 rubberBandLimitMultiplier,
@@ -282,8 +139,6 @@ public class UIElementGroupScrollerTest {
         IUIElementGroupScrollerConstArg arg = Substitute.For<IUIElementGroupScrollerConstArg>();
         arg.initiallyCursoredGroupElementIndex.Returns(initiallyCursoredElementIndex);
         arg.cursorSize.Returns(cursorSize);
-        arg.groupElementLength.Returns(groupElementLength);
-        arg.padding.Returns(padding);
         arg.startSearchSpeed.Returns(1f);
         arg.relativeCursorPosition.Returns(relativeCursorPosition);
         arg.scrollerAxis.Returns(scrollerAxis);
@@ -309,8 +164,6 @@ public class UIElementGroupScrollerTest {
         IUIElementGroupScrollerConstArg arg = CreateMockConstArg(
             initiallyCursoredElementIndex: 0,
             cursorSize: new int[]{1, 1},
-            groupElementLength: new Vector2(50f, 50f),
-            padding: new Vector2(10f, 10f),
             relativeCursorPosition: new Vector2(0f, 0f),
             scrollerAxis: ScrollerAxis.Both,
             rubberBandLimitMultiplier: new Vector2(.1f, .1f),
