@@ -4,22 +4,20 @@ using UnityEngine;
 using DKUtility;
 using UnityEngine.UI;
 namespace UISystem{
+	public interface IColoChangeButton: IUIElement{
+		void SetTargetUIElement(IUIElement targetUIElement);
+	}
 	public class ColorChangeButton : GenericUIElement {
 
 		public ColorChangeButton(IColorChangeButtonConstArg arg): base(arg){
-			thisTargetUIAdaptor = arg.targetUIAdaptor;
 			thisTargetColor = arg.targetColor;
 			thisTargetText = arg.targetText;
 		}
-		readonly IUIAdaptor thisTargetUIAdaptor;
 		IUIElement thisTargetUIElement;
-		readonly Text thisTargetText;
-		protected override void OnUIReferenceSet(){
-			/* To SetUpUIEReference
-			 */
-			base.OnUIReferenceSet();
-			thisTargetUIElement = thisTargetUIAdaptor.GetUIElement();
+		public void SetTargetUIElement(IUIElement targetUIElement){
+			thisTargetUIElement = targetUIElement;
 		}
+		readonly Text thisTargetText;
 		
 		Color thisTargetUIEDefaultColor{
 			get{

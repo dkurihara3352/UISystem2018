@@ -16,16 +16,6 @@ namespace UISystem.PickUpUISystem{
 			}
 		}
 		IEquippableUIItem thisEqpItem;
-		public override void GetReadyForActivation(IUIAdaptorBaseInitializationData passedArg){
-			if(passedArg is IEquipToolActivationData){
-				IEquipToolActivationData eqpToolUIAArg = passedArg as IEquipToolActivationData;
-				thisEqpIITAM = eqpToolUIAArg.eqpIITAM;
-				thisEqpTool = eqpToolUIAArg.eqpTool;
-				thisEqpToolUIEFactory = eqpToolUIAArg.eqpToolUIEFactory;
-				base.GetReadyForActivation(passedArg);
-			}else
-				throw new System.ArgumentException("passedArg must be of type IEquipToolUIAActivationArg");
-		}
 		IEquippableIITAManager thisEqpIITAM;/* not used? */
 		IEquipTool thisEqpTool;/* not used? */
 		IEquipToolUIEFactory thisEqpToolUIEFactory;

@@ -23,5 +23,11 @@ namespace UISystem{
 			ColorChangeButton button = new ColorChangeButton(arg);
 			return button;
 		}
+		protected override void SetUpUIElementReferenceImple(){
+			base.SetUpUIElementReferenceImple();
+			IColoChangeButton button = (IColoChangeButton)GetUIElement();
+			IUIElement targetUIElement = targetUIElementAdaptor.GetUIElement();
+			button.SetTargetUIElement(targetUIElement);
+		}
 	}
 }
