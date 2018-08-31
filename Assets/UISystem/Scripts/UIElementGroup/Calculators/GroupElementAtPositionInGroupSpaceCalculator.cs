@@ -25,7 +25,7 @@ namespace UISystem{
 		readonly Vector2 thisPadding;
 		readonly Vector2 thisGroupRectLength;
 		readonly string thisName;
-		float marginOfError = .1f;
+		float marginOfError = .01f;
 		int[] thisGridCounts{
 			get{
 				return new int[]{

@@ -13,6 +13,7 @@ namespace UISystem{
 		bool IsMovingWithSpeedOverNewScrollThreshold();
 		void UpdateVelocity(float velocityOnAxis, int dimension);
 
+		IUIElement GetScrollerElement();
 		void SetUpScrollerElement();
 		void SetUpCursorTransform();
 		bool ScrollerElementIsUndersizedTo(Vector2 referenceLength, int dimension);
@@ -121,6 +122,9 @@ namespace UISystem{
 				);
 			}
 			protected IUIElement thisScrollerElement;
+			public IUIElement GetScrollerElement(){
+				return thisScrollerElement;
+			}
 			protected void SetTheOnlyChildAsScrollerElement(){
 				List<IUIElement> childUIEs = GetChildUIEs();
 				if(childUIEs == null)
@@ -180,17 +184,6 @@ namespace UISystem{
 						localPos = thisRelativeCursorPosition[i] * diffL;
 					result[i] = localPos;
 				}
-
-
-				Debug.Log(
-					GetName() +
-					"'s scrollerRectLength: " + 
-					scrollerRectLengthV2.ToString() +
-					", cursorLength: "  +
-					cursorLengthV2.ToString() +
-					", diff: " + 
-					diffLV2.ToString()
-				);
 				return result;
 			}
 			/*  */

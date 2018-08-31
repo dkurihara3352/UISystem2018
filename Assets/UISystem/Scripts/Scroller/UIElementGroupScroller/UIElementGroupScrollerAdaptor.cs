@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace UISystem{
-	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{}
+	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{
+		int[] GetCursorSize();
+	}
 	public class UIElementGroupScrollerAdaptor: AbsScrollerAdaptor<IUIElementGroupScroller>, IUIElementGroupScrollerAdaptor{
 		public int initiallyCursoredElementIndex = 0;
 		public int[] cursorSize = new int[2]{1, 1};
+		public int[] GetCursorSize(){
+			return cursorSize;
+		}
 		public float startSearchSpeed = 200f;
 		public bool swipeToSnapNext = false;
 		public bool activatesCursoredElementsOnly = false;

@@ -68,16 +68,23 @@ namespace UISystem{
 			public int GetGroupElementIndex(IUIElement groupElement){
 				return thisUIElementGroup.GetGroupElementIndex(groupElement);
 			}
-
+			float marginOfError = .01f;
 			protected override bool[] thisShouldApplyRubberBand{get{return new bool[2]{true, true};}}
 			protected override Vector2 CalcCursorLength(){
 				float cursorWidth = thisCursorSize[0] * (thisGroupElementLength.x + thisPadding.x) + thisPadding.x;
 				float cursorHeight = thisCursorSize[1] * (thisGroupElementLength.y + thisPadding.y) + thisPadding.y;
 				Vector2 newCursorLength = new Vector2(cursorWidth, cursorHeight);
-				if(newCursorLength[0] <= thisRectLength[0] && newCursorLength[1] <= thisRectLength[1])
+				if(newCursorLength[0] <= thisRectLength[0] + marginOfError && newCursorLength[1] <= thisRectLength[1] + marginOfError)
 					return newCursorLength;
-				else
+				else{
+					Debug.Log(
+						"cursorLengh: " +
+						newCursorLength.ToString() +
+						", rectLength: " +
+						thisRectLength.ToString()
+					);
 					throw new System.InvalidOperationException("cursorLength cannot exceed this rect length. provide lesser cursor size");
+				}
 			}
 			public override void SetScrollerElementLocalPosOnAxis(float localPosOnAxis, int dimension){
 				base.SetScrollerElementLocalPosOnAxis(localPosOnAxis, dimension);

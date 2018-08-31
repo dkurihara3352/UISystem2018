@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IRectConstraint{
-		void SetRectCalculationData(IRectCalculationData data);
+		void SetRectCalculationData(ITwoConstraintsRectCalculationData data);
 		Vector2 CalcElementLengthFromFixedGroupLength();
 		Vector2 CalcPaddingFromFixedGroupLength();
 		Vector2 CalcGroupLengthFromFixedElementLength();
@@ -14,7 +14,7 @@ namespace UISystem{
 	}
 	public abstract class AbsRectConstraint: IRectConstraint{
 
-		public void SetRectCalculationData(IRectCalculationData data){
+		public void SetRectCalculationData(ITwoConstraintsRectCalculationData data){
 			thisRectCalculationData = data;
 		}
 		protected abstract Vector2 thisValue{get;}
@@ -29,7 +29,7 @@ namespace UISystem{
 				1f/ source.y
 			);
 		}
-		protected IRectCalculationData thisRectCalculationData;
+		protected ITwoConstraintsRectCalculationData thisRectCalculationData;
 		protected Vector2 thisGroupLength{
 			get{
 				return thisRectCalculationData.groupLength;

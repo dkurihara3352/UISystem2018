@@ -95,7 +95,7 @@ namespace UISystem{
 				thisParentUIAdaptor = CalcParentUIAdaptor();
 				thisChildUIAdaptors = CalcChildUIAdaptors();
 			}
-			IUIAdaptor thisParentUIAdaptor;
+			protected IUIAdaptor thisParentUIAdaptor;
 			IUIAdaptor CalcParentUIAdaptor(){
 				Transform parent = this.transform.parent;
 				if(parent != null){
@@ -215,7 +215,7 @@ namespace UISystem{
 				imageRectTrans.pivot = new Vector2(0f, 0f);
 				imageRectTrans.anchorMin = new Vector2(0f, 0f);
 				imageRectTrans.anchorMax = new Vector2(1f, 1f);
-				imageRectTrans.sizeDelta = Vector2.one;
+				imageRectTrans.sizeDelta = Vector2.zero;
 				imageRectTrans.anchoredPosition = Vector3.zero;
 				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultBrightness, thisImageDarkenedBrightness, thisDomainInitializationData.processFactory);
 				return uiImage;

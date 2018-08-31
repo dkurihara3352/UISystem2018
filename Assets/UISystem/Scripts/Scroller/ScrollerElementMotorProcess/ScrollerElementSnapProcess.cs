@@ -28,8 +28,7 @@ namespace UISystem{
 		}
 		readonly float thisTargetElementLocalPositionOnAxis;
 		readonly IRealTimeCriticallyDampedSpringCalculator thisSpringCalculator;
-		protected readonly float thisDiffThreshold;
-		const float thisMinDiffThreshold = 1f;
+		protected readonly float thisDiffThreshold = 1f;
 		
 		float prevLocalPosOnAxis;
 		float thisElapsedTime = 0f;

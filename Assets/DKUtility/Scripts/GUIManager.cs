@@ -13,13 +13,13 @@ public class GUIManager : MonoBehaviour {
 			topLeftSubRect_5 = GetSubRect(topLeftRect, 5, 8);
 			topLeftSubRect_6 = GetSubRect(topLeftRect, 6, 8);
 			topLeftSubRect_7 = GetSubRect(topLeftRect, 7, 8);
-		Rect topRight = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.25f, .65f));
+		Rect topRight = CreateGUIRect(new Vector2(1f, 0f), new Vector2(.25f, .3f));
 			topRightSub_0 = GetSubRect(topRight, 0, 6);
 			topRightSub_1 = GetSubRect(topRight, 1, 6);
 			topRightSub_2 = GetSubRect(topRight, 2, 6);
 			topRightSub_3 = GetSubRect(topRight, 3, 6);
 			topRightSub_4 = GetSubRect(topRight, 4, 6);
-			topRightSub_4 = GetSubRect(topRight, 5, 6);
+			topRightSub_5 = GetSubRect(topRight, 5, 6);
 		
 	}
 	Rect topLeftRect;
@@ -37,27 +37,10 @@ public class GUIManager : MonoBehaviour {
 	void OnGUI(){
 		if(thisGUIIsEnabled){
 			if(topLeftIsEnabled){
-				GUI.Label(topLeftSubRect_0, "Activation");
-				if(GUI.Button(topLeftSubRect_1, "GetReadyForA"))
-					thisUIM.GetReadyForUISystemActivation();
-				if(GUI.Button(topLeftSubRect_2, "Activate"))
-					thisUIM.ActivateUISystem(false);
-				if(GUI.Button(topLeftSubRect_3, "Deactivate"))
-					thisUIM.DeactivateUISystem(false);
-				if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
-					thisUIM.ActivateUISystem(true);
-				if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
-					thisUIM.DeactivateUISystem(true);
-				if(GUI.Button(topLeftSubRect_6, "TogglePopUp"))
-					testUIManagerAdaptor.TogglePopUp();
+				DrawTopLeft();
 			}
 			if(topRightIsEnabled){
-				GUI.Label(topRightSub_0, GetInputHandlingScrollerString());
-				GUI.Label(topRightSub_1, GetEventHandledString());
-				GUI.Label(topRightSub_2, GetCursoredElementsText());
-				GUI.Label(topRightSub_3, GetTopMostScrollerInMotionString());
-				GUI.Label(topRightSub_4, GetHandlingScrollerVelocityString());
-				GUI.Label(topRightSub_5, GetScrollerProximateParentScrollerString());
+				DrawTopRight();
 			}
 
 		}
@@ -105,6 +88,27 @@ public class GUIManager : MonoBehaviour {
 			result = "uie is not evaluated yet";
 		}
 		return result;
+	}
+	string GetCursorOffsetString(){
+		IUIElementGroupScroller uieGroupScroller = (IUIElementGroupScroller)uieGroupScrollerAdaptor.GetUIElement();
+		if(uieGroupScroller != null){
+			IUIElement scrollerElement = uieGroupScroller.GetScrollerElement() ;
+			Vector2 offset = new Vector2();
+			for(int i = 0; i < 2; i++){
+				float cursorOffset = uieGroupScroller.GetElementCursorOffsetInPixel(
+					scrollerElement.GetLocalPosition()[i],
+					i
+				);
+				offset[i] = cursorOffset;
+			}
+			string result = "Cursored Offset: ( " +
+				offset.x +
+				", " +
+				offset.y +
+				" )";
+			return result;
+		}
+		return "";
 	}
 	string GetHandlingScrollerVelocityString(){
 		if(thisUIM != null){
@@ -171,5 +175,47 @@ public class GUIManager : MonoBehaviour {
 				result += topMost.GetUIAdaptor().GetName();
 		}
 		return result;
+	}
+	void DrawTopLeft(){
+		GUI.Label(topLeftSubRect_0, "Activation");
+		if(GUI.Button(topLeftSubRect_1, "GetReadyForA"))
+			thisUIM.GetReadyForUISystemActivation();
+		if(GUI.Button(topLeftSubRect_2, "Activate"))
+			thisUIM.ActivateUISystem(false);
+		if(GUI.Button(topLeftSubRect_3, "Deactivate"))
+			thisUIM.DeactivateUISystem(false);
+		if(GUI.Button(topLeftSubRect_4, "ActivateInst"))
+			thisUIM.ActivateUISystem(true);
+		if(GUI.Button(topLeftSubRect_5, "DeactivateInst"))
+			thisUIM.DeactivateUISystem(true);
+		if(GUI.Button(topLeftSubRect_6, "TogglePopUp"))
+			testUIManagerAdaptor.TogglePopUp();
+	}
+	void DrawTopRight(){
+		GUI.Label(
+			topRightSub_0, 
+			GetInputHandlingScrollerString()
+		);
+		GUI.Label(
+			topRightSub_1, 
+		 	GetEventHandledString()
+		);
+		GUI.Label(
+			topRightSub_2, 
+			GetCursoredElementsText()
+		);
+		GUI.Label(
+			topRightSub_3, 
+			// GetTopMostScrollerInMotionString()
+			GetCursorOffsetString()
+		);
+		GUI.Label(
+			topRightSub_4, 
+			GetHandlingScrollerVelocityString()
+		);
+		GUI.Label(
+			topRightSub_5, 
+			GetScrollerProximateParentScrollerString()
+		);
 	}
 }

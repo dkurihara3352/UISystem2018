@@ -47,7 +47,7 @@ namespace UISystem{
 			imageRT.anchorMin = Vector2.zero;
 			imageRT.anchorMax = Vector2.one;
 			imageRT.anchoredPosition = new Vector2(0f, 0f);
-			imageRT.sizeDelta = Vector2.one;
+			imageRT.sizeDelta = Vector2.zero;
 			Image thisImage = CreateImage(imageGO);
 			image = thisImage;
 			return imageRT;
@@ -66,7 +66,7 @@ namespace UISystem{
 			textRT.anchorMin = Vector2.zero;
 			textRT.anchorMax = Vector2.one;
 			textRT.anchoredPosition = new Vector2(0f, 0f);
-			textRT.sizeDelta = Vector2.one;
+			textRT.sizeDelta = Vector2.zero;
 			Text thisText = CreateIndexText(thisIndexForText, textGO);
 			text = thisText;
 			return textRT;
