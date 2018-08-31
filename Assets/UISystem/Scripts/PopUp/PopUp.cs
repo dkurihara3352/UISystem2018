@@ -17,6 +17,7 @@ namespace UISystem{
 		bool IsHidden();
 		bool IsShown();
 		bool IsAncestorOf(IPopUp other);
+		void SetUpPopUpHierarchy();
 	}
 	public enum PopUpMode{
 		Alpha,
@@ -36,13 +37,6 @@ namespace UISystem{
 			if(arg.popUpMode == PopUpMode.Alpha)
 				this.GetUIAdaptor().SetUpCanvasGroupComponent();
 			((IPopUpAdaptor)GetUIAdaptor()).ToggleRaycastBlock(false);
-
-			/* there must be moved to setup ref */
-			thisProximateParentPopUp = FindProximateParentPopUp();
-
-			if(thisProximateParentPopUp != null)
-				thisProximateParentPopUp.RegisterProximateChildPopUp(this);
-			thisProximateChildPopUps = new List<IPopUp>();
 		}
 		readonly IPopUpManager thisPopUpManager;
 		public bool HidesOnTappingOthers(){
@@ -66,6 +60,13 @@ namespace UISystem{
 		public virtual void OnHideBegin(){}
 		public virtual void OnShowComplete(){}
 		public virtual void OnHideComplete(){}
+		public void SetUpPopUpHierarchy(){
+			thisProximateParentPopUp = FindProximateParentPopUp();
+
+			if(thisProximateParentPopUp != null)
+				thisProximateParentPopUp.RegisterProximateChildPopUp(this);
+			thisProximateChildPopUps = new List<IPopUp>();
+		}
 		protected virtual IPopUp FindProximateParentPopUp(){
 			return FindProximateParentTypedUIElement<IPopUp>();
 		}

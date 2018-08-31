@@ -6,7 +6,6 @@ namespace UISystem{
 	public interface IMBAdaptor{
 		Transform GetTransform();
 		Rect GetRect();
-		void SetRectLengthOnAxis(float lengthOnAxis, int dimension);
 		void SetRectLength(Vector2 length);
 		Vector2 GetLocalPosition();
 		void SetLocalPosition(Vector2 localPos);

@@ -153,7 +153,6 @@
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Caculators\CorrectedCursoredElementIndexCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Caculators\ElementGroupOffsetCalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\Caculators\SwipeNextTargetGroupElementArrayIndexCalculator.cs" />
-     <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\GenericElementGroupScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScroller.cs" />
      <Compile Include="Assets\UISystem\Scripts\Scroller\UIElementGroupScroller\UIElementGroupScrollerAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\SelectabilityState\SelectabilityState.cs" />
@@ -179,8 +178,6 @@
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationState.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIEActivationStateHandling\UIEActivationStateEngine.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\EquippableUIE.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElement.cs" />
-     <Compile Include="Assets\UISystem\Scripts\UIElement\GenericUIElement\GenericUIElementAdaptor.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ProximateParentTypedUIECalculator\ProximateParentTypedUIECalculator.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\ResizableUIE.cs" />
      <Compile Include="Assets\UISystem\Scripts\UIElement\UIElement.cs" />

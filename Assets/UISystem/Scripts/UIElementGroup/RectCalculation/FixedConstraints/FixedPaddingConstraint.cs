@@ -22,19 +22,19 @@ namespace UISystem{
 			);
 		}
 		public override Vector2 CalcElementLengthFromFixedGroupLength(){
-			thisRectCalculationData.SetPadding(
+			return CalcElementLengthFromFixedGroupLengthAndPadding(
+				thisGroupLength,
 				thisValue
 			);
-			return CalcElementLengthFromFixedGroupLengthAndPadding();
 		}
 		public override Vector2 CalcPaddingFromFixedGroupLength(){
 			return thisValue;
 		}
 		public override Vector2 CalcGroupLengthFromFixedElementLength(){
-			thisRectCalculationData.SetPadding(
+			return CalcGroupLengthFromFixedElementLengthAndPadding(
+				thisElementLength,
 				thisValue
 			);
-			return CalcGroupLengthFromFixedElementLengthAndPadding();
 		}
 		public override Vector2 CalcPaddingFromFixedElementLength(){
 			return thisValue;

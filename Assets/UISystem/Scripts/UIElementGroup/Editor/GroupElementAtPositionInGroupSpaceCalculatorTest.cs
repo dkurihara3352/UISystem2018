@@ -13,7 +13,13 @@ public class GroupElementAtPositionInGroupSpaceCalculatorTest {
 	public void Calculate_Various(int[] expectedArrayIndex){
 
 		IUIElement[,] elementsArray = CreateElementsArray();
-		IGroupElementAtPositionInGroupSpaceCalculator calculator = new GroupElementAtPositionInGroupSpaceCalculator(elementsArray, thisElementLength, thisPadding, thisGroupRectLength);
+		IGroupElementAtPositionInGroupSpaceCalculator calculator = new GroupElementAtPositionInGroupSpaceCalculator(
+			elementsArray, 
+			thisElementLength, 
+			thisPadding, 
+			thisGroupRectLength,
+			"some name"
+		);
 
 		Vector2 minPos = new Vector2(
 			expectedArrayIndex[0] * (thisPadding.x + thisElementLength.x) + thisPadding.x,

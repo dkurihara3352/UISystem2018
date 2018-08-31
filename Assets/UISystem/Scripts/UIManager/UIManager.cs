@@ -21,8 +21,8 @@ namespace UISystem{
 		void GetReadyForUISystemActivation();
 		void ActivateUISystem(bool instantly);
 		void DeactivateUISystem(bool instantly);
-		float GetUIImageDarknedDarkness();
-		float GetUIImageDefaultDarkness();
+		float GetUIImageDarknedBrightness();
+		float GetUIImageDefaultBrightness();
 	}
 	public class UIManager: IUIManager {
 		public UIManager(
@@ -31,16 +31,17 @@ namespace UISystem{
 			RectTransform uieReserveTrans, 
 			bool showsInputability,
 
-			float imageDarkenedDarkness,
-			float imageDefaultDarkness
+			float imageDarkenedBrightness,
+			float imageDefaultBrightness
 		){
 			thisProcessManager = processManager;
 			thisRootUIAdaptor = rootUIAdaptor;
 			thisUIEReserveTrans = uieReserveTrans;
 			thisShowsInputability = showsInputability;
 
-			thisImageDarknedDarkness = imageDarkenedDarkness;
-			thisImageDefaultDarkness = imageDefaultDarkness;
+			thisImageDarknedBrightness = imageDarkenedBrightness;
+			thisImageDefaultBrightnes = imageDefaultBrightness;
+			thisPopUpManager = new PopUpManager();
 		}
 		readonly IUIAdaptor thisRootUIAdaptor;
 		public void GetReadyForUISystemActivation(){
@@ -60,7 +61,7 @@ namespace UISystem{
 			);
 
 			thisRootUIElement = thisRootUIAdaptor.GetUIElement();
-			thisPopUpManager = new PopUpManager(thisRootUIElement);
+			thisPopUpManager.SetRootUIElement(thisRootUIElement);
 		}
 		public void ActivateUISystem(bool instantly){
 			thisRootUIElement.ActivateRecursively(instantly);
@@ -113,13 +114,13 @@ namespace UISystem{
 			thisRegisteredID = touchID;
 		}
 		/*  */
-		readonly float thisImageDarknedDarkness;
-		public float GetUIImageDarknedDarkness(){
-			return thisImageDarknedDarkness;
+		readonly float thisImageDarknedBrightness;
+		public float GetUIImageDarknedBrightness(){
+			return thisImageDarknedBrightness;
 		}
-		readonly float thisImageDefaultDarkness;
-		public float GetUIImageDefaultDarkness(){
-			return thisImageDefaultDarkness;
+		readonly float thisImageDefaultBrightnes;
+		public float GetUIImageDefaultBrightness(){
+			return thisImageDefaultBrightnes;
 		}
 
 

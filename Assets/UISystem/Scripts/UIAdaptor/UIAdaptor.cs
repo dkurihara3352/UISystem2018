@@ -87,7 +87,8 @@ namespace UISystem{
 					}
 				else{
 					IUIAdaptor parentUIA = thisParentUIAdaptor;
-					parentUIA.UpdateUIAdaptorHiearchy(false);
+					if(parentUIA != null)
+						parentUIA.UpdateUIAdaptorHiearchy(false);
 				}
 			}
 			void UpdateUIAdaptorHiearchyImple(){
@@ -123,7 +124,7 @@ namespace UISystem{
 				Initialize();
 				if(recursively)
 					foreach(IUIAdaptor childUIA in thisChildUIAdaptors){
-						InitializeUIAdaptor(
+						childUIA.InitializeUIAdaptor(
 							thisDomainInitializationData,
 							true
 						);
@@ -147,16 +148,9 @@ namespace UISystem{
 			protected IUIManager thisUIManager{get{return thisDomainInitializationData.uim;}}
 			protected IUISystemProcessFactory thisProcessFactory{get{return thisDomainInitializationData.processFactory;}}
 			void Initialize(){
-				IUIAdaptorInputStateEngineConstArg arg = new UIAdaptorInputStateEngineConstArg(
-					thisUIManager,
-					this, 
-					thisProcessFactory
-				);
-				thisInputStateEngine = new UIAdaptorInputStateEngine(arg);
-
 				this.enabled = true;
-				thisImageDarkenedDarkness = thisUIManager.GetUIImageDarknedDarkness();
-				thisImageDefaultDarkness = thisUIManager.GetUIImageDefaultDarkness();
+				thisImageDarkenedBrightness = thisUIManager.GetUIImageDarknedBrightness();
+				thisImageDefaultBrightness = thisUIManager.GetUIImageDefaultBrightness();
 			}
 		/* CreateAndSetUIElement */
 			public void CreateAndSetUIElement(
@@ -172,14 +166,24 @@ namespace UISystem{
 				thisUIElement = CreateUIElement(image);
 			}
 			protected virtual IUIElement CreateUIElement(IUIImage image){
-				return null;
+				IUIElementConstArg arg = new UIElementConstArg(
+					thisDomainInitializationData.uim,
+					thisDomainInitializationData.processFactory,
+					thisDomainInitializationData.uiElementFactory,
+					this,
+					image,
+					activationMode
+				);
+				return new UIElement(arg);
 			}
 			IUIElement thisUIElement;
 			public IUIElement GetUIElement(){
 				return thisUIElement;
 			}
 			public IUIElement GetParentUIE(){
-				return thisParentUIAdaptor.GetUIElement();
+				if(thisParentUIAdaptor != null)
+					return thisParentUIAdaptor.GetUIElement();
+				return null;
 			}
 			public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
 				IUIAdaptor newParentUIA = newParentUIE.GetUIAdaptor();
@@ -213,7 +217,7 @@ namespace UISystem{
 				imageRectTrans.anchorMax = new Vector2(1f, 1f);
 				imageRectTrans.sizeDelta = Vector2.one;
 				imageRectTrans.anchoredPosition = Vector3.zero;
-				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainInitializationData.processFactory);
+				IUIImage uiImage = new UIImage(image, childWithImage, thisImageDefaultBrightness, thisImageDarkenedBrightness, thisDomainInitializationData.processFactory);
 				return uiImage;
 			}
 			protected Transform GetChildWithImage(out Image image){
@@ -227,8 +231,8 @@ namespace UISystem{
 				}
 				throw new System.InvalidOperationException("there's no child transform with Image component asigned");
 			}
-			public float thisImageDefaultDarkness = .8f;
-			public float thisImageDarkenedDarkness = .5f;
+			public float thisImageDefaultBrightness = .8f;
+			public float thisImageDarkenedBrightness = .5f;
 		/* Setting up UIE reference */
 			public void SetUpUIElementReference(bool recursively){
 				SetUpUIElementReferenceImple();
@@ -236,7 +240,15 @@ namespace UISystem{
 					foreach(IUIAdaptor childUIA in thisChildUIAdaptors)
 						childUIA.SetUpUIElementReference(true);
 			}
-			protected virtual void SetUpUIElementReferenceImple(){}
+			protected virtual void SetUpUIElementReferenceImple(){
+				IUIAdaptorInputStateEngineConstArg arg = new UIAdaptorInputStateEngineConstArg(
+					thisUIManager,
+					thisUIElement,
+					this, 
+					thisProcessFactory
+				);
+				thisInputStateEngine = new UIAdaptorInputStateEngine(arg);
+			}
 		/* Completing UIE reference */
 			public void CompleteUIElementReferenceSetUp(bool recursively){
 				CompleteUIElementReferenceSetUpImple();
@@ -269,27 +281,10 @@ namespace UISystem{
 			public Rect GetRect(){
 				return ((RectTransform)this.GetComponent<RectTransform>()).rect;
 			}
-			public void SetRectLengthOnAxis(float length, int dimension){
-				RectTransform rectTrans = (RectTransform)this.transform;
-				Vector2 sourceSize = rectTrans.sizeDelta;
-				if(dimension == 0)
-					rectTrans.sizeDelta = new Vector2(length, sourceSize.y);
-				else
-					rectTrans.sizeDelta = new Vector2(sourceSize.x, length);
-			}
 			public void SetRectLength(Vector2 length){
 				RectTransform rt = (RectTransform)this.transform;
 				rt.sizeDelta = length;
-			}
-			protected RectTransform[] GetChildRectTransformsWithGraphicComponent(){
-				List<RectTransform> result = new List<RectTransform>();
-				for(int i = 0; i < this.transform.childCount; i ++){
-					Transform child = this.transform.GetChild(i);
-					Graphic graphicComp = child.GetComponent<Graphic>();
-					if(graphicComp != null)
-						result.Add(child.GetComponent<RectTransform>());
-				}
-				return result.ToArray();
+				thisUIElement.UpdateRect();
 			}
 			public Vector2 GetLocalPosition(){
 				return new Vector2(this.transform.localPosition.x, this.transform.localPosition.y);

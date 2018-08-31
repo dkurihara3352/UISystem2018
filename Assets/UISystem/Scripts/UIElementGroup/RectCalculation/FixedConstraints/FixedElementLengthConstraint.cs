@@ -27,10 +27,10 @@ namespace UISystem{
 			return thisValue;
 		}
 		public override Vector2 CalcPaddingFromFixedGroupLength(){
-			thisRectCalculationData.SetElementLength(
+			return CalcPaddingFromFixedGroupAndElementLength(
+				thisGroupLength,
 				thisValue
 			);
-			return CalcPaddingFromGroupAndElementLength();
 		}
 		public override Vector2 CalcGroupLengthFromFixedElementLength(){
 			throw new System.InvalidOperationException(
@@ -43,10 +43,10 @@ namespace UISystem{
 			);
 		}
 		public override Vector2 CalcGroupLengthFromFixedPadding(){
-			thisRectCalculationData.SetElementLength(
-				thisValue
+			return CalcGroupLengthFromFixedElementLengthAndPadding(
+				thisValue,
+				thisPadding
 			);
-			return CalcGroupLengthFromFixedElementLengthAndPadding();
 		}
 		public override Vector2 CalcElementLengthFromFixedPadding(){
 			return thisValue;

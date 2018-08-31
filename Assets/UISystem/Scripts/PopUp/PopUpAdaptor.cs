@@ -28,5 +28,10 @@ namespace UISystem{
 			CanvasGroup canvasGroup = this.transform.GetComponent<CanvasGroup>();
 			canvasGroup.blocksRaycasts = blocks;
 		}
+		protected override void SetUpUIElementReferenceImple(){
+			base.SetUpUIElementReferenceImple();
+			IPopUp popUp = (IPopUp)GetUIElement();
+			popUp.SetUpPopUpHierarchy();
+		}
 	}
 }

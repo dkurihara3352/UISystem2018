@@ -112,6 +112,7 @@ namespace UISystem{
 			return uie;
 		}
 		protected override void SetUpUIElementReferenceImple(){
+			base.SetUpUIElementReferenceImple();
 			List<IUIElement> groupElements = GetGroupElements();
 			IRectCalculationData rectCalculationData = CreateRectCalculationData(groupElements);
 
@@ -125,11 +126,13 @@ namespace UISystem{
 		IRectCalculationData CreateRectCalculationData(List<IUIElement> groupElements){
 			IRectConstraint firstConstraint = CreateRectConstraint(
 				firstConstraintType,
+				firstFixedConstraintValueType,
 				firstFixedConstraintReferenceRect,
 				firstConstraintValue
 			);
 			IRectConstraint secondConstraint = CreateRectConstraint(
 				secondConstraintType,
+				secondFixedConstraintValueType,
 				secondFixedConstraintReferenceRect,
 				secondConstraintValue
 			);
@@ -144,35 +147,32 @@ namespace UISystem{
 		}
 		IRectConstraint CreateRectConstraint(
 			RectConstraintType constraintType,
+			FixedRectValueType fixedValueType,
 			RectTransform referenceRect,
 			Vector2 constraintValue
 		){
 			IRectConstraint rectConstraint;
 			if(ConstraintIsFixedType(constraintType)){
-				IFixedRectConstraintValueData fixedConstraintValue;
-				if(firstFixedConstraintValueType == FixedRectValueType.ConstantValue)
-					fixedConstraintValue = new ConstantFixedRectConstraintValueData(
-						constraintValue
-					);
-				else
-					fixedConstraintValue = new ReferenceFixedRectConstraintValueData(
-						referenceRect.sizeDelta,
-						constraintValue
-					);
+				IFixedRectConstraintValueData fixedConstraintValueData = CreateFixedConstraintValueData(
+					fixedValueType,
+					referenceRect,
+					constraintValue
+				);
+				
 				switch(constraintType){
 					case RectConstraintType.FixedGroupLength:
 						rectConstraint = new FixedGroupLengthConstraint(
-							fixedConstraintValue
+							fixedConstraintValueData
 						);
 						break;
 					case RectConstraintType.FixedElementLength:
 						rectConstraint = new FixedElementLengthConstraint(
-							fixedConstraintValue
+							fixedConstraintValueData
 						);
 						break;
 					case RectConstraintType.FixedPadding:
 						rectConstraint = new FixedPaddingConstraint(
-							fixedConstraintValue
+							fixedConstraintValueData
 						);
 						break;
 					default: 
@@ -205,6 +205,36 @@ namespace UISystem{
 			}
 			return rectConstraint;
 		}
+		IFixedRectConstraintValueData CreateFixedConstraintValueData(
+			FixedRectValueType valuType,
+			RectTransform referenceRect,
+			Vector2 constraintValue
+		){
+			IFixedRectConstraintValueData result;
+			switch(valuType){
+				case FixedRectValueType.ConstantValue:
+					result = new ConstantFixedRectConstraintValueData(
+						constraintValue
+					);
+					break;
+				case FixedRectValueType.ReferenceRect:
+					result = new ReferenceFixedRectConstraintValueData(
+						referenceRect.sizeDelta,
+						constraintValue
+					);
+					break;
+				case FixedRectValueType.RelativeToScreen:
+					result = new RelativeToScreenRectConstraintValueData(
+						constraintValue
+					);
+					break;
+				default:
+					throw new System.InvalidOperationException(
+						"cannot be anything other than above"
+					);
+			}
+			return result;
+		}
 		public enum RectConstraintType{
 			FixedGroupLength,
 			FixedElementLength,
@@ -214,7 +244,7 @@ namespace UISystem{
 			ElementToPaddingRatio,
 			GroupToPaddingRatio
 		}
-		bool ConstraintIsFixedType(RectConstraintType type){
+		protected bool ConstraintIsFixedType(RectConstraintType type){
 			return 
 			type == RectConstraintType.FixedGroupLength ||
 			type == RectConstraintType.FixedElementLength ||
@@ -223,7 +253,8 @@ namespace UISystem{
 		}
 		public enum FixedRectValueType{
 			ConstantValue,
-			ReferenceRect
+			ReferenceRect,
+			RelativeToScreen
 		}
 	}
 }

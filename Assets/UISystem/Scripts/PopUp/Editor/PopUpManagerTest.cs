@@ -13,7 +13,8 @@ public class PopUpManagerTest{
     public void RegisterPopUp_CallsPopUpToRegisterShowHidden(){
         IPopUp popUpToRegister = Substitute.For<IPopUp>();
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
 
         popUpManager.RegisterPopUp(popUpToRegister);
 
@@ -23,7 +24,8 @@ public class PopUpManagerTest{
     public void RegisterPopUp_ActivePopUpNull_CallsRootUIEPopUpDisableRecursively(){
         IUIElement rootUIE = Substitute.For<IUIElement>();
         IPopUp popUpToRegister = Substitute.For<IPopUp>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIE);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIE);
         popUpManager.SetActivePopUp_Test(null);
 
         popUpManager.RegisterPopUp(popUpToRegister);
@@ -33,7 +35,8 @@ public class PopUpManagerTest{
     [Test]
     public void RegisterPopUp_PopUpToRegIsAncestorOfActive_DoesNotCallActivePopUp(){
         IUIElement rootUIE = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIE);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIE);
         IPopUp popUpToRegister = Substitute.For<IPopUp>();
         IPopUp activePopUp = Substitute.For<IPopUp>();
         popUpToRegister.IsAncestorOf(activePopUp).Returns(true);
@@ -47,7 +50,8 @@ public class PopUpManagerTest{
     [Test]
     public void RegisterPopUp_ActivePopUpIsNotChild_CallActivePopUp(){
         IUIElement rootUIE = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIE);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIE);
         IPopUp popUpToRegister = Substitute.For<IPopUp>();
         IPopUp activePopUp = Substitute.For<IPopUp>();
         IPopUp nullPopUp = null;
@@ -61,7 +65,8 @@ public class PopUpManagerTest{
     [Test]
     public void RegisterPopUp_SetsActivePopUp(){
         IUIElement rootUIE = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIE);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIE);
         IPopUp popUpToRegister = Substitute.For<IPopUp>();
 
         popUpManager.RegisterPopUp(popUpToRegister);
@@ -73,7 +78,8 @@ public class PopUpManagerTest{
     [Test]
     public void UnregiterPopUp_CallsPopUpToUnregHideShow(){
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
         IPopUp popUpToUnreg = Substitute.For<IPopUp>();
 
         popUpManager.UnregisterPopUp(popUpToUnreg);
@@ -83,7 +89,8 @@ public class PopUpManagerTest{
     [Test]
     public void UnregiterPopUp_UnregedPopUpParentPopUpNotNull_CallsItInSequence(){
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
         IPopUp popUpToUnreg = Substitute.For<IPopUp>();
         IPopUp popUpToUnregParentPopUp = Substitute.For<IPopUp>();
         popUpToUnreg.GetProximateParentPopUp().Returns(popUpToUnregParentPopUp);
@@ -99,7 +106,8 @@ public class PopUpManagerTest{
     [Test]
     public void UnregiterPopUp_UnregedPopUpParentPopUpNotNull_SetsParentPopUpActive(){
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
         IPopUp popUpToUnreg = Substitute.For<IPopUp>();
         IPopUp popUpToUnregParentPopUp = Substitute.For<IPopUp>();
         popUpToUnreg.GetProximateParentPopUp().Returns(popUpToUnregParentPopUp);
@@ -112,7 +120,8 @@ public class PopUpManagerTest{
     [Test]
     public void UnregiterPopUp_UnregedPopUpParentPopUpNull_CallsRootUIEReverse(){
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
         IPopUp popUpToUnreg = Substitute.For<IPopUp>();
         IPopUp popUpToUnregParentPopUp = null;
         popUpToUnreg.GetProximateParentPopUp().Returns(popUpToUnregParentPopUp);
@@ -125,7 +134,8 @@ public class PopUpManagerTest{
     [Test]
     public void UnregiterPopUp_UnregedPopUpParentPopUpNull_SetsActiveNull(){
         IUIElement rootUIElement = Substitute.For<IUIElement>();
-        TestPopUpManager popUpManager = new TestPopUpManager(rootUIElement);
+        TestPopUpManager popUpManager = new TestPopUpManager();
+        popUpManager.SetRootUIElement(rootUIElement);
         IPopUp popUpToUnreg = Substitute.For<IPopUp>();
         IPopUp popUpToUnregParentPopUp = null;
         popUpToUnreg.GetProximateParentPopUp().Returns(popUpToUnregParentPopUp);
@@ -136,13 +146,6 @@ public class PopUpManagerTest{
         Assert.That(popUpManager.GetActivePopUp_Test(), Is.Null);
     }
     public class TestPopUpManager: PopUpManager{
-        public TestPopUpManager(
-            IUIElement rootUIElemenet
-        ): base(
-            rootUIElemenet
-        ){
-
-        }
         public IPopUp GetActivePopUp_Test(){
             return thisActivePopUp;
         }

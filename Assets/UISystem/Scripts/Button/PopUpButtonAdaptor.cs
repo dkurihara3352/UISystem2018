@@ -7,16 +7,21 @@ namespace UISystem{
 	public class PopUpButtonAdaptor : UIAdaptor, IPopUpButtonAdaptor {
 		public PopUpAdaptor targetPopUpAdaptor;
 		protected override IUIElement CreateUIElement(IUIImage image){
-			IPopUpButtonConstArg arg = new PopUpButtonConstArg(
+			IUIElementConstArg arg = new UIElementConstArg(
 				thisDomainInitializationData.uim,
 				thisDomainInitializationData.processFactory,
 				thisDomainInitializationData.uiElementFactory,
 				this,
 				image,
-				activationMode,
-				targetPopUpAdaptor
+				activationMode
 			);
 			return new PopUpButton(arg);
+		}
+		protected override void SetUpUIElementReferenceImple(){
+			base.SetUpUIElementReferenceImple();
+			IPopUp popUp = (IPopUp)targetPopUpAdaptor.GetUIElement();
+			IPopUpButton popUpButton = (IPopUpButton)GetUIElement();
+			popUpButton.SetTargetPopUp(popUp);
 		}
 	}
 }

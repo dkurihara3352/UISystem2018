@@ -4,14 +4,8 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IIndexElementGroupAdaptor: IUIElementGroupAdaptor{}
-	public class IndexElementGroupAdaptor : UIAdaptor, IIndexElementGroupAdaptor {
+	public class IndexElementGroupAdaptor : AbsUIElementGroupAdaptor, IIndexElementGroupAdaptor {
 		TestUIElementFactory testUIElementFactory;
-
-		public int columnCountConstraint;
-		public int rowCountConstraint;
-		public bool topToBottom = true;
-		public bool leftToRight = true;
-		public bool rowToColumn = true;
 
 		public int groupElementCount;
 		public Font font;
@@ -19,14 +13,8 @@ namespace UISystem{
 		public Color imageColor;
 		public float imageDefaultDarkness = .8f;
 		public float imageDarkenedDarkness = .5f;
-
-		public Vector2 groupElementLength;
-		public Vector2 GetGroupElementLength(){return groupElementLength;}
-		public Vector2 padding;
-		public Vector2 GetPadding(){return padding;}
-		public bool[] usesFixedPadding = new bool[2]{true, true};
 		
-		protected override void SetUpUIElementReferenceImple(){
+		protected override List<IUIElement> GetGroupElements(){
 			testUIElementFactory = new TestUIElementFactory(
 				thisUIManager, 
 				font, 
@@ -35,9 +23,7 @@ namespace UISystem{
 				imageDefaultDarkness, 
 				imageDarkenedDarkness
 			);
-			List<IUIElement> groupElements = CreateUIEs();
-			IUIElementGroup uieGroup = (IUIElementGroup)this.GetUIElement();
-			uieGroup.SetUpElements(groupElements);
+			return CreateUIEs();
 		}
 		List<IUIElement> CreateUIEs(){
 			/* to SetUpUIEReference */
@@ -46,13 +32,35 @@ namespace UISystem{
 				result.Add(
 					testUIElementFactory.CreateUIElementWithIndexText(
 						i, 
-						groupElementLength, 
+						GetIndexElementLength(), 
 						thisDomainInitializationData.processFactory
 					
 					)
 				);
 			}
 			return result;
+		}
+		Vector2 GetIndexElementLength(){
+			bool found = false;
+			Vector2 result = new Vector2();
+			if(ConstraintIsFixedType(firstConstraintType)){
+				if(firstConstraintType == RectConstraintType.FixedElementLength){
+					found = true;
+					result = firstConstraintValue;
+				}
+			}else if(ConstraintIsFixedType(secondConstraintType)){
+				if(secondConstraintType == RectConstraintType.FixedElementLength){
+					found = true;
+					result = secondConstraintValue;
+				}
+			}
+			if(found)
+				return result;
+			else
+				throw new System.InvalidOperationException(
+					"IndexElementGroup requires at lest one of its constraints be set FixedElementLength"
+				);
+
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementGroupConstArg arg = new UIElementGroupConstArg(

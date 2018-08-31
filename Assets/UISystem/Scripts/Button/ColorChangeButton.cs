@@ -4,10 +4,10 @@ using UnityEngine;
 using DKUtility;
 using UnityEngine.UI;
 namespace UISystem{
-	public interface IColoChangeButton: IUIElement{
+	public interface IColorChangeButton: IUIElement{
 		void SetTargetUIElement(IUIElement targetUIElement);
 	}
-	public class ColorChangeButton : GenericUIElement {
+	public class ColorChangeButton : UIElement, IColorChangeButton {
 
 		public ColorChangeButton(IColorChangeButtonConstArg arg): base(arg){
 			thisTargetColor = arg.targetColor;

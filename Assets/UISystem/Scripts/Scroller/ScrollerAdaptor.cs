@@ -8,9 +8,9 @@ namespace UISystem{
 	}
 	public abstract class AbsScrollerAdaptor<T>: UIAdaptor, IScrollerAdaptor where T: class, IScroller{
 		public ScrollerAxis scrollerAxis;
-		public Vector2 relativeCursorPosition;
-		public Vector2 rubberBandLimitMultiplier;
-		public bool isEnabledInertia;
+		public Vector2 relativeCursorPosition = new Vector2(.5f, .5f);
+		public Vector2 rubberBandLimitMultiplier = new Vector2(.1f ,.1f);
+		public bool isEnabledInertia = true;
 		public float locksInputAboveThisVelocity = 200f;
 		public void ShowCursorRectInGUI(Rect cursorRect){
 			thisCursorRect = cursorRect;

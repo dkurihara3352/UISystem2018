@@ -11,8 +11,8 @@ namespace UISystem{
 			thisFont = typedData.font;
 			thisFontSize = typedData.fontSize;
 			thisImageColor = typedData.imageColor;
-			thisImageDefaultDarkness = typedData.imageDefaultDarkness;
-			thisImageDarkenedDarkness = typedData.imageDarkenedDarkness;
+			thisImageDefaultBrightness = typedData.imageDefaultDarkness;
+			thisImageDarkenedBrightness = typedData.imageDarkenedDarkness;
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){
 			IUIElementConstArg arg = new UIElementConstArg(
@@ -23,7 +23,7 @@ namespace UISystem{
 				image, 
 				ActivationMode.None
 			);
-			GenericUIElement uie = new GenericUIElement(arg);
+			IUIElement uie = new UIElement(arg);
 			return uie;
 		}
 		int thisIndexForText;
@@ -35,7 +35,7 @@ namespace UISystem{
 			RectTransform imageRT = CreateChildWithImageComponent(out image);
 			Text text;
 			RectTransform textRT = CreateChildWithTextComponent(out text);
-			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultDarkness, thisImageDarkenedDarkness, thisDomainInitializationData.processFactory);
+			IUIImage uiImage = new UIImage(image, imageRT, thisImageDefaultBrightness, thisImageDarkenedBrightness, thisDomainInitializationData.processFactory);
 			return uiImage;
 		}
 		RectTransform CreateChildWithImageComponent(out Image image){
@@ -45,9 +45,9 @@ namespace UISystem{
 			imageRT.SetAsLastSibling();
 			imageRT.pivot = new Vector2(0f, 0f);
 			imageRT.anchorMin = Vector2.zero;
-			imageRT.anchorMax = Vector2.zero;
+			imageRT.anchorMax = Vector2.one;
 			imageRT.anchoredPosition = new Vector2(0f, 0f);
-			imageRT.sizeDelta = this.GetRect().size;
+			imageRT.sizeDelta = Vector2.one;
 			Image thisImage = CreateImage(imageGO);
 			image = thisImage;
 			return imageRT;
@@ -64,9 +64,9 @@ namespace UISystem{
 			textRT.SetAsLastSibling();
 			textRT.pivot = new Vector2(0f, 0f);
 			textRT.anchorMin = Vector2.zero;
-			textRT.anchorMax = Vector2.zero;
+			textRT.anchorMax = Vector2.one;
 			textRT.anchoredPosition = new Vector2(0f, 0f);
-			textRT.sizeDelta = this.GetRect().size;
+			textRT.sizeDelta = Vector2.one;
 			Text thisText = CreateIndexText(thisIndexForText, textGO);
 			text = thisText;
 			return textRT;
@@ -122,14 +122,10 @@ namespace UISystem{
 	}
 	public struct IndexElementAdaptorInstantiationData: IIndexElementAdaptorInstantiationData{
 		public IndexElementAdaptorInstantiationData(
-			Vector2 sizeDelta, 
 			IIndexElementAdaptorInitializationData initData
 		){
-			thisSizeDelta = sizeDelta;
 			thisInitData = initData;
 		}
-		readonly Vector2 thisSizeDelta;
-		public Vector2 sizeDelta{get{return thisSizeDelta;}}
 		readonly IIndexElementAdaptorInitializationData thisInitData;
 		public IUIAInitializationData initializationData{get{return thisInitData;}}
 	}

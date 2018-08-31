@@ -8,7 +8,16 @@ namespace UISystem{
 	}
 	public class TestUIElementFactory : UIElementFactory, ITestUIElementFactory {
 
-		public TestUIElementFactory(IUIManager uim, Font textFont, int fontSize, Color imageColor, float imageDefaultDarkness, float imageDarkenedDarkness): base(uim){
+		public TestUIElementFactory(
+			IUIManager uim, 
+			Font textFont, 
+			int fontSize, 
+			Color imageColor, 
+			float imageDefaultDarkness, 
+			float imageDarkenedDarkness
+		): base(
+			uim
+		){
 			thisFont = textFont;
 			thisImageColor = imageColor;
 			thisFontSize = fontSize;
@@ -35,7 +44,6 @@ namespace UISystem{
 				thisImageDarkenedDarkness
 			);
 			IIndexElementAdaptorInstantiationData instData = new IndexElementAdaptorInstantiationData(
-				sizeDelta, 
 				initData
 			);
 			IndexElementAdaptor uia = this.CreateInstatiableUIA<IndexElementAdaptor>(instData);

@@ -25,7 +25,7 @@ namespace UISystem.PickUpUISystem{
 		protected override IUIImage CreateUIImage(){
 			Image image;
 			Transform child = GetChildWithImage(out image);
-			IItemIconImage itemIconImage = new ItemIconImage(thisItem, image, child, thisImageDefaultDarkness, thisImageDarkenedDarkness);
+			IItemIconImage itemIconImage = new ItemIconImage(thisItem, image, child, thisImageDefaultBrightness, thisImageDarkenedBrightness);
 			return itemIconImage;
 		}
 		protected override IUIElement CreateUIElement(IUIImage image){

@@ -33,7 +33,7 @@ namespace UISystem{
 			IUIAdaptorInputStateEngineConstArg arg
 		){
 			IUIAdaptor uia = arg.uiAdaptor;
-			thisUIE = uia.GetUIElement();
+			thisUIE = arg.uiElement;
 			IUISystemProcessFactory procFac = arg.processFactory;
 			IUIManager uim = arg.uiManager;
 
@@ -162,22 +162,27 @@ namespace UISystem{
 	public interface IUIAdaptorInputStateEngineConstArg{
 		IUIManager uiManager{get;}
 		IUIAdaptor uiAdaptor{get;}
+		IUIElement uiElement{get;}
 		IUISystemProcessFactory processFactory{get;}
 	}
 	public class UIAdaptorInputStateEngineConstArg: IUIAdaptorInputStateEngineConstArg{
 		public UIAdaptorInputStateEngineConstArg(
 			IUIManager uiManager,
+			IUIElement uiElement,
 			IUIAdaptor uiAdaptor,
 			IUISystemProcessFactory processFactory
 		){
 			thisUIManager = uiManager;
 			thisUIAdaptor = uiAdaptor;
+			thisUIElement = uiElement;
 			thisProcessFactory = processFactory;
 		}
 		readonly IUIManager thisUIManager;
 		public IUIManager uiManager{get{return thisUIManager;}}
 		readonly IUIAdaptor thisUIAdaptor;
 		public IUIAdaptor uiAdaptor{get{return thisUIAdaptor;}}
+		readonly IUIElement thisUIElement;
+		public IUIElement uiElement{get{return thisUIElement;}}
 		readonly IUISystemProcessFactory thisProcessFactory;
 		public IUISystemProcessFactory processFactory{get{return thisProcessFactory;}}
 	}

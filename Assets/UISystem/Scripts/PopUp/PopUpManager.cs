@@ -4,16 +4,18 @@ using UnityEngine;
 
 namespace UISystem{
 	public interface IPopUpManager{
+		void SetRootUIElement(IUIElement rootUIElement);
 		void RegisterPopUp(IPopUp popUpToRegister);
 		void UnregisterPopUp(IPopUp popUpToUnregister);
 		void CheckAndHideActivePopUp();
 		bool ActivePopUpHidesOnTappingOthers();
 	}
 	public class PopUpManager : IPopUpManager {
-		public PopUpManager(IUIElement rootUIElement){
+
+		public void SetRootUIElement(IUIElement rootUIElement){
 			thisRootUIElement = rootUIElement;
 		}
-		readonly IUIElement thisRootUIElement;
+		IUIElement thisRootUIElement;
 
 		public void RegisterPopUp(IPopUp popUpToRegister){
 			popUpToRegister.ShowHiddenProximateParentPopUpRecursively();

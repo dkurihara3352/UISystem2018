@@ -8,7 +8,6 @@ namespace UISystem{
 	}
 	public interface IUIAInitializationData{}
 	public interface IInstantiableUIAdaptorInstantiationData{
-		Vector2 sizeDelta{get;}
 		IUIAInitializationData initializationData{get;}
 	}
 }

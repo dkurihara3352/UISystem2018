@@ -16,21 +16,26 @@ namespace UISystem{
 		protected readonly RectTransform reserveTrans;
 		protected T CreateInstatiableUIA<T>(IInstantiableUIAdaptorInstantiationData instatiationData) where T: MonoBehaviour, IInstatiableUIAdaptor{
 			GameObject go = new GameObject("uiaGO");
-			RectTransform rectTrans = CreateRectTransform(go, reserveTrans, instatiationData.sizeDelta);
+			RectTransform rectTrans = CreateRectTransform(
+				go, 
+				reserveTrans
+			);
 			go.AddComponent<CanvasRenderer>();
 			go.transform.SetAsLastSibling();
 			T uia = go.AddComponent<T>();
 			uia.SetInitializationFields(instatiationData.initializationData);
 			return uia;
 		}
-		RectTransform CreateRectTransform(GameObject gameObject, RectTransform parentRT, Vector2 sizeDelta){
+		RectTransform CreateRectTransform(
+			GameObject gameObject, 
+			RectTransform parentRT
+		){
 			RectTransform rectTrans = gameObject.AddComponent<RectTransform>();
 			rectTrans.SetParent(parentRT);
 			rectTrans.pivot = new Vector2(0f, 0f);
 			rectTrans.anchorMin = Vector2.zero;
 			rectTrans.anchorMax = Vector2.zero;
 			rectTrans.anchoredPosition = new Vector2(0f, 0f);
-			rectTrans.sizeDelta = sizeDelta;
 			return rectTrans;
 		}
 		public IDigitPanelSet CreateDigitPanelSet(int digitPlace, IQuantityRoller quantityRoller, Vector2 panelDim, Vector2 padding){

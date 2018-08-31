@@ -5,14 +5,13 @@ using UnityEngine;
 namespace UISystem{
 	public interface IUIElementGroupScrollerAdaptor: IScrollerAdaptor{}
 	public class UIElementGroupScrollerAdaptor: AbsScrollerAdaptor<IUIElementGroupScroller>, IUIElementGroupScrollerAdaptor{
-		public int initiallyCursoredElementIndex;
-		public int[] cursorSize;
-		public float startSearchSpeed;
-		public bool swipeToSnapNext;
-		public bool activatesCursoredElementsOnly;
+		public int initiallyCursoredElementIndex = 0;
+		public int[] cursorSize = new int[2]{1, 1};
+		public float startSearchSpeed = 200f;
+		public bool swipeToSnapNext = false;
+		public bool activatesCursoredElementsOnly = false;
 		protected override void CompleteUIElementReferenceSetUpImple(){
 			IUIElementGroupScroller scroller = (IUIElementGroupScroller)GetUIElement();
-			scroller.UpdateGroupElementLengthAndPadding();
 			scroller.SetUpScrollerElement();
 			base.CompleteUIElementReferenceSetUpImple();
 		}

@@ -13,8 +13,8 @@ namespace UISystem{
 		public UIAdaptor rootUIAdaptor;/* assigned in inspector*/
 		public RectTransform uieReserveTrans;
 		public bool showsInputability;
-		public float uiImageDarkenedDarkness;
-		public float uiImageDefaultDarkness;
+		public float uiImageDarkenedBrightness = .4f;
+		public float uiImageDefaultBrightness = .8f;
 
 		public void Awake(){
 			thisUIManager = new UIManager(
@@ -22,8 +22,8 @@ namespace UISystem{
 				rootUIAdaptor,
 				uieReserveTrans,
 				showsInputability,
-				uiImageDarkenedDarkness,
-				uiImageDefaultDarkness
+				uiImageDarkenedBrightness,
+				uiImageDefaultBrightness
 			);
 		}
 	}	

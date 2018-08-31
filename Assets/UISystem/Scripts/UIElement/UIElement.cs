@@ -12,6 +12,7 @@ namespace UISystem{
 		IUIAdaptor GetUIAdaptor();
 		IUIImage GetUIImage();
 		string GetName();
+		void UpdateRect();
 		/* Activation */
 		void ActivateSelf(bool instantly);
 		void ActivateRecursively(bool instantly);
@@ -112,7 +113,9 @@ namespace UISystem{
 		public void SetParentUIE(IUIElement newParentUIE, bool worldPositionStays){
 			thisUIA.SetParentUIE(newParentUIE, worldPositionStays);
 		}
-
+		public virtual void UpdateRect(){
+			
+		}
 
 		/* Activation */
 			protected IUIEActivationStateEngine thisUIEActivationStateEngine;
@@ -435,9 +438,11 @@ namespace UISystem{
 			protected bool thisIsFocusedInScroller = false;
 			public virtual void BecomeFocusedInScrollerSelf(){
 				thisIsFocusedInScroller = true;
+				BecomeSelectable();
 			}
 			public virtual void BecomeDefocusedInScrollerSelf(){
 				thisIsFocusedInScroller = false;
+				BecomeUnselectable();
 			}
 			public virtual void BecomeFocusedInScrollerRecursively(){
 				BecomeDefocusedInScrollerSelf();

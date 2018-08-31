@@ -29,4 +29,18 @@ namespace UISystem{
 			);
 		}
 	}
+	public struct RelativeToScreenRectConstraintValueData: IFixedRectConstraintValueData{
+		public RelativeToScreenRectConstraintValueData(
+			Vector2 relativeLength
+		){
+			thisRelativeLength = relativeLength;
+		}
+		readonly Vector2 thisRelativeLength;
+		public Vector2 GetValue(){
+			return new Vector2(
+				Screen.width * thisRelativeLength.x,
+				Screen.height * thisRelativeLength.y
+			);
+		}
+	}
 }

@@ -34,8 +34,6 @@ namespace UISystem{
 				thisLeftToRight, 
 				thisRowToColumn
 			);
-			thisNumOfColumns = CalcNumberOfColumnsToCreate();
-			thisNumOfRows = CalcNumberOfRowsToCreate();
 		}
 		/* Construction */
 			void MakeSureArrayConstraintIsProperlySet(){
@@ -62,26 +60,6 @@ namespace UISystem{
 			void CheckAndSetMaxElementsCount(){
 				if(thisColumnCountConstraint != 0 && thisRowCountConstraint != 0)
 					thisMaxElementCount = thisColumnCountConstraint * thisRowCountConstraint;
-			}
-			readonly int thisNumOfColumns;
-			readonly int thisNumOfRows;
-			protected int CalcNumberOfColumnsToCreate(){
-				if(thisColumnCountConstraint != 0)
-					return thisColumnCountConstraint;
-				else{
-					int quotient = thisGroupElements.Count / thisRowCountConstraint;
-					int modulo = thisGroupElements.Count % thisRowCountConstraint;
-					return modulo > 0? quotient + 1 : quotient;
-				}
-			}
-			protected int CalcNumberOfRowsToCreate(){
-				if(thisRowCountConstraint != 0)
-					return thisRowCountConstraint;
-				else{
-					int quotient = thisGroupElements.Count / thisColumnCountConstraint;
-					int modulo = thisGroupElements.Count % thisColumnCountConstraint;
-					return modulo > 0? quotient + 1 : quotient;
-				}
 			}
 		/* Accessing elements */
 			protected List<T> thisGroupElements;/* explicitly and externally set */
@@ -121,7 +99,9 @@ namespace UISystem{
 				MakeSureElementsCountIsValid(elements.Count);
 				thisGroupElements = CreateTypedList(elements);
 				ChildrenAllElements(elements);
+				CalcAndSetGridCounts();
 				SetUpElementsArray(elements);
+				SetElementsDependentCalculators();
 			}
 			void MakeSureElementsCountIsValid(int count){
 				if(thisIsConstrainedByBothAxis)
@@ -142,7 +122,31 @@ namespace UISystem{
 				foreach(IUIElement uie in elements)
 					uie.SetParentUIE(this, true);
 			}
-			/* Setting up array */
+
+			void CalcAndSetGridCounts(){
+				thisNumOfColumns = CalcNumberOfColumnsToCreate();
+				thisNumOfRows = CalcNumberOfRowsToCreate();
+			}
+			int thisNumOfColumns;
+			int thisNumOfRows;
+			protected int CalcNumberOfColumnsToCreate(){
+				if(thisColumnCountConstraint != 0)
+					return thisColumnCountConstraint;
+				else{
+					int quotient = thisGroupElements.Count / thisRowCountConstraint;
+					int modulo = thisGroupElements.Count % thisRowCountConstraint;
+					return modulo > 0? quotient + 1 : quotient;
+				}
+			}
+			protected int CalcNumberOfRowsToCreate(){
+				if(thisRowCountConstraint != 0)
+					return thisRowCountConstraint;
+				else{
+					int quotient = thisGroupElements.Count / thisColumnCountConstraint;
+					int modulo = thisGroupElements.Count % thisColumnCountConstraint;
+					return modulo > 0? quotient + 1 : quotient;
+				}
+			}
 			void SetUpElementsArray(List<IUIElement> elements){
 				thisElementsArray = CreateElements2DArray(
 					thisNumOfColumns, 
@@ -201,7 +205,6 @@ namespace UISystem{
 				SetUpElementLength(data.elementLength);
 				SetUpPadding(data.padding);
 			}
-			protected virtual void SetRectsDependentCalculators(){}
 			protected void SetUpGroupLength(Vector2 groupLength){
 				thisGroupLength = groupLength;
 				thisUIA.SetRectLength(groupLength);
@@ -227,12 +230,6 @@ namespace UISystem{
 			}
 		/* calculators */
 			void SetElementsDependentCalculators(){
-				thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(
-					thisElementsArray, 
-					thisElementLength, 
-					thisPadding, 
-					thisUIA.GetRect().size
-				);
 				thisGroupElementsArrayCalculator = new GroupElementsArrayCalculator(
 					thisElementsArray
 				);
@@ -249,6 +246,15 @@ namespace UISystem{
 				int maxRowIndex
 			){
 				return thisGroupElementsArrayCalculator.GetGroupElementsWithinIndexRange(minColumnIndex, minRowIndex, maxColumnIndex, maxRowIndex);
+			}
+			protected virtual void SetRectsDependentCalculators(){
+				thisGroupElementAtPositionInGroupSpaceCalculator = new GroupElementAtPositionInGroupSpaceCalculator(
+					thisElementsArray, 
+					thisElementLength, 
+					thisPadding, 
+					thisUIA.GetRect().size,
+					GetName()
+				);
 			}
 		/* Placing Elements */
 			public void PlaceElements(){

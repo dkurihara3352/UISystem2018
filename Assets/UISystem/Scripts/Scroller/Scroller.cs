@@ -37,9 +37,7 @@ namespace UISystem{
 			thisNewScrollSpeedThreshold = arg.newScrollSpeedThreshold;
 
 			/* good here */
-			SetUpScrollerRect();
-			MakeSureRectIsSet(thisRect);
-			SetUpRubberBandCalculators();
+			UpdateRect();
 			
 			/* non dependent */
 			thisRunningScrollerMotorProcess = new IScrollerElementMotorProcess[2];
@@ -68,15 +66,17 @@ namespace UISystem{
 			protected readonly ScrollerAxis thisScrollerAxis;
 
 		/* ScrollerRect */
+			public override void UpdateRect(){
+				base.UpdateRect();
+				SetUpScrollerRect();
+				MakeSureRectIsSet(thisRect);
+				SetUpRubberBandCalculators();
+			}
 			protected Rect thisRect;
-			protected Vector2 thisRectMin;
-			protected Vector2 thisRectMax;
 			protected Vector2 thisRectLength;
 			void SetUpScrollerRect(){
 				thisRect = thisUIA.GetRect();
 				thisRectLength = new Vector2(thisRect.width, thisRect.height);
-				thisRectMin = new Vector2(thisRect.x, thisRect.y);
-				thisRectMax = new Vector2(thisRectMin.x + thisRectLength.x, thisRectMin.y + thisRectLength.y);
 			}
 			protected void MakeSureRectIsSet(Rect rect){
 				if(rect.width == 0f || rect.height == 0f)
@@ -133,10 +133,13 @@ namespace UISystem{
 			}
 			protected Rect thisScrollerElementRect;
 			protected Vector2 thisScrollerElementLength;
-			void SetUpScrollerElementRect(){
+			protected virtual void SetUpScrollerElementRect(){
 				IUIAdaptor scrollerElementAdaptor = thisScrollerElement.GetUIAdaptor();
 				thisScrollerElementRect = scrollerElementAdaptor.GetRect();
-				thisScrollerElementLength = new Vector2(thisScrollerElementRect.width, thisScrollerElementRect.height);
+				thisScrollerElementLength = new Vector2(
+					thisScrollerElementRect.width, 
+					thisScrollerElementRect.height
+				);
 			}
 			/* Cursor Transform */
 			public void SetUpCursorTransform(){
@@ -159,10 +162,16 @@ namespace UISystem{
 			}
 			protected virtual Vector2 CalcCursorLocalPos(){
 				Vector2 result = new Vector2();
+				Vector2 scrollerRectLengthV2 = new Vector2();
+				Vector2 cursorLengthV2 = new  Vector2();
+				Vector2 diffLV2 = new Vector2();
 				for(int i = 0; i < 2; i ++){
 					float scrollerRectLength = thisRectLength[i];
+						scrollerRectLengthV2[i] = scrollerRectLength;
 					float cursorLength = thisCursorLength[i];
+						cursorLengthV2[i] = cursorLength;
 					float diffL = scrollerRectLength - cursorLength;
+						diffLV2[i] = diffL;
 
 					float localPos;
 					if(thisRelativeCursorPosition[i] == 0f) 
@@ -171,6 +180,17 @@ namespace UISystem{
 						localPos = thisRelativeCursorPosition[i] * diffL;
 					result[i] = localPos;
 				}
+
+
+				Debug.Log(
+					GetName() +
+					"'s scrollerRectLength: " + 
+					scrollerRectLengthV2.ToString() +
+					", cursorLength: "  +
+					cursorLengthV2.ToString() +
+					", diff: " + 
+					diffLV2.ToString()
+				);
 				return result;
 			}
 			/*  */

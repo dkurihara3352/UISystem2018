@@ -6,8 +6,8 @@ using DKUtility;
 
 namespace UISystem{
 	public interface IUIImage{
-		void TurnToSelectableDarkness();
-		void TurnToUnselectableDarkenss();
+		void TurnToSelectableBrightness();
+		void TurnToUnselectableBrightness();
 		/* Transform */
 		void CopyPosition(IUIImage other);
 		Transform GetTransform();
@@ -27,18 +27,18 @@ namespace UISystem{
 		public UIImage(
 			Graphic graphicComponent, 
 			Transform imageTrans, 
-			float defaultDarkness, 
-			float darkenedDarkness,
+			float defaultBrightness, 
+			float darkenedBrightness,
 			IUISystemProcessFactory processFactory
 
 		){
 			thisGraphicComponent = graphicComponent;
 			thisOriginalColor = GetColor();
 			thisImageTrans = imageTrans;
-			thisDefaultDarkness = defaultDarkness;
-			thisDarkenedDarkness = darkenedDarkness;
-			thisDefaultColor = GetColorAtDarkness(thisDefaultDarkness);
-			thisDarkenedColor = GetColorAtDarkness(thisDarkenedDarkness);
+			thisDefaultBrightness = defaultBrightness;
+			thisDarkenedBrightness = darkenedBrightness;
+			thisDefaultColor = GetColorAtBrightness(thisDefaultBrightness);
+			thisDarkenedColor = GetColorAtBrightness(thisDarkenedBrightness);
 			SetColor(thisDefaultColor);
 			thisProcessFactory = processFactory;
 		}
@@ -55,7 +55,7 @@ namespace UISystem{
 		public Color GetDarkenedColor(){
 			return thisDarkenedColor;
 		}
-		public float GetCurrentDarkness(){
+		public float GetCurrentBrightness(){
 			Color curColor = GetColor();
 			float h;
 			float s;
@@ -63,9 +63,9 @@ namespace UISystem{
 			Color.RGBToHSV(curColor, out h, out s, out v);
 			return v;
 		}
-		readonly float thisDefaultDarkness;
-		readonly float thisDarkenedDarkness;
-		Color GetColorAtDarkness(float darkness){
+		readonly float thisDefaultBrightness;
+		readonly float thisDarkenedBrightness;
+		Color GetColorAtBrightness(float darkness){
 			float a = thisOriginalColor.a;
 			float h;
 			float s;
@@ -112,12 +112,12 @@ namespace UISystem{
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}
-		public void TurnToSelectableDarkness(){
+		public void TurnToSelectableBrightness(){
 			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, thisDefaultColor);
 			process.Run();
 			SetRunningTurnColorProcess(process);
 		}
-		public void TurnToUnselectableDarkenss(){
+		public void TurnToUnselectableBrightness(){
 			IImageColorTurnProcess process = thisProcessFactory.CreateGenericImageColorTurnProcess(this, thisDarkenedColor);
 			process.Run();
 			SetRunningTurnColorProcess(process);

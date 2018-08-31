@@ -102,6 +102,10 @@ namespace UISystem{
 						thisScrollerAxis
 					);
 			}
+			protected override void SetUpScrollerElementRect(){
+				base.SetUpScrollerElementRect();
+				UpdateGroupElementLengthAndPadding();
+			}
 			public void UpdateGroupElementLengthAndPadding(){
 				thisGroupElementLength = thisUIElementGroup.GetGroupElementLength();
 				thisPadding = thisUIElementGroup.GetPadding();
@@ -259,13 +263,8 @@ namespace UISystem{
 				
 				IUIElement leastCursoredElement = thisUIElementGroup.GetGroupElementAtPositionInGroupSpace(cursorRefPInElementGroupSpace);
 
+
 				return leastCursoredElement;
-			}
-			string GetGroupElementIndexString(IUIElement element){
-				if(element == null)
-					return "null";
-				else
-					return GetGroupElementIndex(element).ToString();
 			}
 			int[,] CalcCursoredGroupElementArrayIndexRange(IUIElement cursoredElement){
 

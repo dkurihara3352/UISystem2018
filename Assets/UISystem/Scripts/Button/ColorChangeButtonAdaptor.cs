@@ -25,7 +25,7 @@ namespace UISystem{
 		}
 		protected override void SetUpUIElementReferenceImple(){
 			base.SetUpUIElementReferenceImple();
-			IColoChangeButton button = (IColoChangeButton)GetUIElement();
+			IColorChangeButton button = (IColorChangeButton)GetUIElement();
 			IUIElement targetUIElement = targetUIElementAdaptor.GetUIElement();
 			button.SetTargetUIElement(targetUIElement);
 		}

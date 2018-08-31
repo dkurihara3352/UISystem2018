@@ -19,14 +19,14 @@ namespace UISystem{
 		public SelectableState(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
 		public override void OnEnter(){
 			if(thisUIM.ShowsNormal())
-			thisUIImage.TurnToSelectableDarkness();
+			thisUIImage.TurnToSelectableBrightness();
 		}
 	}
 	public class UnselectableState: AbsSelectabilityState{
 		public UnselectableState(IUIImage uiImage, IUIManager uim): base(uiImage, uim){}
 		public override void OnEnter(){
 			if(thisUIM.ShowsNormal())
-			thisUIImage.TurnToUnselectableDarkenss();
+			thisUIImage.TurnToUnselectableBrightness();
 		}
 	}
 	public class SelectedState: AbsSelectabilityState{

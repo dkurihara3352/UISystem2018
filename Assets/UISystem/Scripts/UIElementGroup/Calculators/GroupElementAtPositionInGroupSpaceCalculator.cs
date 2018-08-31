@@ -7,16 +7,33 @@ namespace UISystem{
 		IUIElement Calculate(Vector2 positionInGroupSpace);
 	}
 	public class GroupElementAtPositionInGroupSpaceCalculator : IGroupElementAtPositionInGroupSpaceCalculator {
-		public GroupElementAtPositionInGroupSpaceCalculator(IUIElement[,] elementsArray, Vector2 elementLength, Vector2 padding, Vector2 groupRectLength){
+		public GroupElementAtPositionInGroupSpaceCalculator(
+			IUIElement[,] elementsArray, 
+			Vector2 elementLength, 
+			Vector2 padding, 
+			Vector2 groupRectLength,
+			string name
+		){
 			thisElementsArray = elementsArray;
 			thisElementLength = elementLength;
 			thisPadding = padding;
 			thisGroupRectLength = groupRectLength;
+			thisName = name;
 		}
 		readonly IUIElement[,] thisElementsArray;
 		readonly Vector2 thisElementLength;
 		readonly Vector2 thisPadding;
 		readonly Vector2 thisGroupRectLength;
+		readonly string thisName;
+		float marginOfError = .1f;
+		int[] thisGridCounts{
+			get{
+				return new int[]{
+					thisElementsArray.GetLength(0),
+					thisElementsArray.GetLength(1)
+				};
+			}
+		}
 		public IUIElement Calculate(Vector2 positionInGroupSpace){
 			if(PositionIsOutOfThisRectBouds(positionInGroupSpace)){
 				return null;
@@ -27,14 +44,12 @@ namespace UISystem{
 					float elementLengthPlusPadding = thisElementLength[i] + thisPadding[i];
 					float modulo = positionInGroupSpace[i] % elementLengthPlusPadding;
 					if(modulo == 0f){
-						if(positionInGroupSpace[i] > thisPadding[i]){
-							int quotient = Mathf.FloorToInt(positionInGroupSpace[i]/ elementLengthPlusPadding) -1;
-							arrayIndex[i] = quotient;
-						}else{
-							return null;
-						}
+						int quotient = Mathf.FloorToInt(positionInGroupSpace[i]/ elementLengthPlusPadding);
+						if(quotient == thisGridCounts[i])
+							quotient -= 1;
+						arrayIndex[i] = quotient;
 					}else{
-						if(modulo >= thisPadding[i]){
+						if(modulo + marginOfError >= thisPadding[i]){
 							int quotient = Mathf.FloorToInt(positionInGroupSpace[i] / elementLengthPlusPadding);
 							arrayIndex[i] = quotient;
 						}else{
