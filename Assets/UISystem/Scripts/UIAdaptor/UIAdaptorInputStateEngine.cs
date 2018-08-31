@@ -35,7 +35,7 @@ namespace UISystem{
 			IUIAdaptor uia = arg.uiAdaptor;
 			thisUIE = arg.uiElement;
 			IUISystemProcessFactory procFac = arg.processFactory;
-			IUIManager uim = arg.uiManager;
+			thisUIManager = arg.uiManager;
 
 			IUIAdaptorInputStateConstArg pointerUpInputStateArg = new UIAdaptorInputStateConstArg(
 				this
@@ -46,7 +46,7 @@ namespace UISystem{
 
 			IPointerDownInputProcessStateConstArg pointerDownProcessStateArg = new PointerDownInputProcessStateConstArg(
 				this,
-				uim,
+				thisUIManager,
 				thisVelocityStackSize,
 				procFac
 			);
@@ -67,6 +67,7 @@ namespace UISystem{
 			SetWithInitState();
 			ResetTouchCounter();
 		}
+		readonly IUIManager thisUIManager;
 		public string GetName(){
 			return thisUIE.GetName();
 		}
@@ -119,9 +120,9 @@ namespace UISystem{
 			thisUIE.OnSwipe(eventData);
 		}
 		public float GetSwipeVelocityThreshold(){
-			return thisSwipeVelocityThreshold;
+			return thisUIManager.GetSwipeVelocityThreshold();
 		}
-		float thisSwipeVelocityThreshold = 200f;
+		// float thisSwipeVelocityThreshold = 200f;
 		/* IRawInputHandler */
 			public void OnPointerDown(ICustomEventData eventData){
 				thisCurState.OnPointerDown(eventData);

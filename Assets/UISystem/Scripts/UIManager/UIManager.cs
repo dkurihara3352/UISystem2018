@@ -23,6 +23,7 @@ namespace UISystem{
 		void DeactivateUISystem(bool instantly);
 		float GetUIImageDarknedBrightness();
 		float GetUIImageDefaultBrightness();
+		float GetSwipeVelocityThreshold();
 	}
 	public class UIManager: IUIManager {
 		public UIManager(
@@ -32,7 +33,9 @@ namespace UISystem{
 			bool showsInputability,
 
 			float imageDarkenedBrightness,
-			float imageDefaultBrightness
+			float imageDefaultBrightness,
+
+			float swipeVelocityThreshold
 		){
 			thisProcessManager = processManager;
 			thisRootUIAdaptor = rootUIAdaptor;
@@ -42,6 +45,8 @@ namespace UISystem{
 			thisImageDarknedBrightness = imageDarkenedBrightness;
 			thisImageDefaultBrightnes = imageDefaultBrightness;
 			thisPopUpManager = new PopUpManager();
+
+			thisSwipeVelocityThreshold = swipeVelocityThreshold;
 		}
 		readonly IUIAdaptor thisRootUIAdaptor;
 		public void GetReadyForUISystemActivation(){
@@ -144,14 +149,18 @@ namespace UISystem{
 		public string GetEventName(){
 			return thisInputName.ToString();
 		}
-	public enum InputName{
-		None,
-		Release,
-		Tap,
-		Swipe,
-		BeginDrag,
-		Drag,
-		Touch,
-	}
+		public float GetSwipeVelocityThreshold(){
+			return thisSwipeVelocityThreshold;
+		}
+		readonly float thisSwipeVelocityThreshold;
+		public enum InputName{
+			None,
+			Release,
+			Tap,
+			Swipe,
+			BeginDrag,
+			Drag,
+			Touch,
+		}
 	}
 }
