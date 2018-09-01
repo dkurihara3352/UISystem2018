@@ -36,7 +36,10 @@ namespace UISystem{
 			thisStateEngine = new PopUpStateEngine(popUpStateEngineConstArg);
 			if(arg.popUpMode == PopUpMode.Alpha)
 				this.GetUIAdaptor().SetUpCanvasGroupComponent();
-			((IPopUpAdaptor)GetUIAdaptor()).ToggleRaycastBlock(false);
+			GetPopUpAdaptor().ToggleRaycastBlock(false);
+		}
+		protected virtual IPopUpAdaptor GetPopUpAdaptor(){
+			return (IPopUpAdaptor)GetUIAdaptor();
 		}
 		readonly IPopUpManager thisPopUpManager;
 		public bool HidesOnTappingOthers(){

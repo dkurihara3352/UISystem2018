@@ -10,27 +10,10 @@ using DKUtility;
 [TestFixture, Category("UISystem")]
 public class PopUpTest{
 	[Test]
-	public void Construction_SetProximateParentScroller(){
-		IPopUpConstArg arg = CreateMockArg();
-		TestPopUp popUp = new TestPopUp(arg);
-
-		IPopUp actual = popUp.GetProximateParentPopUp();
-
-		Assert.That(actual, Is.Not.Null);
-	}
-	[Test]
-	public void Construction_CallsParentPopUpRegisterProximateChildPopUpThis(){
-		IPopUpConstArg arg = CreateMockArg();
-		TestPopUp popUp = new TestPopUp(arg);
-
-		IPopUp parentPopUp = popUp.GetProximateParentPopUp();
-
-		parentPopUp.Received(1).RegisterProximateChildPopUp(popUp);
-	}
-	[Test]
 	public void ShowHiddenProximateParentPopUpRecursively_ProxParNotNull_ProxParIsHidden_CallsItInSequence(){
 		IPopUpConstArg arg = CreateMockArg();
 		TestPopUp popUp = new TestPopUp(arg);
+		popUp.SetUpPopUpHierarchy();
 		IPopUp parentPopUp = popUp.GetProximateParentPopUp();
 		parentPopUp.IsHidden().Returns(true);
 
@@ -43,6 +26,7 @@ public class PopUpTest{
 	public void HideShownChildPopUpsRecursively_ChildIsActivated_ChildIsShown_CallsItInSequence(){
 		IPopUpConstArg arg = CreateMockArg();
 		TestPopUp popUp = new TestPopUp(arg);
+		popUp.SetUpPopUpHierarchy();
 		
 		List<IPopUp> calledChildrent = new List<IPopUp>();
 		for(int i = 0; i < 3 ; i ++){
@@ -131,6 +115,9 @@ public class PopUpTest{
 			parentScroller.GetProximateParentScroller().Returns(nullScroller);
 			
 			return parentScroller;
+		}
+		protected override IPopUpAdaptor GetPopUpAdaptor(){
+			return Substitute.For<IPopUpAdaptor>();
 		}
 	}
 	public IPopUpConstArg CreateMockArg(){

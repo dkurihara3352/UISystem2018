@@ -19,6 +19,7 @@ public class ConstrainedProcessTest {
 		arg.processConstraint.Returns(processConstraint);
 		arg.constraintValue.Returns(constraintValue);
 		TestConstrainedProcess testProcess = new TestConstrainedProcess(arg);
+		testProcess.SetLatestInitialValueDifference_Test(1f);
 		
 		testProcess.Run();
 
@@ -67,9 +68,12 @@ public class ConstrainedProcessTest {
 			arg
 		){}
 		protected override void UpdateProcessImple(float deltaT){}
-		readonly float thisLatestInitialValueDifference;
+		float thisLatestInitialValueDifference;
 		protected override float GetLatestInitialValueDifference(){
 			return thisLatestInitialValueDifference;
+		}
+		public void SetLatestInitialValueDifference_Test(float value){
+			thisLatestInitialValueDifference = value;
 		}
 		public float GetRateOfChange_Test(){
 			return thisRateOfChange;

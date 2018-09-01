@@ -9,20 +9,6 @@ using DKUtility;
 
 [TestFixture, Category("UISystem")]
 public class GenericSingleElementScrollerTest{
-	[Test, TestCaseSource(typeof(Construction_CalcAndSetsCursorSize_TestCase), "cases")]
-	public void Construction_CalcAndSetsCursorSize(Vector2 relativeCursorLength, Vector2 expected){
-		TestGenericSingleElementScroller scroller = CreateGenericSingleElementScroller(relativeCursorLength);
-		
-		Vector2 actual = scroller.thisCursorLength_Test;
-		Assert.That(actual, Is.EqualTo(expected));
-	}
-	public class Construction_CalcAndSetsCursorSize_TestCase{
-		public static object[] cases = {
-			new object[]{new Vector2(1f, 1f), new Vector2(200f, 100f)},
-			new object[]{new Vector2(.1f, .1f), new Vector2(20f, 10f)},
-			new object[]{new Vector2(.5f, .5f), new Vector2(100f, 50f)},
-		};
-	}
 	[Test, TestCaseSource(typeof(Constructor_TestCase), "lessThan0Cases")]
 	public void Constructor_RelativeCursorSizeNotGreaterThanZero_ThrowsException(Vector2 relativeCursorLength){
 		IGenericSingleElementScrollerConstArg arg = CreateMockConstArg();

@@ -45,11 +45,16 @@ namespace UISystem{
 					float modulo = positionInGroupSpace[i] % elementLengthPlusPadding;
 					if(modulo == 0f){
 						int quotient = Mathf.FloorToInt(positionInGroupSpace[i]/ elementLengthPlusPadding);
-						if(quotient == thisGridCounts[i])
+						if(quotient == 0){
+							if(thisPadding[1] != 0f){//at the leastside edge
+								return null;
+							}
+						}else{
 							quotient -= 1;
+						}
 						arrayIndex[i] = quotient;
 					}else{
-						if(modulo + marginOfError >= thisPadding[i]){
+						if(modulo >= thisPadding[i] - marginOfError){
 							int quotient = Mathf.FloorToInt(positionInGroupSpace[i] / elementLengthPlusPadding);
 							arrayIndex[i] = quotient;
 						}else{

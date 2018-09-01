@@ -21,6 +21,7 @@ public class InterpolatorProcessTest{
     [Test][TestCaseSource(typeof(UpdateProcess_TestCases), "cases")]
     public void UpdateProcess_CallsIrperInterpolate(float expireT){
         IInterpolatorProcesssConstArg arg = CreateMockArg();
+        arg.constraintValue.Returns(expireT);
         TestInterpolatorProcess testProcess = new TestInterpolatorProcess(arg);
 
         testProcess.Run();
